@@ -1,9 +1,9 @@
 # Gate 1 D0 开工前置门记录
 
-**项目：** Project-004-New Era 2  
-**日期：** 2026-07-26  
-**对应计划：** `2026-07-26-react-web-gate-1-2-development-plan.md`  
-**当前结论：** `D0_BLOCKED_HUMAN_CONFIRMATION`  
+**项目：** Project-004-New Era 2
+**日期：** 2026-07-26
+**对应计划：** `2026-07-26-react-web-gate-1-2-development-plan.md`
+**当前结论：** `D0_BLOCKED_HUMAN_CONFIRMATION`
 **实施分支：** `codex/gate1-react-web`
 
 ---
@@ -12,9 +12,9 @@
 
 | D0 条件 | 状态 | 证据或剩余动作 |
 |---|---|---|
-| 四份权威文档形成同一提交基线 | 未完成 | 当前工作树包含多组既有设计改动；不得混入同一提交 |
+| 四份权威文档形成同一提交基线 | 完成 | 远端基线提交 `897a11af8cf14974b67e31f7f18c3fffab77d0dc` 同时固定总控计划、开发计划、两周切片规格和玩家测试协议 |
 | 检查工作树与提交边界 | 完成 | 已确认使用明确路径暂存，不使用 `git add -A` |
-| Node 24 LTS 可用 | 完成 | `/opt/homebrew/opt/node@24/bin/node --version` 应输出 `v24.18.0`；根目录 `.node-version` 固定 `24.18.0` |
+| Node 24 LTS 可用 | 完成 | 已验证 `PATH=/opt/homebrew/opt/node@24/bin:$PATH node --version` 输出 `v24.18.0`、`npm --version` 输出 `11.16.0`；根目录 `.node-version` 固定 `24.18.0` |
 | 实施负责人已记录 | 完成 | 当前 Codex 工程实施任务，分支 `codex/gate1-react-web` |
 | 测试负责人由项目 Owner 确认 | 待确认 | 需要 Owner 指定负责招募、主持、原始记录与 Gate 报告的人 |
 | 代理试玩 A、B、C 已确认 | 待确认 | 需要三个不计入正式样本的试玩人选或可用时段 |
@@ -38,4 +38,4 @@
 2. 代理试玩 A、B、C 由谁参加或何时可安排；
 3. 测试负责人是否接受至少 7 名候选人、5 名有效样本和 2 名替补的台账规则。
 
-完成以上确认并建立四份权威文档的同一提交基线后，才将开发计划状态从 `Ready after D0` 改为实施中，并开始 D1。
+完成以上三项 Owner 确认后，才将开发计划状态从 `Ready after D0` 改为实施中，并开始 D1。
