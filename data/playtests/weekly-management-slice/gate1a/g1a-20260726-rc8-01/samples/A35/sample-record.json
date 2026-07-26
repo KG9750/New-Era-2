@@ -1,0 +1,166 @@
+{
+  "schemaVersion": "gate1a-sample-record-v1",
+  "sampleId": "A35",
+  "cohortId": "g1a-20260726-rc8-01",
+  "sampleKind": "primary",
+  "batchId": "Batch 2",
+  "issue": 37,
+  "operator": "/root",
+  "validityAdjudicator": "/root/gate1a_test_ops_lead",
+  "sealedAtUtc": "2026-07-26T17:58:30Z",
+  "identityAndIsolation": {
+    "agentTask": "/root/a35_player",
+    "agentSessionId": null,
+    "agentSessionIdReason": "collaboration_tool_did_not_expose_session_uuid",
+    "freshContextAttestation": true,
+    "freshContextMechanism": "fork_turns=none",
+    "freshBrowserEvidence": "new isolated agent browser context released after A34 evidence commit; root observed one host and no concurrent player task",
+    "browserProfileUuidExposed": false,
+    "contextContaminationDetected": false,
+    "priorPrototypeExposure": false,
+    "readOnlyAttestation": true,
+    "playerPacketReleasedBeforePlay": true,
+    "postSessionInterviewReleasedAfterPlayDownloadAndClear": true
+  },
+  "releaseCandidate": {
+    "buildId": "g1-rc-20260726.8",
+    "gitSha": "03973fcfc0c244555e7e4a4c623eec3fb8b8e032",
+    "artifactHash": "e0cf7c78251642a54f88845c61aa214e9e91076b3e432fb8399bd873ef0fe49b",
+    "scenarioId": "gate1-two-week-management",
+    "scenarioVersion": "0.4.0",
+    "fixedSeed": 104729,
+    "initialStateHash": "fnv1a32-33a16fbf",
+    "protocolVersion": "gate1a-agent-proxy-v6",
+    "playerPacketHash": "9a5653dbfdb616936b81ef511e9503e209e5dbfe692a89db98a2091f880d1205",
+    "postSessionInterviewHash": "8beabc12ab995b330d78f4cdfbbf16377f024737c2ae4fcecf477d291e7a8aa5",
+    "viewport": "1440x900",
+    "inputMode": "browser-pointer-keyboard"
+  },
+  "applicationSession": {
+    "sessionId": "90ec180b-bb7d-4f51-9338-b6e4f3f9faf1",
+    "machineStartedAtEpochMs": 1785087911088,
+    "machineEndedAtEpochMs": 1785088335903,
+    "machineElapsedMs": 424812,
+    "week1RawDurationMs": 172583,
+    "week2RawDurationMs": 142174,
+    "captureKind": "complete",
+    "finalTick": 2010,
+    "twoWeeksCompleted": true,
+    "recapCount": 2,
+    "exportTriggered": true,
+    "exportReceiptObserved": "已保存并校验 tick 2010 的匿名记录。",
+    "clearCompleted": true,
+    "clearEvidence": "Agent returned to the 开始匿名新会话 entry and stopped without starting another session."
+  },
+  "machineEvidence": {
+    "exportFilePath": "captures/g1-rc-20260726.8-A35-90ec180b-bb7d-4f51-9338-b6e4f3f9faf1.json",
+    "exportFileSha256": "4c676f24c2c576494ccb3e7f80fdca3cab1f0af4044e2e9d5861208d51270b7b",
+    "exportFileSizeBytes": 64903,
+    "receiptPath": "captures/g1-rc-20260726.8-A35-90ec180b-bb7d-4f51-9338-b6e4f3f9faf1.json.receipt.json",
+    "sha256SidecarPath": "captures/g1-rc-20260726.8-A35-90ec180b-bb7d-4f51-9338-b6e4f3f9faf1.json.sha256",
+    "browserDownloadPath": "/Users/leo/Downloads/g1-rc-20260726.8-A35-90ec180b-bb7d-4f51-9338-b6e4f3f9faf1.json",
+    "browserDownloadEventCompleted": true,
+    "browserDownloadSha256": "4c676f24c2c576494ccb3e7f80fdca3cab1f0af4044e2e9d5861208d51270b7b",
+    "browserDownloadSizeBytes": 64903,
+    "browserDownloadMatchesServerRaw": true,
+    "browserDownloadComparison": "cmp byte-identical",
+    "actions": 9,
+    "domainEvents": 12,
+    "telemetry": 265,
+    "machineWeek1CandidateEditCount": 4,
+    "machineWeek2CandidateEditCount": 0,
+    "week1ValidEditCount": 3,
+    "week2ValidEditCount": 1,
+    "completeMarkerCount": 1,
+    "blockedMarkerCount": 0
+  },
+  "candidateEditAdjudication": [
+    {
+      "actionId": "action-0001",
+      "weekIndex": 0,
+      "machineWeekIndex": 0,
+      "actionType": "CHANGE_ACTIVITY",
+      "valid": true,
+      "undoActionIds": []
+    },
+    {
+      "actionId": "action-0002",
+      "weekIndex": 0,
+      "machineWeekIndex": 0,
+      "actionType": "OPEN_TRANSPORT_SHORTCUT",
+      "valid": true,
+      "undoActionIds": []
+    },
+    {
+      "actionId": "action-0003",
+      "weekIndex": 0,
+      "machineWeekIndex": 0,
+      "actionType": "EDIT_SCHEDULE",
+      "valid": true,
+      "undoActionIds": []
+    },
+    {
+      "actionId": "action-0008",
+      "weekIndex": 1,
+      "machineWeekIndex": 0,
+      "actionType": "EDIT_SCHEDULE",
+      "valid": true,
+      "undoActionIds": [],
+      "adjudicationOverrideReason": "The action occurs after CONTINUE_TO_NEXT_WEEK, targets day-8 block qiao-pan:d7:b3 and belongs to week 2; machine grouping retained weekIndex 0 at boundary tick 1002."
+    }
+  ],
+  "agentReportedEvidence": {
+    "initialObservation": "这周最需要先补上水泵的第 2 个预防性检修块；如果周三前不处理，水泵停机风险会把当前轻度粮食缺口压成严重短缺。",
+    "completionSignal": "PLAYTHROUGH_COMPLETE；保存、下载和清空完成并返回新会话入口。",
+    "threeProblemIdentification": {
+      "foodShortage": true,
+      "pumpPreventiveMaintenance": true,
+      "transportLoss": true,
+      "identifiedInInitialObservation": 2,
+      "identifiedOverall": 3
+    },
+    "predictionExplanationProvided": true,
+    "personAndDecisionImpactProvided": true,
+    "mapEnteredDecision": true,
+    "mapActionTaken": true,
+    "week2ScheduleExpanded": true,
+    "week2FullInspection": false,
+    "week2FullReplan": false,
+    "verbatimOutputPath": "samples/A35/agent-verbatim-output.md"
+  },
+  "hostPrompts": [
+    {
+      "stage": "post-playthrough-save",
+      "kind": "neutral-technical-evidence-check",
+      "changedCoreTask": false,
+      "strategyLeak": false,
+      "agentWaitedForReply": true
+    },
+    {
+      "stage": "post-save-clear",
+      "kind": "neutral-technical-evidence-check",
+      "changedCoreTask": false,
+      "strategyLeak": false,
+      "agentWaitedForReply": true
+    }
+  ],
+  "technicalInterruptions": [],
+  "symptoms": [],
+  "subjectiveHumanFields": "not_applicable_agent_proxy",
+  "validityDecision": {
+    "status": "VALID",
+    "reasonCode": "VALID_COMPLETE_CAPTURE_AND_PROTOCOL_COMPLIANCE",
+    "reason": "Fresh A35 context, frozen RC fingerprint, two-week completion, complete raw/SHA/receipt, byte-identical browser download, post-save clear and V4 satisfy the frozen protocol.",
+    "negativeOutcomeExcludedBecauseOfResult": false,
+    "productObservationsRetained": true,
+    "includedInSevenValidSampleDenominator": true,
+    "sampleIdReusable": false,
+    "replacementRequired": false,
+    "replacementSampleId": null
+  },
+  "trackLocks": {
+    "gate1A": "RUNNING_5_OF_7_VALID_A37_PENDING",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED"
+  }
+}
