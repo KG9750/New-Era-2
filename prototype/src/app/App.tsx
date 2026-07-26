@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
+import type { RcBuildMetadata } from '../build-metadata'
 import { gate1WeekOneScenario as scenario } from '../scenario/gate1-week-one'
 import { advanceSimulation, applyPlayerAction, createPlayerAction } from '../sim/engine'
 import {
@@ -38,6 +39,10 @@ import { SessionGate } from './SessionGate'
 type Speed = 1 | 3 | 8
 type FocusedIssue = 'food' | 'pump' | 'repair' | 'transport' | 'lin-request' | null
 type SupplyForecast = FoodForecast | RepairForecast
+
+interface AppProps {
+  buildMetadata: RcBuildMetadata
+}
 
 function initialState(): SimulationState {
   return scenario.createInitialState()
@@ -147,7 +152,7 @@ export function CharacterDecisionPanel({
   )
 }
 
-export function App() {
+export function App({ buildMetadata }: AppProps) {
   const [simulation, setSimulation] = useState(initialState)
   const [speed, setSpeed] = useState<Speed>(3)
   const [focusedIssue, setFocusedIssue] = useState<FocusedIssue>(null)
@@ -175,6 +180,18 @@ export function App() {
           !item.id.endsWith('-ended'),
       )
     : undefined
+  const pumpIncidentResolved = simulation.processedScriptEventIds.includes(
+    'pump-incident-day-3',
+  )
+  const pumpIssueStatus = pumpIncidentResolved
+    ? simulation.pumpStatus === 'protected'
+      ? '已兑现 · 检修奏效'
+      : '已兑现 · 水泵停机'
+    : pumpPlanReady
+      ? '已安排 · 等待事件'
+      : focusedIssue === 'pump'
+        ? '已定位 · 待处理'
+        : '定位安排 →'
 
   function submit(action: PlayerAction) {
     if (!recorderRef.current) return
@@ -223,7 +240,7 @@ export function App() {
 
   function startSession(sampleId: string) {
     const state = initialState()
-    const recorder = createSessionRecorder(sampleId, state)
+    const recorder = createSessionRecorder(sampleId, state, buildMetadata)
     recorderRef.current = recorder
     nextActionSequence.current = 1
     setSimulation(state)
@@ -279,6 +296,7 @@ export function App() {
   if (!activeSession) {
     return (
       <SessionGate
+        buildMetadata={buildMetadata}
         onStart={startSession}
         wasCleared={wasSessionCleared}
       />
@@ -310,25 +328,24 @@ export function App() {
             ))}
             <button
               className="play-button"
-              disabled={simulation.isComplete}
+              disabled={simulation.recap !== null}
               onClick={() =>
-                simulation.recap && !simulation.isComplete
-                  ? submit({ type: 'CONTINUE_TO_NEXT_WEEK' })
-                  : submit({ type: 'SET_PAUSED', paused: !simulation.isPaused })
+                submit({ type: 'SET_PAUSED', paused: !simulation.isPaused })
               }
               type="button"
             >
-              {simulation.isPaused
-                ? simulation.recap && !simulation.isComplete
-                  ? '进入第二周'
-                  : latestBlockingEvent
+              {simulation.recap
+                ? '复盘中'
+                : simulation.isPaused
+                  ? latestBlockingEvent
                     ? '确认后继续'
                     : '开始运行'
-                : '暂停'}
+                  : '暂停'}
             </button>
           </div>
         </div>
-        <div className="progress-track" aria-label={`两周进度 ${progress}%`}>
+        <div className="progress-label">两周总进度 {progress}%</div>
+        <div className="progress-track" aria-label={`两周总进度 ${progress}%`}>
           <span style={{ width: `${progress}%` }} />
         </div>
       </header>
@@ -336,11 +353,16 @@ export function App() {
       <section className="session-meta-strip" aria-label="当前测试会话元数据">
         <div><span>匿名编号</span><strong>{activeSession.sampleId}</strong></div>
         <div><span>构建</span><strong>{activeSession.buildId}</strong></div>
+        <div><span>Git</span><strong title={activeSession.gitSha}>{activeSession.gitSha}</strong></div>
+        <div><span>产物</span><strong title={activeSession.artifactHash}>{activeSession.artifactHash}</strong></div>
+        <div><span>初态</span><strong>{activeSession.initialStateHash}</strong></div>
         <div><span>场景</span><strong>{activeSession.scenarioVersion}</strong></div>
         <div><span>种子</span><strong>{activeSession.fixedSeed}</strong></div>
         <div><span>Session</span><strong>{activeSession.sessionId}</strong></div>
       </section>
 
+      {!simulation.recap && (
+        <>
       <section className="briefing" aria-labelledby="briefing-title">
         <div className="section-heading">
           <div>
@@ -374,7 +396,11 @@ export function App() {
               <small>{foodForecast.acceptedRisk ? '已接受风险，不再作为未处理错误' : '影响：粮食、化肥与共享劳动力'}</small>
             </span>
             <span className="issue-action">
-              {focusedIssue === 'food' ? '已定位' : '查看原因 →'}
+              {foodForecast.acceptedRisk
+                ? '已接受 · 风险保留'
+                : focusedIssue === 'food'
+                  ? '已定位 · 待决定'
+                  : '查看原因 →'}
             </span>
           </button>
           <button
@@ -391,7 +417,7 @@ export function App() {
               <small>影响：乔磐、林禾 · 周二 · 粮食与维修保障</small>
             </span>
             <span className="issue-action">
-              {focusedIssue === 'pump' ? '已定位' : '定位安排 →'}
+              {pumpIssueStatus}
             </span>
           </button>
           <button
@@ -406,7 +432,7 @@ export function App() {
               <small>影响：乔磐效率、维修工坊与共享劳动力</small>
             </span>
             <span className="issue-action">
-              {focusedIssue === 'repair' ? '已定位' : '查看原因 →'}
+              {focusedIssue === 'repair' ? '已定位 · 待权衡' : '查看原因 →'}
             </span>
           </button>
             </>
@@ -430,7 +456,13 @@ export function App() {
                   </small>
                 </span>
                 <span className="issue-action">
-                  {focusedIssue === 'lin-request' ? '已定位' : '处理请求 →'}
+                  {simulation.linHeRequestDecision === 'accepted'
+                    ? '已接受 · 已锁定'
+                    : simulation.linHeRequestDecision === 'declined'
+                      ? '已拒绝 · 保留农务'
+                      : focusedIssue === 'lin-request'
+                        ? '已定位 · 待答复'
+                        : '处理请求 →'}
                 </span>
               </button>
               <button
@@ -475,7 +507,11 @@ export function App() {
                   </small>
                 </span>
                 <span className="issue-action">
-                  {focusedIssue === 'transport' ? '已定位' : '查看地图 →'}
+                  {transportRoute.id === 'south-shortcut'
+                    ? '已调整 · 已继承'
+                    : focusedIssue === 'transport'
+                      ? '已定位 · 待决定'
+                      : '查看地图 →'}
                 </span>
               </button>
             </>
@@ -642,6 +678,8 @@ export function App() {
         simulation={simulation}
         submit={submit}
       />
+        </>
+      )}
 
       {latestBlockingEvent && !simulation.recap && (
         <section className="event-banner" role="alert">
@@ -656,7 +694,15 @@ export function App() {
       {simulation.recap && (
         <section className="recap" aria-labelledby="recap-title">
           <p className="eyebrow">第 {simulation.recaps.length} 周结束</p>
-          <h2 id="recap-title">周末偏差复盘</h2>
+          <h2 id="recap-title">周末偏差复盘 · 本周结算快照</h2>
+          <div className="settlement-note" role="status">
+            <strong>本周安排已完成并结算，不是被撤销</strong>
+            <span>
+              {simulation.isComplete
+                ? '当前页面冻结为第二周结算快照；不会并列显示失效例外后的基础日程或下一周预测。'
+                : '当前页面冻结为第一周结算快照；进入第二周后才显示继承的基础计划和新增例外。'}
+            </span>
+          </div>
           <p className="recap-headline">{simulation.recap.headline}</p>
           <div className="recap-numbers">
             <div><span>计划期末</span><strong>{formatRange(simulation.recap.planned)}</strong></div>
@@ -676,6 +722,17 @@ export function App() {
               </li>
             ))}
           </ol>
+          {simulation.isComplete ? (
+            <p className="recap-next-step">两周流程已完成，可以下载匿名 JSON 并结束会话。</p>
+          ) : (
+            <button
+              className="recap-next-button"
+              onClick={() => submit({ type: 'CONTINUE_TO_NEXT_WEEK' })}
+              type="button"
+            >
+              确认复盘并进入第二周
+            </button>
+          )}
         </section>
       )}
 

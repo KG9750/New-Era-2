@@ -1,8 +1,9 @@
 import { useState } from 'react'
+import type { RcBuildMetadata } from '../build-metadata'
 import { gate1WeekOneScenario as scenario } from '../scenario/gate1-week-one'
-import { RC_BUILD_ID } from '../telemetry/session'
 
 interface SessionGateProps {
+  buildMetadata: RcBuildMetadata
   wasCleared: boolean
   onStart(sampleId: string): void
 }
@@ -10,6 +11,7 @@ interface SessionGateProps {
 const SAMPLE_ID_PATTERN = /^(?:A\d{2,}|P\d{2,}|M-[ABC])$/
 
 export function SessionGate({
+  buildMetadata,
   wasCleared,
   onStart,
 }: SessionGateProps) {
@@ -30,7 +32,10 @@ export function SessionGate({
         </div>
 
         <dl className="session-build-grid">
-          <div><dt>构建编号</dt><dd>{RC_BUILD_ID}</dd></div>
+          <div><dt>构建编号</dt><dd>{buildMetadata.buildId}</dd></div>
+          <div><dt>Git SHA</dt><dd title={buildMetadata.gitSha}>{buildMetadata.gitSha.slice(0, 12)}</dd></div>
+          <div><dt>产物哈希</dt><dd title={buildMetadata.artifactHash}>{buildMetadata.artifactHash.slice(0, 12)}</dd></div>
+          <div><dt>初态哈希</dt><dd>{buildMetadata.initialStateHash}</dd></div>
           <div><dt>场景版本</dt><dd>{scenario.version}</dd></div>
           <div><dt>固定种子</dt><dd>{scenario.fixedSeed}</dd></div>
         </dl>

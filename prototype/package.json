@@ -8,7 +8,11 @@
     "lint": "tsc --noEmit",
     "test:run": "vitest run",
     "build": "tsc -b && vite build",
-    "e2e": "playwright test"
+    "rc:build": "node scripts/rc-build.mjs",
+    "rc:verify": "node scripts/verify-rc-build.mjs",
+    "rc:serve": "vite preview --host 127.0.0.1 --port 4186",
+    "e2e": "npm run rc:build -- --build-id g1-e2e-20260726.1 --git-sha 1111111111111111111111111111111111111111 && npm run e2e:rc",
+    "e2e:rc": "npm run rc:verify && playwright test"
   },
   "dependencies": {
     "react": "^19.1.1",

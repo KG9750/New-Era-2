@@ -14,10 +14,26 @@ import {
   recordSpeedChange,
 } from '../src/telemetry/session'
 
+const TEST_BUILD_METADATA = {
+  buildId: 'g1-e2e-unit.1',
+  gitSha: '1111111111111111111111111111111111111111',
+  artifactHash: '2'.repeat(64),
+  artifactHashAlgorithm: 'sha256-canonical-file-manifest-v1' as const,
+  artifactManifestPath: 'artifact-manifest.json' as const,
+  initialStateHash: 'fnv1a32-33a16fbf',
+  initialStateHashAlgorithm: 'fnv1a32-stable-json-v1' as const,
+}
+
 describe('Gate 1 playtest evidence contract', () => {
   it('records structured undo, domain events, tick transitions, speed, and raw week duration', () => {
     let state: SimulationState = scenario.createInitialState()
-    const recorder = createSessionRecorder('A01', state, 1_000, 100)
+    const recorder = createSessionRecorder(
+      'A01',
+      state,
+      TEST_BUILD_METADATA,
+      1_000,
+      100,
+    )
 
     const edit = createPlayerAction(1, state.currentTick, {
       type: 'CHANGE_ACTIVITY',
@@ -99,8 +115,20 @@ describe('Gate 1 playtest evidence contract', () => {
 
   it('uses a strict privacy allowlist and gives every fresh session a new id', () => {
     const initial = scenario.createInitialState()
-    const first = createSessionRecorder('M-C', initial, 1_000, 100)
-    const second = createSessionRecorder('M-C', initial, 2_000, 200)
+    const first = createSessionRecorder(
+      'M-C',
+      initial,
+      TEST_BUILD_METADATA,
+      1_000,
+      100,
+    )
+    const second = createSessionRecorder(
+      'M-C',
+      initial,
+      TEST_BUILD_METADATA,
+      2_000,
+      200,
+    )
     const exported = createPlaytestExport(first, initial, 1_100, 150)
 
     expect(second.meta.sessionId).not.toBe(first.meta.sessionId)

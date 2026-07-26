@@ -3,8 +3,18 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { App, CharacterDecisionPanel } from '../src/app/App'
 import { gate1WeekOneScenario as scenario } from '../src/scenario/gate1-week-one'
 
+const TEST_BUILD_METADATA = {
+  buildId: 'g1-e2e-unit.1',
+  gitSha: '1111111111111111111111111111111111111111',
+  artifactHash: '2'.repeat(64),
+  artifactHashAlgorithm: 'sha256-canonical-file-manifest-v1' as const,
+  artifactManifestPath: 'artifact-manifest.json' as const,
+  initialStateHash: 'fnv1a32-33a16fbf',
+  initialStateHashAlgorithm: 'fnv1a32-stable-json-v1' as const,
+}
+
 function renderStartedApp() {
-  render(<App />)
+  render(<App buildMetadata={TEST_BUILD_METADATA} />)
   fireEvent.click(screen.getByRole('button', { name: '创建固定初态会话' }))
 }
 
@@ -29,6 +39,9 @@ describe('minimal weekly flow UI', () => {
     expect(forecastPanel).not.toBeNull()
     expect(within(forecastPanel!).getByText('3–11')).toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: /水泵需要 2 个预防性维修块/ }))
+    expect(
+      screen.getByRole('button', { name: /水泵需要 2 个预防性维修块/ }),
+    ).toHaveTextContent('已定位 · 待处理')
     fireEvent.click(screen.getByRole('button', { name: /补足第 2 个检修块/ }))
 
     expect(screen.getByRole('button', { name: /补足第 2 个检修块/ })).toHaveAttribute(
@@ -36,6 +49,9 @@ describe('minimal weekly flow UI', () => {
       'true',
     )
     expect(within(forecastPanel!).getByText('9')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /水泵需要 2 个预防性维修块/ }),
+    ).toHaveTextContent('已安排 · 等待事件')
     expect(screen.getByText(/已安排 2 个水泵维修块/)).toBeInTheDocument()
     expect(screen.getByText(/粮食 3–11 → 9；维修保障/)).toBeInTheDocument()
   })
@@ -162,9 +178,13 @@ describe('minimal weekly flow UI', () => {
     act(() => {
       vi.advanceTimersByTime(60_000)
     })
-    expect(screen.getByRole('heading', { name: '周末偏差复盘' })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: /周末偏差复盘/ })).toBeInTheDocument()
+    expect(screen.getByText('本周安排已完成并结算，不是被撤销')).toBeInTheDocument()
+    expect(screen.queryByRole('heading', { name: '粮食' })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: '保留休息' })).not.toBeInTheDocument()
+    expect(screen.getByLabelText('聚落时钟')).toHaveTextContent('复盘中')
 
-    fireEvent.click(screen.getByRole('button', { name: '进入第二周' }))
+    fireEvent.click(screen.getByRole('button', { name: '确认复盘并进入第二周' }))
 
     expect(screen.getByRole('heading', { name: '第二周新增例外' })).toBeInTheDocument()
     expect(screen.getByText('基础计划已继承')).toBeInTheDocument()

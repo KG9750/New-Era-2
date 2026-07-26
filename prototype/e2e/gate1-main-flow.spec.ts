@@ -16,18 +16,47 @@ async function downloadSession(page: Page) {
 }
 
 test('new session to two-week export and memory clear', async ({ page }) => {
+  const consoleErrors: string[] = []
+  const pageErrors: string[] = []
+  page.on('console', (message) => {
+    if (message.type() === 'error') consoleErrors.push(message.text())
+  })
+  page.on('pageerror', (error) => pageErrors.push(error.message))
   await page.clock.install({ time: new Date('2026-07-26T06:00:00Z') })
   await page.goto('/')
+  const buildMetadata = await page
+    .request
+    .get('/rc-build.json')
+    .then((response) => response.json())
 
   await expect(
     page.getByRole('heading', { name: '开始匿名新会话' }),
   ).toBeVisible()
-  await page.getByLabel('匿名编号').fill('M-C')
-  await page.getByRole('button', { name: '创建固定初态会话' }).click()
+  await expect(page.getByText(buildMetadata.buildId)).toBeVisible()
+  await expect(page.getByTitle(buildMetadata.gitSha)).toBeVisible()
+  await expect(page.getByTitle(buildMetadata.artifactHash)).toBeVisible()
+  await expect(page.getByText(buildMetadata.initialStateHash)).toBeVisible()
+  const sampleInput = page.getByLabel('匿名编号')
+  await sampleInput.fill('M-C')
+  await sampleInput.focus()
+  await page.keyboard.press('Tab')
+  const createSessionButton = page.getByRole('button', {
+    name: '创建固定初态会话',
+  })
+  await expect(createSessionButton).toBeFocused()
+  expect(
+    await createSessionButton.evaluate(
+      (element) => getComputedStyle(element).outlineStyle,
+    ),
+  ).not.toBe('none')
+  await page.keyboard.press('Enter')
 
   const meta = page.getByRole('region', { name: '当前测试会话元数据' })
   await expect(meta).toContainText('M-C')
-  await expect(meta).toContainText('g1-rc-20260726.1')
+  await expect(meta).toContainText(buildMetadata.buildId)
+  await expect(meta).toContainText(buildMetadata.gitSha)
+  await expect(meta).toContainText(buildMetadata.artifactHash)
+  await expect(meta).toContainText(buildMetadata.initialStateHash)
   await expect(meta).toContainText('0.4.0')
   await expect(meta).toContainText('104729')
   const firstSessionId = (await meta.locator('div').last().locator('strong').textContent())!
@@ -45,7 +74,13 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   await page
     .getByRole('button', { name: /水泵需要 2 个预防性维修块/ })
     .click()
+  await expect(
+    page.getByRole('button', { name: /水泵需要 2 个预防性维修块/ }),
+  ).toContainText('已定位 · 待处理')
   await page.getByRole('button', { name: /补足第 2 个检修块/ }).click()
+  await expect(
+    page.getByRole('button', { name: /水泵需要 2 个预防性维修块/ }),
+  ).toContainText('已安排 · 等待事件')
   await page
     .getByRole('button', { name: '开启短通路 · 维修保障 −1' })
     .click()
@@ -54,11 +89,19 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   await page.getByRole('button', { name: '开始运行' }).click()
   await page.clock.runFor(10_000)
   await expect(page.getByRole('heading', { name: /水泵异常，检修奏效/ })).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: /水泵需要 2 个预防性维修块/ }),
+  ).toContainText('已兑现 · 检修奏效')
   await page.getByRole('button', { name: '确认后继续' }).click()
+  await expect(page.getByText(/事件触发时，时钟自动暂停/)).toBeVisible()
+  await expect(page.getByText(/时钟已自动暂停/)).toHaveCount(0)
   await page.clock.runFor(22_000)
-  await expect(page.getByRole('heading', { name: '周末偏差复盘' })).toBeVisible()
+  await expect(page.getByRole('heading', { name: /周末偏差复盘/ })).toBeVisible()
+  await expect(page.getByText('本周安排已完成并结算，不是被撤销')).toBeVisible()
+  await expect(page.getByRole('heading', { name: '粮食' })).toHaveCount(0)
+  await expect(page.getByRole('button', { name: '保留休息' })).toHaveCount(0)
 
-  await page.getByRole('button', { name: '进入第二周' }).click()
+  await page.getByRole('button', { name: '确认复盘并进入第二周' }).click()
   await expect(page.getByText('基础计划已继承')).toBeVisible()
   await page
     .getByRole('button', { name: /林禾请求周二 B1 学习/ })
@@ -68,7 +111,14 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   await page.clock.runFor(33_000)
 
   await expect(page.getByText('第 2 周结束')).toBeVisible()
-  await expect(page.getByLabel(/两周进度 100%/)).toBeVisible()
+  await expect(page.getByLabel(/两周总进度 100%/)).toBeVisible()
+  await expect(page.getByText(/冻结为第二周结算快照/)).toBeVisible()
+  await expect(page.getByRole('heading', { name: '粮食' })).toHaveCount(0)
+  const recap = page.getByRole('heading', {
+    name: /周末偏差复盘/,
+  }).locator('..')
+  await expect(recap).toContainText('12–13')
+  await expect(recap).toContainText('12')
   const exported = await downloadSession(page)
 
   expect(exported).toMatchObject({
@@ -76,9 +126,10 @@ test('new session to two-week export and memory clear', async ({ page }) => {
     meta: {
       sampleId: 'M-C',
       sessionId: firstSessionId,
-      buildId: 'g1-rc-20260726.1',
-      gitSha: 'e2e-git-sha',
-      artifactHash: 'e2e-artifact-hash',
+      buildId: buildMetadata.buildId,
+      gitSha: buildMetadata.gitSha,
+      artifactHash: buildMetadata.artifactHash,
+      initialStateHash: buildMetadata.initialStateHash,
       scenarioVersion: '0.4.0',
       fixedSeed: 104729,
     },
@@ -139,4 +190,11 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   expect(cleanExport.domainEvents).toEqual([])
   expect(cleanExport.finalTick).toBe(54)
   expect(cleanExport.recap).toEqual([])
+  expect(
+    await page.evaluate(
+      () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
+    ),
+  ).toBe(true)
+  expect(consoleErrors).toEqual([])
+  expect(pageErrors).toEqual([])
 })

@@ -1,12 +1,11 @@
 import { gate1WeekOneScenario as scenario } from '../scenario/gate1-week-one'
+import type { RcBuildMetadata } from '../build-metadata'
 import type {
   DomainEvent,
   PlayerActionEnvelope,
   SimulationState,
   TransitionResult,
 } from '../sim/model'
-
-export const RC_BUILD_ID = 'g1-rc-20260726.1'
 
 export interface PlaytestSessionMeta {
   sampleId: string
@@ -160,19 +159,26 @@ function recordWeekBoundaries(
 export function createSessionRecorder(
   sampleId: string,
   state: SimulationState,
+  buildMetadata: RcBuildMetadata,
   epochNow = Date.now(),
   monotonicNow = performance.now(),
 ): SessionRecorder {
+  const initialStateHash = stableStateHash(state)
+  if (buildMetadata.initialStateHash !== initialStateHash) {
+    throw new Error(
+      `冻结初态指纹不一致：metadata=${buildMetadata.initialStateHash} runtime=${initialStateHash}`,
+    )
+  }
   const meta: PlaytestSessionMeta = {
     sampleId,
     sessionId: createSessionId(),
-    buildId: RC_BUILD_ID,
-    gitSha: import.meta.env.VITE_GIT_SHA ?? 'UNFROZEN',
-    artifactHash: import.meta.env.VITE_ARTIFACT_HASH ?? 'UNFROZEN',
+    buildId: buildMetadata.buildId,
+    gitSha: buildMetadata.gitSha,
+    artifactHash: buildMetadata.artifactHash,
     scenarioId: scenario.id,
     scenarioVersion: scenario.version,
     fixedSeed: scenario.fixedSeed,
-    initialStateHash: stableStateHash(state),
+    initialStateHash,
     viewport:
       typeof window === 'undefined'
         ? 'unknown'

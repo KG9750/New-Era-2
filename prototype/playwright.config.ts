@@ -3,6 +3,7 @@ import { defineConfig, devices } from '@playwright/test'
 export default defineConfig({
   testDir: './e2e',
   fullyParallel: false,
+  workers: 1,
   retries: 0,
   reporter: 'list',
   use: {
@@ -10,18 +11,25 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   webServer: {
-    command:
-      'VITE_GIT_SHA=e2e-git-sha VITE_ARTIFACT_HASH=e2e-artifact-hash npm run build && npm exec vite preview -- --host 127.0.0.1 --port 4186',
+    command: 'npm run rc:serve',
     port: 4186,
     reuseExistingServer: false,
   },
   projects: [
     {
-      name: 'chromium',
+      name: 'chromium-1440x900',
       use: {
         ...devices['Desktop Chrome'],
         launchOptions: { args: ['--single-process'] },
         viewport: { width: 1440, height: 900 },
+      },
+    },
+    {
+      name: 'chromium-1280x720',
+      use: {
+        ...devices['Desktop Chrome'],
+        launchOptions: { args: ['--single-process'] },
+        viewport: { width: 1280, height: 720 },
       },
     },
   ],

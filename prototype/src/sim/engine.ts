@@ -581,7 +581,7 @@ export function advanceSimulation(
           kind: 'scripted-event',
           id: nextEvent.id,
           title: '林禾请求逾期，默认保留农务',
-          detail: `时钟已自动暂停。周二 B1 锁定为农务，粮食预测 ${formatRange(after)}；林禾记住了这次沉默。`,
+          detail: `事件触发时，时钟自动暂停。周二 B1 锁定为农务，粮食预测 ${formatRange(after)}；林禾记住了这次沉默。`,
           before,
           after,
         }),
@@ -620,8 +620,8 @@ export function advanceSimulation(
         title: pumpStatus === 'protected' ? '水泵异常，检修奏效' : '水泵故障并停机',
         detail:
           pumpStatus === 'protected'
-            ? `时钟已自动暂停。粮食期末预测由 ${formatRange(before)} 调整为 ${formatRange(after)}。`
-            : `时钟已自动暂停。粮食期末预测由 ${formatRange(before)} 下调为 ${formatRange(after)}。`,
+            ? `事件触发时，时钟自动暂停。粮食期末预测由 ${formatRange(before)} 调整为 ${formatRange(after)}。`
+            : `事件触发时，时钟自动暂停。粮食期末预测由 ${formatRange(before)} 下调为 ${formatRange(after)}。`,
         before,
         after,
       }),

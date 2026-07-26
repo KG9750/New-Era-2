@@ -29,6 +29,14 @@ button {
   font: inherit;
 }
 
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+[role="gridcell"]:focus-visible {
+  outline: 3px solid #1d5f8a;
+  outline-offset: 3px;
+}
+
 .app-shell {
   width: min(1180px, calc(100% - 64px));
   margin: 0 auto;
@@ -131,6 +139,15 @@ h2 {
   height: 3px;
   overflow: hidden;
   background: #cbc4b8;
+}
+
+.progress-label {
+  bottom: 7px;
+  color: #656960;
+  font-size: 11px;
+  font-weight: 800;
+  position: absolute;
+  right: 0;
 }
 
 .progress-track span {
@@ -794,6 +811,37 @@ h2 {
   background: #f6f1e7;
 }
 
+.settlement-note {
+  background: #e7eee5;
+  border: 1px solid #9fb49d;
+  border-radius: 9px;
+  display: grid;
+  gap: 4px;
+  margin-top: 16px;
+  padding: 12px 14px;
+}
+
+.settlement-note span,
+.recap-next-step {
+  color: #59675c;
+}
+
+.recap-next-button {
+  background: var(--safe);
+  border: 1px solid var(--safe);
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-weight: 800;
+  margin-top: 16px;
+  padding: 11px 16px;
+}
+
+.recap-next-step {
+  font-weight: 750;
+  margin: 18px 0 0;
+}
+
 .recap-headline {
   margin: 12px 0 20px;
   color: #526353;
@@ -1129,7 +1177,7 @@ h2 {
   background: rgba(249, 246, 239, 0.7);
   border: 1px solid var(--line);
   border-radius: 12px;
-  grid-template-columns: repeat(5, minmax(0, 1fr));
+  grid-template-columns: repeat(8, minmax(0, 1fr));
   margin-bottom: 22px;
   padding: 8px;
 }
