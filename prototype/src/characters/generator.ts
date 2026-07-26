@@ -11,6 +11,11 @@ import {
 } from './content'
 import {
   ATTRIBUTE_KEYS,
+  CHARACTER_SCHEMA_VERSION,
+  CONTENT_PACK_VERSIONS,
+  CULTURE_PACK_VERSION,
+  GENERATOR_SCHEMA_VERSION,
+  LIBRARY_SCHEMA_VERSION,
   MBTI_TYPES,
   SKILL_KEYS,
   type AttributeKey,
@@ -32,149 +37,16 @@ import {
 import {
   computeDistinctionFingerprint,
 } from './fingerprint'
+import { selectSeededVariationAttributes } from './seeded-variation'
 import {
   machineFinding as finding,
   validateCharacter,
   validateCharacterLibraryContent,
 } from './validator'
+import { deriveSeedV1 } from './seed'
 
 export { validateCharacter, validateCharacterLibraryContent } from './validator'
-
-const CHARACTER_SCHEMA_VERSION = 'character-v0.1.1-candidate' as const
-const LIBRARY_SCHEMA_VERSION = 'character-library-v0.1.1-candidate' as const
-const GENERATOR_SCHEMA_VERSION = 'char-gen-v0.1.1-candidate' as const
-const CONTENT_PACK_VERSIONS = {
-  biography: 'candidate-0.1.1',
-  traits: 'candidate-0.1.0',
-  values_and_redlines: 'candidate-0.1.1',
-} as const
-const CULTURE_PACK_VERSION = 'cn-frontier-draft-v0.1' as const
-
-type CanonicalJson =
-  | null
-  | boolean
-  | number
-  | string
-  | readonly CanonicalJson[]
-  | { readonly [key: string]: CanonicalJson }
-
-function canonicalStringify(value: CanonicalJson): string {
-  if (value === null || typeof value === 'boolean' || typeof value === 'string') {
-    return JSON.stringify(value)
-  }
-
-  if (typeof value === 'number') {
-    if (!Number.isSafeInteger(value)) {
-      throw new Error('seed_derivation_v1 only accepts safe JSON integers')
-    }
-    return String(value)
-  }
-
-  if (Array.isArray(value)) {
-    return `[${value.map(canonicalStringify).join(',')}]`
-  }
-
-  const entries = Object.entries(value).sort(([left], [right]) =>
-    left < right ? -1 : left > right ? 1 : 0,
-  )
-  return `{${entries
-    .map(([key, child]) => `${JSON.stringify(key)}:${canonicalStringify(child)}`)
-    .join(',')}}`
-}
-
-function rotateRight(value: number, count: number): number {
-  return (value >>> count) | (value << (32 - count))
-}
-
-function sha256(bytes: Uint8Array): Uint8Array {
-  const constants = [
-    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5, 0x3956c25b, 0x59f111f1,
-    0x923f82a4, 0xab1c5ed5, 0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
-    0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174, 0xe49b69c1, 0xefbe4786,
-    0x0fc19dc6, 0x240ca1cc, 0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
-    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7, 0xc6e00bf3, 0xd5a79147,
-    0x06ca6351, 0x14292967, 0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
-    0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85, 0xa2bfe8a1, 0xa81a664b,
-    0xc24b8b70, 0xc76c51a3, 0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5, 0x391c0cb3, 0x4ed8aa4a,
-    0x5b9cca4f, 0x682e6ff3, 0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
-    0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
-  ]
-  const bitLength = bytes.length * 8
-  const paddedLength = Math.ceil((bytes.length + 9) / 64) * 64
-  const padded = new Uint8Array(paddedLength)
-  padded.set(bytes)
-  padded[bytes.length] = 0x80
-  const view = new DataView(padded.buffer)
-  view.setUint32(paddedLength - 8, Math.floor(bitLength / 0x100000000))
-  view.setUint32(paddedLength - 4, bitLength >>> 0)
-
-  const hash = [
-    0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
-    0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19,
-  ]
-  const words = new Uint32Array(64)
-
-  for (let offset = 0; offset < paddedLength; offset += 64) {
-    for (let index = 0; index < 16; index += 1) {
-      words[index] = view.getUint32(offset + index * 4)
-    }
-    for (let index = 16; index < 64; index += 1) {
-      const left = words[index - 15]
-      const right = words[index - 2]
-      const sigma0 = rotateRight(left, 7) ^ rotateRight(left, 18) ^ (left >>> 3)
-      const sigma1 = rotateRight(right, 17) ^ rotateRight(right, 19) ^ (right >>> 10)
-      words[index] =
-        (words[index - 16] + sigma0 + words[index - 7] + sigma1) >>> 0
-    }
-
-    let [a, b, c, d, e, f, g, h] = hash
-    for (let index = 0; index < 64; index += 1) {
-      const choice = (e & f) ^ (~e & g)
-      const majority = (a & b) ^ (a & c) ^ (b & c)
-      const bigSigma0 = rotateRight(a, 2) ^ rotateRight(a, 13) ^ rotateRight(a, 22)
-      const bigSigma1 = rotateRight(e, 6) ^ rotateRight(e, 11) ^ rotateRight(e, 25)
-      const temporary1 = (h + bigSigma1 + choice + constants[index] + words[index]) >>> 0
-      const temporary2 = (bigSigma0 + majority) >>> 0
-      h = g
-      g = f
-      f = e
-      e = (d + temporary1) >>> 0
-      d = c
-      c = b
-      b = a
-      a = (temporary1 + temporary2) >>> 0
-    }
-
-    hash[0] = (hash[0] + a) >>> 0
-    hash[1] = (hash[1] + b) >>> 0
-    hash[2] = (hash[2] + c) >>> 0
-    hash[3] = (hash[3] + d) >>> 0
-    hash[4] = (hash[4] + e) >>> 0
-    hash[5] = (hash[5] + f) >>> 0
-    hash[6] = (hash[6] + g) >>> 0
-    hash[7] = (hash[7] + h) >>> 0
-  }
-
-  const output = new Uint8Array(32)
-  const outputView = new DataView(output.buffer)
-  hash.forEach((value, index) => outputView.setUint32(index * 4, value))
-  return output
-}
-
-export function deriveSeedV1(label: string, parts: readonly CanonicalJson[]): string {
-  const encoder = new TextEncoder()
-  const labelBytes = encoder.encode(label)
-  const partsBytes = encoder.encode(canonicalStringify(parts))
-  const input = new Uint8Array(labelBytes.length + 1 + partsBytes.length)
-  input.set(labelBytes)
-  input[labelBytes.length] = 0
-  input.set(partsBytes, labelBytes.length + 1)
-
-  return Array.from(sha256(input).slice(0, 16), (byte) =>
-    byte.toString(16).padStart(2, '0'),
-  ).join('')
-}
+export { deriveSeedV1 } from './seed'
 
 const MASK_64 = (1n << 64n) - 1n
 
@@ -593,16 +465,8 @@ export function generateCharacter(input: CharacterGenerationInput): GeneratedCha
     }
   }
 
-  const lowestAttributes = [...ATTRIBUTE_KEYS].sort(
-    (left, right) => attributes[left] - attributes[right],
-  )
-  const negativeAttribute =
-    lowestAttributes.find((attribute) => attributes[attribute] >= 5) ??
-    lowestAttributes[lowestAttributes.length - 1]
-  const positiveAttribute =
-    [...ATTRIBUTE_KEYS]
-      .filter((attribute) => attribute !== negativeAttribute && attributes[attribute] < 8)
-      .sort((left, right) => attributes[right] - attributes[left])[0] ?? lowestAttributes[1]
+  const { positiveAttribute, negativeAttribute } =
+    selectSeededVariationAttributes(attributes)
   attributes[negativeAttribute] -= 1
   attributes[positiveAttribute] += 1
 
@@ -669,6 +533,14 @@ export function generateCharacter(input: CharacterGenerationInput): GeneratedCha
     character_id: characterId,
     person_seed: personSeed,
     generation_attempt: attemptIndex,
+    library_generation_evidence: {
+      evidence_schema_version: 'technical-library-provenance-v1',
+      world_seed_hex: input.worldSeedHex,
+      character_index: input.characterIndex,
+      generator_schema_version: GENERATOR_SCHEMA_VERSION,
+      content_pack_versions: CONTENT_PACK_VERSIONS,
+      culture_pack_version: CULTURE_PACK_VERSION,
+    },
     formal_name: formalName,
     name_parts: {
       family_name: familyName,
@@ -723,7 +595,7 @@ export function generateCharacter(input: CharacterGenerationInput): GeneratedCha
     request_seed: motivation.hook,
     distinction_fingerprint: fingerprint,
     review_status: {
-      machine_validation: 'pending',
+      implemented_character_contracts: 'not_evaluated',
       E01_naming_review: 'not_run',
       E02_to_E06_content_review: 'not_run',
     },
@@ -999,12 +871,19 @@ export function generateCharacterLibrary(
     mbtiContentFinding,
     addressFinding,
   ]
-  const machinePassed = findings.every((item) => item.result !== 'blocked')
+  const implementedMachineContractsPassed = findings.every(
+    (item) => item.result !== 'blocked',
+  )
+  const notRunIds = findings
+    .filter((item) => item.result === 'not_run')
+    .map((item) => item.validation_id)
   const characters = rawCharacters.map((character) => ({
     ...character,
     review_status: {
       ...character.review_status,
-      machine_validation: machinePassed ? ('passed' as const) : ('pending' as const),
+      implemented_character_contracts: implementedMachineContractsPassed
+        ? ('passed' as const)
+        : ('blocked' as const),
     },
   }))
 
@@ -1026,7 +905,10 @@ export function generateCharacterLibrary(
     culture_pack_version: CULTURE_PACK_VERSION,
     characters,
     validation: {
-      machine_passed: machinePassed,
+      scope: 'TECHNICAL_CHARACTER_LIBRARY_IMPLEMENTED_CONTRACTS_ONLY',
+      implemented_machine_contracts_passed:
+        implementedMachineContractsPassed,
+      not_run_ids: notRunIds,
       findings,
       manual_reviews: {
         E01: 'not_run',

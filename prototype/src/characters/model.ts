@@ -38,6 +38,17 @@ export const MBTI_TYPES = [
   'ENTJ',
 ] as const
 
+export const CHARACTER_SCHEMA_VERSION = 'character-v0.1.2-candidate' as const
+export const LIBRARY_SCHEMA_VERSION =
+  'character-library-v0.1.2-candidate' as const
+export const GENERATOR_SCHEMA_VERSION = 'char-gen-v0.1.2-candidate' as const
+export const CONTENT_PACK_VERSIONS = {
+  biography: 'candidate-0.1.1',
+  traits: 'candidate-0.1.0',
+  values_and_redlines: 'candidate-0.1.1',
+} as const
+export const CULTURE_PACK_VERSION = 'cn-frontier-draft-v0.1' as const
+
 export type AttributeKey = (typeof ATTRIBUTE_KEYS)[number]
 export type SkillKey = (typeof SKILL_KEYS)[number]
 export type MbtiType = (typeof MBTI_TYPES)[number]
@@ -134,11 +145,21 @@ export interface SeededVariation {
   negative_value: -1
 }
 
+export interface LibraryGenerationEvidence {
+  evidence_schema_version: 'technical-library-provenance-v1'
+  world_seed_hex: string
+  character_index: number
+  generator_schema_version: typeof GENERATOR_SCHEMA_VERSION
+  content_pack_versions: typeof CONTENT_PACK_VERSIONS
+  culture_pack_version: typeof CULTURE_PACK_VERSION
+}
+
 export interface GeneratedCharacter {
-  schema_version: 'character-v0.1.1-candidate'
+  schema_version: typeof CHARACTER_SCHEMA_VERSION
   character_id: string
   person_seed: string
   generation_attempt: number
+  library_generation_evidence: LibraryGenerationEvidence
   formal_name: string
   name_parts: {
     family_name: string
@@ -168,7 +189,7 @@ export interface GeneratedCharacter {
   request_seed: string
   distinction_fingerprint: string
   review_status: {
-    machine_validation: 'pending' | 'passed'
+    implemented_character_contracts: 'not_evaluated' | 'passed' | 'blocked'
     E01_naming_review: 'not_run'
     E02_to_E06_content_review: 'not_run'
   }
@@ -193,22 +214,20 @@ export interface ValidationFinding {
 }
 
 export interface CharacterLibrary {
-  schema_version: 'character-library-v0.1.1-candidate'
+  schema_version: typeof LIBRARY_SCHEMA_VERSION
   library_id: string
   status: 'CANDIDATE_NOT_FROZEN'
   development_stage: 'TECHNICAL_SPIKE_BEFORE_A1'
   world_seed_hex: string
-  generator_schema_version: 'char-gen-v0.1.1-candidate'
+  generator_schema_version: typeof GENERATOR_SCHEMA_VERSION
   seed_derivation_version: 'seed_derivation_v1'
-  content_pack_versions: {
-    biography: 'candidate-0.1.1'
-    traits: 'candidate-0.1.0'
-    values_and_redlines: 'candidate-0.1.1'
-  }
-  culture_pack_version: 'cn-frontier-draft-v0.1'
+  content_pack_versions: typeof CONTENT_PACK_VERSIONS
+  culture_pack_version: typeof CULTURE_PACK_VERSION
   characters: readonly GeneratedCharacter[]
   validation: {
-    machine_passed: boolean
+    scope: 'TECHNICAL_CHARACTER_LIBRARY_IMPLEMENTED_CONTRACTS_ONLY'
+    implemented_machine_contracts_passed: boolean
+    not_run_ids: readonly string[]
     findings: readonly ValidationFinding[]
     manual_reviews: {
       E01: 'not_run'

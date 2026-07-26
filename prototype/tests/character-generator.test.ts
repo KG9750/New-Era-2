@@ -354,7 +354,7 @@ describe('character generator', () => {
 
     expect(library.status).toBe('CANDIDATE_NOT_FROZEN')
     expect(library.development_stage).toBe('TECHNICAL_SPIKE_BEFORE_A1')
-    expect(library.generator_schema_version).toBe('char-gen-v0.1.1-candidate')
+    expect(library.generator_schema_version).toBe('char-gen-v0.1.2-candidate')
     expect(library.characters).toHaveLength(50)
     expect(new Set(library.characters.map((character) => character.character_id))).toHaveLength(50)
     expect(new Set(library.characters.map((character) => character.formal_name))).toHaveLength(50)
@@ -377,7 +377,11 @@ describe('character generator', () => {
     ).toBe(true)
     expect(Math.max(...Object.values(addressStructureCounts)) / library.characters.length).toBeLessThanOrEqual(0.5)
     expect(advancedQualificationsTraceToWork).toBe(true)
-    expect(library.validation.machine_passed).toBe(true)
+    expect(library.validation.implemented_machine_contracts_passed).toBe(true)
+    expect(library.validation.not_run_ids).toEqual(['M12'])
+    expect(library.validation.scope).toBe(
+      'TECHNICAL_CHARACTER_LIBRARY_IMPLEMENTED_CONTRACTS_ONLY',
+    )
     expect(library.validation.findings.some((finding) => finding.result === 'blocked')).toBe(false)
     expect(
       library.validation.findings.find(

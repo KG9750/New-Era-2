@@ -1,6 +1,6 @@
 # 人物生成器 V0.1 候选实现
 
-**状态：** `TECHNICAL_SPIKE_BEFORE_A1 / CANDIDATE_NOT_FROZEN / PARTIAL_MACHINE_PASS / MANUAL_REVIEW_NOT_RUN`
+**状态：** `TECHNICAL_SPIKE_BEFORE_A1 / CANDIDATE_NOT_FROZEN / IMPLEMENTED_MACHINE_CONTRACTS_PASS / MANUAL_REVIEW_NOT_RUN`
 **对应规则：** `character-generation-rules-v0.1.md` V0.1-r8
 **实现位置：** `prototype/src/characters/`
 **生成数据：** `data/characters/generated-50-v0.1-candidate.json`
@@ -32,7 +32,8 @@ reducer、NPC dormant store 和开局四人选择器仍按规则阶段 C 单独�
 - `deriveSeedV1(label, parts)`：实现规则 §12.3，并通过冻结 KAT；
 - `generateCharacter({ worldSeedHex, characterIndex, attemptIndex? })`：生成单人；
 - `validateCharacter(character)`：通过独立 `validator.ts` 接收任意反序列化数据，
-  执行 M03–M07、M09；
+  执行 M03–M07、M09，并复算履历阶段、资格 evidence、MBTI 派生类型、出身模板、
+  seed variation selector、候选库 person seed 与人物 ID；
 - `validateCharacterLibraryContent(characters)`：独立复算区分度指纹、引用和生活
   骨架，执行 M10 与候选库重复度门禁；
 - `generateCharacterLibrary({ worldSeedHex, count })`：生成并校验批次；
@@ -61,16 +62,17 @@ reducer、NPC dormant store 和开局四人选择器仍按规则阶段 C 单独�
 
 首个固定批次：
 
-- character schema：`character-v0.1.1-candidate`；
-- generator schema：`char-gen-v0.1.1-candidate`；
+- character schema：`character-v0.1.2-candidate`；
+- library schema：`character-library-v0.1.2-candidate`；
+- generator schema：`char-gen-v0.1.2-candidate`；
 - world seed：
   `9f4d6b571b07f0036b63f7d56d1b2e8c90f561f52f35db779b03e6c0a83cb9b1`；
 - 50 名人物；
-- Library ID：`character-library-589f6edb461c1d03`；
+- Library ID：`character-library-e16a1cc8dfd1e2b4`；
 - JSON SHA256：
-  `41da217dddba1385dbb9f22fd5fca05637f2ff465ca4607f8166ffc825b5dba3`；
+  `489c380cad0cb7689b7af0b927dcfa5f553bba02c7efa30fc76dbeaa8dcf3d99`；
 - roster SHA256：
-  `fad123efe5c94e5f1e0d80acea75fe5699409baa74a454e700ad7c6e33d7b40d`；
+  `94ab002c76f47be4ee6b7e989be3f252c494e000c7d9c2fde673dba83b5bba62`；
 - 50 个稳定人物 ID、正式姓名与区分度指纹全部唯一；
 - 50 个“成长—工作—当前动机”组合全部不同，每种重复工作连接至少两种成长背景
   和两种长期目标；
@@ -82,6 +84,9 @@ reducer、NPC dormant store 和开局四人选择器仍按规则阶段 C 单独�
 - 四种关系型内部称呼结构均未超过批次的 50%；
 - M03–M07、M09、M10 和候选库生活骨架门禁通过；
 - `SEED-KAT` 与 `LIBRARY-REPLAY-PARTIAL` 通过；
+- 聚合结果只表示当前已实现合同：
+  `scope=TECHNICAL_CHARACTER_LIBRARY_IMPLEMENTED_CONTRACTS_ONLY`、
+  `implemented_machine_contracts_passed=true`、`not_run_ids=["M12"]`；
 - 完整 `M12` 明确为 `not_run`：尚无 `GenerationContextSnapshot`、
   `generation_context_hash`、席位到 attempt 派生链和 32 次重试证据；
 - E01–E06 均明确保存为 `not_run`。
@@ -100,9 +105,9 @@ PATH=/opt/homebrew/opt/node@24/bin:$PATH npm run test:run -- tests/character-val
 
 连续两次执行 `characters:generate` 必须产生逐字节相同的 JSON 与 roster。
 `character-validator.test.ts` 直接读取已落盘 JSON，不调用生成器，并通过字段删除、
-伪造 prerequisite、seed provenance、技能、资格和 fingerprint 验证门禁负例。
-当前候选批次已在 Node 20.20.2、22.23.1、24.18.0 以及 `LANG=C` /
-`zh_CN.UTF-8` 下复算为上述相同 SHA。
+伪造 prerequisite、履历阶段、MBTI、origin、seed provenance、技能、资格和
+fingerprint 验证门禁负例。当前候选批次已在 Node 20.20.2、22.23.1、24.18.0
+以及 `LANG=C` / `zh_CN.UTF-8` 下复算为上述相同 SHA。
 
 ## 冻结边界
 

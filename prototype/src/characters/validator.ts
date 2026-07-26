@@ -2,8 +2,13 @@ import {
   lifeHistoryChassisKey,
   recomputeDistinctionFingerprint,
 } from './fingerprint'
+import { GROWTH_TEMPLATES } from './content'
 import {
   ATTRIBUTE_KEYS,
+  CHARACTER_SCHEMA_VERSION,
+  CONTENT_PACK_VERSIONS,
+  CULTURE_PACK_VERSION,
+  GENERATOR_SCHEMA_VERSION,
   MBTI_TYPES,
   SKILL_KEYS,
   type AttributeKey,
@@ -13,6 +18,8 @@ import {
   type SkillValues,
   type ValidationFinding,
 } from './model'
+import { deriveSeedV1 } from './seed'
+import { selectSeededVariationAttributes } from './seeded-variation'
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === 'object' && value !== null && !Array.isArray(value)
@@ -105,13 +112,35 @@ function isGeneratedCharacterShape(value: unknown): value is GeneratedCharacter 
   }
 
   return (
-    value.schema_version === 'character-v0.1.1-candidate' &&
+    value.schema_version === CHARACTER_SCHEMA_VERSION &&
     typeof value.character_id === 'string' &&
     typeof value.person_seed === 'string' &&
     /^[0-9a-f]{32}$/.test(value.person_seed) &&
     Number.isSafeInteger(value.generation_attempt) &&
     (value.generation_attempt as number) >= 0 &&
     (value.generation_attempt as number) <= 31 &&
+    isRecord(value.library_generation_evidence) &&
+    value.library_generation_evidence.evidence_schema_version ===
+      'technical-library-provenance-v1' &&
+    typeof value.library_generation_evidence.world_seed_hex === 'string' &&
+    /^[0-9a-f]{64}$/.test(
+      value.library_generation_evidence.world_seed_hex as string,
+    ) &&
+    Number.isSafeInteger(
+      value.library_generation_evidence.character_index,
+    ) &&
+    (value.library_generation_evidence.character_index as number) >= 0 &&
+    value.library_generation_evidence.generator_schema_version ===
+      GENERATOR_SCHEMA_VERSION &&
+    isRecord(value.library_generation_evidence.content_pack_versions) &&
+    value.library_generation_evidence.content_pack_versions.biography ===
+      CONTENT_PACK_VERSIONS.biography &&
+    value.library_generation_evidence.content_pack_versions.traits ===
+      CONTENT_PACK_VERSIONS.traits &&
+    value.library_generation_evidence.content_pack_versions
+      .values_and_redlines === CONTENT_PACK_VERSIONS.values_and_redlines &&
+    value.library_generation_evidence.culture_pack_version ===
+      CULTURE_PACK_VERSION &&
     typeof value.formal_name === 'string' &&
     isRecord(value.name_parts) &&
     typeof value.name_parts.family_name === 'string' &&
@@ -194,8 +223,8 @@ function isGeneratedCharacterShape(value: unknown): value is GeneratedCharacter 
     typeof value.request_seed === 'string' &&
     typeof value.distinction_fingerprint === 'string' &&
     isRecord(value.review_status) &&
-    ['pending', 'passed'].includes(
-      value.review_status.machine_validation as string,
+    ['not_evaluated', 'passed', 'blocked'].includes(
+      value.review_status.implemented_character_contracts as string,
     ) &&
     value.review_status.E01_naming_review === 'not_run' &&
     value.review_status.E02_to_E06_content_review === 'not_run'
@@ -284,6 +313,15 @@ export function validateCharacter(
   const nodeIds = new Set(character.biography_nodes.map((node) => node.node_id))
   const valueIds = new Set(character.core_values.map((value) => value.value_id))
   const stableSourceIds = new Set([...nodeIds, ...valueIds])
+  const workNodes = character.biography_nodes.slice(2, -2)
+  const stageSequenceValid =
+    character.biography_nodes[0]?.stage === 'growth' &&
+    character.biography_nodes[1]?.stage === 'education' &&
+    workNodes.length >= 1 &&
+    workNodes.length <= 3 &&
+    workNodes.every((node) => node.stage === 'work') &&
+    character.biography_nodes.at(-2)?.stage === 'turning_point' &&
+    character.biography_nodes.at(-1)?.stage === 'current_motivation'
   const sourceReferencesValid =
     valueIds.size === character.core_values.length &&
     character.core_values.every(
@@ -308,7 +346,7 @@ export function validateCharacter(
     character.origin.length > 0 &&
     character.affiliation_candidates.length > 0 &&
     character.address_rules.length > 0 &&
-    character.biography_nodes.length >= 5 &&
+    stageSequenceValid &&
     character.biography_summary.length > 0 &&
     character.primary_skills.length > 0 &&
     character.traits.length >= 1 &&
@@ -359,13 +397,15 @@ export function validateCharacter(
   const growthNode = character.biography_nodes.find(
     (node) => node.stage === 'growth',
   )
-  const originBridgeValid =
-    growthNode?.context_tags.includes(character.origin) === true ||
-    character.biography_nodes.some(
-      (node) =>
-        node.context_tags.includes('migration') &&
-        node.context_tags.includes(character.origin),
-    )
+  const growthTemplate = GROWTH_TEMPLATES.find(
+    (template) => template.id === growthNode?.template_id,
+  )
+  const originProvenanceValid =
+    growthNode !== undefined &&
+    growthTemplate !== undefined &&
+    character.origin === growthTemplate.context &&
+    growthNode.context_tags[0] === growthTemplate.context &&
+    growthNode.context_tags.includes('growth')
 
   const recomputedAttributes = emptyAttributes()
   const modifierSourcesValid = character.biography_nodes.every((node) =>
@@ -381,6 +421,22 @@ export function validateCharacter(
     }
   }
   const attributesBeforeVariation = { ...recomputedAttributes }
+  const expectedSeededVariation =
+    selectSeededVariationAttributes(attributesBeforeVariation)
+  const expectedPersonSeed = deriveSeedV1('library-character', [
+    character.library_generation_evidence.world_seed_hex,
+    character.library_generation_evidence.character_index,
+    character.library_generation_evidence.generator_schema_version,
+    character.library_generation_evidence.content_pack_versions,
+    character.library_generation_evidence.culture_pack_version,
+  ])
+  const expectedCharacterId = `char_${deriveSeedV1('character-id', [
+    character.library_generation_evidence.world_seed_hex,
+    character.library_generation_evidence.character_index,
+  ]).slice(0, 16)}`
+  const librarySeedProvenanceValid =
+    character.person_seed === expectedPersonSeed &&
+    character.character_id === expectedCharacterId
   recomputedAttributes[character.seeded_variation.positive_attribute] +=
     character.seeded_variation.positive_value
   recomputedAttributes[character.seeded_variation.negative_attribute] +=
@@ -388,12 +444,17 @@ export function validateCharacter(
   const seededVariationValid =
     character.seeded_variation.variation_source_id ===
       `seed_variation:${character.character_id}:seeded-variation-v1` &&
-    character.seeded_variation.person_seed === character.person_seed &&
+    librarySeedProvenanceValid &&
+    character.seeded_variation.person_seed === expectedPersonSeed &&
     character.seeded_variation.algorithm_version === 'seeded-variation-v1' &&
     character.seeded_variation.applicability_condition ===
       'positive_below_8_and_negative_at_least_5' &&
     character.seeded_variation.positive_attribute !==
       character.seeded_variation.negative_attribute &&
+    character.seeded_variation.positive_attribute ===
+      expectedSeededVariation.positiveAttribute &&
+    character.seeded_variation.negative_attribute ===
+      expectedSeededVariation.negativeAttribute &&
     character.seeded_variation.positive_value === 1 &&
     character.seeded_variation.negative_value === -1 &&
     attributesBeforeVariation[
@@ -482,7 +543,8 @@ export function validateCharacter(
               nodeQualification.rank === qualification.rank &&
               nodeQualification.source_node_id ===
                 qualification.source_node_id &&
-              nodeQualification.evidence.length > 0,
+              qualification.evidence.length > 0 &&
+              nodeQualification.evidence === qualification.evidence,
           ),
       ),
   )
@@ -492,6 +554,13 @@ export function validateCharacter(
     !('skill_modifiers' in character.mbti) &&
     !('profession' in character.mbti) &&
     !('morality' in character.mbti)
+  const derivedMbtiType = [
+    character.mbti.dimensions.energy.pole,
+    character.mbti.dimensions.information.pole,
+    character.mbti.dimensions.decision.pole,
+    character.mbti.dimensions.structure.pole,
+  ].join('')
+  const mbtiConfigurationValid = character.mbti.type === derivedMbtiType
 
   return [
     machineFinding(
@@ -499,28 +568,28 @@ export function validateCharacter(
       'character_generation',
       character.character_id,
       '稳定身份、正式姓名、履历和必填人物字段存在，引用可解且无外号或旧代号字段',
-      `required=${requiredFieldsPresent}; source_references_valid=${sourceReferencesValid}; forbidden_fields_absent=${forbiddenFieldsAbsent}`,
+      `required=${requiredFieldsPresent}; stage_sequence_valid=${stageSequenceValid}; source_references_valid=${sourceReferencesValid}; forbidden_fields_absent=${forbiddenFieldsAbsent}`,
       requiredFieldsPresent && forbiddenFieldsAbsent,
     ),
     machineFinding(
       'M04',
       'character_generation',
       character.character_id,
-      '履历年龄区间与前置节点合法；出身与成长地一致或存在迁移桥接',
+      '履历年龄区间与前置节点合法；当前内容包的出身与受版本控制的成长模板一致',
       `${character.biography_nodes
         .map(
           (node) =>
             `${node.node_id}:${node.age_start}-${node.age_end},prerequisites=${node.prerequisites.join(',') || 'none'}`,
         )
-        .join(';')}; prerequisites_valid=${prerequisitesValid}; origin_bridge_valid=${originBridgeValid}`,
-      chronologyValid && prerequisitesValid && originBridgeValid,
+        .join(';')}; prerequisites_valid=${prerequisitesValid}; origin_provenance_valid=${originProvenanceValid}`,
+      chronologyValid && prerequisitesValid && originProvenanceValid,
     ),
     machineFinding(
       'M05',
       'character_generation',
       character.character_id,
       '属性来源可追溯，种子差异来源与适用条件合法，值域合法且标准成年人物总和为32-40',
-      `attribute_total=${attributeTotal}; modifiers_sourced=${modifierSourcesValid}; seeded_variation_valid=${seededVariationValid}`,
+      `attribute_total=${attributeTotal}; modifiers_sourced=${modifierSourcesValid}; library_seed_provenance_valid=${librarySeedProvenanceValid}; seeded_variation_valid=${seededVariationValid}`,
       attributesValid,
     ),
     machineFinding(
@@ -548,9 +617,9 @@ export function validateCharacter(
       'M09',
       'character_generation',
       character.character_id,
-      'MBTI仅表达偏好，不写入属性、技能、职业或道德修正',
-      `mbti_type=${character.mbti.type}; numeric_effect_fields=none`,
-      mbtiHasNoNumericEffects,
+      'MBTI类型由四维pole派生，且仅表达偏好，不写入属性、技能、职业或道德修正',
+      `mbti_type=${character.mbti.type}; derived_type=${derivedMbtiType}; numeric_effect_fields=none`,
+      mbtiConfigurationValid && mbtiHasNoNumericEffects,
     ),
   ]
 }
