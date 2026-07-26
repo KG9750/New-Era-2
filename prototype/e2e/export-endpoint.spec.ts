@@ -90,6 +90,34 @@ function validPayload(
   }
 }
 
+function validBlockedPayload(
+  buildMetadata: RcBuildMetadata,
+  sessionId = randomUUID(),
+) {
+  const payload = validPayload(buildMetadata, sessionId)
+  return {
+    ...payload,
+    captureKind: 'blocked',
+    blockedAtTick: 288,
+    blockedReason: '水泵事件后界面无法继续推进',
+    finalTick: 288,
+    finalState: {
+      ...payload.finalState,
+      completedWeekCount: 0,
+      isComplete: false,
+      recapCount: 0,
+    },
+    recap: [],
+    telemetry: [
+      {
+        type: 'blocked-capture-created',
+        atTick: 288,
+        machineOffsetMs: 1000,
+      },
+    ],
+  }
+}
+
 test('playtest host captures raw bytes once and returns a verified attachment', async ({
   request,
 }) => {
@@ -198,6 +226,121 @@ test('playtest host captures raw bytes once and returns a verified attachment', 
   await expect(conflict.json()).resolves.toEqual({
     error: '同一会话证据链缺失或不一致',
   })
+})
+
+test('playtest host captures an unfinished blocked record as verifiable evidence', async ({
+  request,
+}) => {
+  const buildMetadata = await readBuildMetadata(request)
+  const payload = validBlockedPayload(buildMetadata)
+  const rawJson = JSON.stringify(payload, null, 2)
+  const rawBytes = Buffer.from(rawJson, 'utf8')
+  const expectedSha256 = createHash('sha256').update(rawBytes).digest('hex')
+  const expectedFilename =
+    `${payload.meta.buildId}-${payload.meta.sampleId}-${payload.meta.sessionId}.json`
+
+  const capture = await request.post('/__gate1/capture', {
+    data: rawBytes,
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+    },
+  })
+
+  expect(capture.status()).toBe(201)
+  const receipt = await capture.json()
+  expect(receipt).toMatchObject({
+    schemaVersion: 'gate1-capture-receipt-v1',
+    captureVersion: 'gate1-capture-host-v1',
+    captureKind: 'blocked',
+    blockedAtTick: 288,
+    isComplete: false,
+    filename: expectedFilename,
+    bytes: rawBytes.byteLength,
+    sha256: expectedSha256,
+  })
+  const captureRoot = join(process.cwd(), 'test-results', 'captures')
+  const rawPath = join(captureRoot, expectedFilename)
+  expect(readFileSync(rawPath).equals(rawBytes)).toBe(true)
+  expect(readFileSync(`${rawPath}.sha256`, 'utf8')).toBe(
+    `${expectedSha256}  ${expectedFilename}\n`,
+  )
+  expect(
+    JSON.parse(readFileSync(`${rawPath}.receipt.json`, 'utf8')),
+  ).toMatchObject({
+    captureKind: 'blocked',
+    blockedAtTick: 288,
+    isComplete: false,
+  })
+})
+
+test('playtest host rejects an empty or oversized blocked reason', async ({
+  request,
+}) => {
+  const buildMetadata = await readBuildMetadata(request)
+  for (const blockedReason of ['', '   ', 'x'.repeat(241)]) {
+    const payload = {
+      ...validBlockedPayload(buildMetadata),
+      blockedReason,
+    }
+    const response = await request.post('/__gate1/capture', {
+      data: JSON.stringify(payload),
+      headers: { 'Content-Type': 'application/json' },
+    })
+    expect(response.status(), `reason length=${blockedReason.length}`).toBe(400)
+  }
+})
+
+test('playtest host rejects blocked mode and state contradictions', async ({
+  request,
+}) => {
+  const buildMetadata = await readBuildMetadata(request)
+  const invalidPayloads = [
+    {
+      label: 'missing blocked capture marker',
+      payload: {
+        ...validBlockedPayload(buildMetadata),
+        telemetry: [],
+      },
+    },
+    {
+      label: 'complete export marker in blocked mode',
+      payload: {
+        ...validBlockedPayload(buildMetadata),
+        telemetry: [
+          {
+            type: 'export-created',
+            atTick: 288,
+            machineOffsetMs: 1000,
+          },
+        ],
+      },
+    },
+    {
+      label: 'blocked tick differs from final tick',
+      payload: {
+        ...validBlockedPayload(buildMetadata),
+        blockedAtTick: 287,
+      },
+    },
+    {
+      label: 'blocked mode claims completion',
+      payload: {
+        ...validBlockedPayload(buildMetadata),
+        finalState: {
+          ...validBlockedPayload(buildMetadata).finalState,
+          isComplete: true,
+        },
+      },
+    },
+  ]
+
+  for (const { label, payload } of invalidPayloads) {
+    const response = await request.post('/__gate1/capture', {
+      data: JSON.stringify(payload),
+      headers: { 'Content-Type': 'application/json' },
+    })
+    expect(response.status(), label).toBe(400)
+  }
 })
 
 test('playtest host rejects malformed or out-of-contract captures', async ({

@@ -15,6 +15,7 @@ import { extname, join, resolve, sep } from 'node:path'
 const CAPTURE_PATH = '/__gate1/capture'
 const CAPTURE_VERSION = 'gate1-capture-host-v1'
 const MAX_EXPORT_BYTES = 2 * 1024 * 1024
+const MAX_BLOCKED_REASON_LENGTH = 240
 const BUILD_ID_PATTERN = /^g1-(?:rc|e2e)-[a-z0-9.-]+$/i
 const SAMPLE_ID_PATTERN = /^(?:(?:A|P)\d{2,}|M-[ABC])$/
 const SESSION_ID_PATTERN = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i
@@ -35,6 +36,12 @@ const EXPORT_KEYS = [
   'speedTrajectory',
   'summary',
   'telemetry',
+]
+const BLOCKED_EXPORT_KEYS = [
+  ...EXPORT_KEYS,
+  'blockedAtTick',
+  'blockedReason',
+  'captureKind',
 ]
 const META_KEYS = [
   'artifactHash',
@@ -75,6 +82,12 @@ const RECEIPT_KEYS = [
   'schemaVersion',
   'sessionId',
   'sha256',
+]
+const BLOCKED_RECEIPT_KEYS = [
+  ...RECEIPT_KEYS,
+  'blockedAtTick',
+  'captureKind',
+  'isComplete',
 ]
 const REQUIRED_ARRAYS = [
   'actions',
@@ -121,15 +134,15 @@ function hasExactKeys(value, keys) {
 }
 
 function validExport(value, buildMetadata) {
+  const isBlocked = value?.captureKind === 'blocked'
   if (
     !value ||
     typeof value !== 'object' ||
     value.schemaVersion !== 'gate1-playtest-v1' ||
-    !hasExactKeys(value, EXPORT_KEYS) ||
+    !hasExactKeys(value, isBlocked ? BLOCKED_EXPORT_KEYS : EXPORT_KEYS) ||
     !value.meta ||
     typeof value.meta !== 'object' ||
     !hasExactKeys(value.meta, META_KEYS) ||
-    value.finalTick !== 2010 ||
     typeof value.finalStateHash !== 'string' ||
     !INITIAL_STATE_HASH_PATTERN.test(value.finalStateHash)
   ) {
@@ -178,20 +191,20 @@ function validExport(value, buildMetadata) {
       !Array.isArray(entry) &&
       entry.type === 'export-created',
   )
-  return (
+  const blockedCaptureCreated = value.telemetry.filter(
+    (entry) =>
+      entry &&
+      typeof entry === 'object' &&
+      !Array.isArray(entry) &&
+      entry.type === 'blocked-capture-created',
+  )
+  const validCommonContract =
     hasExactKeys(value.finalState, FINAL_STATE_KEYS) &&
-    value.finalState.isComplete === true &&
-    value.finalState.completedWeekCount === 2 &&
-    value.finalState.recapCount === 2 &&
     Array.isArray(value.finalState.processedScriptEventIds) &&
     value.finalState.processedScriptEventIds.every(
       (eventId) => typeof eventId === 'string',
     ) &&
-    value.recap.length === 2 &&
     validRecaps &&
-    JSON.stringify(recapWeekIndexes) === JSON.stringify([0, 1]) &&
-    exportCreated.length === 1 &&
-    exportCreated[0].atTick === 2010 &&
     typeof meta.sampleId === 'string' &&
     SAMPLE_ID_PATTERN.test(meta.sampleId) &&
     meta.sampleId.length <= 16 &&
@@ -220,6 +233,42 @@ function validExport(value, buildMetadata) {
     /^\d+x\d+$/.test(meta.viewport) &&
     typeof meta.inputDevice === 'string' &&
     meta.inputDevice === 'browser-pointer-keyboard'
+  if (!validCommonContract) return false
+
+  if (isBlocked) {
+    return (
+      Number.isInteger(value.blockedAtTick) &&
+      value.blockedAtTick >= 0 &&
+      value.blockedAtTick < 2010 &&
+      value.finalTick === value.blockedAtTick &&
+      typeof value.blockedReason === 'string' &&
+      value.blockedReason === value.blockedReason.trim() &&
+      value.blockedReason.length > 0 &&
+      value.blockedReason.length <= MAX_BLOCKED_REASON_LENGTH &&
+      value.finalState.isComplete === false &&
+      Number.isInteger(value.finalState.completedWeekCount) &&
+      value.finalState.completedWeekCount >= 0 &&
+      value.finalState.completedWeekCount <= 1 &&
+      value.finalState.recapCount === value.finalState.completedWeekCount &&
+      value.recap.length === value.finalState.recapCount &&
+      JSON.stringify(recapWeekIndexes) ===
+        JSON.stringify(value.recap.length === 1 ? [0] : []) &&
+      exportCreated.length === 0 &&
+      blockedCaptureCreated.length === 1 &&
+      blockedCaptureCreated[0].atTick === value.blockedAtTick
+    )
+  }
+
+  return (
+    value.finalTick === 2010 &&
+    value.finalState.isComplete === true &&
+    value.finalState.completedWeekCount === 2 &&
+    value.finalState.recapCount === 2 &&
+    value.recap.length === 2 &&
+    JSON.stringify(recapWeekIndexes) === JSON.stringify([0, 1]) &&
+    exportCreated.length === 1 &&
+    exportCreated[0].atTick === 2010 &&
+    blockedCaptureCreated.length === 0
   )
 }
 
@@ -258,7 +307,14 @@ function installIfAbsent(path, bytes) {
   }
 }
 
-function createReceipt(filename, bytes, sha256, metadata, capturedAtUtc) {
+function createReceipt(
+  filename,
+  bytes,
+  sha256,
+  metadata,
+  capturedAtUtc,
+  capture,
+) {
   return {
     schemaVersion: 'gate1-capture-receipt-v1',
     captureVersion: CAPTURE_VERSION,
@@ -271,6 +327,13 @@ function createReceipt(filename, bytes, sha256, metadata, capturedAtUtc) {
     buildId: metadata.buildId,
     gitSha: metadata.gitSha,
     artifactHash: metadata.artifactHash,
+    ...(capture?.captureKind === 'blocked'
+      ? {
+          captureKind: 'blocked',
+          blockedAtTick: capture.blockedAtTick,
+          isComplete: false,
+        }
+      : {}),
   }
 }
 
@@ -296,7 +359,12 @@ function readMatchingReceipt(path, expected) {
     !receipt ||
     typeof receipt !== 'object' ||
     Array.isArray(receipt) ||
-    !hasExactKeys(receipt, RECEIPT_KEYS) ||
+    !hasExactKeys(
+      receipt,
+      receipt.captureKind === 'blocked'
+        ? BLOCKED_RECEIPT_KEYS
+        : RECEIPT_KEYS,
+    ) ||
     !validCapturedAt(receipt.capturedAtUtc) ||
     receiptText !== `${JSON.stringify(receipt, null, 2)}\n`
   ) {
@@ -315,7 +383,7 @@ function matchingEvidence(sidecarPath, receiptPath, sidecarBytes, expectedReceip
   return readMatchingReceipt(receiptPath, expectedReceipt)
 }
 
-function writeCapture(captureRoot, filename, bytes, metadata) {
+function writeCapture(captureRoot, filename, bytes, metadata, capture) {
   const rawPath = join(captureRoot, filename)
   const sidecarPath = `${rawPath}.sha256`
   const receiptPath = `${rawPath}.receipt.json`
@@ -327,6 +395,7 @@ function writeCapture(captureRoot, filename, bytes, metadata) {
     sha256,
     metadata,
     undefined,
+    capture,
   )
   delete expectedReceipt.capturedAtUtc
 
@@ -367,6 +436,7 @@ function writeCapture(captureRoot, filename, bytes, metadata) {
     sha256,
     metadata,
     new Date().toISOString(),
+    capture,
   )
   const receiptBytes = Buffer.from(`${JSON.stringify(newReceipt, null, 2)}\n`)
   if (!installIfAbsent(sidecarPath, sidecarBytes)) return { conflict: true }
@@ -415,10 +485,17 @@ function createHandler(distRoot, captureRoot, buildMetadata) {
         }
 
         const { meta } = payload
+        const capture =
+          payload.captureKind === 'blocked'
+            ? {
+                captureKind: 'blocked',
+                blockedAtTick: payload.blockedAtTick,
+              }
+            : undefined
         const filename = `${meta.buildId}-${meta.sampleId}-${meta.sessionId}.json`
         let result
         try {
-          result = writeCapture(captureRoot, filename, bytes, meta)
+          result = writeCapture(captureRoot, filename, bytes, meta, capture)
         } catch {
           sendJson(response, 500, { error: '匿名导出无法写入证据目录' })
           return

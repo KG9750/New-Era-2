@@ -21,8 +21,12 @@ import {
   resolveScheduleBlock,
 } from '../sim/schedule'
 import { selectTransportRoute } from '../sim/transport'
-import { createPlaytestExport } from '../telemetry/export'
 import {
+  createBlockedPlaytestExport,
+  createPlaytestExport,
+} from '../telemetry/export'
+import {
+  recordBlockedCaptureCreated,
   createSessionRecorder,
   recordExportCreated,
   recordPlayerTransition,
@@ -58,15 +62,21 @@ interface CaptureReceipt {
   gitSha: string
   artifactHash: string
   downloadUrl: string
+  captureKind?: 'blocked'
+  blockedAtTick?: number
+  isComplete?: false
 }
 
 interface PendingCapture {
   rawJson: string
   tick: number
-  isComplete: boolean
+  captureKind: 'complete' | 'blocked'
 }
 
 type CaptureStatus = 'idle' | 'saving' | 'saved' | 'error'
+type CaptureKind = PendingCapture['captureKind']
+
+const MAX_BLOCKED_REASON_LENGTH = 240
 
 const ACTIVITY_LABELS: Readonly<Record<Activity, string>> = {
   food: '农务',
@@ -111,11 +121,13 @@ function validCaptureReceipt(
     sampleId: string
     sessionId: string
     sha256: string
+    captureKind: CaptureKind
+    blockedAtTick?: number
   },
 ): value is CaptureReceipt {
   if (!value || typeof value !== 'object') return false
   const receipt = value as Record<string, unknown>
-  return (
+  const commonReceipt =
     receipt.schemaVersion === 'gate1-capture-receipt-v1' &&
     receipt.captureVersion === 'gate1-capture-host-v1' &&
     receipt.filename === expected.filename &&
@@ -129,7 +141,14 @@ function validCaptureReceipt(
     typeof receipt.capturedAtUtc === 'string' &&
     typeof receipt.downloadUrl === 'string' &&
     /^\/__gate1\/capture\/[a-f0-9-]+$/i.test(receipt.downloadUrl)
-  )
+  if (!commonReceipt) return false
+  return expected.captureKind === 'blocked'
+    ? receipt.captureKind === 'blocked' &&
+        receipt.blockedAtTick === expected.blockedAtTick &&
+        receipt.isComplete === false
+    : !('captureKind' in receipt) &&
+        !('blockedAtTick' in receipt) &&
+        !('isComplete' in receipt)
 }
 
 function SupplyForecastCard({ forecast }: { forecast: SupplyForecast }) {
@@ -245,7 +264,9 @@ export function App({ buildMetadata }: AppProps) {
   const [lastExportedAtTick, setLastExportedAtTick] = useState<number>()
   const [captureStatus, setCaptureStatus] = useState<CaptureStatus>('idle')
   const [captureError, setCaptureError] = useState<string>()
-  const [savedCompleteSession, setSavedCompleteSession] = useState(false)
+  const [savedCaptureKind, setSavedCaptureKind] = useState<CaptureKind>()
+  const [blockedReason, setBlockedReason] = useState('')
+  const [blockedCaptureFrozen, setBlockedCaptureFrozen] = useState(false)
   const nextActionSequence = useRef(1)
   const recorderRef = useRef<SessionRecorder | null>(null)
   const pendingCaptureRef = useRef<PendingCapture | null>(null)
@@ -285,7 +306,7 @@ export function App({ buildMetadata }: AppProps) {
         : '定位安排 →'
 
   function submit(action: PlayerAction) {
-    if (!recorderRef.current) return
+    if (!recorderRef.current || blockedCaptureFrozen) return
     const undoOfActionId =
       action.type === 'UNDO_SCHEDULE'
         ? simulation.scheduleTransactions.at(-1)?.actionId
@@ -304,7 +325,12 @@ export function App({ buildMetadata }: AppProps) {
   }
 
   useEffect(() => {
-    if (!activeSession || simulation.isPaused || simulation.recap) return
+    if (
+      !activeSession ||
+      blockedCaptureFrozen ||
+      simulation.isPaused ||
+      simulation.recap
+    ) return
     const timer = window.setInterval(() => {
       setSimulation((current) => {
         if (current.isPaused || current.recap) return current
@@ -320,7 +346,13 @@ export function App({ buildMetadata }: AppProps) {
       })
     }, 250)
     return () => window.clearInterval(timer)
-  }, [activeSession, simulation.isPaused, simulation.recap, speed])
+  }, [
+    activeSession,
+    blockedCaptureFrozen,
+    simulation.isPaused,
+    simulation.recap,
+    speed,
+  ])
 
   function startSession(sampleId: string) {
     const state = initialState()
@@ -333,42 +365,71 @@ export function App({ buildMetadata }: AppProps) {
     setLastExportedAtTick(undefined)
     setCaptureStatus('idle')
     setCaptureError(undefined)
-    setSavedCompleteSession(false)
+    setSavedCaptureKind(undefined)
+    setBlockedReason('')
+    setBlockedCaptureFrozen(false)
     pendingCaptureRef.current = null
     setActiveSession(recorder.meta)
     setWasSessionCleared(false)
   }
 
   function changeSpeed(value: Speed) {
+    if (blockedCaptureFrozen) return
     if (recorderRef.current && speed !== value) {
       recordSpeedChange(recorderRef.current, simulation.currentTick, value)
     }
     setSpeed(value)
   }
 
-  async function exportSession() {
+  async function captureSession(captureKind: CaptureKind) {
+    const normalizedBlockedReason = blockedReason.trim()
     if (
       !recorderRef.current ||
       !activeSession ||
-      !simulation.isComplete ||
+      savedCaptureKind !== undefined ||
+      (captureKind === 'complete' && !simulation.isComplete) ||
+      (captureKind === 'blocked' &&
+        (simulation.isComplete ||
+          normalizedBlockedReason.length === 0 ||
+          normalizedBlockedReason.length > MAX_BLOCKED_REASON_LENGTH)) ||
       captureStatus === 'saving'
     ) {
       return
     }
+    if (captureKind === 'blocked') setBlockedCaptureFrozen(true)
     setCaptureStatus('saving')
     setCaptureError(undefined)
 
     let pendingCapture = pendingCaptureRef.current
     if (!pendingCapture) {
-      recordExportCreated(recorderRef.current, simulation.currentTick)
-      const payload = createPlaytestExport(recorderRef.current, simulation)
+      const payload =
+        captureKind === 'blocked'
+          ? (() => {
+              recordBlockedCaptureCreated(
+                recorderRef.current!,
+                simulation.currentTick,
+              )
+              return createBlockedPlaytestExport(
+                recorderRef.current!,
+                simulation,
+                normalizedBlockedReason,
+              )
+            })()
+          : (() => {
+              recordExportCreated(
+                recorderRef.current!,
+                simulation.currentTick,
+              )
+              return createPlaytestExport(recorderRef.current!, simulation)
+            })()
       pendingCapture = {
         rawJson: JSON.stringify(payload, null, 2),
         tick: simulation.currentTick,
-        isComplete: payload.finalState.isComplete,
+        captureKind,
       }
       pendingCaptureRef.current = pendingCapture
     }
+    if (pendingCapture.captureKind !== captureKind) return
 
     try {
       const bytes = new TextEncoder().encode(pendingCapture.rawJson)
@@ -407,13 +468,17 @@ export function App({ buildMetadata }: AppProps) {
           sampleId: activeSession.sampleId,
           sessionId: activeSession.sessionId,
           sha256,
+          captureKind: pendingCapture.captureKind,
+          ...(pendingCapture.captureKind === 'blocked'
+            ? { blockedAtTick: pendingCapture.tick }
+            : {}),
         })
       ) {
         throw new Error('匿名记录保存回执无效')
       }
 
       setLastExportedAtTick(pendingCapture.tick)
-      setSavedCompleteSession(pendingCapture.isComplete)
+      setSavedCaptureKind(pendingCapture.captureKind)
       setCaptureStatus('saved')
       const anchor = document.createElement('a')
       anchor.href = responseBody.downloadUrl
@@ -430,7 +495,7 @@ export function App({ buildMetadata }: AppProps) {
   }
 
   function clearSession() {
-    if (!activeSession || (simulation.isComplete && !savedCompleteSession)) return
+    if (!activeSession || savedCaptureKind === undefined) return
     recorderRef.current = null
     nextActionSequence.current = 1
     pendingCaptureRef.current = null
@@ -442,7 +507,9 @@ export function App({ buildMetadata }: AppProps) {
     setLastExportedAtTick(undefined)
     setCaptureStatus('idle')
     setCaptureError(undefined)
-    setSavedCompleteSession(false)
+    setSavedCaptureKind(undefined)
+    setBlockedReason('')
+    setBlockedCaptureFrozen(false)
   }
 
   const canEditPumpPlan = simulation.currentTick < scenario.pumpEventTick
@@ -473,6 +540,7 @@ export function App({ buildMetadata }: AppProps) {
             {([1, 3, 8] as const).map((value) => (
               <button
                 className={speed === value ? 'active' : ''}
+                disabled={blockedCaptureFrozen}
                 key={value}
                 onClick={() => changeSpeed(value)}
                 type="button"
@@ -482,7 +550,7 @@ export function App({ buildMetadata }: AppProps) {
             ))}
             <button
               className="play-button"
-              disabled={simulation.recap !== null}
+              disabled={simulation.recap !== null || blockedCaptureFrozen}
               onClick={() =>
                 submit({ type: 'SET_PAUSED', paused: !simulation.isPaused })
               }
@@ -927,28 +995,69 @@ export function App({ buildMetadata }: AppProps) {
           </p>
           {lastExportedAtTick !== undefined && (
             <small role="status">
-              已保存并校验 tick {lastExportedAtTick} 的匿名记录。
+              {savedCaptureKind === 'blocked'
+                ? `已保存并校验 tick ${lastExportedAtTick} 的阻断记录（非完整场次）。`
+                : `已保存并校验 tick ${lastExportedAtTick} 的匿名记录。`}
             </small>
           )}
           {captureError && <small role="alert">{captureError}</small>}
           {!simulation.isComplete && (
-            <small>完成两周后才能保存匿名记录。</small>
+            <>
+              <label className="blocked-reason-field">
+                <span>阻断原因</span>
+                <textarea
+                  disabled={blockedCaptureFrozen}
+                  maxLength={MAX_BLOCKED_REASON_LENGTH}
+                  onChange={(event) => setBlockedReason(event.target.value)}
+                  placeholder="简要说明在当前状态下无法继续的可复现阻断"
+                  rows={3}
+                  value={blockedReason}
+                />
+                <small>
+                  1–{MAX_BLOCKED_REASON_LENGTH} 字；阻断记录只保存当前未完成状态，
+                  不代表已完成两周。
+                </small>
+              </label>
+              {blockedCaptureFrozen && savedCaptureKind === undefined && (
+                <small>阻断记录已冻结；保存失败时请重试，成功前不能清空。</small>
+              )}
+            </>
           )}
-          {simulation.isComplete && !savedCompleteSession && (
+          {simulation.isComplete && savedCaptureKind === undefined && (
             <small>完整场次需先成功保存匿名记录，才能清空。</small>
           )}
         </div>
         <div className="session-action-buttons">
           <button
-            disabled={!simulation.isComplete || captureStatus === 'saving'}
-            onClick={exportSession}
+            disabled={
+              !simulation.isComplete ||
+              captureStatus === 'saving' ||
+              savedCaptureKind !== undefined
+            }
+            onClick={() => captureSession('complete')}
             type="button"
           >
             下载匿名 JSON
           </button>
+          {!simulation.isComplete && (
+            <button
+              disabled={
+                captureStatus === 'saving' ||
+                savedCaptureKind !== undefined ||
+                (!blockedCaptureFrozen &&
+                  (blockedReason.trim().length === 0 ||
+                    blockedReason.trim().length >
+                      MAX_BLOCKED_REASON_LENGTH))
+              }
+              onClick={() => captureSession('blocked')}
+              type="button"
+            >
+              保存阻断记录
+            </button>
+          )}
           <button
             className="danger-button"
-            disabled={simulation.isComplete && !savedCompleteSession}
+            disabled={savedCaptureKind === undefined}
             onClick={clearSession}
             type="button"
           >

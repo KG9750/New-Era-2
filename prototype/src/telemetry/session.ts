@@ -30,6 +30,7 @@ export type TelemetryType =
   | 'week-started'
   | 'week-completed'
   | 'export-created'
+  | 'blocked-capture-created'
 
 export interface TelemetryEvent {
   sequence: number
@@ -301,6 +302,18 @@ export function recordExportCreated(
 ) {
   pushTelemetry(recorder, {
     type: 'export-created',
+    atTick,
+    machineOffsetMs: machineOffset(recorder, monotonicNow),
+  })
+}
+
+export function recordBlockedCaptureCreated(
+  recorder: SessionRecorder,
+  atTick: number,
+  monotonicNow = performance.now(),
+) {
+  pushTelemetry(recorder, {
+    type: 'blocked-capture-created',
     atTick,
     machineOffsetMs: machineOffset(recorder, monotonicNow),
   })

@@ -7,6 +7,8 @@ import type {
 import type { SessionRecorder } from './session'
 import { stableStateHash } from './session'
 
+const MAX_BLOCKED_REASON_LENGTH = 240
+
 type ExportedPlayerAction =
   | { type: 'CHANGE_ACTIVITY'; activity: string }
   | {
@@ -84,11 +86,12 @@ function weekIndexForTick(tick: number): 0 | 1 {
   return tick <= scenario.weekEndTicks[0] ? 0 : 1
 }
 
-export function createPlaytestExport(
+function createExport(
   recorder: SessionRecorder,
   state: SimulationState,
   epochNow = Date.now(),
   monotonicNow = performance.now(),
+  blockedReason?: string,
 ) {
   const machineElapsedMs = Math.max(
     0,
@@ -114,6 +117,13 @@ export function createPlaytestExport(
 
   return {
     schemaVersion: 'gate1-playtest-v1' as const,
+    ...(blockedReason === undefined
+      ? {}
+      : {
+          captureKind: 'blocked' as const,
+          blockedAtTick: state.currentTick,
+          blockedReason,
+        }),
     meta: { ...recorder.meta },
     machineTiming: {
       machineStartedAtEpochMs: recorder.machineStartedAtEpochMs,
@@ -151,4 +161,39 @@ export function createPlaytestExport(
       ).length,
     },
   }
+}
+
+export function createPlaytestExport(
+  recorder: SessionRecorder,
+  state: SimulationState,
+  epochNow = Date.now(),
+  monotonicNow = performance.now(),
+) {
+  return createExport(recorder, state, epochNow, monotonicNow)
+}
+
+export function createBlockedPlaytestExport(
+  recorder: SessionRecorder,
+  state: SimulationState,
+  reason: string,
+  epochNow = Date.now(),
+  monotonicNow = performance.now(),
+) {
+  const blockedReason = reason.trim()
+  if (
+    blockedReason.length === 0 ||
+    blockedReason.length > MAX_BLOCKED_REASON_LENGTH
+  ) {
+    throw new Error('阻断原因需为 1–240 个字符')
+  }
+  if (state.isComplete) {
+    throw new Error('完整场次不能保存为阻断记录')
+  }
+  return createExport(
+    recorder,
+    state,
+    epochNow,
+    monotonicNow,
+    blockedReason,
+  )
 }

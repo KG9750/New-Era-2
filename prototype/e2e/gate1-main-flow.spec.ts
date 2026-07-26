@@ -10,14 +10,17 @@ async function readDownload(download: Download) {
   return Buffer.concat(chunks)
 }
 
-async function downloadSession(page: Page) {
+async function downloadSession(
+  page: Page,
+  buttonName = '下载匿名 JSON',
+) {
   const capturePending = page.waitForResponse(
     (response) =>
       new URL(response.url()).pathname === '/__gate1/capture' &&
       response.request().method() === 'POST',
   )
   const downloadPending = page.waitForEvent('download')
-  await page.getByRole('button', { name: '下载匿名 JSON' }).click()
+  await page.getByRole('button', { name: buttonName }).click()
   const [capture, download] = await Promise.all([
     capturePending,
     downloadPending,
@@ -263,4 +266,55 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   expect(consoleErrors).toHaveLength(1)
   expect(consoleErrors[0]).toContain('500')
   expect(pageErrors).toEqual([])
+  await expect(clearSessionButton).toBeDisabled()
+
+  await page.getByRole('button', { name: '8×' }).click()
+  await page.getByRole('button', { name: '开始运行' }).click()
+  await page.clock.runFor(10_000)
+  await expect(
+    page.getByRole('heading', { name: /水泵故障并停机/ }),
+  ).toBeVisible()
+
+  await page
+    .getByLabel('阻断原因')
+    .fill('水泵事件后操作无法继续，保留当前状态供复现')
+  const blockedCapture = await downloadSession(page, '保存阻断记录')
+
+  expect(blockedCapture.receipt).toMatchObject({
+    captureKind: 'blocked',
+    blockedAtTick: 342,
+    isComplete: false,
+  })
+  expect(blockedCapture.exported).toMatchObject({
+    captureKind: 'blocked',
+    blockedAtTick: 342,
+    blockedReason: '水泵事件后操作无法继续，保留当前状态供复现',
+    finalTick: 342,
+    finalState: {
+      isComplete: false,
+      completedWeekCount: 0,
+      recapCount: 0,
+    },
+  })
+  expect(blockedCapture.exported.recap).toEqual([])
+  expect(
+    blockedCapture.exported.telemetry.filter(
+      (entry: { type: string }) => entry.type === 'export-created',
+    ),
+  ).toHaveLength(0)
+  expect(
+    blockedCapture.exported.telemetry.filter(
+      (entry: { type: string }) => entry.type === 'blocked-capture-created',
+    ),
+  ).toHaveLength(1)
+  await expect(
+    page.getByText('已保存并校验 tick 342 的阻断记录（非完整场次）。'),
+  ).toBeVisible()
+  await expect(page.getByText(/两周流程已完成/)).toHaveCount(0)
+  await expect(clearSessionButton).toBeEnabled()
+
+  await clearSessionButton.click()
+  await expect(
+    page.getByRole('heading', { name: '开始匿名新会话' }),
+  ).toBeVisible()
 })

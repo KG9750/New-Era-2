@@ -1207,6 +1207,25 @@ h2 {
   max-width: 740px;
 }
 
+.blocked-reason-field {
+  display: grid;
+  font-size: 13px;
+  font-weight: 800;
+  gap: 6px;
+  margin-top: 12px;
+  max-width: 560px;
+}
+
+.blocked-reason-field textarea {
+  background: white;
+  border: 1px solid #aaa495;
+  border-radius: 8px;
+  font: inherit;
+  font-weight: 500;
+  padding: 10px 12px;
+  resize: vertical;
+}
+
 .session-action-buttons {
   display: flex;
   flex-shrink: 0;
@@ -1215,6 +1234,11 @@ h2 {
 
 .session-actions .danger-button {
   background: #7b4038;
+}
+
+.session-actions button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
 }
 
 .recap-items {
