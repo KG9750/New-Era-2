@@ -1,0 +1,189 @@
+{
+  "schemaVersion": "gate1a-cohort-manifest-v1",
+  "cohortId": "g1a-20260726-rc4-01",
+  "status": "FROZEN_PENDING_INDEPENDENT_REVIEW",
+  "frozenAtUtc": "2026-07-26T09:38:00Z",
+  "gate": "Gate 1A",
+  "operator": "/root",
+  "supersedes": {
+    "cohortId": "g1a-20260726-rc3-01",
+    "reason": "Independent freeze review found two state-consistency P1s fixed by a769877 before any formal sample started."
+  },
+  "releaseCandidate": {
+    "ref": "refs/heads/codex/gate1-rc-20260726.4",
+    "buildId": "g1-rc-20260726.4",
+    "gitSha": "a769877871f232b3722c02a184ccbc3426950887",
+    "gitTree": "efcc989c7f84883242b9fabe99030feca8c60c0a",
+    "sourceTreeManifestHash": "59f67b4e698a3f72e54522c5da479da711c252b95d304fda1c7ca714b6a6baf1",
+    "sourceTreeManifestHashAlgorithm": "sha256-git-blob-path-manifest-v1",
+    "sourceTreeManifestScope": "tracked prototype/ files sorted by path; each line is <path><TAB><git-blob-object-id><LF>, including final LF",
+    "sourceTreeFileCount": 37,
+    "artifactHash": "0c84ce60f0fd3305a90fac23fcdfbd47cd67b16a6a0b2b72751da11de6cb6b58",
+    "artifactHashAlgorithm": "sha256-canonical-file-manifest-v1",
+    "artifactManifest": {
+      "path": "rc-dist/artifact-manifest.json",
+      "sha256": "e17610a3f719b497b06696c8a94f1bc69f1357c042e87a72884b5ada46f45914"
+    },
+    "buildMetadata": {
+      "path": "rc-dist/rc-build.json",
+      "sha256": "bb63417fbb1369de16c6b1d053256f9b36480847fe160fbf9dc086a0fa11cb93"
+    },
+    "detachedArchive": {
+      "path": "rc-dist.tar",
+      "format": "ustar",
+      "sha256": "008ea767eb9bf0dac567cf2917d3c19537d4257585ebfc0f2fcadad61764d01a"
+    },
+    "scenarioId": "gate1-two-week-management",
+    "scenarioVersion": "0.4.0",
+    "fixedSeed": 104729,
+    "initialStateHash": "fnv1a32-33a16fbf",
+    "initialStateHashAlgorithm": "fnv1a32-stable-json-v1"
+  },
+  "protocol": {
+    "protocolVersion": "gate1a-agent-ops-v2-two-stage",
+    "hostProtocol": {
+      "path": "docs/exec-plans/active/2026-07-26-gate1-agent-test-operations.md",
+      "sha256": "7ff09779507b0632741ec66d3ebf2ddc43ae5d1e8dba704a9d049de7cbfcc0d2"
+    },
+    "playtestSpecification": {
+      "path": "docs/product-specs/weekly-management-slice-playtest-v0.1.md",
+      "sha256": "b480b0032ea2d65e3371af1e9fef5fe37128501f31ecba665863218c632dd718"
+    },
+    "playerPacketVersion": "gate1a-neutral-player-packet-v2",
+    "playerPacket": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc4-01/player-packet.md",
+      "sha256": "a77b475be19f8d0916bc91fd6d8177a01b8a6651a8e91509880228cd00b324ff"
+    },
+    "postSessionInterviewVersion": "gate1a-post-session-interview-v1",
+    "postSessionInterview": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc4-01/post-session-interview.md",
+      "sha256": "c680c5fe4c7d1fed5e60403e457fcadeba1256423088e7c9e62ac253d8e4db00",
+      "releaseTiming": "after-playthrough-download-and-clear"
+    }
+  },
+  "environment": {
+    "url": "http://127.0.0.1:4192/",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "frozenValue": "1440x900"
+    },
+    "inputMode": "Chrome agent UI control",
+    "browser": "Chrome",
+    "browserProfile": "Speed",
+    "browserVersion": null,
+    "browserVersionReason": "The Chrome agent control plane did not expose a version value.",
+    "locale": "zh-CN",
+    "timezone": "Asia/Shanghai"
+  },
+  "samplePlan": {
+    "primarySamples": [
+      "A01",
+      "A02",
+      "A03",
+      "A04",
+      "A05",
+      "A06",
+      "A07"
+    ],
+    "batches": [
+      {
+        "batchId": "Batch 1",
+        "samples": [
+          "A01",
+          "A02",
+          "A03"
+        ]
+      },
+      {
+        "batchId": "Batch 2",
+        "samples": [
+          "A04",
+          "A05",
+          "A06"
+        ]
+      },
+      {
+        "batchId": "Batch 3",
+        "samples": [
+          "A07"
+        ]
+      }
+    ],
+    "replacementStartsAt": "A08",
+    "requiredValidSamples": 7,
+    "batchIsolationRequired": true,
+    "crossSampleCommunicationAllowed": false
+  },
+  "verification": {
+    "cleanClones": 2,
+    "npmCi": {
+      "status": "PASS",
+      "vulnerabilities": 0
+    },
+    "toolchain": {
+      "node": "24.18.0",
+      "vite": "8.1.5",
+      "viteReactPlugin": "6.0.4",
+      "vitest": "4.1.10",
+      "viteNode": "6.0.0",
+      "playwright": "1.62.0"
+    },
+    "lint": "PASS",
+    "vitest": {
+      "status": "PASS",
+      "files": 7,
+      "tests": 46
+    },
+    "rcVerify": "PASS",
+    "chromiumE2E": {
+      "status": "PASS",
+      "projects": [
+        "1440x900",
+        "1280x720"
+      ],
+      "passed": 2,
+      "total": 2
+    },
+    "technicalUiAudit": {
+      "status": "PASS",
+      "sampleId": "TECH-A97",
+      "uiSampleId": "A97",
+      "includedInGate1A": false,
+      "recordPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc4-01/evidence/TECH-A97-ui-audit.md",
+      "recordSha256": "2765222ff73a523ce5e43eda626c2d983451014b4f301dfa904cb91a982b0692",
+      "downloadEventCaptured": false,
+      "downloadReceiptObserved": "已导出 tick 2010 的匿名记录",
+      "downloadPayloadCoveredByChromiumE2E": true
+    },
+    "freezeAudit": {
+      "status": "PASS_PENDING_INDEPENDENT_DECISION",
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc4-01/evidence/rc-freeze-audit.md",
+      "sha256": "a680ded08fa202a3286cc970444d799aefc94d698a4249b643f82b51a5f955bf"
+    },
+    "noGate2Code": {
+      "value": true,
+      "evidence": "RC3-to-RC4 app changes are limited to Gate 1 resolved-state consistency plus regression tests."
+    }
+  },
+  "launchGate": {
+    "independentFreezeReviewRequired": true,
+    "requiredDecision": "RC_FREEZE=YES",
+    "formalSamplesStarted": false
+  },
+  "trackLocks": {
+    "gate1A": "FROZEN_PENDING_INDEPENDENT_REVIEW",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED",
+    "noGate2Code": true
+  },
+  "excludedFromFormalSamples": [
+    "M-A",
+    "M-B",
+    "M-C",
+    "TECH-A97",
+    "TECH-A98",
+    "TECH-A99",
+    "TECH-P00"
+  ]
+}

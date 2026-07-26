@@ -17,9 +17,9 @@ This file is the top-level context entrypoint for the project.
 - Gate 0 已 `PASS`：总控计划、两周切片规格和玩家测试协议已建立；这只证明验证合同成立，不代表玩法已被玩家证明。
 - Gate 1 采用双轨：Gate 1A 已授权使用 7 个独立 agent 样本，Gate 1H 真人验证暂缓；Gate 1A 不能替代 Gate 1H，也不能解锁 Gate 2。
 - D0-A 已 `READY`：双轨基线为 `2550617be5eff4226e9e140be741d619fcb6f5a3`，当前主 agent `/root` 担任测试运营负责人；Gate 1A 汇总为 #9，A01–A07 七个独立测试席位为 #10–#16。
-- Gate 1 两周 RC3 已固定为 `refs/heads/codex/gate1-rc-20260726.3`，指向 Vite 8 提交 `57621e670e69a2b4c7c283a6614ab1bdefd71ca1`；cohort `g1a-20260726-rc3-01` 使用“中性试玩包 → 完成并清空 → 统一结束访谈”的两阶段协议，manifest 与 detached archive 已冻结并等待独立复核。
-- `g1a-20260726-rc2-01` 在开跑前因玩家包诱导风险被否决；`g1a-20260726-rc2-02` 虽修正协议，但仍基于 Vite 7，因此也在 A01 前标记为 `SUPERSEDED`。两者均未产生正式样本。
-- #2–#6 与 `M-A`–`M-C` 已完成；#7 因 RC3 重冻暂时重开。A01–A07 仍须等待独立冻结复核给出 `RC_FREEZE=YES`，随后只按 `3 + 3 + 1` 分批实例化。
+- Gate 1 两周 RC4 已固定为 `refs/heads/codex/gate1-rc-20260726.4`，指向 Vite 8 提交 `a769877871f232b3722c02a184ccbc3426950887`；cohort `g1a-20260726-rc4-01` 使用“中性试玩包 → 完成并清空 → 统一结束访谈”的两阶段协议，manifest 与 detached archive 已冻结并等待独立复核。
+- `g1a-20260726-rc2-01` 因玩家包诱导风险被否决；rc2-02 因 Vite 7 基线偏差被替代；rc3-01 因独立审查发现两项状态一致性 P1 被替代。三者均未产生正式样本。
+- #2–#6 与 `M-A`–`M-C` 已完成；#7 因 RC4 重冻保持打开。A01–A07 仍须等待独立冻结复核给出 `RC_FREEZE=YES`，随后只按 `3 + 3 + 1` 分批实例化。
 - React + TypeScript + Vite 是 Gate 1 实施介质；Node `v24.18.0` 已在 `/opt/homebrew/opt/node@24/bin/` 验证并由 `.node-version` 固定，实施 shell 仍需优先使用该路径。
 - Gate 1 当前估算为 15–18 个净开发工作日；D0、里程碑代理试玩、正式 Gate 1A 运营和报告时间另计，Gate 1H 真人运营时间暂不排期。
 - Gate 2 仍为 `LOCKED`；只有 Gate 1H 获得真人 `PASS` 后才允许编写 Gate 2 规格，不提前实现主题、NPC、排名或豁免。
