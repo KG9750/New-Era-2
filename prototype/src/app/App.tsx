@@ -1,27 +1,172 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { gate1WeekOneScenario as scenario } from '../scenario/gate1-week-one'
 import { advanceSimulation, applyPlayerAction, createPlayerAction } from '../sim/engine'
-import { calculateFoodForecast, formatRange } from '../sim/forecast'
-import type { PlayerAction, SimulationState } from '../sim/model'
+import {
+  calculateFoodForecast,
+  calculateRepairForecast,
+  formatRange,
+} from '../sim/forecast'
+import type {
+  FoodForecast,
+  PlayerAction,
+  RepairForecast,
+  SimulationState,
+} from '../sim/model'
 import { selectClockLabel, selectProgress } from '../sim/selectors'
-import { PUMP_MAINTENANCE_BLOCK_ID, resolveScheduleBlock } from '../sim/schedule'
+import {
+  PUMP_MAINTENANCE_BLOCK_ID,
+  hasPreventiveMaintenance,
+  resolveScheduleBlock,
+} from '../sim/schedule'
 import { ScheduleBoard } from './ScheduleBoard'
 
 type Speed = 1 | 3 | 8
+type FocusedIssue = 'food' | 'pump' | 'repair' | null
+type SupplyForecast = FoodForecast | RepairForecast
 
 function initialState(): SimulationState {
   return scenario.createInitialState()
 }
 
+function SupplyForecastCard({ forecast }: { forecast: SupplyForecast }) {
+  return (
+    <section
+      className="panel forecast-panel"
+      aria-labelledby={`${forecast.id}-forecast-title`}
+    >
+      <div className="panel-title">
+        <div>
+          <p className="eyebrow">聚落供需推演</p>
+          <h2 id={`${forecast.id}-forecast-title`}>{forecast.label}</h2>
+        </div>
+        <span className={`status-chip supply-status-${forecast.status}`}>
+          {forecast.status}
+          {forecast.acceptedRisk ? ' · 已接受风险' : ''}
+        </span>
+      </div>
+      <div className="forecast-number" aria-live="polite">
+        <span>预计期末库存</span>
+        <strong>{formatRange(forecast.endingStock)}</strong>
+        <small>趋势：{forecast.trend}</small>
+      </div>
+      <dl className="forecast-formula">
+        <div><dt>当前库存</dt><dd>{forecast.currentStock}</dd></div>
+        <div><dt>计划产出</dt><dd>+{formatRange(forecast.production)}</dd></div>
+        <div><dt>已知需求</dt><dd>−{forecast.consumption}</dd></div>
+      </dl>
+      <div className="explanation" aria-live="polite">
+        <strong>为什么是这个结果？</strong>
+        <ul>
+          {forecast.reasons.map((reason) => <li key={reason}>{reason}</li>)}
+        </ul>
+      </div>
+    </section>
+  )
+}
+
+interface CharacterDecisionPanelProps {
+  simulation: SimulationState
+  submit(action: PlayerAction): void
+}
+
+export function CharacterDecisionPanel({
+  simulation,
+  submit,
+}: CharacterDecisionPanelProps) {
+  const showLinHeRequest =
+    (simulation.completedWeekIndexes.includes(0) && simulation.recap === null) ||
+    simulation.currentTick >= 144 * 7
+  const requestPending = simulation.linHeRequestDecision === 'pending'
+
+  return (
+    <section className="character-decisions" aria-labelledby="character-decisions-title">
+      <div className="section-heading">
+        <div>
+          <p className="eyebrow">人物承诺</p>
+          <h2 id="character-decisions-title">不是匿名效率条</h2>
+        </div>
+        <span className="count-chip">决定会写入人物记录</span>
+      </div>
+      <div className="character-card-grid">
+        <article className="character-card">
+          <div className="character-card-heading">
+            <div>
+              <strong>乔磐</strong>
+              <span>维修效率 200%</span>
+            </div>
+            <span className="boundary-chip">连续加班上限 2 日</span>
+          </div>
+          <p>“正常班和两天短期加班都可以，第三天请安排别人交接。”</p>
+          <small>{simulation.characterRecords['qiao-pan'].at(-1)}</small>
+        </article>
+
+        {showLinHeRequest && (
+          <article className="character-card request-card">
+            <div className="character-card-heading">
+              <div>
+                <strong>林禾</strong>
+                <span>农务效率 200%</span>
+              </div>
+              <span className="request-chip">
+                {requestPending
+                  ? '等待答复'
+                  : simulation.linHeRequestDecision === 'accepted'
+                    ? '已接受'
+                    : '已拒绝'}
+              </span>
+            </div>
+            <p>“第二周周二上午，我想把一个农务块留给学习。眼前会少 2 份产出。”</p>
+            {requestPending ? (
+              <>
+                <div className="request-impact">
+                  <span>接受：粮食产出 −2，记录学习承诺</span>
+                  <span>拒绝：粮食不变，记录本次拒绝</span>
+                </div>
+                <div className="request-actions">
+                  <button
+                    onClick={() =>
+                      submit({ type: 'RESOLVE_LIN_HE_REQUEST', decision: 'accepted' })
+                    }
+                    type="button"
+                  >
+                    接受学习请求
+                  </button>
+                  <button
+                    className="secondary-button"
+                    onClick={() =>
+                      submit({ type: 'RESOLVE_LIN_HE_REQUEST', decision: 'declined' })
+                    }
+                    type="button"
+                  >
+                    拒绝并保留农务
+                  </button>
+                </div>
+              </>
+            ) : (
+              <small>{simulation.characterRecords['lin-he'].at(-1)}</small>
+            )}
+          </article>
+        )}
+      </div>
+    </section>
+  )
+}
+
 export function App() {
   const [simulation, setSimulation] = useState(initialState)
   const [speed, setSpeed] = useState<Speed>(3)
-  const [isFocused, setIsFocused] = useState(false)
+  const [focusedIssue, setFocusedIssue] = useState<FocusedIssue>(null)
   const nextActionSequence = useRef(1)
-  const forecast = useMemo(() => calculateFoodForecast(simulation), [simulation])
+  const foodForecast = useMemo(() => calculateFoodForecast(simulation), [simulation])
+  const repairForecast = useMemo(() => calculateRepairForecast(simulation), [simulation])
   const progress = selectProgress(simulation, scenario)
   const pumpHandled = simulation.processedScriptEventIds.includes('pump-incident-day-3')
-  const currentWeek = simulation.currentTick <= scenario.weekEndTick ? 1 : 2
+  const currentWeek =
+    (simulation.completedWeekIndexes.includes(0) && simulation.recap === null) ||
+    simulation.currentTick >= 144 * 7
+      ? 2
+      : 1
+  const pumpPlanReady = hasPreventiveMaintenance(simulation)
 
   function submit(action: PlayerAction) {
     const envelope = createPlayerAction(
@@ -44,7 +189,7 @@ export function App() {
     return () => window.clearInterval(timer)
   }, [simulation.isPaused, simulation.recap, speed])
 
-  const canEdit = simulation.currentTick < scenario.pumpEventTick
+  const canEditPumpPlan = simulation.currentTick < scenario.pumpEventTick
 
   return (
     <main className="app-shell">
@@ -94,30 +239,64 @@ export function App() {
         <div className="section-heading">
           <div>
             <p className="eyebrow">周初摘要</p>
-            <h2 id="briefing-title">本周先处理这一件事</h2>
+            <h2 id="briefing-title">本周三项取舍</h2>
           </div>
-          <span className="count-chip">1 个已知风险</span>
+          <span className="count-chip">不要求全部调绿</span>
         </div>
-        <button
-          className={`issue-card ${isFocused ? 'selected' : ''}`}
-          onClick={() => setIsFocused(true)}
-          type="button"
-        >
-          <span className="issue-icon" aria-hidden="true">!</span>
-          <span className="issue-copy">
-            <strong>水泵需要预防性检修</strong>
-            <span>
-              周三 09:00 前不处理，粮食期末库存可能从 11 下探至 3。
+        <div className="issue-list">
+          <button
+            className={`issue-card ${focusedIssue === 'food' ? 'selected' : ''} ${foodForecast.acceptedRisk ? 'accepted' : ''}`}
+            onClick={() => setFocusedIssue('food')}
+            type="button"
+          >
+            <span className="issue-icon" aria-hidden="true">!</span>
+            <span className="issue-copy">
+              <strong>粮食预计{foodForecast.status}</strong>
+              <span>期末库存 {formatRange(foodForecast.endingStock)}；可以补产能，也可以明确承担轻度缺口。</span>
+              <small>{foodForecast.acceptedRisk ? '已接受风险，不再作为未处理错误' : '影响：粮食、化肥与共享劳动力'}</small>
             </span>
-            <small>影响：林禾 · 周二午后 · 粮食预测</small>
-          </span>
-          <span className="issue-action">{isFocused ? '已定位' : '定位安排 →'}</span>
-        </button>
+            <span className="issue-action">
+              {focusedIssue === 'food' ? '已定位' : '查看原因 →'}
+            </span>
+          </button>
+          <button
+            className={`issue-card ${focusedIssue === 'pump' ? 'selected' : ''} ${pumpPlanReady ? 'resolved' : ''}`}
+            onClick={() => setFocusedIssue('pump')}
+            type="button"
+          >
+            <span className="issue-icon" aria-hidden="true">!</span>
+            <span className="issue-copy">
+              <strong>水泵需要 2 个预防性维修块</strong>
+              <span>
+                乔磐已排 1 块；周三前再补 1 块，否则粮食下探会成为严重短缺。
+              </span>
+              <small>影响：乔磐、林禾 · 周二 · 粮食与维修保障</small>
+            </span>
+            <span className="issue-action">
+              {focusedIssue === 'pump' ? '已定位' : '定位安排 →'}
+            </span>
+          </button>
+          <button
+            className={`issue-card ${focusedIssue === 'repair' ? 'selected' : ''}`}
+            onClick={() => setFocusedIssue('repair')}
+            type="button"
+          >
+            <span className="issue-icon" aria-hidden="true">!</span>
+            <span className="issue-copy">
+              <strong>维修保障处于{repairForecast.status}</strong>
+              <span>期末库存 {formatRange(repairForecast.endingStock)}；把人调去维修会挤占粮食或物流。</span>
+              <small>影响：乔磐效率、维修工坊与共享劳动力</small>
+            </span>
+            <span className="issue-action">
+              {focusedIssue === 'repair' ? '已定位' : '查看原因 →'}
+            </span>
+          </button>
+        </div>
       </section>
 
       <div className="workspace-grid">
         <section
-          className={`panel schedule-panel ${isFocused ? 'focused-panel' : ''}`}
+          className={`panel schedule-panel ${focusedIssue === 'pump' ? 'focused-panel' : ''}`}
           aria-labelledby="schedule-title"
         >
           <div className="panel-title">
@@ -127,19 +306,19 @@ export function App() {
             </div>
             <span className="skill-chip">农务</span>
           </div>
-          <p className="block-time">13:00–16:00 · 本周一次性安排</p>
-          {!isFocused ? (
-            <p className="empty-prompt">点击上方问题卡，定位受影响的活动块。</p>
+          <p className="block-time">周二 13:00–16:00 · 水泵检修第 2 / 2 块</p>
+          {focusedIssue !== 'pump' ? (
+            <p className="empty-prompt">点击“水泵需要 2 个预防性维修块”，定位缺少的检修块。</p>
           ) : (
             <div className="activity-editor">
-              <p>选择这个活动块：</p>
+              <p>乔磐已有 1 块。为林禾选择第二块：</p>
               <div className="activity-options" role="group" aria-label="活动选择">
                 <button
                   aria-pressed={
                     resolveScheduleBlock(simulation, PUMP_MAINTENANCE_BLOCK_ID).activity ===
                     'rest'
                   }
-                  disabled={!canEdit}
+                  disabled={!canEditPumpPlan}
                   onClick={() => submit({ type: 'CHANGE_ACTIVITY', activity: 'rest' })}
                   type="button"
                 >
@@ -151,45 +330,67 @@ export function App() {
                     resolveScheduleBlock(simulation, PUMP_MAINTENANCE_BLOCK_ID).activity ===
                     'repair'
                   }
-                  disabled={!canEdit}
+                  disabled={!canEditPumpPlan}
                   onClick={() => submit({ type: 'CHANGE_ACTIVITY', activity: 'repair' })}
                   type="button"
                 >
                   <span aria-hidden="true">◆</span>
-                  检修水泵
+                  补足第 2 个检修块
                 </button>
               </div>
-              {!canEdit && <small>水泵事件已发生，这个预防性安排不再可改。</small>}
+              <small>
+                人物与设施联动：林禾的维修效率低于乔磐，且这块会进入共享劳动力总额。
+              </small>
+              {!canEditPumpPlan && <small>水泵事件已发生，过去的预防性安排不能追溯修改。</small>}
             </div>
           )}
         </section>
 
-        <section className="panel forecast-panel" aria-labelledby="forecast-title">
-          <div className="panel-title">
-            <div>
-              <p className="eyebrow">聚落供需推演</p>
-              <h2 id="forecast-title">粮食</h2>
-            </div>
-            <span className={`status-chip status-${forecast.trend}`}>{forecast.status}</span>
-          </div>
-          <div className="forecast-number" aria-live="polite">
-            <span>预计期末库存</span>
-            <strong>{formatRange(forecast.endingStock)}</strong>
-            <small>趋势：{forecast.trend}</small>
-          </div>
-          <dl className="forecast-formula">
-            <div><dt>当前库存</dt><dd>{forecast.currentStock}</dd></div>
-            <div><dt>计划产出</dt><dd>+{formatRange(forecast.production)}</dd></div>
-            <div><dt>已知消费</dt><dd>−{forecast.consumption}</dd></div>
-          </dl>
-          <div className="explanation" aria-live="polite">
-            <strong>为什么是这个结果？</strong>
-            <ul>
-              {forecast.reasons.map((reason) => <li key={reason}>{reason}</li>)}
-            </ul>
-          </div>
-        </section>
+        <div className="supply-stack">
+          <SupplyForecastCard forecast={foodForecast} />
+          <SupplyForecastCard forecast={repairForecast} />
+        </div>
       </div>
+
+      <section className="management-actions" aria-labelledby="management-actions-title">
+        <div>
+          <p className="eyebrow">本周资源与风险</p>
+          <h2 id="management-actions-title">选择代价，不是一键补绿</h2>
+        </div>
+        <div className="management-action-card">
+          <strong>化肥库存</strong>
+          <span>{simulation.fertilizerUsed ? '0 / 1 · 已用于粮食' : '1 / 1 · 仅能使用一次'}</span>
+          <button
+            disabled={simulation.fertilizerUsed}
+            onClick={() => submit({ type: 'USE_FERTILIZER' })}
+            type="button"
+          >
+            {simulation.fertilizerUsed ? '化肥已使用' : '使用化肥：粮食 +6'}
+          </button>
+        </div>
+        <div className="management-action-card">
+          <strong>粮食风险承诺</strong>
+          <span>
+            {foodForecast.status === '轻度缺口'
+              ? '可主动接受；数学预测不会改变'
+              : '只有轻度缺口可以主动接受'}
+          </span>
+          <button
+            disabled={foodForecast.status !== '轻度缺口'}
+            onClick={() =>
+              submit({
+                type: 'SET_FOOD_SHORTFALL_ACCEPTED',
+                accepted: !foodForecast.acceptedRisk,
+              })
+            }
+            type="button"
+          >
+            {foodForecast.acceptedRisk ? '撤回风险接受' : '接受轻度粮食缺口'}
+          </button>
+        </div>
+      </section>
+
+      <CharacterDecisionPanel simulation={simulation} submit={submit} />
 
       <ScheduleBoard simulation={simulation} submit={submit} />
 

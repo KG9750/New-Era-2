@@ -52,8 +52,8 @@ describe('Gate 1 minimal simulation contract', () => {
     const repaired = chooseRepair(initial)
 
     expect(calculateFoodForecast(initial).endingStock).toEqual({ low: 3, high: 11 })
-    expect(calculateFoodForecast(repaired).endingStock).toEqual({ low: 11, high: 11 })
-    expect(calculateFoodForecast(repaired).reasons[0]).toContain('故障风险已从预测中移除')
+    expect(calculateFoodForecast(repaired).endingStock).toEqual({ low: 9, high: 9 })
+    expect(calculateFoodForecast(repaired).reasons[0]).toContain('2 个水泵维修块')
   })
 
   it('processes the pump event once and auto-pauses at its tick', () => {
@@ -87,7 +87,7 @@ describe('Gate 1 minimal simulation contract', () => {
       'player-action',
     ])
     expect(state.pumpStatus).toBe('failed')
-    expect(calculateFoodForecast(state).endingStock).toEqual({ low: 3, high: 3 })
+    expect(calculateFoodForecast(state).endingStock).toEqual({ low: 1, high: 1 })
   })
 
   it('gives preventive maintenance and ignored maintenance different outcomes', () => {
@@ -104,7 +104,7 @@ describe('Gate 1 minimal simulation contract', () => {
 
     expect(protectedState.pumpStatus).toBe('protected')
     expect(failedState.pumpStatus).toBe('failed')
-    expect(calculateFoodForecast(protectedState).endingStock).toEqual({ low: 10, high: 11 })
+    expect(calculateFoodForecast(protectedState).endingStock).toEqual({ low: 8, high: 9 })
     expect(calculateFoodForecast(failedState).endingStock).toEqual({ low: 3, high: 3 })
   })
 
@@ -119,8 +119,8 @@ describe('Gate 1 minimal simulation contract', () => {
     state = advanceSimulation(state, scenario.weekEndTick, scenario).state
 
     expect(state.recap).not.toBeNull()
-    expect(state.recap?.planned).toEqual({ low: 11, high: 11 })
-    expect(state.recap?.actual).toBe(10)
+    expect(state.recap?.planned).toEqual({ low: 9, high: 9 })
+    expect(state.recap?.actual).toBe(8)
     expect(state.recap?.items.join(' ')).toContain('水泵异常')
   })
 })

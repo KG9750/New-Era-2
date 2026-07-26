@@ -3,6 +3,14 @@ export type PumpStatus = 'at-risk' | 'protected' | 'failed'
 export type CharacterId = 'lin-he' | 'qiao-pan' | 'su-ji' | 'chen-du'
 export type ScheduleScope = 'weekly' | 'immediate' | 'base'
 export type ScheduleLayer = 'weeklyOverrides' | 'immediateAdjustments' | 'basePlan'
+export type SupplyStatus =
+  | '严重短缺'
+  | '轻度缺口'
+  | '脆弱平衡'
+  | '目标区间'
+  | '显著过剩'
+export type SupplyTrend = '上升' | '持平' | '下调' | '风险未消除' | '风险收窄' | '事件下调'
+export type LinHeRequestDecision = 'pending' | 'accepted' | 'declined'
 
 export interface CharacterDefinition {
   id: CharacterId
@@ -38,13 +46,29 @@ export interface ForecastRange {
 }
 
 export interface FoodForecast {
+  id: 'food'
+  label: '粮食'
   currentStock: number
   production: ForecastRange
   consumption: number
   endingStock: ForecastRange
-  status: '严重短缺' | '轻度缺口' | '脆弱平衡' | '目标区间'
-  trend: '风险未消除' | '风险收窄' | '事件下调'
+  status: SupplyStatus
+  trend: SupplyTrend
   reasons: readonly string[]
+  acceptedRisk: boolean
+}
+
+export interface RepairForecast {
+  id: 'repair'
+  label: '维修保障'
+  currentStock: number
+  production: ForecastRange
+  consumption: number
+  endingStock: ForecastRange
+  status: SupplyStatus
+  trend: SupplyTrend
+  reasons: readonly string[]
+  acceptedRisk: false
 }
 
 export interface TimelineEntry {
@@ -82,6 +106,10 @@ export interface SimulationState {
   recaps: readonly WeekendRecap[]
   completedWeekIndexes: readonly number[]
   isComplete: boolean
+  fertilizerUsed: boolean
+  acceptedFoodShortfall: boolean
+  linHeRequestDecision: LinHeRequestDecision
+  characterRecords: Readonly<Record<CharacterId, readonly string[]>>
 }
 
 export type PlayerAction =
@@ -100,6 +128,9 @@ export type PlayerAction =
       scope: ScheduleScope
     }
   | { type: 'UNDO_SCHEDULE' }
+  | { type: 'USE_FERTILIZER' }
+  | { type: 'SET_FOOD_SHORTFALL_ACCEPTED'; accepted: boolean }
+  | { type: 'RESOLVE_LIN_HE_REQUEST'; decision: Exclude<LinHeRequestDecision, 'pending'> }
   | { type: 'SET_PAUSED'; paused: boolean }
 
 export interface PlayerActionEnvelope {
@@ -135,6 +166,9 @@ export interface DomainEvent {
     | 'activity-changed'
     | 'schedule-edited'
     | 'schedule-undone'
+    | 'fertilizer-used'
+    | 'food-shortfall-accepted'
+    | 'lin-he-request-resolved'
     | 'clock-changed'
     | 'pump-incident'
     | 'week-ended'

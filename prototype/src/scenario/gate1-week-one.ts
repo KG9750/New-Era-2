@@ -9,7 +9,7 @@ export const SIMULATION_END_TICK = TICKS_PER_DAY * 13 + 138
 
 export const gate1WeekOneScenario: ScenarioDefinition = {
   id: 'gate1-week-one-minimal',
-  version: '0.2.0',
+  version: '0.3.0',
   fixedSeed: 104729,
   startTick: START_TICK,
   weekEndTick: WEEK_END_TICK,
@@ -41,6 +41,15 @@ export const gate1WeekOneScenario: ScenarioDefinition = {
       recaps: [],
       completedWeekIndexes: [],
       isComplete: false,
+      fertilizerUsed: false,
+      acceptedFoodShortfall: false,
+      linHeRequestDecision: 'pending',
+      characterRecords: {
+        'lin-he': ['第二周希望占用一个农务块学习，等待管理者答复。'],
+        'qiao-pan': ['接受正常排班与连续不超过两日的短期加班。'],
+        'su-ji': ['物流效率稳定，可承担基础岗位交接。'],
+        'chen-du': ['泛用协作稳定，适合作为粮食与维修之间的调剂者。'],
+      },
     }
   },
 }

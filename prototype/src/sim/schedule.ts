@@ -36,6 +36,11 @@ export const DAY_LABELS = [
 ]
 
 export const PUMP_MAINTENANCE_BLOCK_ID = createBlockId('lin-he', 1, 1)
+export const PUMP_MAINTENANCE_BLOCK_IDS = [
+  createBlockId('qiao-pan', 1, 0),
+  PUMP_MAINTENANCE_BLOCK_ID,
+] as const
+export const LIN_HE_STUDY_BLOCK_ID = createBlockId('lin-he', 8, 0)
 
 export function createBlockId(
   characterId: CharacterId,
@@ -57,6 +62,11 @@ export function parseBlockId(blockId: string): {
     dayIndex: Number(match[2]),
     blockIndex: Number(match[3]),
   }
+}
+
+export function blockEndTick(blockId: string): number {
+  const { dayIndex, blockIndex } = parseBlockId(blockId)
+  return dayIndex * 144 + [72, 96, 114, 138][blockIndex]
 }
 
 export function createBaseKey(
@@ -120,6 +130,12 @@ export function resolveScheduleBlock(state: SimulationState, blockId: string) {
   }
 }
 
+export function hasPreventiveMaintenance(state: SimulationState): boolean {
+  return PUMP_MAINTENANCE_BLOCK_IDS.every(
+    (blockId) => resolveScheduleBlock(state, blockId).activity === 'repair',
+  )
+}
+
 function layerFor(scope: ScheduleScope): ScheduleLayer {
   if (scope === 'immediate') return 'immediateAdjustments'
   if (scope === 'base') return 'basePlan'
@@ -142,6 +158,9 @@ export function affectedBlockIdsFor(action: PlayerAction): readonly string[] {
   if (action.type === 'EDIT_SCHEDULE') return [...new Set(action.blockIds)]
   if (action.type === 'COPY_DAY') return affectedIdsForCopy(action)
   if (action.type === 'CHANGE_ACTIVITY') return [PUMP_MAINTENANCE_BLOCK_ID]
+  if (action.type === 'RESOLVE_LIN_HE_REQUEST' && action.decision === 'accepted') {
+    return [LIN_HE_STUDY_BLOCK_ID]
+  }
   return []
 }
 
@@ -208,6 +227,42 @@ export function applyScheduleTransaction(
   }
 }
 
+export interface QiaoPanBoundaryWarning {
+  refusedDayIndexes: readonly number[]
+  message: string
+}
+
+export function findQiaoPanBoundaryWarning(
+  state: SimulationState,
+  action:
+    | Extract<PlayerAction, { type: 'EDIT_SCHEDULE' }>
+    | Extract<PlayerAction, { type: 'COPY_DAY' }>,
+): QiaoPanBoundaryWarning | null {
+  const preview = applyScheduleTransaction(state, 'boundary-preview', action)
+  const refusedDayIndexes: number[] = []
+  let consecutiveDays = 0
+
+  for (let dayIndex = 0; dayIndex < 14; dayIndex += 1) {
+    const overtimeActivity = resolveScheduleBlock(
+      preview,
+      createBlockId('qiao-pan', dayIndex, 3),
+    ).activity
+    if (overtimeActivity === 'repair') {
+      consecutiveDays += 1
+      if (consecutiveDays >= 3) refusedDayIndexes.push(dayIndex)
+    } else {
+      consecutiveDays = 0
+    }
+  }
+
+  if (refusedDayIndexes.length === 0) return null
+  const firstRefusedDay = refusedDayIndexes[0] + 1
+  return {
+    refusedDayIndexes,
+    message: `乔磐将在第 ${firstRefusedDay} 日触发第三个连续加班日并拒绝该维修块。请改由陈渡交接、延期，或接受维修缺口。`,
+  }
+}
+
 export function undoLastScheduleTransaction(state: SimulationState): SimulationState {
   const transaction = state.scheduleTransactions.at(-1)
   if (!transaction) return state
@@ -232,8 +287,8 @@ export function expireScheduleLayers(
 ): SimulationState {
   const immediateAdjustments = { ...state.immediateAdjustments }
   for (const blockId of Object.keys(immediateAdjustments)) {
-    const { dayIndex, blockIndex } = parseBlockId(blockId)
-    const endTick = dayIndex * 144 + [72, 96, 114, 138][blockIndex]
+    const { dayIndex } = parseBlockId(blockId)
+    const endTick = blockEndTick(blockId)
     if (endTick <= throughTick) delete immediateAdjustments[blockId]
   }
 

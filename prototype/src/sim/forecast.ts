@@ -1,67 +1,292 @@
-import type { FoodForecast, ForecastRange, SimulationState } from './model'
-import { PUMP_MAINTENANCE_BLOCK_ID, resolveScheduleBlock } from './schedule'
+import type {
+  CharacterId,
+  FoodForecast,
+  ForecastRange,
+  RepairForecast,
+  SimulationState,
+  SupplyStatus,
+} from './model'
+import {
+  CHARACTERS,
+  LIN_HE_STUDY_BLOCK_ID,
+  createBlockId,
+  hasPreventiveMaintenance,
+  resolveScheduleBlock,
+} from './schedule'
 
-const CURRENT_STOCK = 18
-const KNOWN_CONSUMPTION = 42
+const FOOD_CURRENT_STOCK = 18
+const FOOD_KNOWN_CONSUMPTION = 42
+const FOOD_TARGET = { low: 12, high: 20 }
+const REPAIR_CURRENT_STOCK = 9
+const REPAIR_KNOWN_CONSUMPTION = 32
+const REPAIR_TARGET = { low: 5, high: 9 }
+const BASELINE_FOOD_OUTPUT = 35
+const BASELINE_REPAIR_OUTPUT = 28
+const BASELINE_LOGISTICS_OUTPUT = 41
+const SHARED_LABOR_CAPACITY =
+  BASELINE_FOOD_OUTPUT + BASELINE_REPAIR_OUTPUT + BASELINE_LOGISTICS_OUTPUT
 
-function endingStock(production: ForecastRange): ForecastRange {
+const FOOD_EFFICIENCY: Readonly<Record<CharacterId, number>> = {
+  'lin-he': 2,
+  'qiao-pan': 1,
+  'su-ji': 1,
+  'chen-du': 1,
+}
+
+const REPAIR_EFFICIENCY: Readonly<Record<CharacterId, number>> = {
+  'lin-he': 1,
+  'qiao-pan': 2,
+  'su-ji': 1,
+  'chen-du': 1,
+}
+
+const LOGISTICS_EFFICIENCY: Readonly<Record<CharacterId, number>> = {
+  'lin-he': 1,
+  'qiao-pan': 1,
+  'su-ji': 2,
+  'chen-du': 1,
+}
+
+interface LaborAllocation {
+  food: number
+  repair: number
+  rawFood: number
+  rawRepair: number
+  logistics: number
+  rawLogistics: number
+  foodByCharacter: Readonly<Record<CharacterId, number>>
+  repairByCharacter: Readonly<Record<CharacterId, number>>
+  logisticsByCharacter: Readonly<Record<CharacterId, number>>
+  capped: boolean
+}
+
+function currentWeekIndex(state: SimulationState): 0 | 1 {
+  if (state.completedWeekIndexes.includes(0) && state.recap === null) return 1
+  return Math.floor(state.currentTick / (144 * 7)) >= 1 ? 1 : 0
+}
+
+function calculateLaborAllocation(state: SimulationState): LaborAllocation {
+  const firstDay = currentWeekIndex(state) * 7
+  const foodByCharacter = Object.fromEntries(
+    CHARACTERS.map((character) => [character.id, 0]),
+  ) as Record<CharacterId, number>
+  const repairByCharacter = { ...foodByCharacter }
+  const logisticsByCharacter = { ...foodByCharacter }
+
+  for (const character of CHARACTERS) {
+    for (let dayIndex = firstDay; dayIndex < firstDay + 7; dayIndex += 1) {
+      for (let blockIndex = 0; blockIndex < 4; blockIndex += 1) {
+        const activity = resolveScheduleBlock(
+          state,
+          createBlockId(character.id, dayIndex, blockIndex),
+        ).activity
+        if (activity === 'food') {
+          foodByCharacter[character.id] += FOOD_EFFICIENCY[character.id]
+        }
+        if (activity === 'repair') {
+          repairByCharacter[character.id] += REPAIR_EFFICIENCY[character.id]
+        }
+        if (activity === 'logistics') {
+          logisticsByCharacter[character.id] += LOGISTICS_EFFICIENCY[character.id]
+        }
+      }
+    }
+  }
+
+  const rawFood = Object.values(foodByCharacter).reduce((sum, value) => sum + value, 0)
+  const rawRepair = Object.values(repairByCharacter).reduce((sum, value) => sum + value, 0)
+  const rawLogistics = Object.values(logisticsByCharacter).reduce(
+    (sum, value) => sum + value,
+    0,
+  )
+  const rawTotal = rawFood + rawRepair + rawLogistics
+  const capped = rawTotal > SHARED_LABOR_CAPACITY
+  const scale = capped ? SHARED_LABOR_CAPACITY / rawTotal : 1
+
   return {
-    low: CURRENT_STOCK + production.low - KNOWN_CONSUMPTION,
-    high: CURRENT_STOCK + production.high - KNOWN_CONSUMPTION,
+    food: Math.floor(rawFood * scale),
+    repair: Math.floor(rawRepair * scale),
+    logistics: Math.floor(rawLogistics * scale),
+    rawFood,
+    rawRepair,
+    rawLogistics,
+    foodByCharacter,
+    repairByCharacter,
+    logisticsByCharacter,
+    capped,
   }
 }
 
-function statusFor(range: ForecastRange): FoodForecast['status'] {
-  if (range.high < 4) return '严重短缺'
-  if (range.high < 12) return '轻度缺口'
-  if (range.low < 12) return '脆弱平衡'
+function statusFor(
+  range: ForecastRange,
+  target: Readonly<{ low: number; high: number }>,
+  severeBelow: number,
+): SupplyStatus {
+  if (range.high < severeBelow) return '严重短缺'
+  if (range.high < target.low) return '轻度缺口'
+  if (range.low < target.low) return '脆弱平衡'
+  if (range.low > target.high) return '显著过剩'
   return '目标区间'
 }
 
-export function calculateFoodForecast(state: SimulationState): FoodForecast {
-  let production: ForecastRange
-  let trend: FoodForecast['trend']
-  let reasons: readonly string[]
+function foodFacilityRange(state: SimulationState, output: number): ForecastRange {
+  if (state.pumpStatus === 'at-risk' && hasPreventiveMaintenance(state)) {
+    return { low: output, high: output }
+  }
+  if (state.pumpStatus === 'protected') return { low: output - 1, high: output }
+  if (state.pumpStatus === 'failed') return { low: output - 8, high: output - 8 }
+  return { low: output - 8, high: output }
+}
 
+function foodFacilityReason(state: SimulationState): string {
+  if (state.pumpStatus === 'at-risk' && hasPreventiveMaintenance(state)) {
+    return '设施：周三前已安排 2 个水泵维修块，已知停机风险从计划区间移除。'
+  }
   if (state.pumpStatus === 'protected') {
-    production = { low: 34, high: 35 }
-    trend = '风险收窄'
-    reasons = [
-      '周二的预防性检修生效：周三水泵异常只造成 0–1 单位产出损失。',
-      '林禾其余农务块与既有运输条件维持基线产出。',
-    ]
-  } else if (state.pumpStatus === 'failed') {
-    production = { low: 27, high: 27 }
-    trend = '事件下调'
-    reasons = [
-      '水泵未检修并在周三停机，粮食产出确定减少 8 单位。',
-      '这是已发生事件带来的下调，不是隐藏随机波动。',
-    ]
-  } else if (resolveScheduleBlock(state, PUMP_MAINTENANCE_BLOCK_ID).activity === 'repair') {
-    production = { low: 35, high: 35 }
-    trend = '风险收窄'
-    reasons = [
-      '林禾已把周二午后改为预防性检修，水泵故障风险已从预测中移除。',
-      '检修占用休息块，不减少既定农务产出。',
-    ]
-  } else {
-    production = { low: 27, high: 35 }
-    trend = '风险未消除'
-    reasons = [
-      '水泵仍未安排检修；若周三故障兑现，粮食产出可能减少 8 单位。',
-      '当前区间只包含玩家已知的水泵风险。',
-    ]
+    return '设施：水泵已受检修保护，农田产出区间仅保留 0–1 的可见波动。'
+  }
+  if (state.pumpStatus === 'failed') {
+    return '设施：水泵已停机，农田产出确定减少 8；这不是隐藏随机波动。'
+  }
+  return '设施：水泵尚未检修，农田产出下限包含已知的 8 单位停机风险。'
+}
+
+function laborReason(allocation: LaborAllocation, supply: 'food' | 'repair'): string {
+  const contributions = supply === 'food' ? allocation.foodByCharacter : allocation.repairByCharacter
+  const visibleContributors = CHARACTERS
+    .filter((character) => contributions[character.id] > 0)
+    .map((character) => `${character.name} ${contributions[character.id]}`)
+    .join('、')
+  const label = supply === 'food' ? '农务' : '维修'
+  return `人物与日程：${visibleContributors || '无人投入'}；熟练度已计入每个${label}块。`
+}
+
+function sharedLaborReason(allocation: LaborAllocation): string {
+  if (allocation.capped) {
+    return `共享劳动力：粮食、维修与物流原始投入共 ${allocation.rawFood + allocation.rawRepair + allocation.rawLogistics}，超过可持续上限 ${SHARED_LABOR_CAPACITY}；额外加班不能同时抬高两条预测。`
+  }
+  return `共享劳动力：粮食、维修与物流共占用 ${allocation.rawFood + allocation.rawRepair + allocation.rawLogistics}/${SHARED_LABOR_CAPACITY} 可靠产能，改派会在两条供需间转移。`
+}
+
+function logisticsAdjustment(allocation: LaborAllocation): number {
+  return Math.max(-6, Math.min(6, allocation.logistics - BASELINE_LOGISTICS_OUTPUT))
+}
+
+export function calculateFoodForecast(state: SimulationState): FoodForecast {
+  const allocation = calculateLaborAllocation(state)
+  const fertilizerBonus = state.fertilizerUsed ? 6 : 0
+  const logisticsBonus = logisticsAdjustment(allocation)
+  const facilityProduction = foodFacilityRange(
+    state,
+    Math.max(0, allocation.food + logisticsBonus),
+  )
+  const production = {
+    low: Math.max(0, facilityProduction.low + fertilizerBonus),
+    high: Math.max(0, facilityProduction.high + fertilizerBonus),
+  }
+  const endingStock = {
+    low: FOOD_CURRENT_STOCK + production.low - FOOD_KNOWN_CONSUMPTION,
+    high: FOOD_CURRENT_STOCK + production.high - FOOD_KNOWN_CONSUMPTION,
+  }
+  const status = statusFor(endingStock, FOOD_TARGET, 4)
+  const requestAccepted =
+    state.linHeRequestDecision === 'accepted' &&
+    resolveScheduleBlock(state, LIN_HE_STUDY_BLOCK_ID).activity === 'study'
+  const modifiers = [
+    state.fertilizerUsed ? '化肥 +6' : '化肥尚未使用',
+    requestAccepted ? '林禾学习占用 1 个农务块' : null,
+    `物流兑现 ${logisticsBonus >= 0 ? '+' : ''}${logisticsBonus}；${sharedLaborReason(allocation)}`,
+  ].filter((item): item is string => item !== null)
+
+  return {
+    id: 'food',
+    label: '粮食',
+    currentStock: FOOD_CURRENT_STOCK,
+    production,
+    consumption: FOOD_KNOWN_CONSUMPTION,
+    endingStock,
+    status,
+    trend:
+      state.pumpStatus === 'failed'
+        ? '事件下调'
+        : state.pumpStatus === 'protected' ||
+            (state.pumpStatus === 'at-risk' && hasPreventiveMaintenance(state))
+          ? '风险收窄'
+        : production.high > BASELINE_FOOD_OUTPUT
+          ? '上升'
+          : production.high < BASELINE_FOOD_OUTPUT
+            ? '下调'
+            : '风险未消除',
+    reasons: [
+      foodFacilityReason(state),
+      laborReason(allocation, 'food'),
+      modifiers.join('；'),
+    ],
+    acceptedRisk: state.acceptedFoodShortfall && status === '轻度缺口',
+  }
+}
+
+export function calculateRepairForecast(state: SimulationState): RepairForecast {
+  const allocation = calculateLaborAllocation(state)
+  const logisticsBonus = Math.trunc(logisticsAdjustment(allocation) / 2)
+  const riskCost =
+    state.pumpStatus === 'failed'
+      ? { low: 4, high: 4 }
+      : state.pumpStatus === 'protected'
+        ? { low: 1, high: 1 }
+        : hasPreventiveMaintenance(state)
+          ? { low: 1, high: 1 }
+          : { low: 2, high: 0 }
+  const repairOutput = Math.max(0, allocation.repair + logisticsBonus)
+  const production = { low: repairOutput, high: repairOutput }
+  const endingStock = {
+    low:
+      REPAIR_CURRENT_STOCK +
+      production.low -
+      REPAIR_KNOWN_CONSUMPTION -
+      riskCost.low,
+    high:
+      REPAIR_CURRENT_STOCK +
+      production.high -
+      REPAIR_KNOWN_CONSUMPTION -
+      riskCost.high,
   }
 
-  const ending = endingStock(production)
   return {
-    currentStock: CURRENT_STOCK,
+    id: 'repair',
+    label: '维修保障',
+    currentStock: REPAIR_CURRENT_STOCK,
     production,
-    consumption: KNOWN_CONSUMPTION,
-    endingStock: ending,
-    status: statusFor(ending),
-    trend,
-    reasons,
+    consumption: REPAIR_KNOWN_CONSUMPTION,
+    endingStock,
+    status: statusFor(endingStock, REPAIR_TARGET, 0),
+    trend:
+      state.pumpStatus === 'failed'
+        ? '事件下调'
+        : repairOutput > BASELINE_REPAIR_OUTPUT
+          ? '上升'
+          : repairOutput < BASELINE_REPAIR_OUTPUT
+            ? '下调'
+            : state.pumpStatus === 'protected' || hasPreventiveMaintenance(state)
+              ? '风险收窄'
+              : '风险未消除',
+    reasons: [
+      state.pumpStatus === 'at-risk'
+        ? '设施：维修工坊正常；水泵风险会额外占用 0–2 保障。'
+        : state.pumpStatus === 'protected'
+          ? '设施：维修工坊正常；预防性检修把水泵额外消耗锁定为 1。'
+          : '设施：维修工坊正常；水泵停机已确定占用 4 维修保障。',
+      laborReason(allocation, 'repair'),
+      `物流备件支持 ${logisticsBonus >= 0 ? '+' : ''}${logisticsBonus}；${sharedLaborReason(allocation)}`,
+    ],
+    acceptedRisk: false,
+  }
+}
+
+export function calculateSupplyForecasts(state: SimulationState) {
+  return {
+    food: calculateFoodForecast(state),
+    repair: calculateRepairForecast(state),
   }
 }
 
