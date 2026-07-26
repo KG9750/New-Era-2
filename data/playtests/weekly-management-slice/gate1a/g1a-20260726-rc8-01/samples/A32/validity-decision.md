@@ -61,3 +61,18 @@
 - `Gate 1A=RUNNING_2_OF_7_VALID_A37_PENDING`
 - `Gate 1H=PENDING`
 - `Gate 2=LOCKED`
+
+## Post-seal aggregate adjudication
+
+`2026-07-26T18:52:21Z`，聚合审计者 `/root` 依据玩家测试协议 §8.1 复核 raw
+动作。机器原始候选计数保持 `1/0`；最终人工有效编辑为：
+
+- Week 1：`action-0001`，共 `1`；
+- Week 2：`action-0006`，共 `1`。
+
+`action-0006 / RESOLVE_LIN_HE_REQUEST` 应计为有效编辑，归入
+`REQUEST_ACTION_CANDIDATE_CLASSIFICATION` 的 request omission P1。A32
+逐字输出第 10 节还明确记录第二周页面切换后时钟短暂显示“周日 23:00”，
+归入 `WEEK_BOUNDARY_PHASE_AT_TICK_1002` 的 systematic prestart-label P2；
+该来源为 verbatim 补证，不改写原 `symptoms=[]`。历史字段、`2/7` 快照和原
+adjudicator 保留；`VALID` 不变。

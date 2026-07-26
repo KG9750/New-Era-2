@@ -84,6 +84,50 @@
       "undoActionIds": []
     }
   ],
+  "postSealAggregateAdjudication": {
+    "adjudicatedAtUtc": "2026-07-26T18:52:21Z",
+    "aggregateAuditor": "/root",
+    "basis": "docs/product-specs/weekly-management-slice-playtest-v0.1.md section 8.1",
+    "historicalFieldsAndSnapshotsPreserved": true,
+    "machineOriginalCandidateEditCounts": {
+      "week1": 1,
+      "week2": 0
+    },
+    "manualValidEdits": {
+      "week1": {
+        "actionIds": [
+          "action-0001"
+        ],
+        "count": 1
+      },
+      "week2": {
+        "actionIds": [
+          "action-0005"
+        ],
+        "count": 1
+      }
+    },
+    "requestActionClassification": {
+      "actionId": "action-0005",
+      "actionType": "RESOLVE_LIN_HE_REQUEST",
+      "qualifiesUnderSection8_1": true,
+      "reason": "Accepting the request changes the day-8 activity, produces visible supply and character consequences, and remains in the confirmed plan."
+    },
+    "clusterMembership": [
+      {
+        "clusterKey": "REQUEST_ACTION_CANDIDATE_CLASSIFICATION",
+        "findingKey": "REQUEST_ACTION_OMITTED_FROM_CANDIDATE_AND_EARLY_MANUAL_COUNTS",
+        "severity": "P1"
+      },
+      {
+        "clusterKey": "WEEK_BOUNDARY_PHASE_AT_TICK_1002",
+        "findingKey": "WEEK2_PRESTART_TIME_LABEL_TRANSITION",
+        "severity": "P2",
+        "source": "sample-record symptoms"
+      }
+    ],
+    "validityStatusUnchanged": "VALID"
+  },
   "agentReportedEvidence": {
     "initialObservation": "第一周最需要先补上周二 B2 的第二个水泵预防性检修块；若不处理，水泵停机风险会让粮食预测下探，从轻度缺口恶化为严重短缺。",
     "completionSignal": "PLAYTHROUGH_COMPLETE；保存、下载和清空完成并返回新会话入口。",

@@ -25,7 +25,7 @@ This file is the top-level context entrypoint for the project.
 - RC5 因无法保存中途产品阻断的三件套而撤回开跑许可：A09 固定为 `SUPERSEDED_RC_REVOKED_AFTER_SESSION` 并排除，A10–A15 未启动，#18–#24 已历史化。
 - RC6 因拒绝 `tick=2010 / isComplete=false` 的合法终局阻断而作废：A16–A22 未启动，#25–#31 已历史化，编号不复用。
 - RC7 因冻结 tar 的 UTC 配方不一致及随后出现的第二周化肥证据修复而预启动作废：A23–A29 未创建 Issue、未启动 player agent，编号不复用。
-- Gate 1A RC8 最终结论为 `AGENT_PROXY_FAIL`：A30 因并发 A30/M-C 身份污染而技术无效，A37 完成对 A30 的替补；A31–A37 共七个有效样本全部完成两周、导出和清空。流程与因果指标通过，但 Week 1 / Week 2 有效编辑中位数为 `2 / 0`，同时低于冻结目标 `3–5`，且超出 conditional 范围。A33、A34、A36、A37 四个有效独立样本还确认系统性 P2 `WEEK2_PRESTART_TIME_LABEL_TRANSITION`；完整报告见 RC8 cohort 的 `gate1a-final-report.md`。
+- Gate 1A RC8 最终结论为 `AGENT_PROXY_FAIL`：post-seal provenance 确认正式 A30 与 M-C 来自两个 agent，A30 capture 可归属，但同 host 重叠 `119,458 ms` 仍违反串行隔离合同，故 A30 保持技术无效，A37 完成替补；A31–A37 共七个有效样本全部完成两周、导出和清空。按协议 §8.1 补计七场人物请求动作后，Week 1 / Week 2 有效编辑数组为 `3,1,1,2,3,2,2` / `2,1,1,2,2,1,1`，中位数 `2 / 1`，仍同时低于目标 `3–5` 且超出 conditional 范围。聚合问题为 `P0=0 / P1=2 / P2=1`：`REQUEST_ACTION_CANDIDATE_CLASSIFICATION` 包含影响 A31–A37 的 request omission P1；`WEEK_BOUNDARY_PHASE_AT_TICK_1002` 包含影响 A31/A34/A35 的 week-attribution P1，以及影响 A32/A33/A34/A36/A37 的 systematic prestart-label P2。完整报告见 RC8 cohort 的 `gate1a-final-report.md`。
 - React + TypeScript + Vite 是 Gate 1 实施介质；Node `v24.18.0` 已在 `/opt/homebrew/opt/node@24/bin/` 验证并由 `.node-version` 固定，实施 shell 仍需优先使用该路径。
 - Gate 1 当前估算为 15–18 个净开发工作日；D0、里程碑代理试玩、正式 Gate 1A 运营和报告时间另计，Gate 1H 真人运营时间暂不排期。
 - Gate 2 仍为 `LOCKED`；只有 Gate 1H 获得真人 `PASS` 后才允许编写 Gate 2 规格，不提前实现主题、NPC、排名或豁免。

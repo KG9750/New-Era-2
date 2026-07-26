@@ -75,3 +75,19 @@ M-C 场在第二周使用化肥并接受第一周粮食缺口。两份 capture �
 3. M-C 只作为未授权并发污染证据隔离；
 4. A37 为首个替补；
 5. A31 前必须完成 host、浏览器页面和 capture inventory 的逐场隔离预检。
+
+## Post-seal provenance reconciliation
+
+`2026-07-26T18:52:21Z`，聚合审计者 `/root` 对共享协作记录完成 provenance
+对账：正式 A30 agent 是 `/root/gate1a_a30`；持续看到 `M-C` 的 agent 是另一个
+嵌套任务
+`/root/rc3_ui_audit/rc7_independent_freeze/rc8_independent_freeze/a30_player`。
+因此这是两个不同 agent 的并发运行，而不是同一 agent 内无法区分的 capture。
+
+- `A30 / 6e3bad8c…` 可归属于正式 A30 agent；
+- `M-C / 0809d5c5…` 可归属于另一个并发 agent；
+- 两场仍在同一 host 重叠 `119,458 ms`，违反冻结的逐场串行隔离合同；
+- A30 继续为 `INVALID_TECHNICAL_CONCURRENT_SESSION_CONTAMINATION`，A37
+  替补及七样本分母均不变。
+
+本段是 post-seal 补证；上文历史陈述、原 adjudicator 和原始文件均保留。

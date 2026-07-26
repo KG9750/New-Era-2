@@ -73,3 +73,16 @@ player agent 和一个游戏页面、场前记录 capture inventory、创建后�
 - `Gate 1A=RUNNING_0_OF_7_VALID_A37_PENDING`
 - `Gate 1H=PENDING`
 - `Gate 2=LOCKED`
+
+## Post-seal provenance reconciliation
+
+`2026-07-26T18:52:21Z`，聚合审计者 `/root` 补充确认：正式 A30 agent
+`/root/gate1a_a30` 与持续看到 `M-C` 的嵌套 agent
+`/root/rc3_ui_audit/rc7_independent_freeze/rc8_independent_freeze/a30_player`
+是两个不同 agent。`A30 / 6e3bad8c…` 可归属于正式 A30 agent，`M-C /
+0809d5c5…` 可归属于另一个并发 agent。
+
+这项补证只修正 provenance，不推翻技术无效结论：两个应用会话在同一 host
+重叠 `119,458 ms`，仍违反冻结的逐场串行隔离合同。因此 A30 继续保持
+`INVALID_TECHNICAL_CONCURRENT_SESSION_CONTAMINATION`、排除于七样本分母，
+A37 替补关系不变。上文历史文本、旧裁定依据和原 adjudicator 均原样保留。

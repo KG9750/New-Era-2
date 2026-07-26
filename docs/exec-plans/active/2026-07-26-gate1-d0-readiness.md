@@ -16,11 +16,19 @@ RC8 冻结通过后已创建 A30–A36。A30 因同一 host 出现时间重叠�
 `fork_turns=none`、玩家包、首次观察、同页冻结续存、字节一致下载、清空和
 访谈 V4，且机器时间不与 A30/M-C 重叠，独立运营负责人最终修订为有效。
 随后 A32–A37 在单一 host 与各自全新 agent 上下文中完成保存、逐字节下载
-核验、清空和访谈 V4，均裁定为有效；A37 完成对 A30 的替补。A31–A37 共七个
-有效样本全部完成流程与因果复述，但 Week 1 / Week 2 有效编辑中位数为 `2 / 0`，
-同时低于冻结目标 `3–5`，最终裁定 `AGENT_PROXY_FAIL`。A33、A34、A36、A37
-四个有效独立样本还确认系统性 P2 `WEEK2_PRESTART_TIME_LABEL_TRANSITION`；
-它未造成阻断、误判或错误操作，不构成独立 P1。
+核验、清空和访谈 V4，均裁定为有效；A37 完成对 A30 的替补。Post-seal
+provenance 确认正式 A30 与 M-C 是两个 agent，A30 capture 可归属，但同 host
+重叠 `119,458 ms` 仍违反串行隔离合同，技术无效结论不变。A31–A37 共七个
+有效样本全部完成流程与因果复述；按协议 §8.1 补计人物请求动作后，Week 1 /
+Week 2 有效编辑数组为 `3,1,1,2,3,2,2` / `2,1,1,2,2,1,1`，中位数
+`2 / 1`，仍同时低于冻结目标 `3–5`，最终裁定 `AGENT_PROXY_FAIL`。
+
+Post-seal 聚合问题为 `P0=0 / P1=2 / P2=1`，归入两个 root cluster：
+`REQUEST_ACTION_CANDIDATE_CLASSIFICATION` 的 request omission P1 影响
+A31–A37；`WEEK_BOUNDARY_PHASE_AT_TICK_1002` 的 week-attribution P1
+影响 A31/A34/A35，其 systematic prestart-label P2 影响
+A32/A33/A34/A36/A37。A32 来源为 verbatim，其余 prestart occurrence 来自
+结构化症状。
 
 - Gate 1A：`AGENT_PROXY_FAIL`
 - Gate 1H：`PENDING`
@@ -62,7 +70,7 @@ RC8 冻结通过后已创建 A30–A36。A30 因同一 host 出现时间重叠�
 ## 3. 后续边界
 
 1. RC8 不得作为通过候选交给 Gate 1H，也不得解锁 Gate 2；
-2. 当前失败根因是两周有效编辑密度低于冻结目标，不是流程无法完成或因果无法理解；
+2. 当前失败根因仍是两周有效编辑密度低于冻结目标，不是流程无法完成或因果无法理解；post-seal 计数修正没有改变失败结论；
 3. 是否修改周计划交互、编辑定义或数值，需要项目 Owner 另行授权，测试运营负责人不直接改 RC；
 4. 任何影响决策的修复都必须形成新 RC、新 cohort，并从头取得七个全新独立样本；
 5. #8 只在项目 Owner 明确恢复 Gate 1H 后继续；Gate 1A 结论不得替代真人验证。

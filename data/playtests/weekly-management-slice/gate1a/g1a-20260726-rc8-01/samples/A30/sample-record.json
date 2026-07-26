@@ -157,6 +157,20 @@
       "supersededReason": "Later technical audit established two overlapping sessions and contradicted the delegated agent's A30 identity attribution."
     }
   ],
+  "postSealProvenanceReconciliation": {
+    "reconciledAtUtc": "2026-07-26T18:52:21Z",
+    "aggregateAuditor": "/root",
+    "historicalFieldsAndOriginalAdjudicatorPreserved": true,
+    "formalA30AgentTask": "/root/gate1a_a30",
+    "concurrentMCAgentTask": "/root/rc3_ui_audit/rc7_independent_freeze/rc8_independent_freeze/a30_player",
+    "twoDistinctAgentsEstablished": true,
+    "formalA30CaptureAttributable": true,
+    "formalA30ApplicationSessionId": "6e3bad8c-234f-4171-a843-8bd815ea7e6c",
+    "concurrentMCApplicationSessionId": "0809d5c5-8f73-48ca-a25e-0cb73d8dc625",
+    "overlapMs": 119458,
+    "validityStatusUnchanged": "INVALID_TECHNICAL_CONCURRENT_SESSION_CONTAMINATION",
+    "reason": "Post-seal provenance establishes two separate agents and attributes the A30 capture to the formal A30 agent. The 119458 ms same-host overlap still violates the frozen serial isolation contract, so A30 remains technically invalid and excluded."
+  },
   "validityDecision": {
     "status": "INVALID_TECHNICAL",
     "reasonCode": "INVALID_TECHNICAL_CONCURRENT_SESSION_CONTAMINATION",

@@ -63,3 +63,17 @@ A35 未报告 `WEEK2_PRESTART_TIME_LABEL_TRANSITION`，不增加该聚类的独�
 - `Gate 1A=RUNNING_5_OF_7_VALID_A37_PENDING`
 - `Gate 1H=PENDING`
 - `Gate 2=LOCKED`
+
+## Post-seal aggregate adjudication
+
+`2026-07-26T18:52:21Z`，聚合审计者 `/root` 依据玩家测试协议 §8.1 复核 raw
+动作。机器原始候选计数保持 `4/0`；最终人工有效编辑为：
+
+- Week 1：`action-0001`、`action-0002`、`action-0003`，共 `3`；
+- Week 2：`action-0007`、`action-0008`，共 `2`。
+
+`action-0007 / RESOLVE_LIN_HE_REQUEST` 应计为有效编辑，归入
+`REQUEST_ACTION_CANDIDATE_CLASSIFICATION` 的 request omission P1；
+`action-0008` 的错周归属归入 `WEEK_BOUNDARY_PHASE_AT_TICK_1002` 的
+week-attribution P1。历史字段、`5/7` 快照和原 adjudicator 保留；
+`VALID` 不变。

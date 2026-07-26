@@ -60,3 +60,27 @@
 - `Gate 1A=SEALING_7_OF_7_VALID_PENDING_AGGREGATION`
 - `Gate 1H=PENDING`
 - `Gate 2=LOCKED`
+
+## Post-seal attribution addendum
+
+`2026-07-26T18:52:21Z`，聚合审计者 `/root` 补齐 A37 provenance：
+`fork_turns=none`，child session
+`019f9fa3-017a-7d62-a9d4-1bda99eb89ef`；首次观察
+`2026-07-26T18:16:13.603Z`，首次查看
+`2026-07-26T18:16:27.575Z`，首次修改
+`2026-07-26T18:16:39.912Z`。同一 agent 随后完成保存、浏览器下载、清空和
+V4。历史 `agentSessionId=null` 字段原样保留。
+
+## Post-seal aggregate adjudication
+
+同一时点，依据玩家测试协议 §8.1 复核 raw 动作。机器原始候选计数保持
+`2/0`；最终人工有效编辑为：
+
+- Week 1：`action-0001`、`action-0002`，共 `2`；
+- Week 2：`action-0006`，共 `1`。
+
+`action-0006 / RESOLVE_LIN_HE_REQUEST` 应计为有效编辑，归入
+`REQUEST_ACTION_CANDIDATE_CLASSIFICATION` 的 request omission P1；既有
+prestart 时钟症状归入 `WEEK_BOUNDARY_PHASE_AT_TICK_1002` 的 systematic
+prestart-label P2。历史字段、`7/7` 快照和原 adjudicator 保留；`VALID`
+不变。

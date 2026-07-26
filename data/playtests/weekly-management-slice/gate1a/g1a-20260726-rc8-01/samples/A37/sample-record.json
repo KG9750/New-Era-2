@@ -23,6 +23,17 @@
     "playerPacketReleasedBeforePlay": true,
     "postSessionInterviewReleasedAfterPlayDownloadAndClear": true
   },
+  "postSealAttributionAddendum": {
+    "addedAtUtc": "2026-07-26T18:52:21Z",
+    "aggregateAuditor": "/root",
+    "freshContextMechanism": "fork_turns=none",
+    "childSessionId": "019f9fa3-017a-7d62-a9d4-1bda99eb89ef",
+    "firstObservationAtUtc": "2026-07-26T18:16:13.603Z",
+    "firstViewAtUtc": "2026-07-26T18:16:27.575Z",
+    "firstMutationAtUtc": "2026-07-26T18:16:39.912Z",
+    "sameAgentCompletedSaveDownloadClearAndV4": true,
+    "historicalAgentSessionIdNullPreserved": true
+  },
   "releaseCandidate": {
     "buildId": "g1-rc-20260726.8",
     "gitSha": "03973fcfc0c244555e7e4a4c623eec3fb8b8e032",
@@ -93,6 +104,51 @@
       "undoActionIds": []
     }
   ],
+  "postSealAggregateAdjudication": {
+    "adjudicatedAtUtc": "2026-07-26T18:52:21Z",
+    "aggregateAuditor": "/root",
+    "basis": "docs/product-specs/weekly-management-slice-playtest-v0.1.md section 8.1",
+    "historicalFieldsAndSnapshotsPreserved": true,
+    "machineOriginalCandidateEditCounts": {
+      "week1": 2,
+      "week2": 0
+    },
+    "manualValidEdits": {
+      "week1": {
+        "actionIds": [
+          "action-0001",
+          "action-0002"
+        ],
+        "count": 2
+      },
+      "week2": {
+        "actionIds": [
+          "action-0006"
+        ],
+        "count": 1
+      }
+    },
+    "requestActionClassification": {
+      "actionId": "action-0006",
+      "actionType": "RESOLVE_LIN_HE_REQUEST",
+      "qualifiesUnderSection8_1": true,
+      "reason": "Accepting the request changes the day-8 activity, produces visible supply and character consequences, and remains in the confirmed plan."
+    },
+    "clusterMembership": [
+      {
+        "clusterKey": "REQUEST_ACTION_CANDIDATE_CLASSIFICATION",
+        "findingKey": "REQUEST_ACTION_OMITTED_FROM_CANDIDATE_AND_EARLY_MANUAL_COUNTS",
+        "severity": "P1"
+      },
+      {
+        "clusterKey": "WEEK_BOUNDARY_PHASE_AT_TICK_1002",
+        "findingKey": "WEEK2_PRESTART_TIME_LABEL_TRANSITION",
+        "severity": "P2",
+        "source": "sample-record symptoms"
+      }
+    ],
+    "validityStatusUnchanged": "VALID"
+  },
   "agentReportedEvidence": {
     "initialObservation": "这周最需要补上水泵的第 2 个预防性维修块；如果周三前不处理，水泵停机风险会把原本轻度的粮食缺口下探为严重短缺。",
     "completionSignal": "PLAYTHROUGH_COMPLETE；保存、下载和清空完成并返回新会话入口。",

@@ -85,3 +85,18 @@ A31 的机器区间为 `2026-07-26T16:12:09.332Z–16:19:00.884Z`，A30/M-C
 - `Gate 1A=IN_PROGRESS_1_OF_7_VALID_A37_PENDING`
 - `Gate 1H=PENDING`
 - `Gate 2=LOCKED`
+
+## Post-seal aggregate adjudication
+
+`2026-07-26T18:52:21Z`，聚合审计者 `/root` 依据玩家测试协议 §8.1 复核 raw
+动作。机器原始候选计数保持 `4/0`；最终人工有效编辑为：
+
+- Week 1：`action-0001`、`action-0002`、`action-0003`，共 `3`；
+- Week 2：`action-0007`、`action-0008`，共 `2`。
+
+`action-0007 / RESOLVE_LIN_HE_REQUEST` 改变第 8 日人物活动，产生可见供需与
+人物后果并进入确认计划，故应计为有效编辑。聚合归入
+`REQUEST_ACTION_CANDIDATE_CLASSIFICATION` 的 request omission P1；同时
+`action-0008` 的错周归属归入 `WEEK_BOUNDARY_PHASE_AT_TICK_1002` 的
+week-attribution P1。历史字段、`1/7` 快照和原 adjudicator 保留；
+`VALID` 不变。
