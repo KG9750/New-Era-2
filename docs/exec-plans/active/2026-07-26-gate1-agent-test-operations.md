@@ -4,7 +4,7 @@
 |---|---|
 | 项目 | Project-004-New Era 2 |
 | 日期 | 2026-07-26 |
-| 状态 | Gate 1A RC6 等待独立冻结复核；Gate 1H `PENDING` |
+| 状态 | Gate 1A RC7 等待独立冻结复核；Gate 1H `PENDING` |
 | 适用范围 | Gate 1 React Web 两周经营灰盒 |
 | 运营负责人 | 当前根 agent `/root` |
 | 上位计划 | `2026-07-26-react-web-gate-1-2-development-plan.md` |
@@ -84,20 +84,21 @@
 
 RC4 的 A01 在暴露证据采集风险后已永久技术无效；RC4 整体作废，A02–A08
 均不迁入新 cohort。RC5 的 A09 在开跑许可撤回后固定为
-`SUPERSEDED_RC_REVOKED_AFTER_SESSION`，A10–A15 未启动；A01–A15 均不迁入
-新 cohort。RC6 的主样本固定为：
+`SUPERSEDED_RC_REVOKED_AFTER_SESSION`，A10–A15 未启动。RC6 的 A16–A22
+只有 Issue 席位、未启动 player agent，因终局 blocked capture P1 整体历史化。
+A01–A22 均不迁入新 cohort。RC7 的主样本固定为：
 
 | 批次 | 样本 | 执行顺序 |
 |---|---|---|
-| Batch 1 | A16、A17、A18 | RC 冻结后首先执行 |
-| Batch 2 | A19、A20、A21 | Batch 1 原始记录封存后执行 |
-| Batch 3 | A22 | Batch 2 原始记录封存后执行 |
+| Batch 1 | A23、A24、A25 | RC 冻结后首先执行 |
+| Batch 2 | A26、A27、A28 | Batch 1 原始记录封存后执行 |
+| Batch 3 | A29 | Batch 2 原始记录封存后执行 |
 
 分批只为控制执行和证据核验，不允许在批次之间修改 RC、场景、玩家包、主持规则或结论阈值。后续批次不得收到前序批次的摘要、缺陷、策略、动作轨迹或结论。
 
 ## 4. RC cohort 冻结
 
-启动 A16 前，测试运营负责人必须保存不可变的 cohort manifest。A16–A22 必须逐字段一致：
+启动 A23 前，测试运营负责人必须保存不可变的 cohort manifest。A23–A29 必须逐字段一致：
 
 | 冻结字段 | 要求 |
 |---|---|
@@ -118,7 +119,7 @@ RC4 的 A01 在暴露证据采集风险后已永久技术无效；RC4 整体作�
 
 ## 5. 干净上下文、会话隔离与只读纪律
 
-每个 A16–A22 必须满足：
+每个 A23–A29 必须满足：
 
 1. 从空白 agent 对话启动，不继承实施、设计、里程碑试玩或其他样本的对话历史；
 2. 只收到匿名编号、统一中性开场、玩家任务、可操作 RC 入口和统一结束访谈问题；
@@ -146,8 +147,9 @@ RC4 的 A01 在暴露证据采集风险后已永久技术无效；RC4 整体作�
 7. 完整两周时保存 `captureKind=complete` 的匿名 JSON，并核验 tick 2010、
    服务端 raw、SHA sidecar、canonical receipt 与浏览器下载；
 8. 原型自身可复现阻断时，由 agent 输入 1–240 字非空原因并保存
-   `captureKind=blocked`，核验 `blockedAtTick`、`isComplete=false`、服务端
-   raw、SHA sidecar、canonical receipt 与浏览器下载；
+   `captureKind=blocked`，核验 `54<=blockedAtTick=finalTick<=2010`、
+   `isComplete=false`、服务端 raw、SHA sidecar、canonical receipt 与浏览器
+   下载；该路径必须包含 tick 2010 的终局状态转换故障；
 9. 只有保存校验成功后才执行“结束并清空会话”；
 10. 清空后才向同一 agent 发放 cohort 冻结的统一结束访谈；
 11. 完成有效性裁定后封存，才开始该批次的下一场。
@@ -253,9 +255,9 @@ agent 玩家不能看到浏览器日志的评分汇总，也不能在结束后�
 
 ### 8.3 替补
 
-- A16–A22 是 RC6 冻结的主样本编号；
+- A23–A29 是 RC7 冻结的主样本编号；
 - 无效样本保留完整原始记录，编号永不复用；
-- 替补按 `A23`、`A24`……连续递增，并使用同一 cohort 指纹和全新上下文；
+- 替补按 `A30`、`A31`……连续递增，并使用同一 cohort 指纹和全新上下文；
 - 不得根据前序结果挑选模型、提示方式或替补顺序；
 - Gate 1A 只在取得 7 个有效样本后计算结论。
 

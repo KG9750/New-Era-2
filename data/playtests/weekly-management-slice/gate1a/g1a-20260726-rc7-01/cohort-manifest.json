@@ -1,0 +1,282 @@
+{
+  "schemaVersion": "gate1a-cohort-manifest-v3",
+  "cohortId": "g1a-20260726-rc7-01",
+  "status": "FROZEN_PENDING_INDEPENDENT_REVIEW",
+  "frozenAtUtc": "2026-07-26T14:38:45Z",
+  "gate": "Gate 1A",
+  "operator": "/root",
+  "operatorDisplayName": "Codex root agent",
+  "supersedes": {
+    "cohortId": "g1a-20260726-rc6-01",
+    "reason": "RC6 rejected valid terminal product-block evidence at tick 2010 when isComplete remained false, including a two-recap completion-flag transition failure. RC7 preserves these states without relaxing the completed-session contract.",
+    "historyDisposition": {
+      "A16-A22": "ISSUES_ONLY_NOT_STARTED",
+      "issues": "#25-#31 CLOSED+wontfix",
+      "priorNumbersReusable": false
+    }
+  },
+  "releaseCandidate": {
+    "ref": "refs/heads/codex/gate1-rc-20260726.7",
+    "buildId": "g1-rc-20260726.7",
+    "gitSha": "d8bb0728b61eb6a189a5d4726177761e92ca89f7",
+    "gitTree": "60f28b748f05a9ffebe2a53831c551b53c35c2f3",
+    "sourceTreeManifestHash": "bafa4f3b4974bd4a470a8f8fab3cd568b1827f64dfc507ba2dd58291264622bb",
+    "sourceTreeManifestHashAlgorithm": "sha256-git-blob-path-manifest-v1",
+    "sourceTreeManifestScope": "tracked prototype/ files sorted by path; each line is <path><TAB><git-blob-object-id><LF>, including final LF",
+    "sourceTreeFileCount": 39,
+    "artifactHash": "1c608ae5c6de53557d8fae1d2250236241d645a195d92a1e272735b33882450f",
+    "artifactHashAlgorithm": "sha256-canonical-file-manifest-v1",
+    "artifactManifest": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc7-01/rc-dist/artifact-manifest.json",
+      "sha256": "22087fbd85cf18a3174f2112379fa720038403f41891decb592fcdde5de4014d"
+    },
+    "rcBuild": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc7-01/rc-dist/rc-build.json",
+      "sha256": "a6d932b299251e25852bc91459c19a9ef89226b28d5700a86caf34858c59c7e9"
+    },
+    "captureHost": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc7-01/rc-dist/playtest-host.mjs",
+      "sha256": "84859a4840b54580162b709d52beacd5fa550ec318c6830d1a8cdb6df1b97f05"
+    },
+    "deterministicArchive": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc7-01/rc-dist.tar",
+      "sha256": "490dbaba9d17e1fd2c76b064c4726f37ac34852ea81a64b6deba759d3541dbf2",
+      "format": "ustar",
+      "determinism": "sorted paths; mtime 2000-01-01T00:00:00Z; uid/gid 0; root/root; no xattrs or macOS metadata"
+    },
+    "initialStateHash": "fnv1a32-33a16fbf",
+    "initialStateHashAlgorithm": "fnv1a32-stable-json-v1",
+    "scenarioId": "gate1-two-week-management",
+    "scenarioVersion": "0.4.0",
+    "fixedSeed": 104729
+  },
+  "protocol": {
+    "protocolVersion": "gate1a-agent-proxy-v5",
+    "playerPacketVersion": "gate1a-neutral-player-packet-v5",
+    "playerPacket": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc7-01/player-packet.md",
+      "sha256": "abf79552d159269f8cc7ad0c80ae699dd65d961b9be794aba9d833e00264f9f1"
+    },
+    "postSessionInterviewVersion": "gate1a-post-session-interview-v3",
+    "postSessionInterview": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc7-01/post-session-interview.md",
+      "sha256": "fdb32584327efe2872a33bb20cee920eb15e6a364925d3dc9dce4719632573aa"
+    },
+    "interviewReleaseCondition": "Only after complete or blocked capture, browser download and session clear have all been verified.",
+    "completeCaptureContract": {
+      "captureKind": "complete",
+      "finalTick": 2010,
+      "isComplete": true,
+      "completedWeekCount": 2,
+      "recapCount": 2,
+      "terminalMarker": "export-created",
+      "blockedMarkerAllowed": false
+    },
+    "blockedCaptureContract": {
+      "captureKind": "blocked",
+      "blockedAtTick": "integer between 54 and 2010 inclusive and equal to finalTick",
+      "isComplete": false,
+      "completedWeekCount": "integer between 0 and 2 inclusive",
+      "recapContract": "recapCount equals completedWeekCount; recap array uses contiguous weekIndex values from 0",
+      "reason": "trimmed non-empty string, 1-240 characters",
+      "terminalCompletionFlagFailureAllowed": true,
+      "terminalMarker": "blocked-capture-created",
+      "completeMarkerAllowed": false
+    }
+  },
+  "environment": {
+    "entryUrl": "http://127.0.0.1:4196/",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "inputMode": "Chrome UI mouse and keyboard only",
+    "locale": "zh-CN",
+    "timezone": "Asia/Shanghai",
+    "captureHost": {
+      "workingDirectory": ".",
+      "command": "node data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc7-01/rc-dist/playtest-host.mjs --host 127.0.0.1 --port 4196 --capture-dir data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc7-01/captures",
+      "captureDirectory": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc7-01/captures",
+      "explicitCaptureDirectoryRequired": true,
+      "loopbackOnly": true
+    }
+  },
+  "samplePlan": {
+    "primarySamples": [
+      "A23",
+      "A24",
+      "A25",
+      "A26",
+      "A27",
+      "A28",
+      "A29"
+    ],
+    "batches": [
+      {
+        "batchId": "Batch 1",
+        "samples": [
+          "A23",
+          "A24",
+          "A25"
+        ]
+      },
+      {
+        "batchId": "Batch 2",
+        "samples": [
+          "A26",
+          "A27",
+          "A28"
+        ]
+      },
+      {
+        "batchId": "Batch 3",
+        "samples": [
+          "A29"
+        ]
+      }
+    ],
+    "replacementStartsAt": "A30",
+    "requiredValidSamples": 7,
+    "batchIsolationRequired": true,
+    "crossSampleCommunicationAllowed": false,
+    "priorNumbersExcluded": [
+      "A01",
+      "A02",
+      "A03",
+      "A04",
+      "A05",
+      "A06",
+      "A07",
+      "A08",
+      "A09",
+      "A10",
+      "A11",
+      "A12",
+      "A13",
+      "A14",
+      "A15",
+      "A16",
+      "A17",
+      "A18",
+      "A19",
+      "A20",
+      "A21",
+      "A22"
+    ]
+  },
+  "verification": {
+    "cleanClones": [
+      "/tmp/new-era-g1a-rc7-a.l8u8qz/repo",
+      "/tmp/new-era-g1a-rc7-b.xwoI0D/repo"
+    ],
+    "npmCi": {
+      "status": "PASS",
+      "vulnerabilities": 0
+    },
+    "toolchain": {
+      "node": "24.18.0",
+      "npm": "11.16.0",
+      "vite": "8.1.5",
+      "viteReactPlugin": "6.0.4",
+      "vitest": "4.1.10",
+      "viteNode": "6.0.0",
+      "playwright": "1.62.0"
+    },
+    "lint": "PASS",
+    "vitest": {
+      "status": "PASS",
+      "files": 7,
+      "tests": 47
+    },
+    "hostSourceSyntax": "PASS",
+    "hostDistSyntax": "PASS",
+    "rcVerify": "PASS",
+    "frozenDistMatchesBothCleanClones": true,
+    "deterministicArchiveMatchesBothCleanClones": true,
+    "chromiumE2E": {
+      "status": "PASS",
+      "projects": [
+        "1440x900",
+        "1280x720"
+      ],
+      "passed": 22,
+      "total": 22
+    },
+    "codeReview": {
+      "decision": "CODE_REVIEW=PASS",
+      "p0": 0,
+      "p1": 0,
+      "p2": 0,
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc7-01/evidence/rc7-code-review.md",
+      "sha256": "076655541cfd9b935547121bd7d20e7549c0cdc0095adb897b00794170c4b328"
+    },
+    "freezeAudit": {
+      "status": "PASS_PENDING_INDEPENDENT_DECISION",
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc7-01/evidence/rc-freeze-audit.md",
+      "sha256": "55dd2bd5129e78bef7600cff3f99c97a4eedadb2bd3c7644473652b0bdf02324"
+    },
+    "noGate2Code": {
+      "value": true,
+      "evidence": "RC6-to-RC7 prototype changes are limited to capture-host terminal blocked-state validation and public endpoint regression coverage."
+    }
+  },
+  "authorityReferences": [
+    {
+      "path": "docs/design-docs/weekly-plan-production-forecast-slice-v0.1.md",
+      "sha256": "12ca308783dc2f2b878600569b0e7fc5498a09c89dbc50c7749b8bc177d166ef"
+    },
+    {
+      "path": "docs/exec-plans/active/2026-07-26-gate1-agent-test-operations.md",
+      "sha256": "c8358a81120b70e14cd18ba7ad0512cdd0e3bdcdf9797401b08800f6c2ac9211"
+    },
+    {
+      "path": "docs/exec-plans/active/2026-07-26-react-web-gate-1-2-development-plan.md",
+      "sha256": "a48c20485dd47b70821c0e45812129306f0b0250df9e4e301f446c2a53ce08ce"
+    },
+    {
+      "path": "docs/exec-plans/active/2026-07-26-v0.4-prototype-validation-plan.md",
+      "sha256": "2fa72e8296356b6d6fbaf76a2e0e85446d479856b8f79b748309fc2f329e1a72"
+    },
+    {
+      "path": "docs/product-specs/weekly-management-slice-playtest-v0.1.md",
+      "sha256": "c84ee837b8486550e2ba67fe008c3efec3682957e286f83387df967705d52726"
+    },
+    {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc6-01/SUPERSEDED.md",
+      "sha256": "f6978169bf6a4309af208e744604189567f083fcb9683a10c33735f8ba6443dd"
+    },
+    {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc7-01/player-packet.md",
+      "sha256": "abf79552d159269f8cc7ad0c80ae699dd65d961b9be794aba9d833e00264f9f1"
+    },
+    {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc7-01/post-session-interview.md",
+      "sha256": "fdb32584327efe2872a33bb20cee920eb15e6a364925d3dc9dce4719632573aa"
+    }
+  ],
+  "launchGate": {
+    "independentFreezeReviewRequired": true,
+    "requiredDecision": "RC_FREEZE=YES",
+    "formalSamplesStarted": false,
+    "issuesMayBeCreatedBeforeFreezePass": false
+  },
+  "trackLocks": {
+    "gate1A": "FROZEN_PENDING_INDEPENDENT_REVIEW",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED",
+    "noGate2Code": true
+  },
+  "excludedFromFormalSamples": [
+    "M-A",
+    "M-B",
+    "M-C",
+    "TECH-A97",
+    "TECH-A98",
+    "TECH-A99",
+    "TECH-P00",
+    "TECH-P98",
+    "RC4:A01",
+    "RC5:A09",
+    "RC6:A16-A22"
+  ]
+}
