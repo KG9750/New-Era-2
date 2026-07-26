@@ -20,6 +20,7 @@ This file is the top-level context entrypoint for the project.
 - Gate 1 两周 RC4 已固定为 `refs/heads/codex/gate1-rc-20260726.4`，指向 Vite 8 提交 `a769877871f232b3722c02a184ccbc3426950887`；cohort `g1a-20260726-rc4-01` 使用两阶段协议，manifest 与 detached archive 已冻结，并取得独立复核 `RC_FREEZE=YES`。
 - `g1a-20260726-rc2-01` 因玩家包诱导风险被否决；rc2-02 因 Vite 7 基线偏差被替代；rc3-01 因独立审查发现两项状态一致性 P1 被替代。三者均未产生正式样本。
 - #2–#7 与 `M-A`–`M-C` 已完成；A01–A07 现可按 `3 + 3 + 1`、逐场封存和隔离纪律实例化。
+- Gate 1A 已 `RUNNING`：A01 完成两周、导出回执和清空，但浏览器控制层未保留匿名 JSON，按冻结规则判为技术无效并永久保留；替补 A08 为 #17。A02 或 A08 启动前必须先完成不计入正式分母的下载捕获技术验证。
 - React + TypeScript + Vite 是 Gate 1 实施介质；Node `v24.18.0` 已在 `/opt/homebrew/opt/node@24/bin/` 验证并由 `.node-version` 固定，实施 shell 仍需优先使用该路径。
 - Gate 1 当前估算为 15–18 个净开发工作日；D0、里程碑代理试玩、正式 Gate 1A 运营和报告时间另计，Gate 1H 真人运营时间暂不排期。
 - Gate 2 仍为 `LOCKED`；只有 Gate 1H 获得真人 `PASS` 后才允许编写 Gate 2 规格，不提前实现主题、NPC、排名或豁免。

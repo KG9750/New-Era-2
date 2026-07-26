@@ -1,0 +1,150 @@
+{
+  "schemaVersion": "gate1a-sample-record-v1",
+  "sampleId": "A01",
+  "cohortId": "g1a-20260726-rc4-01",
+  "sampleKind": "primary",
+  "batchId": "Batch 1",
+  "issue": 10,
+  "replacement": {
+    "sampleId": "A08",
+    "issue": 17
+  },
+  "operator": "/root",
+  "sealedAtUtc": "2026-07-26T10:26:33Z",
+  "identityAndIsolation": {
+    "agentTask": "/root/gate1a_a01",
+    "agentSessionId": null,
+    "agentSessionIdReason": "The collaboration control plane exposed the task path but no separate agent session identifier.",
+    "freshContextAttestation": true,
+    "freshContextMechanism": "fork_turns=none",
+    "contextContaminationDetected": false,
+    "priorPrototypeExposure": false,
+    "readOnlyAttestation": true,
+    "playerPacketReleasedBeforePlay": true,
+    "postSessionInterviewReleasedAfterPlayDownloadAndClear": true
+  },
+  "releaseCandidate": {
+    "buildId": "g1-rc-20260726.4",
+    "gitSha": "a769877871f232b3722c02a184ccbc3426950887",
+    "artifactHash": "0c84ce60f0fd3305a90fac23fcdfbd47cd67b16a6a0b2b72751da11de6cb6b58",
+    "scenarioId": "gate1-two-week-management",
+    "scenarioVersion": "0.4.0",
+    "fixedSeed": 104729,
+    "initialStateHash": "fnv1a32-33a16fbf",
+    "protocolVersion": "gate1a-agent-ops-v2-two-stage",
+    "playerPacketHash": "a77b475be19f8d0916bc91fd6d8177a01b8a6651a8e91509880228cd00b324ff",
+    "viewport": "1440x900",
+    "inputMode": "Chrome agent UI control",
+    "browserOrHarnessVersion": null,
+    "browserOrHarnessVersionReason": "The Chrome agent control plane did not expose a version value."
+  },
+  "applicationSession": {
+    "sessionId": "fe9b19cd-3d44-4dd8-b234-920203a8165d",
+    "machineStartedAt": null,
+    "machineEndedAt": null,
+    "machineElapsedMs": null,
+    "timingReason": "No retained browser export or independent machine timestamp source was available.",
+    "week1RawDurationMs": null,
+    "week2RawDurationMs": null,
+    "technicalInterruptionMs": null,
+    "finalTick": 2010,
+    "finalTickEvidence": "Agent observed the UI export receipt at tick 2010.",
+    "twoWeeksCompleted": true,
+    "exportTriggered": true,
+    "exportReceiptObserved": "已导出 tick 2010 的匿名记录。",
+    "clearCompleted": true,
+    "clearEvidence": "Agent reported return to the 开始匿名新会话 entry and the in-memory clear notice."
+  },
+  "machineEvidence": {
+    "exportFilePath": null,
+    "exportFileSha256": null,
+    "exportFileSizeBytes": null,
+    "expectedFileName": "g1-rc-20260726.4-A01-fe9b19cd-3d44-4dd8-b234-920203a8165d.json",
+    "searchesPerformed": [
+      "/Users/leo/Downloads top level exact A01 build pattern",
+      "/tmp exact expected filename",
+      "project workspace exact expected filename",
+      "Chrome History exact expected filename",
+      "Spotlight exact expected filename"
+    ],
+    "searchResult": "NOT_FOUND",
+    "actions": null,
+    "domainEvents": null,
+    "telemetry": null,
+    "week1CandidateEditCount": null,
+    "week2CandidateEditCount": null,
+    "machineEvidenceReason": "Chrome UI showed the export receipt, but the browser control plane did not retain or expose the downloaded JSON. Action envelopes, event logs, telemetry, durations and candidate-edit counts therefore cannot be independently verified."
+  },
+  "agentReportedEvidence": {
+    "initialObservation": "这周最需要先补上水泵第 2 个预防性维修块；如果周三前不处理，水泵停机会让粮食预测从轻度缺口下探到严重短缺。",
+    "completionSignal": "PLAYTHROUGH_COMPLETE；两周：已完成；下载：已完成并看到“已导出 tick 2010 的匿名记录”回执；清空：已完成并回到“开始匿名新会话”入口。",
+    "reportedWeek1Decisions": [
+      "补足第 2 个水泵预防性维修块",
+      "使用唯一一份化肥",
+      "保留北侧绕行，不开启南侧短通路"
+    ],
+    "reportedWeek2Decisions": [
+      "接受林禾周二 B1 学习请求",
+      "不完整检查或重排全部日程",
+      "继续保留北侧绕行"
+    ],
+    "predictionExplanationProvided": true,
+    "personAndDecisionImpactProvided": true,
+    "mapEnteredDecision": true,
+    "mapActionTaken": false,
+    "week2FullInspection": false,
+    "week2FullReplan": false,
+    "verbatimOutputPath": "samples/A01/agent-verbatim-output.md"
+  },
+  "hostPrompts": [
+    {
+      "stage": "before-initial-observation",
+      "kind": "neutral-technical-status-check",
+      "text": "中性技术状态检查：如果浏览器/工具无法启动或原型入口不可访问，请按玩家包回报 PLAYTHROUGH_BLOCKED 与最后可见状态；若工具正常，请继续原任务，无需回复本检查。本消息不包含任何策略提示。",
+      "changedCoreTask": false,
+      "strategyLeak": false
+    }
+  ],
+  "technicalInterruptions": [
+    {
+      "stage": "initial-session-creation",
+      "description": "Chrome automation timed out and reset its control handle. After reopening the same entry, the app still showed a new-session page; A01 re-entered the same identifier and created a fixed initial-state session."
+    },
+    {
+      "stage": "initial-page-render",
+      "description": "The sample-id input locator timed out before the page finished rendering; the agent continued after the visible page became ready."
+    },
+    {
+      "stage": "export-retention",
+      "description": "The UI displayed an export receipt, but no downloaded JSON was retained or exposed to the operator."
+    }
+  ],
+  "symptoms": [
+    {
+      "id": "A01-SYM-01",
+      "description": "In week 2 the agent saw fertilizer marked as used and inventory 0 / 1 while the food forecast explanation still included 化肥 +6; current inventory also showed 18 while the reported week-1 actual was 14. The agent could not tell whether the screen represented an inherited weekly plan baseline or settled inventory state.",
+      "source": "agent interview",
+      "severitySuggestion": "P2_DIAGNOSTIC_ONLY",
+      "gate1aCountingEligible": false,
+      "countingExclusionReason": "A01 is technically invalid because its raw export was not retained."
+    }
+  ],
+  "subjectiveHumanFields": "not_applicable_agent_proxy",
+  "validityDecision": {
+    "status": "INVALID_TECHNICAL",
+    "reasonCode": "RAW_EXPORT_NOT_RETAINED",
+    "reason": "The frozen protocol requires the anonymous JSON, actions, events and telemetry to be saved and verifiable. A UI receipt alone does not satisfy that requirement.",
+    "negativeOutcomeExcludedBecauseOfResult": false,
+    "productObservationsRetained": true,
+    "includedInSevenValidSampleDenominator": false,
+    "sampleIdReusable": false,
+    "replacementRequired": true,
+    "replacementSampleId": "A08",
+    "replacementIssue": 17
+  },
+  "trackLocks": {
+    "gate1A": "RUNNING",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED"
+  }
+}
