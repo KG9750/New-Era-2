@@ -53,7 +53,7 @@
     },
     "playtestSpecification": {
       "path": "docs/product-specs/weekly-management-slice-playtest-v0.1.md",
-      "sha256": "b480b0032ea2d65e3371af1e9fef5fe37128501f31ecba665863218c632dd718"
+      "sha256": "b1370041b26c75db3d533b16db7c8918aa9a5c32f5a08eabf14a8a5e06850a73"
     },
     "playerPacketVersion": "gate1a-neutral-player-packet-v3",
     "playerPacket": {
