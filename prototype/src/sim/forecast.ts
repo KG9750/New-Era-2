@@ -1,4 +1,5 @@
 import type { FoodForecast, ForecastRange, SimulationState } from './model'
+import { PUMP_MAINTENANCE_BLOCK_ID, resolveScheduleBlock } from './schedule'
 
 const CURRENT_STOCK = 18
 const KNOWN_CONSUMPTION = 42
@@ -36,7 +37,7 @@ export function calculateFoodForecast(state: SimulationState): FoodForecast {
       '水泵未检修并在周三停机，粮食产出确定减少 8 单位。',
       '这是已发生事件带来的下调，不是隐藏随机波动。',
     ]
-  } else if (state.activity === 'repair') {
+  } else if (resolveScheduleBlock(state, PUMP_MAINTENANCE_BLOCK_ID).activity === 'repair') {
     production = { low: 35, high: 35 }
     trend = '风险收窄'
     reasons = [

@@ -1,5 +1,36 @@
-export type Activity = 'rest' | 'repair'
+export type Activity = 'food' | 'repair' | 'logistics' | 'study' | 'rest' | 'social'
 export type PumpStatus = 'at-risk' | 'protected' | 'failed'
+export type CharacterId = 'lin-he' | 'qiao-pan' | 'su-ji' | 'chen-du'
+export type ScheduleScope = 'weekly' | 'immediate' | 'base'
+export type ScheduleLayer = 'weeklyOverrides' | 'immediateAdjustments' | 'basePlan'
+
+export interface CharacterDefinition {
+  id: CharacterId
+  name: string
+  skill: string
+}
+
+export interface ResolvedScheduleBlock {
+  blockId: string
+  characterId: CharacterId
+  dayIndex: number
+  blockIndex: number
+  activity: Activity
+  source: '基础计划' | '本周例外' | '即时调整'
+}
+
+export interface ScheduleChange {
+  key: string
+  layer: ScheduleLayer
+  before?: Activity
+  after: Activity
+}
+
+export interface ScheduleTransaction {
+  actionId: string
+  affectedBlockIds: readonly string[]
+  changes: readonly ScheduleChange[]
+}
 
 export interface ForecastRange {
   low: number
@@ -38,16 +69,37 @@ export interface SimulationState {
   currentTick: number
   isPaused: boolean
   activity: Activity
+  basePlan: Readonly<Record<string, Activity>>
+  weeklyOverrides: Readonly<Record<string, Activity>>
+  immediateAdjustments: Readonly<Record<string, Activity>>
+  scheduleTransactions: readonly ScheduleTransaction[]
   pumpStatus: PumpStatus
   processedScriptEventIds: readonly string[]
   actionLog: readonly PlayerActionEnvelope[]
   timeline: readonly TimelineEntry[]
   planSnapshot: ForecastRange | null
   recap: WeekendRecap | null
+  recaps: readonly WeekendRecap[]
+  completedWeekIndexes: readonly number[]
+  isComplete: boolean
 }
 
 export type PlayerAction =
   | { type: 'CHANGE_ACTIVITY'; activity: Activity }
+  | {
+      type: 'EDIT_SCHEDULE'
+      blockIds: readonly string[]
+      activity: Activity
+      scope: ScheduleScope
+    }
+  | {
+      type: 'COPY_DAY'
+      characterId: CharacterId
+      sourceDayIndex: number
+      targetDayIndex: number
+      scope: ScheduleScope
+    }
+  | { type: 'UNDO_SCHEDULE' }
   | { type: 'SET_PAUSED'; paused: boolean }
 
 export interface PlayerActionEnvelope {
@@ -55,6 +107,7 @@ export interface PlayerActionEnvelope {
   sequence: number
   atTick: number
   action: PlayerAction
+  affectedBlockIds: readonly string[]
 }
 
 export interface ScriptedEvent {
@@ -69,6 +122,8 @@ export interface ScenarioDefinition {
   fixedSeed: number
   startTick: number
   weekEndTick: number
+  weekEndTicks: readonly number[]
+  simulationEndTick: number
   pumpEventTick: number
   createInitialState(): SimulationState
   scriptedEvents: readonly ScriptedEvent[]
@@ -76,7 +131,13 @@ export interface ScenarioDefinition {
 
 export interface DomainEvent {
   id: string
-  type: 'activity-changed' | 'clock-changed' | 'pump-incident' | 'week-ended'
+  type:
+    | 'activity-changed'
+    | 'schedule-edited'
+    | 'schedule-undone'
+    | 'clock-changed'
+    | 'pump-incident'
+    | 'week-ended'
   atTick: number
   before?: ForecastRange
   after?: ForecastRange

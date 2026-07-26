@@ -17,6 +17,6 @@ export function selectProgress(
   scenario: ScenarioDefinition,
 ): number {
   const elapsed = state.currentTick - scenario.startTick
-  const duration = scenario.weekEndTick - scenario.startTick
+  const duration = scenario.simulationEndTick - scenario.startTick
   return Math.max(0, Math.min(100, Math.round((elapsed / duration) * 100)))
 }

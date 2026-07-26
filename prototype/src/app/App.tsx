@@ -4,6 +4,8 @@ import { advanceSimulation, applyPlayerAction, createPlayerAction } from '../sim
 import { calculateFoodForecast, formatRange } from '../sim/forecast'
 import type { PlayerAction, SimulationState } from '../sim/model'
 import { selectClockLabel, selectProgress } from '../sim/selectors'
+import { PUMP_MAINTENANCE_BLOCK_ID, resolveScheduleBlock } from '../sim/schedule'
+import { ScheduleBoard } from './ScheduleBoard'
 
 type Speed = 1 | 3 | 8
 
@@ -19,6 +21,7 @@ export function App() {
   const forecast = useMemo(() => calculateFoodForecast(simulation), [simulation])
   const progress = selectProgress(simulation, scenario)
   const pumpHandled = simulation.processedScriptEventIds.includes('pump-incident-day-3')
+  const currentWeek = simulation.currentTick <= scenario.weekEndTick ? 1 : 2
 
   function submit(action: PlayerAction) {
     const envelope = createPlayerAction(
@@ -47,7 +50,7 @@ export function App() {
     <main className="app-shell">
       <header className="topbar">
         <div>
-          <p className="eyebrow">Gate 1 · 第一周</p>
+          <p className="eyebrow">Gate 1 · 第 {currentWeek} 周 / 共 2 周</p>
           <h1>东篱聚落周计划</h1>
         </div>
         <div className="clock-panel" aria-label="聚落时钟">
@@ -68,11 +71,17 @@ export function App() {
             ))}
             <button
               className="play-button"
-              disabled={Boolean(simulation.recap)}
+              disabled={simulation.isComplete}
               onClick={() => submit({ type: 'SET_PAUSED', paused: !simulation.isPaused })}
               type="button"
             >
-              {simulation.isPaused ? (pumpHandled ? '查看后继续' : '开始运行') : '暂停'}
+              {simulation.isPaused
+                ? simulation.recap && !simulation.isComplete
+                  ? '进入第二周'
+                  : pumpHandled
+                    ? '查看后继续'
+                    : '开始运行'
+                : '暂停'}
             </button>
           </div>
         </div>
@@ -126,7 +135,10 @@ export function App() {
               <p>选择这个活动块：</p>
               <div className="activity-options" role="group" aria-label="活动选择">
                 <button
-                  aria-pressed={simulation.activity === 'rest'}
+                  aria-pressed={
+                    resolveScheduleBlock(simulation, PUMP_MAINTENANCE_BLOCK_ID).activity ===
+                    'rest'
+                  }
                   disabled={!canEdit}
                   onClick={() => submit({ type: 'CHANGE_ACTIVITY', activity: 'rest' })}
                   type="button"
@@ -135,7 +147,10 @@ export function App() {
                   保留休息
                 </button>
                 <button
-                  aria-pressed={simulation.activity === 'repair'}
+                  aria-pressed={
+                    resolveScheduleBlock(simulation, PUMP_MAINTENANCE_BLOCK_ID).activity ===
+                    'repair'
+                  }
                   disabled={!canEdit}
                   onClick={() => submit({ type: 'CHANGE_ACTIVITY', activity: 'repair' })}
                   type="button"
@@ -176,6 +191,8 @@ export function App() {
         </section>
       </div>
 
+      <ScheduleBoard simulation={simulation} submit={submit} />
+
       {pumpHandled && !simulation.recap && (
         <section className="event-banner" role="alert">
           <div>
@@ -192,7 +209,7 @@ export function App() {
 
       {simulation.recap && (
         <section className="recap" aria-labelledby="recap-title">
-          <p className="eyebrow">第一周结束</p>
+          <p className="eyebrow">第 {simulation.recaps.length} 周结束</p>
           <h2 id="recap-title">周末偏差复盘</h2>
           <p className="recap-headline">{simulation.recap.headline}</p>
           <div className="recap-numbers">

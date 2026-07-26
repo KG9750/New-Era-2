@@ -43,6 +43,7 @@ describe('Gate 1 minimal simulation contract', () => {
       sequence: 7,
       atTick: 54,
       action: { type: 'CHANGE_ACTIVITY', activity: 'repair' },
+      affectedBlockIds: ['lin-he:d1:b1'],
     })
   })
 
