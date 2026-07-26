@@ -15,9 +15,11 @@ RC8 冻结通过后已创建 A30–A36。A30 因同一 host 出现时间重叠�
 被误判为未知 actor；随后本地提交 `3fdbc2f` 补齐 `/root/gate1a_a31`、
 `fork_turns=none`、玩家包、首次观察、同页冻结续存、字节一致下载、清空和
 访谈 V4，且机器时间不与 A30/M-C 重叠，独立运营负责人最终修订为有效。
-当前有效样本为 `1/7`。这些运营事件均不改变 RC8 指纹，不构成产品玩法失败。
+随后 A32 在单一 host 与全新 agent 上下文中完成保存、逐字节下载核验、清空和
+访谈 V4，裁定为有效且无新增 P0/P1/P2。当前有效样本为 `2/7`。这些运营事件
+均不改变 RC8 指纹，不构成产品玩法失败。
 
-- Gate 1A：`IN_PROGRESS_1_OF_7_VALID_A37_PENDING`
+- Gate 1A：`RUNNING_2_OF_7_VALID_A37_PENDING`
 - Gate 1H：`PENDING`
 - Gate 2：`LOCKED`
 
