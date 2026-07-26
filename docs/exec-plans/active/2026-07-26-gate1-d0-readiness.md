@@ -22,7 +22,7 @@
 | Gate 1A 七样本合同 | 完成 | `A01`–`A07` 使用同一 RC，按 `3 + 3 + 1` 分批执行；上下文、应用会话和结果隔离；无效替补从 `A08` 递增 |
 | Gate 1A 七个独立席位 | 完成 | 汇总 #9；A01–A07 分别为 #10–#16；全部阻塞于 #7 正式 RC 冻结，不提前实例化 agent 会话 |
 | Gate 1 正式 RC | 完成 | `refs/heads/codex/gate1-rc-20260726.2` 固定指向 `eeaa5fe2c1b4cfd68d8be73ba26b463feeed08d6`；双 clean clone 得到相同 artifact hash |
-| Gate 1A cohort manifest | 完成 | `g1a-20260726-rc2-01` 已冻结 RC、协议、玩家包、视口、批次和替补规则；正式样本尚未开始 |
+| Gate 1A cohort manifest | 完成 | `g1a-20260726-rc2-01` 因玩家包诱导风险在开跑前被否决；`g1a-20260726-rc2-02` 已以两阶段协议重新冻结，正式样本尚未开始 |
 | 独立冻结复核 | 待完成 | 新建独立 agent 对 manifest、archive、RC ref、Gate 锁和运营证据做只读复核；只有 `RC_FREEZE=YES` 才能启动 A01 |
 | Gate 1H 暂缓边界 | 完成 | 真人主持、候选人台账与知情同意在恢复 Gate 1H 前另行准备；当前保持 `PENDING` |
 | Gate 2 解锁规则 | 完成 | Gate 1A 任何结论都不解锁 Gate 2；只有 Gate 1H `PASS` 才能解锁规格工作 |

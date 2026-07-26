@@ -1,0 +1,172 @@
+{
+  "schemaVersion": "gate1a-cohort-manifest-v1",
+  "cohortId": "g1a-20260726-rc2-02",
+  "status": "FROZEN",
+  "frozenAtUtc": "2026-07-26T08:42:29Z",
+  "gate": "Gate 1A",
+  "operator": "/root",
+  "releaseCandidate": {
+    "ref": "refs/heads/codex/gate1-rc-20260726.2",
+    "buildId": "g1-rc-20260726.2",
+    "gitSha": "eeaa5fe2c1b4cfd68d8be73ba26b463feeed08d6",
+    "gitTree": "63a90de7a021aac407109e8eafa499375b80ddde",
+    "sourceTreeManifestHash": "c6f5ed5289257584eddbb563c8ac63d5c614c0cd01842110e196e572cdef8ca4",
+    "sourceTreeManifestHashAlgorithm": "sha256-canonical-source-tree-manifest-v1",
+    "artifactHash": "dfcc2ba275128bf0e6c14097d35dcc87600b6d9ee1a55257d25e691c7410f174",
+    "artifactHashAlgorithm": "sha256-canonical-file-manifest-v1",
+    "artifactManifest": {
+      "path": "rc-dist/artifact-manifest.json",
+      "sha256": "d6906dc39c78b0c826e45a0673c41786c92720f6f501eb3cd0d40a9398c7a626"
+    },
+    "buildMetadata": {
+      "path": "rc-dist/rc-build.json",
+      "sha256": "331932966b16bfff3e81b979938d401df019f4c9486885e3d6d04b644f949aa3"
+    },
+    "detachedArchive": {
+      "path": "rc-dist.tar",
+      "format": "ustar",
+      "sha256": "40ff0092be687b283bac5a156b0079396dba15ff1f49c9bc909641f9e593a49c"
+    },
+    "scenarioId": "gate1-two-week-management",
+    "scenarioVersion": "0.4.0",
+    "fixedSeed": 104729,
+    "initialStateHash": "fnv1a32-33a16fbf",
+    "initialStateHashAlgorithm": "fnv1a32-stable-json-v1"
+  },
+  "protocol": {
+    "protocolVersion": "gate1a-agent-ops-v2-two-stage",
+    "hostProtocol": {
+      "path": "docs/exec-plans/active/2026-07-26-gate1-agent-test-operations.md",
+      "sha256": "7ff09779507b0632741ec66d3ebf2ddc43ae5d1e8dba704a9d049de7cbfcc0d2"
+    },
+    "playtestSpecification": {
+      "path": "docs/product-specs/weekly-management-slice-playtest-v0.1.md",
+      "sha256": "b480b0032ea2d65e3371af1e9fef5fe37128501f31ecba665863218c632dd718"
+    },
+    "playerPacketVersion": "gate1a-neutral-player-packet-v2",
+    "playerPacket": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc2-02/player-packet.md",
+      "sha256": "f39f43e4977dd0a48224ead541b2ff7aa5b3aa606e6feac90a5637cd24c739bb"
+    },
+    "postSessionInterviewVersion": "gate1a-post-session-interview-v1",
+    "postSessionInterview": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc2-02/post-session-interview.md",
+      "sha256": "c680c5fe4c7d1fed5e60403e457fcadeba1256423088e7c9e62ac253d8e4db00",
+      "releaseTiming": "after-playthrough-download-and-clear"
+    }
+  },
+  "environment": {
+    "url": "http://127.0.0.1:4191/",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "frozenValue": "1440x900"
+    },
+    "inputMode": "Chrome extension UI",
+    "browser": "Chrome",
+    "browserProfile": "Speed",
+    "browserVersion": null,
+    "browserVersionReason": "Chrome extension control plane did not expose a version value",
+    "locale": "zh-CN",
+    "timezone": "Asia/Shanghai"
+  },
+  "samplePlan": {
+    "primarySamples": [
+      "A01",
+      "A02",
+      "A03",
+      "A04",
+      "A05",
+      "A06",
+      "A07"
+    ],
+    "batches": [
+      {
+        "batchId": "Batch 1",
+        "samples": [
+          "A01",
+          "A02",
+          "A03"
+        ]
+      },
+      {
+        "batchId": "Batch 2",
+        "samples": [
+          "A04",
+          "A05",
+          "A06"
+        ]
+      },
+      {
+        "batchId": "Batch 3",
+        "samples": [
+          "A07"
+        ]
+      }
+    ],
+    "replacementStartsAt": "A08",
+    "requiredValidSamples": 7,
+    "batchIsolationRequired": true,
+    "crossSampleCommunicationAllowed": false
+  },
+  "verification": {
+    "cleanClones": 2,
+    "npmCi": {
+      "status": "PASS",
+      "vulnerabilities": 0
+    },
+    "lint": "PASS",
+    "vitest": {
+      "status": "PASS",
+      "files": 7,
+      "tests": 44
+    },
+    "rcVerify": "PASS",
+    "chromiumE2E": {
+      "status": "PASS",
+      "projects": [
+        "1440x900",
+        "1280x720"
+      ],
+      "passed": 2,
+      "total": 2
+    },
+    "manualUiAudit": {
+      "status": "PASS",
+      "sampleId": "TECH-P00",
+      "includedInGate1A": false,
+      "recordPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc2-02/evidence/rc-audit-record.md",
+      "recordSha256": "344f56c5e10ad2beb8509b728c6655e4745468d6f6b77efb417d06afd3d647c1",
+      "exportPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc2-02/evidence/TECH-P00-export.json",
+      "exportSha256": "2342085a2b61c24c0a7c3b4a88336ba84f4e45f46d4295a4f9b81d6c2dcf9c21"
+    },
+    "candidateEditAdjudication": {
+      "status": "PASS",
+      "includedInGate1A": false,
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc2-02/evidence/candidate-edit-adjudication.md",
+      "sha256": "45e6f64091345cf78e5b3f3ddee2abc5449594c55c592b9265b513f9c0bb09bb"
+    },
+    "noGate2Code": {
+      "value": true,
+      "evidence": "Clean-clone prototype source and test scan found no theme, food-month, ranking, NPC, or exemption implementation."
+    }
+  },
+  "launchGate": {
+    "independentFreezeReviewRequired": true,
+    "requiredDecision": "RC_FREEZE=YES",
+    "formalSamplesStarted": false
+  },
+  "trackLocks": {
+    "gate1A": "FROZEN_PENDING_INDEPENDENT_REVIEW",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED",
+    "noGate2Code": true
+  },
+  "excludedFromFormalSamples": [
+    "M-A",
+    "M-B",
+    "M-C",
+    "TECH-A99",
+    "TECH-P00"
+  ]
+}
