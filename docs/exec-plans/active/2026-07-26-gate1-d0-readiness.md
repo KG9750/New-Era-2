@@ -20,13 +20,13 @@
 | 测试运营负责人由项目 Owner 确认 | 完成 | Owner 已授权由 agent 负责；当前实际负责人为根 agent `/root`，职责合同见 `2026-07-26-gate1-agent-test-operations.md` |
 | 代理试玩 A、B、C 已确认 | 完成 | D4、D9、D14 分别新建三个干净 agent 会话 `M-A`、`M-B`、`M-C`，不计入 Gate 1A 七样本 |
 | Gate 1A 七样本合同 | 完成 | RC6 使用 `A16`–`A22`，按 `3 + 3 + 1` 分批执行；上下文、应用会话和结果隔离；无效替补从 `A23` 递增 |
-| Gate 1A 七个独立席位 | 待创建 | 汇总 #9；RC6 已取得独立 `RC_FREEZE=YES`，下一步创建 A16–A22。#10–#24 均只作 RC4/RC5 历史 |
+| Gate 1A 七个独立席位 | 完成 | 汇总 #9；A16–A22 已创建为 #25–#31。#10–#24 均只作 RC4/RC5 历史 |
 | Gate 1 正式 RC | 完成 | `refs/heads/codex/gate1-rc-20260726.6` 固定指向 `affc5d8a0c9664a3724d1c31cb3d67682c818af9`；双 clean clone 得到相同 Vite 8 artifact、初态和确定性 archive |
 | Gate 1A cohort manifest | 完成 | `g1a-20260726-rc6-01` 固定 A16–A22、显式 capture dir、玩家包 V4、访谈 V2，以及 complete/blocked 两种三件套规则 |
 | 独立冻结复核 | 完成 | 未参与 RC6 实现和冻结制备的 reviewer 从远端复算，结论为 `P0=0 / P1=0 / P2=1 / RC_FREEZE=YES`；唯一 P2 为 blocked 专属失败重试缺少单独 UI 字节断言 |
 | Gate 1H 暂缓边界 | 完成 | 真人主持、候选人台账与知情同意在恢复 Gate 1H 前另行准备；当前保持 `PENDING` |
 | Gate 2 解锁规则 | 完成 | Gate 1A 任何结论都不解锁 Gate 2；只有 Gate 1H `PASS` 才能解锁规格工作 |
-| Issue 状态迁移 | 部分完成 | #8 保持 `[Gate 1H][DEFERRED]` + `needs-info`；#7 与 #9 保持 `OPEN`；#10–#24 已历史化；A16–A22 只在 RC6 冻结通过后创建 |
+| Issue 状态迁移 | 完成 | #7 已在 RC6 独立冻结通过后关闭；#8 保持 `[Gate 1H][DEFERRED]` + `needs-info`；#9 保持 `OPEN`；#10–#24 已历史化；A16–A22 为 #25–#31 |
 
 ## 2. D0 边界
 
@@ -43,10 +43,8 @@
 
 ## 3. 后续执行顺序
 
-1. 提交 RC6 cohort manifest、玩家包、访谈和冻结审计；
-2. 由独立 reviewer 对远端 ref、manifest、archive、blocked capture 合同与 Gate 锁给出 `RC_FREEZE=YES`；
-3. 关闭 #7，创建 A16–A22 七个席位并更新 #9；
-4. 按 A16–A18、A19–A21、A22 三批逐场执行；每场先保存下载、核验三件套、清空，再发送统一结束访谈；
-5. 每场完成有效性裁定和证据封存后才开始下一场；
-6. 在 #9 发布代理结论，始终保留 `Gate 1H: PENDING` 与 `Gate 2: LOCKED`；
-7. #8 只在项目 Owner 明确恢复 Gate 1H 后继续。
+1. 启动 manifest 冻结的 4195 loopback capture host 并完成空白会话预检；
+2. 按 #25–#27、#28–#30、#31 三批逐场执行 A16–A22；每场先保存下载、核验三件套、清空，再发送统一结束访谈；
+3. 每场完成有效性裁定和证据封存后才开始下一场；
+4. 在 #9 发布代理结论，始终保留 `Gate 1H: PENDING` 与 `Gate 2: LOCKED`；
+5. #8 只在项目 Owner 明确恢复 Gate 1H 后继续。

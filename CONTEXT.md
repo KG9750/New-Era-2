@@ -19,11 +19,11 @@ This file is the top-level context entrypoint for the project.
 - D0-A 的开发前提已 `READY`：双轨基线为 `2550617be5eff4226e9e140be741d619fcb6f5a3`；当前根 agent `/root` 担任测试运营负责人，Gate 1A 汇总为 #9。
 - Gate 1 两周 RC6 已固定为 `refs/heads/codex/gate1-rc-20260726.6`，指向提交 `affc5d8a0c9664a3724d1c31cb3d67682c818af9`；artifact 为 `096a4cd2d971be5b0503f1727ec02505f3d3a1a54a2c01d2afa0ff369d1df2ee`。cohort `g1a-20260726-rc6-01` 已取得独立 `P0=0 / P1=0 / P2=1 / RC_FREEZE=YES`。
 - `g1a-20260726-rc2-01` 因玩家包诱导风险被否决；rc2-02 因 Vite 7 基线偏差被替代；rc3-01 因独立审查发现两项状态一致性 P1 被替代。三者均未产生正式样本。
-- `M-A`–`M-C` 已完成且不进入正式分母；RC6 独立冻结复核已通过，#7 可在复核证据推送后关闭。
+- `M-A`–`M-C` 已完成且不进入正式分母；RC6 独立冻结复核已通过，#7 已关闭。
 - RC4 已永久作废：A01 完成两周、导出回执和清空，但匿名 JSON 不可核验，按冻结规则判为 `INVALID_TECHNICAL` 并永久保留；A02–A08 均不迁入 RC5。
 - TECH-P98 已完成真实 Chrome loopback capture 技术验证，服务端 raw、SHA sidecar、receipt 与浏览器下载一致；`P98` 永久保留为技术编号，不得分配给 Gate 1H 真人。
 - RC5 因无法保存中途产品阻断的三件套而撤回开跑许可：A09 固定为 `SUPERSEDED_RC_REVOKED_AFTER_SESSION` 并排除，A10–A15 未启动，#18–#24 已历史化。
-- Gate 1A 当前为 `READY_NOT_STARTED`：RC6 使用 A16–A22，按 `A16–A18 / A19–A21 / A22` 执行，替补从 A23 开始；七个正式 player agent 尚未创建。
+- Gate 1A 当前为 `READY_NOT_STARTED`：RC6 使用 A16–A22，对应 #25–#31，按 `A16–A18 / A19–A21 / A22` 执行，替补从 A23 开始；七个正式 player agent 尚未启动。
 - React + TypeScript + Vite 是 Gate 1 实施介质；Node `v24.18.0` 已在 `/opt/homebrew/opt/node@24/bin/` 验证并由 `.node-version` 固定，实施 shell 仍需优先使用该路径。
 - Gate 1 当前估算为 15–18 个净开发工作日；D0、里程碑代理试玩、正式 Gate 1A 运营和报告时间另计，Gate 1H 真人运营时间暂不排期。
 - Gate 2 仍为 `LOCKED`；只有 Gate 1H 获得真人 `PASS` 后才允许编写 Gate 2 规格，不提前实现主题、NPC、排名或豁免。
