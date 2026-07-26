@@ -872,3 +872,203 @@ h2 {
     padding-left: 0;
   }
 }
+
+.inheritance-strip {
+  align-items: center;
+  background: #e8f0e5;
+  border: 1px solid #a8bea0;
+  border-radius: 12px;
+  display: flex;
+  gap: 12px;
+  margin: 12px 0;
+  padding: 12px 14px;
+}
+
+.inheritance-strip span {
+  color: #59675c;
+}
+
+.map-panel {
+  margin-top: 20px;
+}
+
+.transport-map {
+  display: block;
+  height: auto;
+  margin: 12px auto 0;
+  max-width: 620px;
+  width: 100%;
+}
+
+.map-ground {
+  fill: #edf0e6;
+  stroke: #c8cdbf;
+}
+
+.map-river {
+  fill: none;
+  opacity: 0.55;
+  stroke: #8ab5bd;
+  stroke-width: 3;
+}
+
+.transport-route {
+  fill: none;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 2.4;
+}
+
+.route-line-north-loop {
+  stroke: #a36b3c;
+  stroke-dasharray: 4 2;
+}
+
+.route-line-south-shortcut {
+  stroke: #367257;
+}
+
+.facility rect {
+  fill: #f8f5e9;
+  stroke: #66705e;
+}
+
+.facility text,
+.shortcut-gate text,
+.map-character text {
+  dominant-baseline: middle;
+  font-size: 4px;
+  text-anchor: middle;
+}
+
+.shortcut-gate circle {
+  fill: #d7ead7;
+  stroke: #367257;
+}
+
+.map-character circle {
+  fill: #242c29;
+  stroke: #fff;
+  stroke-width: 0.8;
+}
+
+.map-character text {
+  fill: #fff;
+  font-size: 3.5px;
+}
+
+.route-metrics {
+  display: grid;
+  gap: 8px;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 12px 0;
+}
+
+.route-metrics div {
+  background: #f3f0e8;
+  border-radius: 8px;
+  padding: 9px;
+}
+
+.route-metrics dt {
+  color: #73736a;
+  font-size: 0.78rem;
+}
+
+.route-metrics dd {
+  font-weight: 700;
+  margin: 3px 0 0;
+}
+
+.loss-source {
+  align-items: baseline;
+  display: flex;
+  gap: 12px;
+}
+
+.loss-source ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 20px;
+  margin: 0;
+  padding-left: 18px;
+}
+
+.map-adjustment {
+  align-items: center;
+  background: #f4efe1;
+  border: 1px solid #d5c7a7;
+  border-radius: 10px;
+  display: flex;
+  gap: 18px;
+  justify-content: space-between;
+  margin-top: 14px;
+  padding: 12px;
+}
+
+.map-adjustment div {
+  display: grid;
+  gap: 4px;
+}
+
+.map-adjustment span,
+.map-adjusted-note {
+  color: #667066;
+}
+
+.map-adjusted-note {
+  background: #e8f0e5;
+  border-radius: 8px;
+  margin: 14px 0 0;
+  padding: 10px 12px;
+}
+
+.recap-items {
+  display: grid;
+  gap: 10px;
+  list-style: none;
+  padding: 0;
+}
+
+.recap-items li {
+  align-items: flex-start;
+  display: grid;
+  gap: 12px;
+  grid-template-columns: 86px minmax(0, 1fr);
+}
+
+.recap-items p {
+  margin: 4px 0;
+}
+
+.recap-category {
+  border: 1px solid currentColor;
+  border-radius: 999px;
+  font-size: 0.76rem;
+  padding: 4px 8px;
+  text-align: center;
+}
+
+.category-计划内结果 {
+  color: #35634e;
+}
+
+.category-已知风险 {
+  color: #8a5e25;
+}
+
+.category-新事件 {
+  color: #8a3f3f;
+}
+
+@media (max-width: 760px) {
+  .inheritance-strip,
+  .map-adjustment {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .route-metrics {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}

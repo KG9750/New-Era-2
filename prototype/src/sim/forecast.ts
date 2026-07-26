@@ -13,6 +13,10 @@ import {
   hasPreventiveMaintenance,
   resolveScheduleBlock,
 } from './schedule'
+import {
+  selectTransportRepairCost,
+  selectTransportRoute,
+} from './transport'
 
 const FOOD_CURRENT_STOCK = 18
 const FOOD_KNOWN_CONSUMPTION = 42
@@ -23,6 +27,7 @@ const REPAIR_TARGET = { low: 5, high: 9 }
 const BASELINE_FOOD_OUTPUT = 35
 const BASELINE_REPAIR_OUTPUT = 28
 const BASELINE_LOGISTICS_OUTPUT = 41
+const BASELINE_TRANSPORT_LOSS = 6
 const SHARED_LABOR_CAPACITY =
   BASELINE_FOOD_OUTPUT + BASELINE_REPAIR_OUTPUT + BASELINE_LOGISTICS_OUTPUT
 
@@ -176,9 +181,13 @@ export function calculateFoodForecast(state: SimulationState): FoodForecast {
   const allocation = calculateLaborAllocation(state)
   const fertilizerBonus = state.fertilizerUsed ? 6 : 0
   const logisticsBonus = logisticsAdjustment(allocation)
+  const transportRoute = selectTransportRoute(state)
+  const grossFieldOutput =
+    allocation.food + logisticsBonus + BASELINE_TRANSPORT_LOSS
+  const deliveredOutput = Math.max(0, grossFieldOutput - transportRoute.foodLoss)
   const facilityProduction = foodFacilityRange(
     state,
-    Math.max(0, allocation.food + logisticsBonus),
+    deliveredOutput,
   )
   const production = {
     low: Math.max(0, facilityProduction.low + fertilizerBonus),
@@ -195,7 +204,8 @@ export function calculateFoodForecast(state: SimulationState): FoodForecast {
   const modifiers = [
     state.fertilizerUsed ? '化肥 +6' : '化肥尚未使用',
     requestAccepted ? '林禾学习占用 1 个农务块' : null,
-    `物流兑现 ${logisticsBonus >= 0 ? '+' : ''}${logisticsBonus}；${sharedLaborReason(allocation)}`,
+    `地图：${transportRoute.label} ${transportRoute.distanceMeters} 米 / ${transportRoute.travelMinutes} 分钟，运输损耗 ${transportRoute.foodLoss}（${transportRoute.lossSources.join('、')}）`,
+    `物流排班修正 ${logisticsBonus >= 0 ? '+' : ''}${logisticsBonus}；${sharedLaborReason(allocation)}`,
   ].filter((item): item is string => item !== null)
 
   return {
@@ -229,6 +239,7 @@ export function calculateFoodForecast(state: SimulationState): FoodForecast {
 export function calculateRepairForecast(state: SimulationState): RepairForecast {
   const allocation = calculateLaborAllocation(state)
   const logisticsBonus = Math.trunc(logisticsAdjustment(allocation) / 2)
+  const transportRepairCost = selectTransportRepairCost(state)
   const riskCost =
     state.pumpStatus === 'failed'
       ? { low: 4, high: 4 }
@@ -244,12 +255,14 @@ export function calculateRepairForecast(state: SimulationState): RepairForecast 
       REPAIR_CURRENT_STOCK +
       production.low -
       REPAIR_KNOWN_CONSUMPTION -
-      riskCost.low,
+      riskCost.low -
+      transportRepairCost,
     high:
       REPAIR_CURRENT_STOCK +
       production.high -
       REPAIR_KNOWN_CONSUMPTION -
-      riskCost.high,
+      riskCost.high -
+      transportRepairCost,
   }
 
   return {
@@ -257,7 +270,7 @@ export function calculateRepairForecast(state: SimulationState): RepairForecast 
     label: '维修保障',
     currentStock: REPAIR_CURRENT_STOCK,
     production,
-    consumption: REPAIR_KNOWN_CONSUMPTION,
+    consumption: REPAIR_KNOWN_CONSUMPTION + transportRepairCost,
     endingStock,
     status: statusFor(endingStock, REPAIR_TARGET, 0),
     trend:
@@ -277,7 +290,7 @@ export function calculateRepairForecast(state: SimulationState): RepairForecast 
           ? '设施：维修工坊正常；预防性检修把水泵额外消耗锁定为 1。'
           : '设施：维修工坊正常；水泵停机已确定占用 4 维修保障。',
       laborReason(allocation, 'repair'),
-      `物流备件支持 ${logisticsBonus >= 0 ? '+' : ''}${logisticsBonus}；${sharedLaborReason(allocation)}`,
+      `物流备件支持 ${logisticsBonus >= 0 ? '+' : ''}${logisticsBonus}；短通路本周启用成本 −${transportRepairCost}；${sharedLaborReason(allocation)}`,
     ],
     acceptedRisk: false,
   }

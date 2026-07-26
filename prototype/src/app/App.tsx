@@ -18,10 +18,12 @@ import {
   hasPreventiveMaintenance,
   resolveScheduleBlock,
 } from '../sim/schedule'
+import { selectTransportRoute } from '../sim/transport'
+import { MapPanel } from './MapPanel'
 import { ScheduleBoard } from './ScheduleBoard'
 
 type Speed = 1 | 3 | 8
-type FocusedIssue = 'food' | 'pump' | 'repair' | null
+type FocusedIssue = 'food' | 'pump' | 'repair' | 'transport' | 'lin-request' | null
 type SupplyForecast = FoodForecast | RepairForecast
 
 function initialState(): SimulationState {
@@ -66,12 +68,10 @@ function SupplyForecastCard({ forecast }: { forecast: SupplyForecast }) {
 
 interface CharacterDecisionPanelProps {
   simulation: SimulationState
-  submit(action: PlayerAction): void
 }
 
 export function CharacterDecisionPanel({
   simulation,
-  submit,
 }: CharacterDecisionPanelProps) {
   const showLinHeRequest =
     (simulation.completedWeekIndexes.includes(0) && simulation.recap === null) ||
@@ -122,25 +122,7 @@ export function CharacterDecisionPanel({
                   <span>接受：粮食产出 −2，记录学习承诺</span>
                   <span>拒绝：粮食不变，记录本次拒绝</span>
                 </div>
-                <div className="request-actions">
-                  <button
-                    onClick={() =>
-                      submit({ type: 'RESOLVE_LIN_HE_REQUEST', decision: 'accepted' })
-                    }
-                    type="button"
-                  >
-                    接受学习请求
-                  </button>
-                  <button
-                    className="secondary-button"
-                    onClick={() =>
-                      submit({ type: 'RESOLVE_LIN_HE_REQUEST', decision: 'declined' })
-                    }
-                    type="button"
-                  >
-                    拒绝并保留农务
-                  </button>
-                </div>
+                <small>从第二周新增例外定位周二 B1 后答复。</small>
               </>
             ) : (
               <small>{simulation.characterRecords['lin-he'].at(-1)}</small>
@@ -160,13 +142,21 @@ export function App() {
   const foodForecast = useMemo(() => calculateFoodForecast(simulation), [simulation])
   const repairForecast = useMemo(() => calculateRepairForecast(simulation), [simulation])
   const progress = selectProgress(simulation, scenario)
-  const pumpHandled = simulation.processedScriptEventIds.includes('pump-incident-day-3')
   const currentWeek =
     (simulation.completedWeekIndexes.includes(0) && simulation.recap === null) ||
     simulation.currentTick >= 144 * 7
       ? 2
       : 1
   const pumpPlanReady = hasPreventiveMaintenance(simulation)
+  const transportRoute = selectTransportRoute(simulation)
+  const latestBlockingEvent = simulation.isPaused
+    ? [...simulation.timeline].reverse().find(
+        (item) =>
+          item.kind === 'scripted-event' &&
+          item.atTick === simulation.currentTick &&
+          !item.id.endsWith('-ended'),
+      )
+    : undefined
 
   function submit(action: PlayerAction) {
     const envelope = createPlayerAction(
@@ -175,6 +165,7 @@ export function App() {
       action,
     )
     nextActionSequence.current += 1
+    if (action.type === 'CONTINUE_TO_NEXT_WEEK') setFocusedIssue(null)
     setSimulation((current) => applyPlayerAction(current, envelope, scenario).state)
   }
 
@@ -217,20 +208,24 @@ export function App() {
             <button
               className="play-button"
               disabled={simulation.isComplete}
-              onClick={() => submit({ type: 'SET_PAUSED', paused: !simulation.isPaused })}
+              onClick={() =>
+                simulation.recap && !simulation.isComplete
+                  ? submit({ type: 'CONTINUE_TO_NEXT_WEEK' })
+                  : submit({ type: 'SET_PAUSED', paused: !simulation.isPaused })
+              }
               type="button"
             >
               {simulation.isPaused
                 ? simulation.recap && !simulation.isComplete
                   ? '进入第二周'
-                  : pumpHandled
-                    ? '查看后继续'
+                  : latestBlockingEvent
+                    ? '确认后继续'
                     : '开始运行'
                 : '暂停'}
             </button>
           </div>
         </div>
-        <div className="progress-track" aria-label={`本周进度 ${progress}%`}>
+        <div className="progress-track" aria-label={`两周进度 ${progress}%`}>
           <span style={{ width: `${progress}%` }} />
         </div>
       </header>
@@ -239,11 +234,23 @@ export function App() {
         <div className="section-heading">
           <div>
             <p className="eyebrow">周初摘要</p>
-            <h2 id="briefing-title">本周三项取舍</h2>
+            <h2 id="briefing-title">
+              {currentWeek === 1 ? '本周三项取舍' : '第二周新增例外'}
+            </h2>
           </div>
-          <span className="count-chip">不要求全部调绿</span>
+          <span className="count-chip">
+            {currentWeek === 1 ? '不要求全部调绿' : '未变化计划无需确认'}
+          </span>
         </div>
+        {currentWeek === 2 && (
+          <div className="inheritance-strip">
+            <strong>基础计划已继承</strong>
+            <span>四人 112 个活动块继续生效；第一周一次性例外已结算失效。</span>
+          </div>
+        )}
         <div className="issue-list">
+          {currentWeek === 1 ? (
+            <>
           <button
             className={`issue-card ${focusedIssue === 'food' ? 'selected' : ''} ${foodForecast.acceptedRisk ? 'accepted' : ''}`}
             onClick={() => setFocusedIssue('food')}
@@ -291,24 +298,144 @@ export function App() {
               {focusedIssue === 'repair' ? '已定位' : '查看原因 →'}
             </span>
           </button>
+            </>
+          ) : (
+            <>
+              <button
+                className={`issue-card ${focusedIssue === 'lin-request' ? 'selected' : ''} ${simulation.linHeRequestDecision !== 'pending' ? 'resolved' : ''}`}
+                onClick={() => setFocusedIssue('lin-request')}
+                type="button"
+              >
+                <span className="issue-icon" aria-hidden="true">人</span>
+                <span className="issue-copy">
+                  <strong>林禾请求周二 B1 学习</strong>
+                  <span>
+                    接受会让本周粮食产出 −2；拒绝或逾期会写入不同人物记录。
+                  </span>
+                  <small>
+                    {simulation.linHeRequestDecision === 'pending'
+                      ? '新增例外 · 周二 B1 前答复'
+                      : `已${simulation.linHeRequestDecision === 'accepted' ? '接受' : '拒绝'} · 目标块已锁定`}
+                  </small>
+                </span>
+                <span className="issue-action">
+                  {focusedIssue === 'lin-request' ? '已定位' : '处理请求 →'}
+                </span>
+              </button>
+              <button
+                className="issue-card"
+                onClick={() => setFocusedIssue('food')}
+                type="button"
+              >
+                <span className="issue-icon" aria-hidden="true">+</span>
+                <span className="issue-copy">
+                  <strong>
+                    {simulation.fertilizerUsed ? '化肥已在第一周使用' : '化肥仍有一次机会'}
+                  </strong>
+                  <span>
+                    {simulation.fertilizerUsed
+                      ? '第二周没有额外化肥可补粮。'
+                      : '可用粮食 +6 弥补学习或已知缺口。'}
+                  </span>
+                  <small>新增例外 · 只影响粮食，不改变维修保障</small>
+                </span>
+                <span className="issue-action">查看资源 →</span>
+              </button>
+              <button
+                className={`issue-card ${focusedIssue === 'transport' ? 'selected' : ''} ${transportRoute.id === 'south-shortcut' ? 'resolved' : ''}`}
+                onClick={() => setFocusedIssue('transport')}
+                type="button"
+              >
+                <span className="issue-icon" aria-hidden="true">路</span>
+                <span className="issue-copy">
+                  <strong>
+                    {transportRoute.id === 'south-shortcut'
+                      ? '南侧短通路已继承'
+                      : '北侧长路仍造成运输损耗'}
+                  </strong>
+                  <span>
+                    当前 {transportRoute.distanceMeters} 米 / {transportRoute.travelMinutes} 分钟，
+                    粮食损耗 {transportRoute.foodLoss}。
+                  </span>
+                  <small>
+                    {transportRoute.id === 'south-shortcut'
+                      ? '继承结果 · 无需重复设置'
+                      : '本周首次运输前仍可调整'}
+                  </small>
+                </span>
+                <span className="issue-action">
+                  {focusedIssue === 'transport' ? '已定位' : '查看地图 →'}
+                </span>
+              </button>
+            </>
+          )}
         </div>
       </section>
 
       <div className="workspace-grid">
         <section
-          className={`panel schedule-panel ${focusedIssue === 'pump' ? 'focused-panel' : ''}`}
+          className={`panel schedule-panel ${
+            focusedIssue === 'pump' ||
+            (currentWeek === 2 && focusedIssue === 'lin-request')
+              ? 'focused-panel'
+              : ''
+          }`}
           aria-labelledby="schedule-title"
         >
           <div className="panel-title">
             <div>
               <p className="eyebrow">成员安排</p>
-              <h2 id="schedule-title">林禾 · 周二 B2</h2>
+              <h2 id="schedule-title">
+                {currentWeek === 1 ? '林禾 · 周二 B2' : '林禾 · 周二 B1'}
+              </h2>
             </div>
-            <span className="skill-chip">农务</span>
+            <span className="skill-chip">
+              {currentWeek === 1 ? '农务' : '新增请求'}
+            </span>
           </div>
-          <p className="block-time">周二 13:00–16:00 · 水泵检修第 2 / 2 块</p>
-          {focusedIssue !== 'pump' ? (
-            <p className="empty-prompt">点击“水泵需要 2 个预防性维修块”，定位缺少的检修块。</p>
+          <p className="block-time">
+            {currentWeek === 1
+              ? '周二 13:00–16:00 · 水泵检修第 2 / 2 块'
+              : '第二周周二 09:00–12:00 · 农务 / 学习请求'}
+          </p>
+          {currentWeek === 2 ? (
+            simulation.linHeRequestDecision !== 'pending' ? (
+              <p className="empty-prompt">
+                {simulation.characterRecords['lin-he'].at(-1)}
+              </p>
+            ) : focusedIssue !== 'lin-request' ? (
+              <p className="empty-prompt">
+                点击“林禾请求周二 B1 学习”，只处理这个新增例外。
+              </p>
+            ) : (
+              <div className="activity-editor">
+                <p>“我想用这一块学习。眼前会少 2 份粮食产出。”</p>
+                <div className="request-actions">
+                  <button
+                    onClick={() =>
+                      submit({ type: 'RESOLVE_LIN_HE_REQUEST', decision: 'accepted' })
+                    }
+                    type="button"
+                  >
+                    接受学习请求
+                  </button>
+                  <button
+                    className="secondary-button"
+                    onClick={() =>
+                      submit({ type: 'RESOLVE_LIN_HE_REQUEST', decision: 'declined' })
+                    }
+                    type="button"
+                  >
+                    拒绝并保留农务
+                  </button>
+                </div>
+                <small>决定后目标块锁定，不能再用普通日程编辑覆盖。</small>
+              </div>
+            )
+          ) : focusedIssue !== 'pump' ? (
+            <p className="empty-prompt">
+              点击“水泵需要 2 个预防性维修块”，定位缺少的检修块。
+            </p>
           ) : (
             <div className="activity-editor">
               <p>乔磐已有 1 块。为林禾选择第二块：</p>
@@ -352,6 +479,12 @@ export function App() {
         </div>
       </div>
 
+      <MapPanel
+        focused={focusedIssue === 'transport'}
+        simulation={simulation}
+        submit={submit}
+      />
+
       <section className="management-actions" aria-labelledby="management-actions-title">
         <div>
           <p className="eyebrow">本周资源与风险</p>
@@ -390,21 +523,22 @@ export function App() {
         </div>
       </section>
 
-      <CharacterDecisionPanel simulation={simulation} submit={submit} />
+      <CharacterDecisionPanel simulation={simulation} />
 
-      <ScheduleBoard simulation={simulation} submit={submit} />
+      <ScheduleBoard
+        currentWeekIndex={currentWeek === 1 ? 0 : 1}
+        key={`schedule-week-${currentWeek}`}
+        simulation={simulation}
+        submit={submit}
+      />
 
-      {pumpHandled && !simulation.recap && (
+      {latestBlockingEvent && !simulation.recap && (
         <section className="event-banner" role="alert">
           <div>
             <p className="eyebrow">周中事件 · 时钟已自动暂停</p>
-            <h2>
-              {simulation.pumpStatus === 'protected'
-                ? '水泵异常，预防性检修奏效'
-                : '水泵故障并停机'}
-            </h2>
+            <h2>{latestBlockingEvent.title}</h2>
           </div>
-          <p>{simulation.timeline.find((item) => item.id === 'pump-incident-day-3')?.detail}</p>
+          <p>{latestBlockingEvent.detail}</p>
         </section>
       )}
 
@@ -417,8 +551,19 @@ export function App() {
             <div><span>计划期末</span><strong>{formatRange(simulation.recap.planned)}</strong></div>
             <div><span>实际期末</span><strong>{simulation.recap.actual}</strong></div>
           </div>
-          <ol>
-            {simulation.recap.items.map((item) => <li key={item}>{item}</li>)}
+          <ol className="recap-items">
+            {simulation.recap.items.map((item) => (
+              <li key={item.id}>
+                <span className={`recap-category category-${item.category}`}>
+                  {item.category}
+                </span>
+                <div>
+                  <strong>{item.title}</strong>
+                  <p>{item.detail}</p>
+                  <small>来源：{item.sourceId}</small>
+                </div>
+              </li>
+            ))}
           </ol>
         </section>
       )}

@@ -121,6 +121,8 @@ describe('Gate 1 minimal simulation contract', () => {
     expect(state.recap).not.toBeNull()
     expect(state.recap?.planned).toEqual({ low: 9, high: 9 })
     expect(state.recap?.actual).toBe(8)
-    expect(state.recap?.items.join(' ')).toContain('水泵异常')
+    expect(
+      state.recap?.items.map((item) => `${item.title} ${item.detail}`).join(' '),
+    ).toContain('水泵异常')
   })
 })

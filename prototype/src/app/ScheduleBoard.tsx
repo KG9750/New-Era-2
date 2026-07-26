@@ -13,6 +13,7 @@ import {
   blockEndTick,
   createBlockId,
   findQiaoPanBoundaryWarning,
+  isLinHeRequestBlockLocked,
   resolveScheduleBlock,
 } from '../sim/schedule'
 
@@ -26,13 +27,18 @@ const ACTIVITY_LABELS: Record<Activity, string> = {
 }
 
 interface ScheduleBoardProps {
+  currentWeekIndex: 0 | 1
   simulation: SimulationState
   submit(action: PlayerAction): void
 }
 
-export function ScheduleBoard({ simulation, submit }: ScheduleBoardProps) {
+export function ScheduleBoard({
+  currentWeekIndex,
+  simulation,
+  submit,
+}: ScheduleBoardProps) {
   const [isExpanded, setIsExpanded] = useState(false)
-  const [weekIndex, setWeekIndex] = useState<0 | 1>(0)
+  const [weekIndex, setWeekIndex] = useState<0 | 1>(currentWeekIndex)
   const [selectedIds, setSelectedIds] = useState<readonly string[]>([])
   const [activity, setActivity] = useState<Activity>('rest')
   const [scope, setScope] = useState<ScheduleScope>('weekly')
@@ -65,6 +71,11 @@ export function ScheduleBoard({ simulation, submit }: ScheduleBoardProps) {
       blockEndTick(
         createBlockId(copyCharacter, firstDay + targetDayOffset, blockIndex),
       ) <= simulation.currentTick,
+  )
+  const copyTouchesRequestBlock = [0, 1, 2, 3].some((blockIndex) =>
+    isLinHeRequestBlockLocked(
+      createBlockId(copyCharacter, firstDay + targetDayOffset, blockIndex),
+    ),
   )
 
   function toggleBlock(blockId: string) {
@@ -207,12 +218,13 @@ export function ScheduleBoard({ simulation, submit }: ScheduleBoardProps) {
                     const block = resolveScheduleBlock(simulation, blockId)
                     const selected = selectedIds.includes(blockId)
                     const isPast = blockEndTick(blockId) <= simulation.currentTick
+                    const requestLocked = isLinHeRequestBlockLocked(blockId)
                     return (
                       <button
-                        aria-label={`${character.name} ${DAY_LABELS[dayIndex]} ${BLOCK_LABELS[blockIndex]} ${ACTIVITY_LABELS[block.activity]} ${block.source}${isPast ? ' 已执行' : ''}`}
+                        aria-label={`${character.name} ${DAY_LABELS[dayIndex]} ${BLOCK_LABELS[blockIndex]} ${ACTIVITY_LABELS[block.activity]} ${block.source}${isPast ? ' 已执行' : ''}${requestLocked ? ' 人物请求锁定' : ''}`}
                         aria-pressed={selected}
                         className={`schedule-block activity-${block.activity} ${selected ? 'selected' : ''}`}
-                        disabled={isPast}
+                        disabled={isPast || requestLocked}
                         key={blockId}
                         onClick={() => toggleBlock(blockId)}
                         role="gridcell"
@@ -220,7 +232,7 @@ export function ScheduleBoard({ simulation, submit }: ScheduleBoardProps) {
                       >
                         <span>{BLOCK_LABELS[blockIndex].slice(0, 2)}</span>
                         <strong>{ACTIVITY_LABELS[block.activity]}</strong>
-                        <small>{block.source}</small>
+                        <small>{requestLocked ? '人物请求' : block.source}</small>
                       </button>
                     )
                   })}
@@ -273,12 +285,17 @@ export function ScheduleBoard({ simulation, submit }: ScheduleBoardProps) {
           disabled={
             sourceDayOffset === targetDayOffset ||
             copyBoundaryWarning !== null ||
-            copyTargetsPast
+            copyTargetsPast ||
+            copyTouchesRequestBlock
           }
           onClick={copyDay}
           type="button"
         >
-          {copyBoundaryWarning ? '复制会触发红线' : '复制这一天'}
+          {copyBoundaryWarning
+            ? '复制会触发红线'
+            : copyTouchesRequestBlock
+              ? '目标日含人物请求'
+              : '复制这一天'}
         </button>
       </div>
       {copyBoundaryWarning && (

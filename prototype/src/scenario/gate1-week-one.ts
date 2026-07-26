@@ -6,21 +6,33 @@ export const START_TICK = 54
 export const PUMP_EVENT_TICK = TICKS_PER_DAY * 2 + 54
 export const WEEK_END_TICK = TICKS_PER_DAY * 6 + 138
 export const SIMULATION_END_TICK = TICKS_PER_DAY * 13 + 138
+export const LIN_HE_REQUEST_DEADLINE_TICK = TICKS_PER_DAY * 8 + 54
+export const WEEKLY_TRANSPORT_START_TICKS = [
+  78,
+  TICKS_PER_DAY * 7 + 78,
+] as const
 
 export const gate1WeekOneScenario: ScenarioDefinition = {
-  id: 'gate1-week-one-minimal',
-  version: '0.3.0',
+  id: 'gate1-two-week-management',
+  version: '0.4.0',
   fixedSeed: 104729,
   startTick: START_TICK,
   weekEndTick: WEEK_END_TICK,
   weekEndTicks: [WEEK_END_TICK, SIMULATION_END_TICK],
   simulationEndTick: SIMULATION_END_TICK,
   pumpEventTick: PUMP_EVENT_TICK,
+  linHeRequestDeadlineTick: LIN_HE_REQUEST_DEADLINE_TICK,
+  weeklyTransportStartTicks: WEEKLY_TRANSPORT_START_TICKS,
   scriptedEvents: [
     {
       id: 'pump-incident-day-3',
       atTick: PUMP_EVENT_TICK,
       type: 'PUMP_INCIDENT',
+    },
+    {
+      id: 'lin-he-request-deadline',
+      atTick: LIN_HE_REQUEST_DEADLINE_TICK,
+      type: 'LIN_HE_REQUEST_DEADLINE',
     },
   ],
   createInitialState(): SimulationState {
@@ -44,6 +56,9 @@ export const gate1WeekOneScenario: ScenarioDefinition = {
       fertilizerUsed: false,
       acceptedFoodShortfall: false,
       linHeRequestDecision: 'pending',
+      linHeRequestResolutionSource: null,
+      transportRouteId: 'north-loop',
+      transportRouteOpenedAtTick: null,
       characterRecords: {
         'lin-he': ['第二周希望占用一个农务块学习，等待管理者答复。'],
         'qiao-pan': ['接受正常排班与连续不超过两日的短期加班。'],

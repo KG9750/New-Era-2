@@ -12,6 +12,7 @@ import type {
   SimulationState,
   TransitionResult,
   WeekendRecap,
+  WeekendRecapItem,
 } from './model'
 import {
   PUMP_MAINTENANCE_BLOCK_ID,
@@ -22,9 +23,15 @@ import {
   expireScheduleLayers,
   findQiaoPanBoundaryWarning,
   hasPreventiveMaintenance,
+  isLinHeRequestBlockLocked,
   resolveScheduleBlock,
   undoLastScheduleTransaction,
 } from './schedule'
+import {
+  canOpenTransportShortcut,
+  selectTransportRepairCost,
+  selectTransportRoute,
+} from './transport'
 
 export function createPlayerAction(
   sequence: number,
@@ -123,6 +130,10 @@ export function applyPlayerAction(
     envelope.action.type === 'EDIT_SCHEDULE' ||
     envelope.action.type === 'COPY_DAY'
   ) {
+    const requestTarget = envelope.affectedBlockIds.find(isLinHeRequestBlockLocked)
+    if (requestTarget) {
+      throw new Error('林禾请求占用的活动块必须通过人物请求决定，不能用普通日程编辑覆盖')
+    }
     const pastBlockId = envelope.affectedBlockIds.find(
       (blockId) => blockEndTick(blockId) <= state.currentTick,
     )
@@ -244,12 +255,47 @@ export function applyPlayerAction(
       before,
       after: before,
     }
+  } else if (envelope.action.type === 'OPEN_TRANSPORT_SHORTCUT') {
+    if (!canOpenTransportShortcut(state, _scenario)) {
+      throw new Error('短通路只能在本周首次运输开始前开启，不能追溯改写已发生的损耗')
+    }
+    const beforeRoute = selectTransportRoute(state)
+    const draft: SimulationState = {
+      ...state,
+      transportRouteId: 'south-shortcut',
+      transportRouteOpenedAtTick: state.currentTick,
+    }
+    const afterRoute = selectTransportRoute(draft)
+    const after = rangeOf(draft)
+    next = {
+      ...draft,
+      actionLog: [...state.actionLog, envelope],
+      timeline: appendTimeline(state, {
+        atTick: envelope.atTick,
+        kind: 'player-action',
+        id: envelope.id,
+        title: '开启南侧短通路',
+        detail: `${beforeRoute.label} ${beforeRoute.distanceMeters} 米 / 损耗 ${beforeRoute.foodLoss} → ${afterRoute.label} ${afterRoute.distanceMeters} 米 / 损耗 ${afterRoute.foodLoss}；本周投入 ${selectTransportRepairCost(draft)} 点维修保障。${supplyChangeDetail(state, draft)}`,
+        before,
+        after,
+      }),
+    }
+    event = {
+      id: envelope.id,
+      type: 'transport-shortcut-opened',
+      atTick: envelope.atTick,
+      before,
+      after,
+    }
   } else if (envelope.action.type === 'RESOLVE_LIN_HE_REQUEST') {
     if (!state.completedWeekIndexes.includes(0) || state.recap !== null) {
       throw new Error('林禾的请求会在第二周开始后出现')
     }
     if (state.linHeRequestDecision !== 'pending') {
       throw new Error('林禾的请求已经处理')
+    }
+    if (state.currentTick >= _scenario.linHeRequestDeadlineTick) {
+      throw new Error('林禾请求已经超过答复截止时间')
     }
     const accepted = envelope.action.decision === 'accepted'
     const scheduled = accepted
@@ -264,6 +310,7 @@ export function applyPlayerAction(
       ...scheduled,
       scheduleTransactions: state.scheduleTransactions,
       linHeRequestDecision: envelope.action.decision,
+      linHeRequestResolutionSource: 'player',
       characterRecords: addCharacterRecord(
         state,
         'lin-he',
@@ -287,6 +334,10 @@ export function applyPlayerAction(
         before,
         after,
       }),
+      planSnapshot:
+        state.planSnapshot === null && !state.isPaused
+          ? after
+          : state.planSnapshot,
     }
     event = {
       id: envelope.id,
@@ -295,15 +346,44 @@ export function applyPlayerAction(
       before,
       after,
     }
+  } else if (envelope.action.type === 'CONTINUE_TO_NEXT_WEEK') {
+    if (state.recap === null || state.isComplete) {
+      throw new Error('只有未完成的周末复盘可以进入下一周')
+    }
+    next = {
+      ...state,
+      recap: null,
+      isPaused: true,
+      planSnapshot: null,
+      scheduleTransactions: [],
+      actionLog: [...state.actionLog, envelope],
+      timeline: appendTimeline(state, {
+        atTick: envelope.atTick,
+        kind: 'player-action',
+        id: envelope.id,
+        title: '进入第二周',
+        detail: '基础计划已经继承；第一周一次性例外已结算失效。第二周保持暂停，只需处理新增例外。',
+      }),
+    }
+    event = {
+      id: envelope.id,
+      type: 'clock-changed',
+      atTick: envelope.atTick,
+    }
   } else {
-    const enteringNextWeek =
-      !envelope.action.paused && state.recap !== null && !state.isComplete
+    if (state.recap !== null) {
+      throw new Error('请先完成周末复盘并进入下一周')
+    }
     const clockDraft: SimulationState = {
       ...state,
-      recap: envelope.action.paused ? state.recap : null,
     }
+    const weekTwoRequestReady =
+      !state.completedWeekIndexes.includes(0) ||
+      state.linHeRequestDecision !== 'pending'
     const planSnapshot =
-      !envelope.action.paused && state.planSnapshot === null
+      !envelope.action.paused &&
+      state.planSnapshot === null &&
+      weekTwoRequestReady
         ? rangeOf(clockDraft)
         : state.planSnapshot
     next = {
@@ -318,8 +398,10 @@ export function applyPlayerAction(
         title: envelope.action.paused ? '暂停时间' : '继续时间',
         detail: envelope.action.paused
           ? '聚落时钟已暂停。'
-          : enteringNextWeek
-            ? '第二周从继承的基础计划开始连续推进。'
+          : state.completedWeekIndexes.includes(0)
+            ? state.linHeRequestDecision === 'pending'
+              ? '第二周开始推进；林禾请求尚未答复，截止时将默认保留农务。'
+              : '第二周从继承的基础计划和已处理的新例外开始推进。'
             : '聚落时钟开始连续推进。',
       }),
     }
@@ -338,7 +420,97 @@ function createRecap(state: SimulationState, weekIndex: number): WeekendRecap {
   const actualRange = rangeOf(state)
   const actual =
     state.pumpStatus === 'protected' ? actualRange.low : actualRange.high
-  const protectedPump = state.pumpStatus === 'protected'
+  const route = selectTransportRoute(state)
+  const items: WeekendRecapItem[] = [
+    {
+      id: `week-${weekIndex + 1}-food-result`,
+      category: '计划内结果',
+      sourceId: 'food-forecast',
+      title: '粮食计划兑现',
+      detail: `第 ${weekIndex + 1} 周计划期末库存 ${formatRange(planned)}，周末实际库存 ${actual}。`,
+      values: {
+        plannedLow: planned.low,
+        plannedHigh: planned.high,
+        actual,
+      },
+    },
+  ]
+
+  if (weekIndex === 0) {
+    const protectedPump = state.pumpStatus === 'protected'
+    items.push(
+      {
+        id: 'week-1-pump-risk',
+        category: '已知风险',
+        sourceId: 'pump-preventive-maintenance',
+        title: protectedPump ? '林禾补足预防性检修' : '水泵风险未处理',
+        detail: protectedPump
+          ? '周三前完成 2 个维修块，已知停机风险被压低。'
+          : '周三前只有乔磐的 1 个维修块，水泵停机风险按已知上限兑现。',
+        values: {
+          maintenanceBlocks: protectedPump ? 2 : 1,
+          knownWorstFoodLoss: 8,
+        },
+      },
+      {
+        id: 'week-1-pump-incident',
+        category: '新事件',
+        sourceId: 'pump-incident-day-3',
+        title: protectedPump ? '周三水泵异常被缓释' : '周三水泵故障并停机',
+        detail: protectedPump
+          ? '事件发生后新增信息确认：预防性检修奏效，实际只损失 1 单位粮食。'
+          : '事件发生后新增信息确认：水泵停机，实际损失 8 单位粮食。',
+        values: {
+          actualFoodLoss: protectedPump ? 1 : 8,
+        },
+      },
+    )
+  } else {
+    const accepted = state.linHeRequestDecision === 'accepted'
+    const expired = state.linHeRequestResolutionSource === 'deadline'
+    items.push({
+      id: 'week-2-lin-he-request',
+      category: expired ? '新事件' : '计划内结果',
+      sourceId: expired
+        ? 'lin-he-request-deadline'
+        : accepted
+          ? 'lin-he-request-accepted'
+          : 'lin-he-request-declined',
+      title: expired
+        ? '林禾请求逾期未答'
+        : accepted
+          ? '林禾开始学习'
+          : '林禾保留农务',
+      detail: expired
+        ? '管理者未在周二 B1 前答复，系统按已公开默认保留农务；林禾记住了这次沉默。'
+        : accepted
+          ? '林禾用周二 B1 学习，短期粮食产出减少 2。'
+          : '管理者明确拒绝请求，周二 B1 继续农务，林禾记住了本次取舍。',
+      values: {
+        shortTermFoodDelta: accepted ? -2 : 0,
+      },
+    })
+  }
+
+  items.push({
+    id: `week-${weekIndex + 1}-transport-result`,
+    category: route.id === 'south-shortcut' ? '计划内结果' : '已知风险',
+    sourceId: route.id,
+    title:
+      route.id === 'south-shortcut'
+        ? '苏霁兑现南侧短通路'
+        : '苏霁继续北侧绕行',
+    detail:
+      route.id === 'south-shortcut'
+        ? `农田到粮仓缩短为 ${route.distanceMeters} 米 / ${route.travelMinutes} 分钟，运输损耗从 6 降至 ${route.foodLoss}。`
+        : `农田到粮仓仍需 ${route.distanceMeters} 米 / ${route.travelMinutes} 分钟，${route.foodLoss} 单位粮食在搬运中未兑现。`,
+    values: {
+      distanceMeters: route.distanceMeters,
+      travelMinutes: route.travelMinutes,
+      foodLoss: route.foodLoss,
+    },
+  })
+
   return {
     planned,
     actual,
@@ -346,17 +518,7 @@ function createRecap(state: SimulationState, weekIndex: number): WeekendRecap {
       actual >= planned.low && actual <= planned.high
         ? '实际结果落在计划区间内'
         : '事件使实际结果偏离计划区间',
-    items: [
-      `第 ${weekIndex + 1} 周计划期末库存 ${formatRange(planned)}，周末实际库存 ${actual}。`,
-      protectedPump
-        ? '林禾的预防性检修生效：水泵异常只造成 1 单位粮食损失。'
-        : '水泵未检修并停机：粮食较原计划上限少 8 单位。',
-      weekIndex === 0 && protectedPump
-        ? '本周检修是一次性安排，周末后自动失效；建议下周重新评估水泵状态。'
-        : weekIndex === 0
-          ? '建议下周优先恢复水泵，并保留一块预防性维修时间。'
-          : '第二周本周例外已自动失效，基础计划保留为后续起点。',
-    ],
+    items,
   }
 }
 
@@ -380,8 +542,60 @@ export function advanceSimulation(
 
   if (nextEvent) {
     const before = rangeOf(state)
-    const pumpStatus = hasPreventiveMaintenance(state) ? 'protected' : 'failed'
     const expired = expireScheduleLayers(state, nextEvent.atTick)
+    if (nextEvent.type === 'LIN_HE_REQUEST_DEADLINE') {
+      if (state.linHeRequestDecision !== 'pending') {
+        const consumedState: SimulationState = {
+          ...expired,
+          currentTick: nextEvent.atTick,
+          processedScriptEventIds: [...state.processedScriptEventIds, nextEvent.id],
+        }
+        return targetTick > nextEvent.atTick
+          ? advanceSimulation(consumedState, targetTick, scenario)
+          : { state: consumedState, events: [] }
+      }
+      const deadlineState: SimulationState = {
+        ...expired,
+        currentTick: nextEvent.atTick,
+        isPaused: true,
+        linHeRequestDecision: 'declined',
+        linHeRequestResolutionSource: 'deadline',
+        processedScriptEventIds: [...state.processedScriptEventIds, nextEvent.id],
+        characterRecords: addCharacterRecord(
+          state,
+          'lin-he',
+          '第二周学习请求逾期未答：按公开默认保留农务；林禾记住管理者没有回应。',
+        ),
+      }
+      const after = rangeOf(deadlineState)
+      const next: SimulationState = {
+        ...deadlineState,
+        planSnapshot: state.planSnapshot ?? after,
+        timeline: appendTimeline(state, {
+          atTick: nextEvent.atTick,
+          kind: 'scripted-event',
+          id: nextEvent.id,
+          title: '林禾请求逾期，默认保留农务',
+          detail: `时钟已自动暂停。周二 B1 锁定为农务，粮食预测 ${formatRange(after)}；林禾记住了这次沉默。`,
+          before,
+          after,
+        }),
+      }
+      return {
+        state: next,
+        events: [
+          {
+            id: nextEvent.id,
+            type: 'lin-he-request-expired',
+            atTick: nextEvent.atTick,
+            before,
+            after,
+          },
+        ],
+      }
+    }
+
+    const pumpStatus = hasPreventiveMaintenance(state) ? 'protected' : 'failed'
     const eventState: SimulationState = {
       ...expired,
       currentTick: nextEvent.atTick,
@@ -437,6 +651,7 @@ export function advanceSimulation(
       currentTick,
       isPaused: true,
       acceptedFoodShortfall: false,
+      scheduleTransactions: [],
       completedWeekIndexes: [...state.completedWeekIndexes, endingWeekIndex],
       isComplete: endingWeekIndex === scenario.weekEndTicks.length - 1,
     }

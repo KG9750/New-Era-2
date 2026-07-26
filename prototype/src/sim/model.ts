@@ -11,6 +11,9 @@ export type SupplyStatus =
   | '显著过剩'
 export type SupplyTrend = '上升' | '持平' | '下调' | '风险未消除' | '风险收窄' | '事件下调'
 export type LinHeRequestDecision = 'pending' | 'accepted' | 'declined'
+export type LinHeRequestResolutionSource = 'player' | 'deadline' | null
+export type TransportRouteId = 'north-loop' | 'south-shortcut'
+export type RecapCategory = '计划内结果' | '已知风险' | '新事件'
 
 export interface CharacterDefinition {
   id: CharacterId
@@ -86,7 +89,16 @@ export interface WeekendRecap {
   planned: ForecastRange
   actual: number
   headline: string
-  items: readonly string[]
+  items: readonly WeekendRecapItem[]
+}
+
+export interface WeekendRecapItem {
+  id: string
+  category: RecapCategory
+  sourceId: string
+  title: string
+  detail: string
+  values: Readonly<Record<string, number>>
 }
 
 export interface SimulationState {
@@ -109,6 +121,9 @@ export interface SimulationState {
   fertilizerUsed: boolean
   acceptedFoodShortfall: boolean
   linHeRequestDecision: LinHeRequestDecision
+  linHeRequestResolutionSource: LinHeRequestResolutionSource
+  transportRouteId: TransportRouteId
+  transportRouteOpenedAtTick: number | null
   characterRecords: Readonly<Record<CharacterId, readonly string[]>>
 }
 
@@ -131,6 +146,8 @@ export type PlayerAction =
   | { type: 'USE_FERTILIZER' }
   | { type: 'SET_FOOD_SHORTFALL_ACCEPTED'; accepted: boolean }
   | { type: 'RESOLVE_LIN_HE_REQUEST'; decision: Exclude<LinHeRequestDecision, 'pending'> }
+  | { type: 'OPEN_TRANSPORT_SHORTCUT' }
+  | { type: 'CONTINUE_TO_NEXT_WEEK' }
   | { type: 'SET_PAUSED'; paused: boolean }
 
 export interface PlayerActionEnvelope {
@@ -144,7 +161,7 @@ export interface PlayerActionEnvelope {
 export interface ScriptedEvent {
   id: string
   atTick: number
-  type: 'PUMP_INCIDENT'
+  type: 'PUMP_INCIDENT' | 'LIN_HE_REQUEST_DEADLINE'
 }
 
 export interface ScenarioDefinition {
@@ -156,6 +173,8 @@ export interface ScenarioDefinition {
   weekEndTicks: readonly number[]
   simulationEndTick: number
   pumpEventTick: number
+  linHeRequestDeadlineTick: number
+  weeklyTransportStartTicks: readonly number[]
   createInitialState(): SimulationState
   scriptedEvents: readonly ScriptedEvent[]
 }
@@ -169,8 +188,10 @@ export interface DomainEvent {
     | 'fertilizer-used'
     | 'food-shortfall-accepted'
     | 'lin-he-request-resolved'
+    | 'transport-shortcut-opened'
     | 'clock-changed'
     | 'pump-incident'
+    | 'lin-he-request-expired'
     | 'week-ended'
   atTick: number
   before?: ForecastRange

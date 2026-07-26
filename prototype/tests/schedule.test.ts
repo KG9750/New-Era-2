@@ -188,8 +188,13 @@ describe('four-person fourteen-day schedule contract', () => {
     expect(state.completedWeekIndexes).toEqual([0])
     expect(state.isComplete).toBe(false)
 
-    state = act(state, 2, { type: 'SET_PAUSED', paused: false })
+    state = act(state, 2, { type: 'CONTINUE_TO_NEXT_WEEK' })
     state = act(state, 3, {
+      type: 'RESOLVE_LIN_HE_REQUEST',
+      decision: 'declined',
+    })
+    state = act(state, 4, { type: 'SET_PAUSED', paused: false })
+    state = act(state, 5, {
       type: 'EDIT_SCHEDULE',
       blockIds: [createBlockId('su-ji', 9, 2)],
       activity: 'study',

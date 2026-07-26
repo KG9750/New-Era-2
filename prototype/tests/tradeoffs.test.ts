@@ -56,6 +56,8 @@ function completeTwoWeeks(strategy: 'fertilizer-and-learning' | 'accepted-gap-an
 
   expect(state.planSnapshot).toBeNull()
   expect(state.acceptedFoodShortfall).toBe(false)
+  state = act(state, sequence, { type: 'CONTINUE_TO_NEXT_WEEK' })
+  sequence += 1
   state = act(state, sequence, { type: 'SET_PAUSED', paused: false })
   sequence += 1
   state = act(state, sequence, {
@@ -225,14 +227,15 @@ describe('Gate 1 food-repair-character tradeoff contract', () => {
     base = advanceSimulation(base, scenario.pumpEventTick, scenario).state
     base = act(base, 4, { type: 'SET_PAUSED', paused: false })
     base = advanceSimulation(base, scenario.weekEndTick, scenario).state
-    base = act(base, 5, { type: 'SET_PAUSED', paused: false })
+    base = act(base, 5, { type: 'CONTINUE_TO_NEXT_WEEK' })
+    base = act(base, 6, { type: 'SET_PAUSED', paused: false })
     const before = calculateFoodForecast(base).endingStock
 
-    const accepted = act(base, 6, {
+    const accepted = act(base, 7, {
       type: 'RESOLVE_LIN_HE_REQUEST',
       decision: 'accepted',
     })
-    const declined = act(base, 6, {
+    const declined = act(base, 7, {
       type: 'RESOLVE_LIN_HE_REQUEST',
       decision: 'declined',
     })
@@ -263,7 +266,9 @@ describe('Gate 1 food-repair-character tradeoff contract', () => {
     state = act(state, 4, { type: 'SET_PAUSED', paused: false })
     state = advanceSimulation(state, scenario.weekEndTick, scenario).state
     expect(state.planSnapshot).toBeNull()
-    state = act(state, 5, { type: 'SET_PAUSED', paused: false })
+    state = act(state, 5, { type: 'CONTINUE_TO_NEXT_WEEK' })
+    state = act(state, 6, { type: 'RESOLVE_LIN_HE_REQUEST', decision: 'declined' })
+    state = act(state, 7, { type: 'SET_PAUSED', paused: false })
     expect(state.planSnapshot).toEqual(calculateFoodForecast(state).endingStock)
   })
 })

@@ -1,9 +1,13 @@
-import { fireEvent, render, screen, within } from '@testing-library/react'
-import { describe, expect, it, vi } from 'vitest'
+import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import { afterEach, describe, expect, it, vi } from 'vitest'
 import { App, CharacterDecisionPanel } from '../src/app/App'
 import { gate1WeekOneScenario as scenario } from '../src/scenario/gate1-week-one'
 
 describe('minimal weekly flow UI', () => {
+  afterEach(() => {
+    vi.useRealTimers()
+  })
+
   it('opens on the weekly issue summary instead of a full schedule grid', () => {
     render(<App />)
 
@@ -106,26 +110,67 @@ describe('minimal weekly flow UI', () => {
     expect(screen.getByRole('button', { name: '先调整红线冲突' })).toBeDisabled()
   })
 
-  it('exposes both Lin He request choices during week two as independent player actions', () => {
-    const submit = vi.fn()
+  it('shows both Lin He request consequences during week two', () => {
     const weekTwoState = {
       ...scenario.createInitialState(),
       recap: null,
       completedWeekIndexes: [0],
     }
-    render(<CharacterDecisionPanel simulation={weekTwoState} submit={submit} />)
+    render(<CharacterDecisionPanel simulation={weekTwoState} />)
 
-    fireEvent.click(screen.getByRole('button', { name: '接受学习请求' }))
-    fireEvent.click(screen.getByRole('button', { name: '拒绝并保留农务' }))
-
-    expect(submit).toHaveBeenNthCalledWith(1, {
-      type: 'RESOLVE_LIN_HE_REQUEST',
-      decision: 'accepted',
-    })
-    expect(submit).toHaveBeenNthCalledWith(2, {
-      type: 'RESOLVE_LIN_HE_REQUEST',
-      decision: 'declined',
-    })
     expect(screen.getByText(/接受：粮食产出 −2/)).toBeInTheDocument()
+    expect(screen.getByText(/拒绝：粮食不变/)).toBeInTheDocument()
+  })
+
+  it('renders the authoritative map route and updates loss and food after opening the shortcut', () => {
+    render(<App />)
+    const mapPanel = screen.getByRole('heading', {
+      name: '运输路径与人物位置',
+    }).closest('section')
+    const foodPanel = screen.getByRole('heading', { name: '粮食' }).closest('section')
+    expect(mapPanel).not.toBeNull()
+    expect(foodPanel).not.toBeNull()
+    expect(within(mapPanel!).getByText('北侧绕行 · 损耗 6')).toBeInTheDocument()
+    expect(within(foodPanel!).getByText('3–11')).toBeInTheDocument()
+    expect(within(mapPanel!).getByText(/远距离搬运损失 4/)).toBeInTheDocument()
+
+    fireEvent.click(
+      within(mapPanel!).getByRole('button', {
+        name: '开启短通路 · 维修保障 −1',
+      }),
+    )
+
+    expect(within(mapPanel!).getByText('南侧短通路 · 损耗 2')).toBeInTheDocument()
+    expect(within(foodPanel!).getByText('7–15')).toBeInTheDocument()
+    expect(screen.getByText(/北侧绕行 860 米 \/ 损耗 6 → 南侧短通路 470 米/)).toBeInTheDocument()
+  })
+
+  it('enters week two paused with inherited-plan context and only new exceptions', () => {
+    vi.useFakeTimers()
+    render(<App />)
+    fireEvent.click(screen.getByRole('button', { name: '开始运行' }))
+    act(() => {
+      vi.advanceTimersByTime(30_000)
+    })
+    expect(screen.getByRole('heading', { name: /水泵故障并停机/ })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: '确认后继续' }))
+    act(() => {
+      vi.advanceTimersByTime(60_000)
+    })
+    expect(screen.getByRole('heading', { name: '周末偏差复盘' })).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: '进入第二周' }))
+
+    expect(screen.getByRole('heading', { name: '第二周新增例外' })).toBeInTheDocument()
+    expect(screen.getByText('基础计划已继承')).toBeInTheDocument()
+    expect(screen.getAllByText(/第一周一次性例外已结算失效/).length).toBeGreaterThan(0)
+    expect(screen.getByRole('button', { name: /林禾请求周二 B1 学习/ })).toBeInTheDocument()
+    expect(screen.getByRole('heading', { name: '林禾 · 周二 B1' })).toBeInTheDocument()
+    expect(screen.queryByText(/点击“水泵需要 2 个预防性维修块”/)).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: /林禾请求周二 B1 学习/ }))
+    expect(screen.getByRole('button', { name: '接受学习请求' })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '拒绝并保留农务' })).toBeInTheDocument()
+    expect(screen.getByLabelText('聚落时钟')).toHaveTextContent('已暂停')
+    expect(screen.queryByRole('button', { name: /水泵需要 2 个预防性维修块/ })).not.toBeInTheDocument()
   })
 })

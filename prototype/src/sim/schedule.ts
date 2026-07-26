@@ -42,6 +42,10 @@ export const PUMP_MAINTENANCE_BLOCK_IDS = [
 ] as const
 export const LIN_HE_STUDY_BLOCK_ID = createBlockId('lin-he', 8, 0)
 
+export function isLinHeRequestBlockLocked(blockId: string): boolean {
+  return blockId === LIN_HE_STUDY_BLOCK_ID
+}
+
 export function createBlockId(
   characterId: CharacterId,
   dayIndex: number,
