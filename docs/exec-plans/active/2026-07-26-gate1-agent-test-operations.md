@@ -4,7 +4,7 @@
 |---|---|
 | 项目 | Project-004-New Era 2 |
 | 日期 | 2026-07-26 |
-| 状态 | Gate 1A RC8 已取得独立 `RC_FREEZE=YES`，等待创建 A30–A36；Gate 1H `PENDING` |
+| 状态 | Gate 1A RC8 等待独立冻结复核；Gate 1H `PENDING` |
 | 适用范围 | Gate 1 React Web 两周经营灰盒 |
 | 运营负责人 | 当前根 agent `/root` |
 | 上位计划 | `2026-07-26-react-web-gate-1-2-development-plan.md` |
