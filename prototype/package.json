@@ -7,13 +7,15 @@
     "dev": "vite",
     "lint": "tsc --noEmit",
     "test:run": "vitest run",
-    "build": "tsc -b && vite build"
+    "build": "tsc -b && vite build",
+    "e2e": "playwright test"
   },
   "dependencies": {
     "react": "^19.1.1",
     "react-dom": "^19.1.1"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.0",
     "@testing-library/jest-dom": "^6.6.4",
     "@testing-library/react": "^16.3.0",
     "@types/react": "^19.1.10",

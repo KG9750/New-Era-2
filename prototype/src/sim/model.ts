@@ -156,6 +156,7 @@ export interface PlayerActionEnvelope {
   atTick: number
   action: PlayerAction
   affectedBlockIds: readonly string[]
+  undoOfActionId?: string
 }
 
 export interface ScriptedEvent {

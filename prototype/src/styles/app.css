@@ -1023,6 +1023,152 @@ h2 {
   padding: 10px 12px;
 }
 
+.session-gate {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 48px;
+}
+
+.session-card {
+  background: var(--paper);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 18px 52px rgba(53, 45, 34, 0.12);
+  display: grid;
+  gap: 20px;
+  max-width: 720px;
+  padding: 34px;
+  width: 100%;
+}
+
+.session-card p {
+  color: #66685f;
+  line-height: 1.65;
+  margin-bottom: 0;
+}
+
+.session-build-grid,
+.session-meta-strip {
+  display: grid;
+  gap: 10px;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin: 0;
+}
+
+.session-build-grid div,
+.session-meta-strip div {
+  background: #efeadf;
+  border-radius: 8px;
+  display: grid;
+  gap: 3px;
+  padding: 10px 12px;
+}
+
+.session-build-grid dt,
+.session-meta-strip span {
+  color: #74766b;
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.session-build-grid dd {
+  font-weight: 800;
+  margin: 0;
+}
+
+.sample-id-field {
+  display: grid;
+  font-size: 13px;
+  font-weight: 800;
+  gap: 7px;
+}
+
+.sample-id-field input {
+  background: white;
+  border: 1px solid #aaa495;
+  border-radius: 8px;
+  font: inherit;
+  font-size: 18px;
+  max-width: 220px;
+  padding: 10px 12px;
+  text-transform: uppercase;
+}
+
+.session-card > button,
+.session-actions button {
+  background: #3f5848;
+  border: 0;
+  border-radius: 8px;
+  color: white;
+  cursor: pointer;
+  font-weight: 800;
+  padding: 11px 16px;
+  width: fit-content;
+}
+
+.session-card > button:disabled {
+  cursor: not-allowed;
+  opacity: 0.45;
+}
+
+.field-error {
+  color: var(--danger) !important;
+  font-weight: 750;
+}
+
+.cleared-session-note {
+  background: #e7eee5;
+  border-radius: 8px;
+  color: #405c49 !important;
+  padding: 10px 12px;
+}
+
+.session-meta-strip {
+  background: rgba(249, 246, 239, 0.7);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  margin-bottom: 22px;
+  padding: 8px;
+}
+
+.session-meta-strip strong {
+  font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+  font-size: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.session-actions {
+  align-items: center;
+  background: #e9e2d3;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  display: flex;
+  gap: 24px;
+  justify-content: space-between;
+  margin-top: 20px;
+  padding: 18px;
+}
+
+.session-actions p {
+  color: #65675e;
+  margin: 6px 0;
+  max-width: 740px;
+}
+
+.session-action-buttons {
+  display: flex;
+  flex-shrink: 0;
+  gap: 10px;
+}
+
+.session-actions .danger-button {
+  background: #7b4038;
+}
+
 .recap-items {
   display: grid;
   gap: 10px;

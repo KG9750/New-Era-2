@@ -37,13 +37,18 @@ export function createPlayerAction(
   sequence: number,
   atTick: number,
   action: PlayerAction,
+  undoOfActionId?: string,
 ): PlayerActionEnvelope {
   return {
     id: `action-${sequence.toString().padStart(4, '0')}`,
     sequence,
     atTick,
     action,
-    affectedBlockIds: affectedBlockIdsFor(action),
+    affectedBlockIds:
+      action.type === 'OPEN_TRANSPORT_SHORTCUT'
+        ? ['map:transport-route']
+        : affectedBlockIdsFor(action),
+    ...(undoOfActionId ? { undoOfActionId } : {}),
   }
 }
 

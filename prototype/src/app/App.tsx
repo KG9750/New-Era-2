@@ -19,8 +19,21 @@ import {
   resolveScheduleBlock,
 } from '../sim/schedule'
 import { selectTransportRoute } from '../sim/transport'
+import { createPlaytestExport } from '../telemetry/export'
+import {
+  createSessionRecorder,
+  recordExportCreated,
+  recordPlayerTransition,
+  recordSimulationAdvance,
+  recordSpeedChange,
+} from '../telemetry/session'
+import type {
+  PlaytestSessionMeta,
+  SessionRecorder,
+} from '../telemetry/session'
 import { MapPanel } from './MapPanel'
 import { ScheduleBoard } from './ScheduleBoard'
+import { SessionGate } from './SessionGate'
 
 type Speed = 1 | 3 | 8
 type FocusedIssue = 'food' | 'pump' | 'repair' | 'transport' | 'lin-request' | null
@@ -138,7 +151,12 @@ export function App() {
   const [simulation, setSimulation] = useState(initialState)
   const [speed, setSpeed] = useState<Speed>(3)
   const [focusedIssue, setFocusedIssue] = useState<FocusedIssue>(null)
+  const [activeSession, setActiveSession] = useState<PlaytestSessionMeta | null>(null)
+  const [wasSessionCleared, setWasSessionCleared] = useState(false)
+  const [lastExportedAtTick, setLastExportedAtTick] = useState<number>()
   const nextActionSequence = useRef(1)
+  const recorderRef = useRef<SessionRecorder | null>(null)
+  const downloadUrlRef = useRef<string | null>(null)
   const foodForecast = useMemo(() => calculateFoodForecast(simulation), [simulation])
   const repairForecast = useMemo(() => calculateRepairForecast(simulation), [simulation])
   const progress = selectProgress(simulation, scenario)
@@ -159,28 +177,113 @@ export function App() {
     : undefined
 
   function submit(action: PlayerAction) {
+    if (!recorderRef.current) return
+    const undoOfActionId =
+      action.type === 'UNDO_SCHEDULE'
+        ? simulation.scheduleTransactions.at(-1)?.actionId
+        : undefined
     const envelope = createPlayerAction(
       nextActionSequence.current,
       simulation.currentTick,
       action,
+      undoOfActionId,
     )
     nextActionSequence.current += 1
     if (action.type === 'CONTINUE_TO_NEXT_WEEK') setFocusedIssue(null)
-    setSimulation((current) => applyPlayerAction(current, envelope, scenario).state)
+    const result = applyPlayerAction(simulation, envelope, scenario)
+    recordPlayerTransition(recorderRef.current, simulation, envelope, result)
+    setSimulation(result.state)
   }
 
   useEffect(() => {
-    if (simulation.isPaused || simulation.recap) return
+    if (!activeSession || simulation.isPaused || simulation.recap) return
     const timer = window.setInterval(() => {
       setSimulation((current) => {
         if (current.isPaused || current.recap) return current
-        return advanceSimulation(current, current.currentTick + speed, scenario).state
+        const result = advanceSimulation(
+          current,
+          current.currentTick + speed,
+          scenario,
+        )
+        if (recorderRef.current) {
+          recordSimulationAdvance(recorderRef.current, current, result, speed)
+        }
+        return result.state
       })
     }, 250)
     return () => window.clearInterval(timer)
-  }, [simulation.isPaused, simulation.recap, speed])
+  }, [activeSession, simulation.isPaused, simulation.recap, speed])
+
+  useEffect(
+    () => () => {
+      if (downloadUrlRef.current) URL.revokeObjectURL(downloadUrlRef.current)
+    },
+    [],
+  )
+
+  function startSession(sampleId: string) {
+    const state = initialState()
+    const recorder = createSessionRecorder(sampleId, state)
+    recorderRef.current = recorder
+    nextActionSequence.current = 1
+    setSimulation(state)
+    setSpeed(3)
+    setFocusedIssue(null)
+    setLastExportedAtTick(undefined)
+    setActiveSession(recorder.meta)
+    setWasSessionCleared(false)
+  }
+
+  function changeSpeed(value: Speed) {
+    if (recorderRef.current && speed !== value) {
+      recordSpeedChange(recorderRef.current, simulation.currentTick, value)
+    }
+    setSpeed(value)
+  }
+
+  function exportSession() {
+    if (!recorderRef.current || !activeSession) return
+    recordExportCreated(recorderRef.current, simulation.currentTick)
+    const payload = createPlaytestExport(recorderRef.current, simulation)
+    const blob = new Blob([JSON.stringify(payload, null, 2)], {
+      type: 'application/json',
+    })
+    if (downloadUrlRef.current) URL.revokeObjectURL(downloadUrlRef.current)
+    const url = URL.createObjectURL(blob)
+    downloadUrlRef.current = url
+    const anchor = document.createElement('a')
+    anchor.href = url
+    anchor.download = `${activeSession.buildId}-${activeSession.sampleId}-${activeSession.sessionId}.json`
+    anchor.click()
+    setLastExportedAtTick(simulation.currentTick)
+  }
+
+  function clearSession() {
+    if (!activeSession) return
+    if (downloadUrlRef.current) {
+      URL.revokeObjectURL(downloadUrlRef.current)
+      downloadUrlRef.current = null
+    }
+    recorderRef.current = null
+    nextActionSequence.current = 1
+    setWasSessionCleared(true)
+    setActiveSession(null)
+    setSimulation(initialState())
+    setSpeed(3)
+    setFocusedIssue(null)
+    setLastExportedAtTick(undefined)
+  }
 
   const canEditPumpPlan = simulation.currentTick < scenario.pumpEventTick
+
+  if (!activeSession) {
+    return (
+      <SessionGate
+        onStart={startSession}
+        wasCleared={wasSessionCleared}
+      />
+    )
+  }
 
   return (
     <main className="app-shell">
@@ -199,7 +302,7 @@ export function App() {
               <button
                 className={speed === value ? 'active' : ''}
                 key={value}
-                onClick={() => setSpeed(value)}
+                onClick={() => changeSpeed(value)}
                 type="button"
               >
                 {value}×
@@ -229,6 +332,14 @@ export function App() {
           <span style={{ width: `${progress}%` }} />
         </div>
       </header>
+
+      <section className="session-meta-strip" aria-label="当前测试会话元数据">
+        <div><span>匿名编号</span><strong>{activeSession.sampleId}</strong></div>
+        <div><span>构建</span><strong>{activeSession.buildId}</strong></div>
+        <div><span>场景</span><strong>{activeSession.scenarioVersion}</strong></div>
+        <div><span>种子</span><strong>{activeSession.fixedSeed}</strong></div>
+        <div><span>Session</span><strong>{activeSession.sessionId}</strong></div>
+      </section>
 
       <section className="briefing" aria-labelledby="briefing-title">
         <div className="section-heading">
@@ -582,6 +693,34 @@ export function App() {
           </ol>
         </section>
       )}
+
+      <section className="session-actions" aria-labelledby="session-actions-title">
+        <div>
+          <p className="eyebrow">匿名证据链</p>
+          <h2 id="session-actions-title">导出或结束当前会话</h2>
+          <p>
+            JSON 只包含固定元数据、机器时长、动作、候选编辑组、领域事件和速度轨迹；
+            有效编辑数由测试运营负责人另行裁定。
+          </p>
+          {lastExportedAtTick !== undefined && (
+            <small role="status">
+              已导出 tick {lastExportedAtTick} 的匿名记录。
+            </small>
+          )}
+        </div>
+        <div className="session-action-buttons">
+          <button onClick={exportSession} type="button">
+            下载匿名 JSON
+          </button>
+          <button
+            className="danger-button"
+            onClick={clearSession}
+            type="button"
+          >
+            结束并清空会话
+          </button>
+        </div>
+      </section>
     </main>
   )
 }

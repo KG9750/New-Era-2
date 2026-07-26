@@ -3,13 +3,18 @@ import { afterEach, describe, expect, it, vi } from 'vitest'
 import { App, CharacterDecisionPanel } from '../src/app/App'
 import { gate1WeekOneScenario as scenario } from '../src/scenario/gate1-week-one'
 
+function renderStartedApp() {
+  render(<App />)
+  fireEvent.click(screen.getByRole('button', { name: '创建固定初态会话' }))
+}
+
 describe('minimal weekly flow UI', () => {
   afterEach(() => {
     vi.useRealTimers()
   })
 
   it('opens on the weekly issue summary instead of a full schedule grid', () => {
-    render(<App />)
+    renderStartedApp()
 
     expect(screen.getByRole('heading', { name: '本周三项取舍' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: /水泵需要 2 个预防性维修块/ })).toBeInTheDocument()
@@ -18,7 +23,7 @@ describe('minimal weekly flow UI', () => {
   })
 
   it('locates the activity block and immediately updates forecast and reason', () => {
-    render(<App />)
+    renderStartedApp()
 
     const forecastPanel = screen.getByRole('heading', { name: '粮食' }).closest('section')
     expect(forecastPanel).not.toBeNull()
@@ -36,7 +41,7 @@ describe('minimal weekly flow UI', () => {
   })
 
   it('keeps the 112-cell week grid behind disclosure and supports one batch action', () => {
-    render(<App />)
+    renderStartedApp()
 
     expect(screen.queryByRole('grid', { name: '第 1 周完整计划' })).not.toBeInTheDocument()
     fireEvent.click(screen.getByRole('button', { name: '展开完整周计划' }))
@@ -61,7 +66,7 @@ describe('minimal weekly flow UI', () => {
   })
 
   it('exposes explicit permanent scope, copy-day, undo, and a second 112-cell week', () => {
-    render(<App />)
+    renderStartedApp()
     fireEvent.click(screen.getByRole('button', { name: '展开完整周计划' }))
 
     expect(screen.getByRole('option', { name: '设为后续基础计划' })).toBeInTheDocument()
@@ -77,7 +82,7 @@ describe('minimal weekly flow UI', () => {
   })
 
   it('marks a mild food gap as accepted without changing its forecast math', () => {
-    render(<App />)
+    renderStartedApp()
     const foodPanel = screen.getByRole('heading', { name: '粮食' }).closest('section')
     expect(foodPanel).not.toBeNull()
     expect(within(foodPanel!).getByText('3–11')).toBeInTheDocument()
@@ -91,7 +96,7 @@ describe('minimal weekly flow UI', () => {
   })
 
   it('shows Qiao Pan red-line warning before a third consecutive overtime is submitted', () => {
-    render(<App />)
+    renderStartedApp()
     fireEvent.click(screen.getByRole('button', { name: '展开完整周计划' }))
     const grid = screen.getByRole('grid', { name: '第 1 周完整计划' })
     for (const day of ['第1日', '第2日', '第3日']) {
@@ -123,7 +128,7 @@ describe('minimal weekly flow UI', () => {
   })
 
   it('renders the authoritative map route and updates loss and food after opening the shortcut', () => {
-    render(<App />)
+    renderStartedApp()
     const mapPanel = screen.getByRole('heading', {
       name: '运输路径与人物位置',
     }).closest('section')
@@ -147,7 +152,7 @@ describe('minimal weekly flow UI', () => {
 
   it('enters week two paused with inherited-plan context and only new exceptions', () => {
     vi.useFakeTimers()
-    render(<App />)
+    renderStartedApp()
     fireEvent.click(screen.getByRole('button', { name: '开始运行' }))
     act(() => {
       vi.advanceTimersByTime(30_000)
