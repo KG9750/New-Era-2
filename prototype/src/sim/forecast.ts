@@ -81,10 +81,12 @@ function calculateLaborAllocation(state: SimulationState): LaborAllocation {
   for (const character of CHARACTERS) {
     for (let dayIndex = firstDay; dayIndex < firstDay + 7; dayIndex += 1) {
       for (let blockIndex = 0; blockIndex < 4; blockIndex += 1) {
-        const activity = resolveScheduleBlock(
-          state,
-          createBlockId(character.id, dayIndex, blockIndex),
-        ).activity
+        const blockId = createBlockId(character.id, dayIndex, blockIndex)
+        const activity =
+          state.linHeRequestDecision === 'accepted' &&
+          blockId === LIN_HE_STUDY_BLOCK_ID
+            ? 'study'
+            : resolveScheduleBlock(state, blockId).activity
         if (activity === 'food') {
           foodByCharacter[character.id] += FOOD_EFFICIENCY[character.id]
         }
@@ -198,9 +200,7 @@ export function calculateFoodForecast(state: SimulationState): FoodForecast {
     high: FOOD_CURRENT_STOCK + production.high - FOOD_KNOWN_CONSUMPTION,
   }
   const status = statusFor(endingStock, FOOD_TARGET, 4)
-  const requestAccepted =
-    state.linHeRequestDecision === 'accepted' &&
-    resolveScheduleBlock(state, LIN_HE_STUDY_BLOCK_ID).activity === 'study'
+  const requestAccepted = state.linHeRequestDecision === 'accepted'
   const modifiers = [
     state.fertilizerUsed ? '化肥 +6' : '化肥尚未使用',
     requestAccepted ? '林禾学习占用 1 个农务块' : null,

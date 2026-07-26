@@ -79,7 +79,7 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   ).toContainText('已定位 · 待处理')
   await page.getByRole('button', { name: /补足第 2 个检修块/ }).click()
   await expect(
-    page.getByRole('button', { name: /水泵需要 2 个预防性维修块/ }),
+    page.getByRole('button', { name: /水泵检修已安排 2 个维修块/ }),
   ).toContainText('已安排 · 等待事件')
   await page
     .getByRole('button', { name: '开启短通路 · 维修保障 −1' })
@@ -90,7 +90,7 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   await page.clock.runFor(10_000)
   await expect(page.getByRole('heading', { name: /水泵异常，检修奏效/ })).toBeVisible()
   await expect(
-    page.getByRole('button', { name: /水泵需要 2 个预防性维修块/ }),
+    page.getByRole('button', { name: /水泵检修已安排 2 个维修块/ }),
   ).toContainText('已兑现 · 检修奏效')
   await page.getByRole('button', { name: '确认后继续' }).click()
   await expect(page.getByText(/事件触发时，时钟自动暂停/)).toBeVisible()

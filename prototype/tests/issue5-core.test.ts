@@ -189,4 +189,21 @@ describe('Gate 1 Issue #5 core contract', () => {
         Object.keys(item.values).length > 0,
     )).toBe(true)
   })
+
+  it('keeps the accepted week-two consequence visible after weekly overrides expire', () => {
+    let state = reachWeekTwo()
+    state = act(state, 91, {
+      type: 'RESOLVE_LIN_HE_REQUEST',
+      decision: 'accepted',
+    })
+    state = act(state, 92, { type: 'SET_PAUSED', paused: false })
+    state = advanceSimulation(state, scenario.simulationEndTick, scenario).state
+
+    expect(state.isComplete).toBe(true)
+    expect(state.weeklyOverrides).toEqual({})
+    expect(state.linHeRequestDecision).toBe('accepted')
+    expect(calculateFoodForecast(state).endingStock).toEqual(
+      state.recaps[1].planned,
+    )
+  })
 })

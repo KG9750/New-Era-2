@@ -50,10 +50,28 @@ describe('minimal weekly flow UI', () => {
     )
     expect(within(forecastPanel!).getByText('9')).toBeInTheDocument()
     expect(
-      screen.getByRole('button', { name: /水泵需要 2 个预防性维修块/ }),
+      screen.getByRole('button', { name: /水泵检修已安排 2 个维修块/ }),
     ).toHaveTextContent('已安排 · 等待事件')
     expect(screen.getByText(/已安排 2 个水泵维修块/)).toBeInTheDocument()
     expect(screen.getByText(/粮食 3–11 → 9；维修保障/)).toBeInTheDocument()
+  })
+
+  it('keeps the pump summary and located block label in sync with the chosen plan', () => {
+    renderStartedApp()
+
+    fireEvent.click(screen.getByRole('button', { name: /水泵需要 2 个预防性维修块/ }))
+    const schedulePanel = screen.getByRole('heading', {
+      name: '林禾 · 周二 B2',
+    }).closest('section')
+    expect(schedulePanel).not.toBeNull()
+    expect(within(schedulePanel!).getByText('休息 · 基础计划')).toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: /补足第 2 个检修块/ }))
+
+    expect(within(schedulePanel!).getByText('维修 · 本周例外')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: /水泵检修已安排 2 个维修块/ }),
+    ).toBeInTheDocument()
   })
 
   it('keeps the 112-cell week grid behind disclosure and supports one batch action', () => {

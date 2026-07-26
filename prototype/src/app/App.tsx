@@ -8,6 +8,7 @@ import {
   formatRange,
 } from '../sim/forecast'
 import type {
+  Activity,
   FoodForecast,
   PlayerAction,
   RepairForecast,
@@ -42,6 +43,15 @@ type SupplyForecast = FoodForecast | RepairForecast
 
 interface AppProps {
   buildMetadata: RcBuildMetadata
+}
+
+const ACTIVITY_LABELS: Readonly<Record<Activity, string>> = {
+  food: '农务',
+  repair: '维修',
+  logistics: '物流',
+  study: '学习',
+  rest: '休息',
+  social: '社交',
 }
 
 function initialState(): SimulationState {
@@ -170,6 +180,10 @@ export function App({ buildMetadata }: AppProps) {
     simulation.currentTick >= 144 * 7
       ? 2
       : 1
+  const pumpBlock = resolveScheduleBlock(
+    simulation,
+    PUMP_MAINTENANCE_BLOCK_ID,
+  )
   const pumpPlanReady = hasPreventiveMaintenance(simulation)
   const transportRoute = selectTransportRoute(simulation)
   const latestBlockingEvent = simulation.isPaused
@@ -410,11 +424,21 @@ export function App({ buildMetadata }: AppProps) {
           >
             <span className="issue-icon" aria-hidden="true">!</span>
             <span className="issue-copy">
-              <strong>水泵需要 2 个预防性维修块</strong>
+              <strong>
+                {pumpPlanReady
+                  ? '水泵检修已安排 2 个维修块'
+                  : '水泵需要 2 个预防性维修块'}
+              </strong>
               <span>
-                乔磐已排 1 块；周三前再补 1 块，否则粮食下探会成为严重短缺。
+                {pumpPlanReady
+                  ? '乔磐与林禾已各排 1 块；周三前的已知停机下探已从预测区间移除。'
+                  : '乔磐已排 1 块；周三前再补 1 块，否则粮食下探会成为严重短缺。'}
               </span>
-              <small>影响：乔磐、林禾 · 周二 · 粮食与维修保障</small>
+              <small>
+                {pumpPlanReady
+                  ? '已安排 · 影响：粮食与维修保障'
+                  : '影响：乔磐、林禾 · 周二 · 粮食与维修保障'}
+              </small>
             </span>
             <span className="issue-action">
               {pumpIssueStatus}
@@ -537,7 +561,9 @@ export function App({ buildMetadata }: AppProps) {
               </h2>
             </div>
             <span className="skill-chip">
-              {currentWeek === 1 ? '农务' : '新增请求'}
+              {currentWeek === 1
+                ? `${ACTIVITY_LABELS[pumpBlock.activity]} · ${pumpBlock.source}`
+                : '新增请求'}
             </span>
           </div>
           <p className="block-time">
