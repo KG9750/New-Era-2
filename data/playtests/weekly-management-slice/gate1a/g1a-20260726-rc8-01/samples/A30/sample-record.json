@@ -5,7 +5,8 @@
   "sampleKind": "primary",
   "batchId": "Batch 1",
   "issue": 32,
-  "operator": "/root/gate1a_test_ops_lead",
+  "operator": "/root",
+  "validityAdjudicator": "/root/gate1a_test_ops_lead",
   "sealedAtUtc": "2026-07-26T16:06:44Z",
   "adjudicatedAtUtc": "2026-07-26T16:16:15Z",
   "identityAndIsolation": {

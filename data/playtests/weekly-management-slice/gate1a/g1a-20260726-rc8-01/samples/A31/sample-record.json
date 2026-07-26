@@ -6,7 +6,9 @@
   "batchId": "Batch 1",
   "issue": 33,
   "operator": "/root",
+  "validityAdjudicator": "/root/gate1a_test_ops_lead",
   "sealedAtUtc": "2026-07-26T16:25:34Z",
+  "reconciledAtUtc": "2026-07-26T16:41:42Z",
   "identityAndIsolation": {
     "agentTask": "/root/gate1a_a31",
     "agentSessionId": null,
@@ -162,11 +164,19 @@
       "independentP1Established": false
     }
   ],
+  "handoffReconciliation": {
+    "summaryVisibility": "The handoff summary described A31 as paused and did not expose the in-flight player task.",
+    "laterEvidenceCommit": "3fdbc2fad583c84d47514e4b8b1a7ec33f47c5d7",
+    "agentTaskRecovered": "/root/gate1a_a31",
+    "overlapWithA30OrMC": false,
+    "priorInvalidRulingSuperseded": true,
+    "adjudicatorDecision": "VALID"
+  },
   "subjectiveHumanFields": "not_applicable_agent_proxy",
   "validityDecision": {
     "status": "VALID",
-    "reasonCode": "COMPLETE_CAPTURE_AND_RECOVERED_TOOL_INTERRUPTION",
-    "reason": "The loopback host interruption occurred only after both weeks and decisions were complete. The same browser session and frozen terminal state were preserved; after the identical host returned, server raw/sidecar/receipt and byte-identical browser download verified the original session without replay or strategy change.",
+    "reasonCode": "VALID_COMPLETE_CAPTURE_AND_PROTOCOL_COMPLIANCE_AFTER_HANDOFF_RECONCILIATION",
+    "reason": "The complete attribution chain was recovered from commit 3fdbc2f: a fresh A31 player task, frozen packet, initial observation, preserved terminal page, byte-identical download, clear and V4. The session did not overlap A30/M-C; the earlier invalid ruling was based on incomplete handoff visibility.",
     "negativeOutcomeExcludedBecauseOfResult": false,
     "productObservationsRetained": true,
     "includedInSevenValidSampleDenominator": true,
@@ -175,7 +185,7 @@
     "replacementSampleId": null
   },
   "trackLocks": {
-    "gate1A": "IN_PROGRESS_2_OF_7_VALID",
+    "gate1A": "IN_PROGRESS_1_OF_7_VALID_A37_PENDING",
     "gate1H": "PENDING",
     "gate2": "LOCKED"
   }
