@@ -5,7 +5,6 @@ import {
   GIVEN_NAMES,
   GROWTH_TEMPLATES,
   MOTIVATION_TEMPLATES,
-  ORIGINS,
   STRESS_RESPONSES,
   TURNING_TEMPLATES,
   WORK_TEMPLATES,
@@ -30,6 +29,26 @@ import {
   type SkillValues,
   type ValidationFinding,
 } from './model'
+import {
+  computeDistinctionFingerprint,
+} from './fingerprint'
+import {
+  machineFinding as finding,
+  validateCharacter,
+  validateCharacterLibraryContent,
+} from './validator'
+
+export { validateCharacter, validateCharacterLibraryContent } from './validator'
+
+const CHARACTER_SCHEMA_VERSION = 'character-v0.1.1-candidate' as const
+const LIBRARY_SCHEMA_VERSION = 'character-library-v0.1.1-candidate' as const
+const GENERATOR_SCHEMA_VERSION = 'char-gen-v0.1.1-candidate' as const
+const CONTENT_PACK_VERSIONS = {
+  biography: 'candidate-0.1.1',
+  traits: 'candidate-0.1.0',
+  values_and_redlines: 'candidate-0.1.1',
+} as const
+const CULTURE_PACK_VERSION = 'cn-frontier-draft-v0.1' as const
 
 type CanonicalJson =
   | null
@@ -344,13 +363,9 @@ export function generateCharacter(input: CharacterGenerationInput): GeneratedCha
   const personSeed = deriveSeedV1('library-character', [
     input.worldSeedHex,
     input.characterIndex,
-    'char-gen-v0.1-candidate',
-    {
-      biography: 'candidate-0.1.0',
-      traits: 'candidate-0.1.0',
-      values_and_redlines: 'candidate-0.1.0',
-    },
-    'cn-frontier-draft-v0.1',
+    GENERATOR_SCHEMA_VERSION,
+    CONTENT_PACK_VERSIONS,
+    CULTURE_PACK_VERSION,
   ])
   const attemptSeed = deriveSeedV1('candidate-attempt', [
     input.worldSeedHex,
@@ -371,16 +386,30 @@ export function generateCharacter(input: CharacterGenerationInput): GeneratedCha
   const givenName = GIVEN_NAMES[Math.floor(nameIndex / FAMILY_NAMES.length)]
   const formalName = `${familyName}${givenName}`
 
+  const lifeHistorySeed = deriveSeedV1('library-life-history-order', [
+    input.worldSeedHex,
+  ])
   const growthOffset =
-    Number.parseInt(deriveSeedV1('library-growth-order', [input.worldSeedHex]).slice(0, 8), 16) %
+    Number.parseInt(lifeHistorySeed.slice(0, 8), 16) %
     GROWTH_TEMPLATES.length
-  const growth =
-    GROWTH_TEMPLATES[(growthOffset + input.characterIndex * 3) % GROWTH_TEMPLATES.length]
-
   const workOffset =
-    Number.parseInt(deriveSeedV1('library-work-order', [input.worldSeedHex]).slice(0, 8), 16) %
+    Number.parseInt(lifeHistorySeed.slice(8, 16), 16) %
     WORK_TEMPLATES.length
-  const work = WORK_TEMPLATES[(workOffset + input.characterIndex * 5) % WORK_TEMPLATES.length]
+  const motivationOffset =
+    Number.parseInt(lifeHistorySeed.slice(16, 24), 16) %
+    MOTIVATION_TEMPLATES.length
+  const workCycle = Math.floor(input.characterIndex / WORK_TEMPLATES.length)
+  const growthIndex =
+    (growthOffset + input.characterIndex * 3 + workCycle) %
+    GROWTH_TEMPLATES.length
+  const workIndex =
+    (workOffset + input.characterIndex * 5) %
+    WORK_TEMPLATES.length
+  const motivationIndex =
+    (motivationOffset + input.characterIndex * 7 + workCycle * 3) %
+    MOTIVATION_TEMPLATES.length
+  const growth = GROWTH_TEMPLATES[growthIndex]
+  const work = WORK_TEMPLATES[workIndex]
   const compatibleEducation = EDUCATION_TEMPLATES.filter(
     (template) => template.primary === work.primary,
   )
@@ -397,15 +426,7 @@ export function generateCharacter(input: CharacterGenerationInput): GeneratedCha
         TURNING_TEMPLATES.length
     ]
 
-  const motivationOffset =
-    Number.parseInt(
-      deriveSeedV1('library-motivation-order', [input.worldSeedHex]).slice(0, 8),
-      16,
-    ) % MOTIVATION_TEMPLATES.length
-  const motivation =
-    MOTIVATION_TEMPLATES[
-      (motivationOffset + input.characterIndex * 5) % MOTIVATION_TEMPLATES.length
-    ]
+  const motivation = MOTIVATION_TEMPLATES[motivationIndex]
 
   const age = 29 + random.nextInt(30)
   const turningAge = age - 3
@@ -588,15 +609,17 @@ export function generateCharacter(input: CharacterGenerationInput): GeneratedCha
   const mbti = createMbti(input.worldSeedHex, input.characterIndex, random)
   const primarySkills = selectPrimarySkills(skills)
   const redlineId = `${characterId}:redline:${turn.id}`
-  const fingerprint = deriveSeedV1('distinction-fingerprint', [
-    biographyNodes.map((node) => node.template_id),
+  const fingerprint = computeDistinctionFingerprint({
+    biographyTemplateIds: biographyNodes.map((node) => node.template_id),
     primarySkills,
-    mbti.type,
-    Object.values(mbti.dimensions).map((dimension) => dimension.strength),
-    turn.values,
-    turn.redline.summary,
-    motivation.motivation,
-  ])
+    mbtiType: mbti.type,
+    mbtiStrengths: Object.values(mbti.dimensions).map(
+      (dimension) => dimension.strength,
+    ),
+    coreValueSummaries: turn.values,
+    redlineSummaries: [turn.redline.summary],
+    currentMotivation: motivation.motivation,
+  })
   const affiliationOffset = random.nextInt(AFFILIATION_CANDIDATES.length)
   const affiliations = [0, 1, 2].map(
     (offset) =>
@@ -627,10 +650,22 @@ export function generateCharacter(input: CharacterGenerationInput): GeneratedCha
           : [
               { relationship: 'default', form: givenName },
               { relationship: 'recognized_experience', form: experienceAddress },
-            ]
+          ]
+  const coreValues: GeneratedCharacter['core_values'] = [
+    {
+      value_id: `${characterId}:value:0`,
+      summary: turn.values[0],
+      source_ids: [nodeIds.turn],
+    },
+    {
+      value_id: `${characterId}:value:1`,
+      summary: turn.values[1],
+      source_ids: [nodeIds.turn],
+    },
+  ]
 
   return {
-    schema_version: 'character-v0.1-candidate',
+    schema_version: CHARACTER_SCHEMA_VERSION,
     character_id: characterId,
     person_seed: personSeed,
     generation_attempt: attemptIndex,
@@ -638,11 +673,11 @@ export function generateCharacter(input: CharacterGenerationInput): GeneratedCha
     name_parts: {
       family_name: familyName,
       given_name: givenName,
-      culture_pack_version: 'cn-frontier-draft-v0.1',
+      culture_pack_version: CULTURE_PACK_VERSION,
     },
     age,
     gender,
-    origin: random.nextInt(4) === 0 ? ORIGINS[random.nextInt(ORIGINS.length)] : growth.context,
+    origin: growth.context,
     affiliation_candidates: affiliations,
     address_rules: addressRules,
     biography_nodes: biographyNodes,
@@ -652,6 +687,7 @@ export function generateCharacter(input: CharacterGenerationInput): GeneratedCha
       variation_source_id: `seed_variation:${characterId}:seeded-variation-v1`,
       person_seed: personSeed,
       algorithm_version: 'seeded-variation-v1',
+      applicability_condition: 'positive_below_8_and_negative_at_least_5',
       positive_attribute: positiveAttribute,
       negative_attribute: negativeAttribute,
       positive_value: 1,
@@ -663,7 +699,7 @@ export function generateCharacter(input: CharacterGenerationInput): GeneratedCha
     mbti,
     traits: [growth.trait, work.trait],
     stress_response: STRESS_RESPONSES[random.nextInt(STRESS_RESPONSES.length)],
-    core_values: turn.values,
+    core_values: coreValues,
     redlines: [
       {
         redline_id: redlineId,
@@ -675,8 +711,8 @@ export function generateCharacter(input: CharacterGenerationInput): GeneratedCha
         scope: turn.redline.scope,
         source_ids: [
           nodeIds.turn,
-          `${characterId}:value:0`,
-          `${characterId}:value:1`,
+          coreValues[0].value_id,
+          coreValues[1].value_id,
         ],
         disclosed_at: 'character_join_preview',
       },
@@ -693,190 +729,52 @@ export function generateCharacter(input: CharacterGenerationInput): GeneratedCha
     },
   }
 }
-function finding(
-  validationId: string,
-  phase: ValidationFinding['phase'],
-  subjectId: string,
-  predicate: string,
-  evidence: string,
-  passed: boolean,
-): ValidationFinding {
-  return {
-    validation_id: validationId,
-    executor: 'machine',
-    phase,
-    subject_id: subjectId,
-    predicate,
-    evidence,
-    result: passed ? 'passed' : 'blocked',
-    reviewer: 'character-generator-v0.1',
-    timestamp: 'deterministic-build',
-  }
-}
-
-export function validateCharacter(character: GeneratedCharacter): readonly ValidationFinding[] {
-  const nodeIds = new Set(character.biography_nodes.map((node) => node.node_id))
-  const requiredFieldsPresent =
-    character.character_id.length > 0 &&
-    character.formal_name.length > 0 &&
-    character.biography_nodes.length >= 5 &&
-    character.current_motivation.length > 0 &&
-    character.relationship_hooks.length > 0 &&
-    character.long_term_goal.length > 0
-  const forbiddenFieldsAbsent = !['nickname', 'alias', 'codename', 'old_codename'].some(
-    (key) => key in character,
-  )
-
-  const chronologyValid = character.biography_nodes.every((node, index, nodes) => {
-    if (node.age_start < 0 || node.age_end < node.age_start || node.age_end > character.age) {
-      return false
-    }
-    if (index === 0) {
-      return node.age_start === 0
-    }
-    return nodes[index - 1].age_end <= node.age_start
-  })
-
-  const recomputedAttributes = emptyAttributes()
-  const modifierSourcesValid = character.biography_nodes.every((node) =>
-    node.attribute_modifiers.every(
-      (modifier) =>
-        modifier.modifier_source_id === node.node_id &&
-        (modifier.value === 1 || modifier.value === -1),
-    ),
-  )
-  for (const node of character.biography_nodes) {
-    for (const modifier of node.attribute_modifiers) {
-      recomputedAttributes[modifier.attribute] += modifier.value
-    }
-  }
-  recomputedAttributes[character.seeded_variation.positive_attribute] +=
-    character.seeded_variation.positive_value
-  recomputedAttributes[character.seeded_variation.negative_attribute] +=
-    character.seeded_variation.negative_value
-  const attributeTotal = Object.values(character.attributes).reduce(
-    (sum, value) => sum + value,
-    0,
-  )
-  const attributesValid =
-    modifierSourcesValid &&
-    ATTRIBUTE_KEYS.every(
-      (attribute) =>
-        character.attributes[attribute] === recomputedAttributes[attribute] &&
-        character.attributes[attribute] >= 0 &&
-        character.attributes[attribute] <= 10,
-    ) &&
-    attributeTotal >= 32 &&
-    attributeTotal <= 40 &&
-    ATTRIBUTE_KEYS.filter((attribute) => character.attributes[attribute] >= 8).length <= 2 &&
-    ATTRIBUTE_KEYS.some((attribute) => character.attributes[attribute] <= 4)
-
-  const extremeSourcesValid =
-    ATTRIBUTE_KEYS.every((attribute) => {
-      const value = character.attributes[attribute]
-      if (value > 2 && value < 9) {
-        return true
-      }
-      return character.biography_nodes.some((node) =>
-        node.attribute_modifiers.some((modifier) => modifier.attribute === attribute),
-      )
-    }) &&
-    SKILL_KEYS.every((skill) => {
-      if (character.skills[skill] < 14) {
-        return true
-      }
-      return character.biography_nodes.some((node) =>
-        node.skill_experience.some(
-          (experience) =>
-            experience.skill === skill &&
-            (experience.intensity === 'major_duty' ||
-              experience.intensity === 'long_profession'),
-        ),
-      )
-    })
-
-  const qualificationsValid = character.qualifications.every(
-    (qualification) =>
-      qualification.rank >= 1 &&
-      qualification.rank <= 3 &&
-      nodeIds.has(qualification.source_node_id) &&
-      character.biography_nodes.some((node) =>
-        node.qualifications.some(
-          (nodeQualification) =>
-            nodeQualification.qualification_id === qualification.qualification_id &&
-            nodeQualification.source_node_id === qualification.source_node_id,
-        ),
-      ),
-  )
-
-  const mbtiHasNoNumericEffects =
-    !('attribute_modifiers' in character.mbti) &&
-    !('skill_modifiers' in character.mbti) &&
-    !('profession' in character.mbti) &&
-    !('morality' in character.mbti)
-
-  return [
-    finding(
-      'M03',
-      'character_generation',
-      character.character_id,
-      '稳定身份、正式姓名、履历和必填人物字段存在，且无外号或旧代号字段',
-      `required=${requiredFieldsPresent}; forbidden_fields_absent=${forbiddenFieldsAbsent}`,
-      requiredFieldsPresent && forbiddenFieldsAbsent,
-    ),
-    finding(
-      'M04',
-      'character_generation',
-      character.character_id,
-      '履历年龄区间按时间排列、不冲突且不超过当前年龄',
-      character.biography_nodes
-        .map((node) => `${node.node_id}:${node.age_start}-${node.age_end}`)
-        .join(';'),
-      chronologyValid,
-    ),
-    finding(
-      'M05',
-      'character_generation',
-      character.character_id,
-      '属性来源可追溯、值域合法且标准成年人物总和为32-40',
-      `attribute_total=${attributeTotal}; modifiers_sourced=${modifierSourcesValid}`,
-      attributesValid,
-    ),
-    finding(
-      'M06',
-      'character_generation',
-      character.character_id,
-      '极端属性和14以上技能具有长期经历来源',
-      `extreme_attributes=${ATTRIBUTE_KEYS.filter((key) => character.attributes[key] <= 2 || character.attributes[key] >= 9).join(',') || 'none'}; expert_skills=${SKILL_KEYS.filter((key) => character.skills[key] >= 14).join(',') || 'none'}`,
-      extremeSourcesValid,
-    ),
-    finding(
-      'M07',
-      'character_generation',
-      character.character_id,
-      '每项专业资格均引用训练或实践履历节点',
-      character.qualifications
-        .map(
-          (qualification) =>
-            `${qualification.qualification_id}@${qualification.source_node_id}`,
-        )
-        .join(';'),
-      qualificationsValid,
-    ),
-    finding(
-      'M09',
-      'character_generation',
-      character.character_id,
-      'MBTI仅表达偏好，不写入属性、技能、职业或道德修正',
-      `mbti_type=${character.mbti.type}; numeric_effect_fields=none`,
-      mbtiHasNoNumericEffects,
-    ),
-  ]
-}
-
 export interface CharacterLibraryGenerationInput {
   worldSeedHex: string
   count: number
+}
+
+function frozenSeedKatFinding(): ValidationFinding {
+  const worldSeed =
+    '0000000000000000000000000000000000000000000000000000000000000001'
+  const candidateSequenceSeed = deriveSeedV1('replacement-seat', [
+    worldSeed,
+    'seat:test',
+    'loss:test',
+    'standard_12m_p01',
+  ])
+  const cycleSeed = deriveSeedV1('replacement-cycle', [
+    candidateSequenceSeed,
+    0,
+    0,
+    0,
+    'rc:loss:test',
+    'char-gen-v1',
+    { biography: '1.0.0', traits: '1.0.0' },
+    'culture-v1',
+  ])
+  const personSeed = deriveSeedV1('candidate-person', [cycleSeed])
+  const attemptSeed = deriveSeedV1('candidate-attempt', [
+    worldSeed,
+    personSeed,
+    0,
+  ])
+  const expected = [
+    '964ea7a1c6840d36b9f49f4df75e546b',
+    '1d50b638e9001a77e19abe3fd4b2c88a',
+    'cc00ead317e30f3a279f232891782066',
+    '8a0ac8633dc448667567910ae27ca29d',
+  ]
+  const actual = [candidateSequenceSeed, cycleSeed, personSeed, attemptSeed]
+
+  return finding(
+    'SEED-KAT',
+    'library_build',
+    'seed_derivation_v1',
+    '冻结的席位、周期、人物与attempt已知答案向量逐项一致',
+    `actual=${actual.join(',')}; expected=${expected.join(',')}`,
+    actual.every((value, index) => value === expected[index]),
+  )
 }
 
 export function generateCharacterLibrary(
@@ -893,23 +791,7 @@ export function generateCharacterLibrary(
     generateCharacter({ worldSeedHex: input.worldSeedHex, characterIndex }),
   )
   const characterFindings = rawCharacters.flatMap(validateCharacter)
-  const uniqueIds = new Set(rawCharacters.map((character) => character.character_id))
-  const uniqueNames = new Set(rawCharacters.map((character) => character.formal_name))
-  const uniqueFingerprints = new Set(
-    rawCharacters.map((character) => character.distinction_fingerprint),
-  )
-  const uniquenessPassed =
-    uniqueIds.size === input.count &&
-    uniqueNames.size === input.count &&
-    uniqueFingerprints.size === input.count
-  const uniquenessFinding = finding(
-    'M10',
-    'library_build',
-    'character-library',
-    '人物ID、正式姓名与区分度指纹在候选库内无重复',
-    `count=${input.count}; unique_ids=${uniqueIds.size}; unique_names=${uniqueNames.size}; unique_fingerprints=${uniqueFingerprints.size}`,
-    uniquenessPassed,
-  )
+  const libraryContentFindings = validateCharacterLibraryContent(rawCharacters)
 
   const replayPassed = rawCharacters.every((character, characterIndex) => {
     const replay = generateCharacter({
@@ -919,13 +801,24 @@ export function generateCharacterLibrary(
     return JSON.stringify(replay) === JSON.stringify(character)
   })
   const replayFinding = finding(
-    'M12',
+    'LIBRARY-REPLAY-PARTIAL',
     'library_build',
     'character-library',
-    '相同世界种子、人物索引与attempt生成逐字段相同人物',
+    '相同世界种子、人物索引与attempt在当前候选库接口中生成逐字段相同人物',
     `replayed=${rawCharacters.length}; mismatches=${replayPassed ? 0 : 'one_or_more'}`,
     replayPassed,
   )
+  const m12Finding: ValidationFinding = {
+    ...finding(
+      'M12',
+      'library_build',
+      'character-library',
+      '完整GenerationContextSnapshot、generation_context_hash与席位到attempt派生证据可重放',
+      'not_implemented=GenerationContextSnapshot,generation_context_hash,seat_cycle_attempt_chain,retry_evidence',
+      true,
+    ),
+    result: 'not_run',
+  }
 
   const mbtiCounts = rawCharacters.reduce<Record<MbtiType, number>>(
     (counts, character) => {
@@ -986,6 +879,85 @@ export function generateCharacterLibrary(
     ),
     result: mbtiSkillDiversityPassed ? 'passed' : 'warned',
   }
+  const mbtiContentDiversity = rawCharacters.reduce<
+    Record<
+      MbtiType,
+      {
+        growth: Set<string>
+        work: Set<string>
+        turningPoint: Set<string>
+        motivation: Set<string>
+        values: Set<string>
+        redlines: Set<string>
+      }
+    >
+  >(
+    (groups, character) => {
+      const group = groups[character.mbti.type]
+      for (const node of character.biography_nodes) {
+        if (node.stage === 'growth') {
+          group.growth.add(node.template_id)
+        } else if (node.stage === 'work') {
+          group.work.add(node.template_id)
+        } else if (node.stage === 'turning_point') {
+          group.turningPoint.add(node.template_id)
+        } else if (node.stage === 'current_motivation') {
+          group.motivation.add(node.template_id)
+        }
+      }
+      group.values.add(
+        character.core_values.map((value) => value.summary).join('|'),
+      )
+      group.redlines.add(character.redlines.map((redline) => redline.summary).join('|'))
+      return groups
+    },
+    Object.fromEntries(
+      MBTI_TYPES.map((type) => [
+        type,
+        {
+          growth: new Set<string>(),
+          work: new Set<string>(),
+          turningPoint: new Set<string>(),
+          motivation: new Set<string>(),
+          values: new Set<string>(),
+          redlines: new Set<string>(),
+        },
+      ]),
+    ) as Record<
+      MbtiType,
+      {
+        growth: Set<string>
+        work: Set<string>
+        turningPoint: Set<string>
+        motivation: Set<string>
+        values: Set<string>
+        redlines: Set<string>
+      }
+    >,
+  )
+  const mbtiContentDiversityPassed =
+    input.count < 50 ||
+    MBTI_TYPES.every((type) => {
+      const minimumDistinct = Math.min(3, mbtiCounts[type])
+      const group = mbtiContentDiversity[type]
+      return Object.values(group).every(
+        (values) => values.size >= minimumDistinct,
+      )
+    })
+  const mbtiContentFinding: ValidationFinding = {
+    ...finding(
+      'DIST-MBTI-CONTENT',
+      'library_build',
+      'character-library',
+      '同一MBTI类型至少保留三种成长、工作、转折、动机、价值观和红线组合',
+      MBTI_TYPES.map((type) => {
+        const group = mbtiContentDiversity[type]
+        return `${type}:growth=${group.growth.size},work=${group.work.size},turn=${group.turningPoint.size},motivation=${group.motivation.size},values=${group.values.size},redlines=${group.redlines.size}`
+      }).join(';'),
+      true,
+    ),
+    result: mbtiContentDiversityPassed ? 'passed' : 'warned',
+  }
   const addressStructureCounts = rawCharacters.reduce<Record<string, number>>(
     (counts, character) => {
       const structure = character.address_rules
@@ -1018,10 +990,13 @@ export function generateCharacterLibrary(
 
   const findings = [
     ...characterFindings,
-    uniquenessFinding,
+    ...libraryContentFindings,
+    frozenSeedKatFinding(),
     replayFinding,
+    m12Finding,
     mbtiFinding,
     mbtiSkillFinding,
+    mbtiContentFinding,
     addressFinding,
   ]
   const machinePassed = findings.every((item) => item.result !== 'blocked')
@@ -1034,21 +1009,21 @@ export function generateCharacterLibrary(
   }))
 
   return {
-    schema_version: 'character-library-v0.1-candidate',
+    schema_version: LIBRARY_SCHEMA_VERSION,
     library_id: `character-library-${deriveSeedV1('library-id', [
       input.worldSeedHex,
       input.count,
+      GENERATOR_SCHEMA_VERSION,
+      CONTENT_PACK_VERSIONS,
+      CULTURE_PACK_VERSION,
     ]).slice(0, 16)}`,
     status: 'CANDIDATE_NOT_FROZEN',
+    development_stage: 'TECHNICAL_SPIKE_BEFORE_A1',
     world_seed_hex: input.worldSeedHex,
-    generator_schema_version: 'char-gen-v0.1-candidate',
+    generator_schema_version: GENERATOR_SCHEMA_VERSION,
     seed_derivation_version: 'seed_derivation_v1',
-    content_pack_versions: {
-      biography: 'candidate-0.1.0',
-      traits: 'candidate-0.1.0',
-      values_and_redlines: 'candidate-0.1.0',
-    },
-    culture_pack_version: 'cn-frontier-draft-v0.1',
+    content_pack_versions: CONTENT_PACK_VERSIONS,
+    culture_pack_version: CULTURE_PACK_VERSION,
     characters,
     validation: {
       machine_passed: machinePassed,

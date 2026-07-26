@@ -26,4 +26,4 @@ This file is the top-level context entrypoint for the project.
 - React + TypeScript + Vite 是 Gate 1 实施介质；Node `v24.18.0` 已在 `/opt/homebrew/opt/node@24/bin/` 验证并由 `.node-version` 固定，实施 shell 仍需优先使用该路径。
 - Gate 1 当前估算为 15–18 个净开发工作日；D0、里程碑代理试玩、正式 Gate 1A 运营和报告时间另计，Gate 1H 真人运营时间暂不排期。
 - Gate 2 仍为 `LOCKED`；只有 Gate 1H 获得真人 `PASS` 后才允许编写 Gate 2 规格，不提前实现主题、NPC、排名或豁免。
-- 人物规则 V0.1-r8 已通过 Codex 独立终审；首个固定种子生成内核和 50 人候选库已形成并通过机器结构校验，但文化命名与 E01–E06 人工内容审核均未执行，状态保持 `CANDIDATE_NOT_FROZEN`，不接入 Gate 1 RC。
+- 人物规则 V0.1-r8 已通过 Codex 独立终审；首个固定种子生成内核和 50 人候选库属于 `TECHNICAL_SPIKE_BEFORE_A1`，只通过当前已实现的独立机器合同。完整 M12、文化命名与 E01–E06 人工内容审核均未执行，状态保持 `CANDIDATE_NOT_FROZEN`，不代表阶段 B/C 完成，也不接入 Gate 1 RC；本轮门禁整改完成后仍需独立复审。

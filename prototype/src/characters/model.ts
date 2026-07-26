@@ -112,6 +112,12 @@ export interface Redline {
   disclosed_at: 'character_join_preview'
 }
 
+export interface CoreValue {
+  value_id: string
+  summary: string
+  source_ids: readonly string[]
+}
+
 export interface AddressRule {
   relationship: 'default' | 'familiar' | 'recognized_experience'
   form: string
@@ -121,6 +127,7 @@ export interface SeededVariation {
   variation_source_id: string
   person_seed: string
   algorithm_version: 'seeded-variation-v1'
+  applicability_condition: 'positive_below_8_and_negative_at_least_5'
   positive_attribute: AttributeKey
   negative_attribute: AttributeKey
   positive_value: 1
@@ -128,7 +135,7 @@ export interface SeededVariation {
 }
 
 export interface GeneratedCharacter {
-  schema_version: 'character-v0.1-candidate'
+  schema_version: 'character-v0.1.1-candidate'
   character_id: string
   person_seed: string
   generation_attempt: number
@@ -153,7 +160,7 @@ export interface GeneratedCharacter {
   mbti: MbtiProfile
   traits: readonly [string, string]
   stress_response: string
-  core_values: readonly [string, string]
+  core_values: readonly [CoreValue, CoreValue]
   redlines: readonly [Redline]
   current_motivation: string
   relationship_hooks: readonly [string]
@@ -186,16 +193,17 @@ export interface ValidationFinding {
 }
 
 export interface CharacterLibrary {
-  schema_version: 'character-library-v0.1-candidate'
+  schema_version: 'character-library-v0.1.1-candidate'
   library_id: string
   status: 'CANDIDATE_NOT_FROZEN'
+  development_stage: 'TECHNICAL_SPIKE_BEFORE_A1'
   world_seed_hex: string
-  generator_schema_version: 'char-gen-v0.1-candidate'
+  generator_schema_version: 'char-gen-v0.1.1-candidate'
   seed_derivation_version: 'seed_derivation_v1'
   content_pack_versions: {
-    biography: 'candidate-0.1.0'
+    biography: 'candidate-0.1.1'
     traits: 'candidate-0.1.0'
-    values_and_redlines: 'candidate-0.1.0'
+    values_and_redlines: 'candidate-0.1.1'
   }
   culture_pack_version: 'cn-frontier-draft-v0.1'
   characters: readonly GeneratedCharacter[]

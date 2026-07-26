@@ -4,6 +4,8 @@ import {
   deriveSeedV1,
   generateCharacter,
   generateCharacterLibrary,
+  validateCharacter,
+  validateCharacterLibraryContent,
   validatePopulationLimit,
 } from '../src/characters/generator'
 
@@ -59,6 +61,248 @@ describe('character generator', () => {
     expect(Object.keys(first)).not.toContain('alias')
   })
 
+  it('blocks M03 when required identity or personality fields are missing', () => {
+    const original = generateCharacter({
+      worldSeedHex:
+        '9f4d6b571b07f0036b63f7d56d1b2e8c90f561f52f35db779b03e6c0a83cb9b1',
+      characterIndex: 0,
+    })
+
+    for (const requiredField of [
+      'name_parts',
+      'address_rules',
+      'traits',
+      'stress_response',
+      'core_values',
+      'redlines',
+    ]) {
+      const character = structuredClone(original) as unknown as Record<
+        string,
+        unknown
+      >
+      delete character[requiredField]
+
+      expect(
+        validateCharacter(character).find(
+          (finding) => finding.validation_id === 'M03',
+        )?.result,
+        requiredField,
+      ).toBe('blocked')
+    }
+  })
+
+  it('blocks M04 when a biography prerequisite does not reference an earlier node', () => {
+    const character = structuredClone(
+      generateCharacter({
+        worldSeedHex:
+          '9f4d6b571b07f0036b63f7d56d1b2e8c90f561f52f35db779b03e6c0a83cb9b1',
+        characterIndex: 0,
+      }),
+    )
+
+    character.biography_nodes[1].prerequisites = ['missing-node-id']
+
+    expect(
+      validateCharacter(character).find(
+        (finding) => finding.validation_id === 'M04',
+      )?.result,
+    ).toBe('blocked')
+  })
+
+  it('blocks M04 when origin differs from growth context without a migration bridge', () => {
+    const character = structuredClone(
+      generateCharacter({
+        worldSeedHex:
+          '9f4d6b571b07f0036b63f7d56d1b2e8c90f561f52f35db779b03e6c0a83cb9b1',
+        characterIndex: 1,
+      }),
+    )
+
+    character.origin = '没有履历桥接的异地出身'
+
+    expect(
+      validateCharacter(character).find(
+        (finding) => finding.validation_id === 'M04',
+      )?.result,
+    ).toBe('blocked')
+  })
+
+  it('blocks M05 when seeded variation provenance is forged', () => {
+    const character = structuredClone(
+      generateCharacter({
+        worldSeedHex:
+          '9f4d6b571b07f0036b63f7d56d1b2e8c90f561f52f35db779b03e6c0a83cb9b1',
+        characterIndex: 0,
+      }),
+    )
+    const variation = character.seeded_variation as unknown as Record<string, unknown>
+
+    variation.variation_source_id = 'bogus'
+    variation.person_seed = 'bogus'
+    variation.algorithm_version = 'bogus'
+    variation.applicability_condition = 'bogus'
+
+    expect(
+      validateCharacter(character).find(
+        (finding) => finding.validation_id === 'M05',
+      )?.result,
+    ).toBe('blocked')
+  })
+
+  it('blocks M07 when a qualification rank exceeds its source node evidence', () => {
+    const character = JSON.parse(
+      JSON.stringify(
+        generateCharacter({
+          worldSeedHex:
+            '9f4d6b571b07f0036b63f7d56d1b2e8c90f561f52f35db779b03e6c0a83cb9b1',
+          characterIndex: 0,
+        }),
+      ),
+    ) as ReturnType<typeof generateCharacter>
+
+    character.qualifications[0].rank = 3
+
+    expect(
+      validateCharacter(character).find(
+        (finding) => finding.validation_id === 'M07',
+      )?.result,
+    ).toBe('blocked')
+  })
+
+  it('blocks M06 when a skill value cannot be recomputed from biography nodes', () => {
+    const character = structuredClone(
+      generateCharacter({
+        worldSeedHex:
+          '9f4d6b571b07f0036b63f7d56d1b2e8c90f561f52f35db779b03e6c0a83cb9b1',
+        characterIndex: 0,
+      }),
+    )
+
+    character.skills.生产 += 1
+
+    expect(
+      validateCharacter(character).find(
+        (finding) => finding.validation_id === 'M06',
+      )?.result,
+    ).toBe('blocked')
+  })
+
+  it('generates origins that are explained by the biography', () => {
+    const library = generateCharacterLibrary({
+      worldSeedHex:
+        '9f4d6b571b07f0036b63f7d56d1b2e8c90f561f52f35db779b03e6c0a83cb9b1',
+      count: 50,
+    })
+
+    expect(
+      library.characters.every((character) =>
+        character.biography_nodes.some(
+          (node) =>
+            node.stage === 'growth' &&
+            node.context_tags.includes(character.origin),
+        ),
+      ),
+    ).toBe(true)
+  })
+
+  it('generates redline sources that resolve to biography nodes or value records', () => {
+    const character = generateCharacter({
+      worldSeedHex:
+        '9f4d6b571b07f0036b63f7d56d1b2e8c90f561f52f35db779b03e6c0a83cb9b1',
+      characterIndex: 0,
+    })
+    const sourceIds = new Set([
+      ...character.biography_nodes.map((node) => node.node_id),
+      ...character.core_values.map((value) =>
+        typeof value === 'string' ? value : (value as { value_id: string }).value_id,
+      ),
+    ])
+
+    expect(
+      character.redlines.every((redline) =>
+        redline.source_ids.every((sourceId) => sourceIds.has(sourceId)),
+      ),
+    ).toBe(true)
+  })
+
+  it('blocks M03 when a redline source cannot be resolved', () => {
+    const character = structuredClone(
+      generateCharacter({
+        worldSeedHex:
+          '9f4d6b571b07f0036b63f7d56d1b2e8c90f561f52f35db779b03e6c0a83cb9b1',
+        characterIndex: 0,
+      }),
+    )
+
+    character.redlines[0].source_ids = ['missing-source-id']
+
+    expect(
+      validateCharacter(character).find(
+        (finding) => finding.validation_id === 'M03',
+      )?.result,
+    ).toBe('blocked')
+  })
+
+  it('builds 50 distinct life-history chassis instead of cycling 16 fixed combinations', () => {
+    const library = generateCharacterLibrary({
+      worldSeedHex:
+        '9f4d6b571b07f0036b63f7d56d1b2e8c90f561f52f35db779b03e6c0a83cb9b1',
+      count: 50,
+    })
+    const chassis = library.characters.map((character) =>
+      [
+        character.biography_nodes.find((node) => node.stage === 'growth')
+          ?.template_id,
+        character.biography_nodes.find((node) => node.stage === 'work')
+          ?.template_id,
+        character.biography_nodes.find(
+          (node) => node.stage === 'current_motivation',
+        )?.template_id,
+      ].join('|'),
+    )
+    const workBindings = library.characters.reduce<
+      Record<string, { growth: Set<string>; goals: Set<string> }>
+    >((bindings, character) => {
+      const workId =
+        character.biography_nodes.find((node) => node.stage === 'work')
+          ?.template_id ?? ''
+      const growthId =
+        character.biography_nodes.find((node) => node.stage === 'growth')
+          ?.template_id ?? ''
+      bindings[workId] ??= { growth: new Set(), goals: new Set() }
+      bindings[workId].growth.add(growthId)
+      bindings[workId].goals.add(character.long_term_goal)
+      return bindings
+    }, {})
+
+    expect(new Set(chassis)).toHaveLength(50)
+    expect(
+      Object.values(workBindings).every(
+        ({ growth, goals }) => growth.size >= 2 && goals.size >= 2,
+      ),
+    ).toBe(true)
+  })
+
+  it('blocks M10 when a stored distinction fingerprint is forged', () => {
+    const library = generateCharacterLibrary({
+      worldSeedHex:
+        '9f4d6b571b07f0036b63f7d56d1b2e8c90f561f52f35db779b03e6c0a83cb9b1',
+      count: 50,
+    })
+    const characters = JSON.parse(
+      JSON.stringify(library.characters),
+    ) as typeof library.characters
+
+    ;(characters[0] as { distinction_fingerprint: string }).distinction_fingerprint =
+      'forged-but-unique'
+
+    expect(
+      validateCharacterLibraryContent(characters).find(
+        (finding) => finding.validation_id === 'M10',
+      )?.result,
+    ).toBe('blocked')
+  })
+
   it('builds a validated 50-person candidate library with all 16 MBTI types', () => {
     const library = generateCharacterLibrary({
       worldSeedHex:
@@ -109,6 +353,8 @@ describe('character generator', () => {
     )
 
     expect(library.status).toBe('CANDIDATE_NOT_FROZEN')
+    expect(library.development_stage).toBe('TECHNICAL_SPIKE_BEFORE_A1')
+    expect(library.generator_schema_version).toBe('char-gen-v0.1.1-candidate')
     expect(library.characters).toHaveLength(50)
     expect(new Set(library.characters.map((character) => character.character_id))).toHaveLength(50)
     expect(new Set(library.characters.map((character) => character.formal_name))).toHaveLength(50)
@@ -140,9 +386,29 @@ describe('character generator', () => {
     ).toBe('passed')
     expect(
       library.validation.findings.find(
+        (finding) => finding.validation_id === 'DIST-MBTI-CONTENT',
+      )?.result,
+    ).toBe('passed')
+    expect(
+      library.validation.findings.find(
         (finding) => finding.validation_id === 'DIST-ADDRESS',
       )?.result,
     ).toBe('passed')
+    expect(
+      library.validation.findings.find(
+        (finding) => finding.validation_id === 'SEED-KAT',
+      )?.result,
+    ).toBe('passed')
+    expect(
+      library.validation.findings.find(
+        (finding) => finding.validation_id === 'LIBRARY-REPLAY-PARTIAL',
+      )?.result,
+    ).toBe('passed')
+    expect(
+      library.validation.findings.find(
+        (finding) => finding.validation_id === 'M12',
+      )?.result,
+    ).toBe('not_run')
     expect(library.validation.manual_reviews).toEqual({
       E01: 'not_run',
       E02: 'not_run',

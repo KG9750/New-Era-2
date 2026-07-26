@@ -28,12 +28,12 @@ const mbtiCounts = library.characters.reduce<Record<string, number>>((counts, ch
   return counts
 }, {})
 const rosterRows = library.characters.map((character, index) => {
-  const values = character.core_values.join('；')
+  const values = character.core_values.map((value) => value.summary).join('；')
   return `| ${index + 1} | ${character.formal_name} | ${character.age} | ${character.mbti.type} | ${character.primary_skills.join(' / ')} | ${character.biography_nodes[2].evidence_text} | ${values} | ${character.redlines[0].summary} | ${character.long_term_goal} |`
 })
 const roster = `# 50 人角色候选库 V0.1
 
-> 状态：\`CANDIDATE_NOT_FROZEN\`。机器校验通过；E01–E06 人工审核尚未执行。
+> 状态：\`CANDIDATE_NOT_FROZEN / TECHNICAL_SPIKE_BEFORE_A1\`。已实现的机器合同通过；完整 M12 与 E01–E06 尚未执行。
 > 完整结构化数据见 \`generated-50-v0.1-candidate.json\`。
 
 | # | 正式姓名 | 年龄 | MBTI | 主要技能 | 过往经历 | 核心价值 | 重要红线 | 长期目标 |
@@ -45,7 +45,8 @@ ${rosterRows.join('\n')}
 - Library ID：\`${library.library_id}\`
 - World seed：\`${library.world_seed_hex}\`
 - 人数：${library.characters.length}
-- 机器校验：\`${library.validation.machine_passed ? 'PASS' : 'BLOCKED'}\`
+- 已实现机器合同：\`${library.validation.machine_passed ? 'PASS' : 'BLOCKED'}\`
+- 完整 M12：\`${library.validation.findings.find((finding) => finding.validation_id === 'M12')?.result.toUpperCase()}\`
 - MBTI 分布：${Object.entries(mbtiCounts)
   .sort(([left], [right]) => left.localeCompare(right))
   .map(([type, count]) => `${type}=${count}`)

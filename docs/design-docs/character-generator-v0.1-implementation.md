@@ -1,13 +1,13 @@
 # 人物生成器 V0.1 候选实现
 
-**状态：** `CANDIDATE / MACHINE_PASS / MANUAL_REVIEW_NOT_RUN`
+**状态：** `TECHNICAL_SPIKE_BEFORE_A1 / CANDIDATE_NOT_FROZEN / PARTIAL_MACHINE_PASS / MANUAL_REVIEW_NOT_RUN`
 **对应规则：** `character-generation-rules-v0.1.md` V0.1-r8
 **实现位置：** `prototype/src/characters/`
 **生成数据：** `data/characters/generated-50-v0.1-candidate.json`
 
 ## 目标
 
-本实现先闭合“完整人物内容生成”最小链路：
+本实现验证“候选人物内容生成”技术链路：
 
 ```text
 固定 world seed + 人物 index
@@ -17,12 +17,13 @@
   → 属性、技能与资格来源
   → MBTI、特质、价值、红线
   → 动机、关系钩子、长期请求
-  → 单人和 50 人批次机器校验
+  → 独立单人合同和 50 人批次校验
   → 可重放 JSON 与 Markdown roster
 ```
 
-这不是完整人口运行时。两月加入、紧急补员、替代链、关系 reducer、NPC dormant
-store 和开局四人选择器仍按规则阶段 C 单独实现。
+这不是规则阶段 B 的正式 50 人库，也不是阶段 C 的完整生成器。阶段 A1 的 12 人
+样板、MBTI 专项验证和人工审查尚未完成；两月加入、紧急补员、替代链、关系
+reducer、NPC dormant store 和开局四人选择器仍按规则阶段 C 单独实现。
 
 ## 公共接口
 
@@ -30,7 +31,10 @@ store 和开局四人选择器仍按规则阶段 C 单独实现。
 
 - `deriveSeedV1(label, parts)`：实现规则 §12.3，并通过冻结 KAT；
 - `generateCharacter({ worldSeedHex, characterIndex, attemptIndex? })`：生成单人；
-- `validateCharacter(character)`：执行 M03–M07、M09；
+- `validateCharacter(character)`：通过独立 `validator.ts` 接收任意反序列化数据，
+  执行 M03–M07、M09；
+- `validateCharacterLibraryContent(characters)`：独立复算区分度指纹、引用和生活
+  骨架，执行 M10 与候选库重复度门禁；
 - `generateCharacterLibrary({ worldSeedHex, count })`：生成并校验批次；
 - `validatePopulationLimit(type, count)`：执行玩家 10 / NPC 15 人 M01 上限。
 
@@ -57,16 +61,29 @@ store 和开局四人选择器仍按规则阶段 C 单独实现。
 
 首个固定批次：
 
+- character schema：`character-v0.1.1-candidate`；
+- generator schema：`char-gen-v0.1.1-candidate`；
 - world seed：
   `9f4d6b571b07f0036b63f7d56d1b2e8c90f561f52f35db779b03e6c0a83cb9b1`；
 - 50 名人物；
-- Library ID：`character-library-1436b281554198cc`；
+- Library ID：`character-library-589f6edb461c1d03`；
+- JSON SHA256：
+  `41da217dddba1385dbb9f22fd5fca05637f2ff465ca4607f8166ffc825b5dba3`；
+- roster SHA256：
+  `fad123efe5c94e5f1e0d80acea75fe5699409baa74a454e700ad7c6e33d7b40d`；
 - 50 个稳定人物 ID、正式姓名与区分度指纹全部唯一；
+- 50 个“成长—工作—当前动机”组合全部不同，每种重复工作连接至少两种成长背景
+  和两种长期目标；
+- 出身均由成长节点直接解释；跨地区出身只有在未来加入显式迁移节点后才允许；
+- 核心价值观拥有稳定 ID，全部红线来源均可解引用；
 - 16 种 MBTI 全覆盖，每型 3–4 人；
 - 七项属性总和覆盖 34–38 五档，每档 10 人，单项当前落在 2–8；
 - 同一 MBTI 内最高技能占比不超过 60%，未形成“人格类型＝职业”映射；
 - 四种关系型内部称呼结构均未超过批次的 50%；
-- M03–M07、M09、M10、M12 全部通过；
+- M03–M07、M09、M10 和候选库生活骨架门禁通过；
+- `SEED-KAT` 与 `LIBRARY-REPLAY-PARTIAL` 通过；
+- 完整 `M12` 明确为 `not_run`：尚无 `GenerationContextSnapshot`、
+  `generation_context_hash`、席位到 attempt 派生链和 32 次重试证据；
 - E01–E06 均明确保存为 `not_run`。
 
 完整机器证据保存在生成 JSON 的 `validation.findings` 中。
@@ -78,18 +95,25 @@ cd prototype
 PATH=/opt/homebrew/opt/node@24/bin:$PATH npm ci
 PATH=/opt/homebrew/opt/node@24/bin:$PATH npm run characters:generate
 PATH=/opt/homebrew/opt/node@24/bin:$PATH npm run test:run -- tests/character-generator.test.ts
+PATH=/opt/homebrew/opt/node@24/bin:$PATH npm run test:run -- tests/character-validator.test.ts
 ```
 
 连续两次执行 `characters:generate` 必须产生逐字节相同的 JSON 与 roster。
+`character-validator.test.ts` 直接读取已落盘 JSON，不调用生成器，并通过字段删除、
+伪造 prerequisite、seed provenance、技能、资格和 fingerprint 验证门禁负例。
+当前候选批次已在 Node 20.20.2、22.23.1、24.18.0 以及 `LANG=C` /
+`zh_CN.UTF-8` 下复算为上述相同 SHA。
 
 ## 冻结边界
 
-当前不得将候选库改为正式人物库，原因是：
+当前不得将候选库改为正式人物库，也不得称为阶段 B/C 完成，原因是：
 
-1. E01 文化命名审核尚未执行；
-2. E02–E06 人工内容审核尚未执行；
-3. 规则要求的 12 名样板人物 MBTI 专项玩家验证尚未执行；
-4. 本实现未包含 `PartyValidation`、人口事件状态机或 NPC 往返校验。
+1. 阶段 A1 的 12 名高完成度样板尚未冻结；
+2. E01 文化命名审核尚未执行；
+3. E02–E06 人工内容审核尚未执行；
+4. 规则要求的 12 名样板人物 MBTI 专项玩家验证尚未执行；
+5. 完整 M12、`PartyValidation`、人口事件状态机或 NPC 往返校验尚未实现。
 
-下一步应从 50 人中选出 12 名不同能力与 MBTI 的样板，逐人执行 E01–E06，
-修订内容包后再重生整批，而不是直接把机器 PASS 当作内容冻结。
+下一步应把当前输出只当作选材池，从中重写并冻结 12 名不同能力与 MBTI 的
+高完成度样板，逐人执行 E01–E06，修订内容包后再生成整批；阶段 A1 通过前，
+不得把当前机器结果当作内容冻结。
