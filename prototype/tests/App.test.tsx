@@ -1,4 +1,10 @@
-import { act, fireEvent, render, screen, within } from '@testing-library/react'
+import {
+  act,
+  fireEvent,
+  render,
+  screen,
+  within,
+} from '@testing-library/react'
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { App, CharacterDecisionPanel } from '../src/app/App'
 import { gate1WeekOneScenario as scenario } from '../src/scenario/gate1-week-one'
@@ -21,6 +27,8 @@ function renderStartedApp() {
 describe('minimal weekly flow UI', () => {
   afterEach(() => {
     vi.useRealTimers()
+    vi.restoreAllMocks()
+    vi.unstubAllGlobals()
   })
 
   it('opens on the weekly issue summary instead of a full schedule grid', () => {
@@ -215,5 +223,124 @@ describe('minimal weekly flow UI', () => {
     expect(screen.getByRole('button', { name: '拒绝并保留农务' })).toBeInTheDocument()
     expect(screen.getByLabelText('聚落时钟')).toHaveTextContent('已暂停')
     expect(screen.queryByRole('button', { name: /水泵需要 2 个预防性维修块/ })).not.toBeInTheDocument()
+  })
+
+  it('keeps one complete export immutable across a failed save and retry', async () => {
+    vi.useFakeTimers()
+    const requestBodies: string[] = []
+    const fixedSha256 = 'ab'.repeat(32)
+    const realCrypto = globalThis.crypto
+    const cryptoMock = {
+      randomUUID: realCrypto.randomUUID.bind(realCrypto),
+      subtle: {
+        digest: vi
+          .fn()
+          .mockResolvedValue(Uint8Array.from({ length: 32 }, () => 0xab).buffer),
+      },
+    } as unknown as Crypto
+    vi.stubGlobal('crypto', cryptoMock)
+    const fetchMock = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+      const rawJson = String(init?.body)
+      requestBodies.push(rawJson)
+      if (requestBodies.length === 1) {
+        return new Response(
+          JSON.stringify({ error: '同一会话证据链缺失或不一致' }),
+          {
+            status: 409,
+            headers: { 'Content-Type': 'application/json' },
+          },
+        )
+      }
+      const payload = JSON.parse(rawJson)
+      const filename =
+        `${payload.meta.buildId}-${payload.meta.sampleId}-${payload.meta.sessionId}.json`
+      return new Response(
+        JSON.stringify({
+          schemaVersion: 'gate1-capture-receipt-v1',
+          captureVersion: 'gate1-capture-host-v1',
+          filename,
+          bytes: new TextEncoder().encode(rawJson).byteLength,
+          sha256: fixedSha256,
+          capturedAtUtc: '2026-07-26T06:00:00.000Z',
+          sampleId: payload.meta.sampleId,
+          sessionId: payload.meta.sessionId,
+          buildId: payload.meta.buildId,
+          gitSha: payload.meta.gitSha,
+          artifactHash: payload.meta.artifactHash,
+          downloadUrl: '/__gate1/capture/123e4567-e89b-42d3-a456-426614174000',
+        }),
+        {
+          status: 201,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      )
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    const anchorClick = vi
+      .spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => undefined)
+
+    renderStartedApp()
+    fireEvent.click(screen.getByRole('button', { name: '8×' }))
+    fireEvent.click(screen.getByRole('button', { name: '开始运行' }))
+    act(() => {
+      vi.advanceTimersByTime(30_000)
+    })
+    fireEvent.click(screen.getByRole('button', { name: '确认后继续' }))
+    act(() => {
+      vi.advanceTimersByTime(60_000)
+    })
+    fireEvent.click(
+      screen.getByRole('button', { name: '确认复盘并进入第二周' }),
+    )
+    fireEvent.click(
+      screen.getByRole('button', { name: /林禾请求周二 B1 学习/ }),
+    )
+    fireEvent.click(screen.getByRole('button', { name: '接受学习请求' }))
+    fireEvent.click(screen.getByRole('button', { name: '开始运行' }))
+    act(() => {
+      vi.advanceTimersByTime(60_000)
+    })
+
+    expect(screen.getByText('第 2 周结束')).toBeInTheDocument()
+    const clearButton = screen.getByRole('button', {
+      name: '结束并清空会话',
+    })
+    expect(clearButton).toBeDisabled()
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: '下载匿名 JSON' }))
+    })
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      '同一会话证据链缺失或不一致',
+    )
+    expect(screen.getByRole('region', {
+      name: '当前测试会话元数据',
+    })).toBeInTheDocument()
+    expect(clearButton).toBeDisabled()
+    expect(anchorClick).not.toHaveBeenCalled()
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: '下载匿名 JSON' }))
+    })
+    expect(screen.getByText(/已保存并校验 tick 2010/)).toHaveTextContent(
+      '已保存并校验 tick 2010 的匿名记录。',
+    )
+
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect(requestBodies[1]).toBe(requestBodies[0])
+    const payload = JSON.parse(requestBodies[1])
+    expect(
+      payload.telemetry.filter(
+        (entry: { type: string }) => entry.type === 'export-created',
+      ),
+    ).toHaveLength(1)
+    expect(anchorClick).toHaveBeenCalledTimes(1)
+    expect(clearButton).toBeEnabled()
+
+    fireEvent.click(clearButton)
+    expect(
+      screen.getByRole('heading', { name: '开始匿名新会话' }),
+    ).toBeInTheDocument()
   })
 })

@@ -11,7 +11,8 @@ export default defineConfig({
     trace: 'retain-on-failure',
   },
   webServer: {
-    command: 'npm run rc:serve',
+    command:
+      'npm run rc:serve -- --port 4186 --capture-dir test-results/captures',
     port: 4186,
     reuseExistingServer: false,
   },

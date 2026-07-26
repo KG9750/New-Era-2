@@ -45,6 +45,29 @@ interface AppProps {
   buildMetadata: RcBuildMetadata
 }
 
+interface CaptureReceipt {
+  schemaVersion: 'gate1-capture-receipt-v1'
+  captureVersion: 'gate1-capture-host-v1'
+  filename: string
+  bytes: number
+  sha256: string
+  capturedAtUtc: string
+  sampleId: string
+  sessionId: string
+  buildId: string
+  gitSha: string
+  artifactHash: string
+  downloadUrl: string
+}
+
+interface PendingCapture {
+  rawJson: string
+  tick: number
+  isComplete: boolean
+}
+
+type CaptureStatus = 'idle' | 'saving' | 'saved' | 'error'
+
 const ACTIVITY_LABELS: Readonly<Record<Activity, string>> = {
   food: '农务',
   repair: '维修',
@@ -56,6 +79,57 @@ const ACTIVITY_LABELS: Readonly<Record<Activity, string>> = {
 
 function initialState(): SimulationState {
   return scenario.createInitialState()
+}
+
+async function sha256Hex(bytes: Uint8Array) {
+  const digest = await crypto.subtle.digest('SHA-256', new Uint8Array(bytes))
+  return [...new Uint8Array(digest)]
+    .map((byte) => byte.toString(16).padStart(2, '0'))
+    .join('')
+}
+
+function captureErrorMessage(value: unknown, fallback: string) {
+  if (
+    value &&
+    typeof value === 'object' &&
+    'error' in value &&
+    typeof value.error === 'string'
+  ) {
+    return value.error
+  }
+  return fallback
+}
+
+function validCaptureReceipt(
+  value: unknown,
+  expected: {
+    artifactHash: string
+    buildId: string
+    bytes: number
+    filename: string
+    gitSha: string
+    sampleId: string
+    sessionId: string
+    sha256: string
+  },
+): value is CaptureReceipt {
+  if (!value || typeof value !== 'object') return false
+  const receipt = value as Record<string, unknown>
+  return (
+    receipt.schemaVersion === 'gate1-capture-receipt-v1' &&
+    receipt.captureVersion === 'gate1-capture-host-v1' &&
+    receipt.filename === expected.filename &&
+    receipt.bytes === expected.bytes &&
+    receipt.sha256 === expected.sha256 &&
+    receipt.sampleId === expected.sampleId &&
+    receipt.sessionId === expected.sessionId &&
+    receipt.buildId === expected.buildId &&
+    receipt.gitSha === expected.gitSha &&
+    receipt.artifactHash === expected.artifactHash &&
+    typeof receipt.capturedAtUtc === 'string' &&
+    typeof receipt.downloadUrl === 'string' &&
+    /^\/__gate1\/capture\/[a-f0-9-]+$/i.test(receipt.downloadUrl)
+  )
 }
 
 function SupplyForecastCard({ forecast }: { forecast: SupplyForecast }) {
@@ -169,9 +243,12 @@ export function App({ buildMetadata }: AppProps) {
   const [activeSession, setActiveSession] = useState<PlaytestSessionMeta | null>(null)
   const [wasSessionCleared, setWasSessionCleared] = useState(false)
   const [lastExportedAtTick, setLastExportedAtTick] = useState<number>()
+  const [captureStatus, setCaptureStatus] = useState<CaptureStatus>('idle')
+  const [captureError, setCaptureError] = useState<string>()
+  const [savedCompleteSession, setSavedCompleteSession] = useState(false)
   const nextActionSequence = useRef(1)
   const recorderRef = useRef<SessionRecorder | null>(null)
-  const downloadUrlRef = useRef<string | null>(null)
+  const pendingCaptureRef = useRef<PendingCapture | null>(null)
   const foodForecast = useMemo(() => calculateFoodForecast(simulation), [simulation])
   const repairForecast = useMemo(() => calculateRepairForecast(simulation), [simulation])
   const progress = selectProgress(simulation, scenario)
@@ -245,13 +322,6 @@ export function App({ buildMetadata }: AppProps) {
     return () => window.clearInterval(timer)
   }, [activeSession, simulation.isPaused, simulation.recap, speed])
 
-  useEffect(
-    () => () => {
-      if (downloadUrlRef.current) URL.revokeObjectURL(downloadUrlRef.current)
-    },
-    [],
-  )
-
   function startSession(sampleId: string) {
     const state = initialState()
     const recorder = createSessionRecorder(sampleId, state, buildMetadata)
@@ -261,6 +331,10 @@ export function App({ buildMetadata }: AppProps) {
     setSpeed(3)
     setFocusedIssue(null)
     setLastExportedAtTick(undefined)
+    setCaptureStatus('idle')
+    setCaptureError(undefined)
+    setSavedCompleteSession(false)
+    pendingCaptureRef.current = null
     setActiveSession(recorder.meta)
     setWasSessionCleared(false)
   }
@@ -272,37 +346,103 @@ export function App({ buildMetadata }: AppProps) {
     setSpeed(value)
   }
 
-  function exportSession() {
-    if (!recorderRef.current || !activeSession) return
-    recordExportCreated(recorderRef.current, simulation.currentTick)
-    const payload = createPlaytestExport(recorderRef.current, simulation)
-    const blob = new Blob([JSON.stringify(payload, null, 2)], {
-      type: 'application/json',
-    })
-    if (downloadUrlRef.current) URL.revokeObjectURL(downloadUrlRef.current)
-    const url = URL.createObjectURL(blob)
-    downloadUrlRef.current = url
-    const anchor = document.createElement('a')
-    anchor.href = url
-    anchor.download = `${activeSession.buildId}-${activeSession.sampleId}-${activeSession.sessionId}.json`
-    anchor.click()
-    setLastExportedAtTick(simulation.currentTick)
+  async function exportSession() {
+    if (
+      !recorderRef.current ||
+      !activeSession ||
+      !simulation.isComplete ||
+      captureStatus === 'saving'
+    ) {
+      return
+    }
+    setCaptureStatus('saving')
+    setCaptureError(undefined)
+
+    let pendingCapture = pendingCaptureRef.current
+    if (!pendingCapture) {
+      recordExportCreated(recorderRef.current, simulation.currentTick)
+      const payload = createPlaytestExport(recorderRef.current, simulation)
+      pendingCapture = {
+        rawJson: JSON.stringify(payload, null, 2),
+        tick: simulation.currentTick,
+        isComplete: payload.finalState.isComplete,
+      }
+      pendingCaptureRef.current = pendingCapture
+    }
+
+    try {
+      const bytes = new TextEncoder().encode(pendingCapture.rawJson)
+      const sha256 = await sha256Hex(bytes)
+      const filename =
+        `${activeSession.buildId}-${activeSession.sampleId}-${activeSession.sessionId}.json`
+      const response = await fetch('/__gate1/capture', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json; charset=utf-8',
+        },
+        body: pendingCapture.rawJson,
+        cache: 'no-store',
+      })
+      let responseBody: unknown
+      try {
+        responseBody = await response.json()
+      } catch {
+        throw new Error(`匿名记录保存失败（HTTP ${response.status}）`)
+      }
+      if (!response.ok) {
+        throw new Error(
+          captureErrorMessage(
+            responseBody,
+            `匿名记录保存失败（HTTP ${response.status}）`,
+          ),
+        )
+      }
+      if (
+        !validCaptureReceipt(responseBody, {
+          artifactHash: activeSession.artifactHash,
+          buildId: activeSession.buildId,
+          bytes: bytes.byteLength,
+          filename,
+          gitSha: activeSession.gitSha,
+          sampleId: activeSession.sampleId,
+          sessionId: activeSession.sessionId,
+          sha256,
+        })
+      ) {
+        throw new Error('匿名记录保存回执无效')
+      }
+
+      setLastExportedAtTick(pendingCapture.tick)
+      setSavedCompleteSession(pendingCapture.isComplete)
+      setCaptureStatus('saved')
+      const anchor = document.createElement('a')
+      anchor.href = responseBody.downloadUrl
+      anchor.download = responseBody.filename
+      document.body.append(anchor)
+      anchor.click()
+      anchor.remove()
+    } catch (error) {
+      setCaptureStatus('error')
+      setCaptureError(
+        error instanceof Error ? error.message : '匿名记录保存失败，请重试。',
+      )
+    }
   }
 
   function clearSession() {
-    if (!activeSession) return
-    if (downloadUrlRef.current) {
-      URL.revokeObjectURL(downloadUrlRef.current)
-      downloadUrlRef.current = null
-    }
+    if (!activeSession || (simulation.isComplete && !savedCompleteSession)) return
     recorderRef.current = null
     nextActionSequence.current = 1
+    pendingCaptureRef.current = null
     setWasSessionCleared(true)
     setActiveSession(null)
     setSimulation(initialState())
     setSpeed(3)
     setFocusedIssue(null)
     setLastExportedAtTick(undefined)
+    setCaptureStatus('idle')
+    setCaptureError(undefined)
+    setSavedCompleteSession(false)
   }
 
   const canEditPumpPlan = simulation.currentTick < scenario.pumpEventTick
@@ -787,16 +927,28 @@ export function App({ buildMetadata }: AppProps) {
           </p>
           {lastExportedAtTick !== undefined && (
             <small role="status">
-              已导出 tick {lastExportedAtTick} 的匿名记录。
+              已保存并校验 tick {lastExportedAtTick} 的匿名记录。
             </small>
+          )}
+          {captureError && <small role="alert">{captureError}</small>}
+          {!simulation.isComplete && (
+            <small>完成两周后才能保存匿名记录。</small>
+          )}
+          {simulation.isComplete && !savedCompleteSession && (
+            <small>完整场次需先成功保存匿名记录，才能清空。</small>
           )}
         </div>
         <div className="session-action-buttons">
-          <button onClick={exportSession} type="button">
+          <button
+            disabled={!simulation.isComplete || captureStatus === 'saving'}
+            onClick={exportSession}
+            type="button"
+          >
             下载匿名 JSON
           </button>
           <button
             className="danger-button"
+            disabled={simulation.isComplete && !savedCompleteSession}
             onClick={clearSession}
             type="button"
           >

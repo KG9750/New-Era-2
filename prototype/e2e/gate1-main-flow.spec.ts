@@ -1,18 +1,45 @@
+import { createHash } from 'node:crypto'
 import { expect, test, type Download, type Page } from '@playwright/test'
 
-async function readJsonDownload(download: Download) {
+async function readDownload(download: Download) {
   const stream = await download.createReadStream()
   const chunks: Buffer[] = []
   for await (const chunk of stream) {
     chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
   }
-  return JSON.parse(Buffer.concat(chunks).toString('utf8'))
+  return Buffer.concat(chunks)
 }
 
 async function downloadSession(page: Page) {
-  const pending = page.waitForEvent('download')
+  const capturePending = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname === '/__gate1/capture' &&
+      response.request().method() === 'POST',
+  )
+  const downloadPending = page.waitForEvent('download')
   await page.getByRole('button', { name: '下载匿名 JSON' }).click()
-  return readJsonDownload(await pending)
+  const [capture, download] = await Promise.all([
+    capturePending,
+    downloadPending,
+  ])
+  expect([200, 201]).toContain(capture.status())
+  const receipt = await capture.json()
+  const requestBytes = capture.request().postDataBuffer()
+  expect(requestBytes).not.toBeNull()
+  expect(new URL(download.url()).pathname).toBe(receipt.downloadUrl)
+  expect(download.suggestedFilename()).toBe(receipt.filename)
+  expect(await download.failure()).toBeNull()
+  const downloadedBytes = await readDownload(download)
+  expect(downloadedBytes.byteLength).toBe(receipt.bytes)
+  expect(createHash('sha256').update(downloadedBytes).digest('hex')).toBe(
+    receipt.sha256,
+  )
+  expect(downloadedBytes.equals(requestBytes!)).toBe(true)
+  return {
+    exported: JSON.parse(downloadedBytes.toString('utf8')),
+    receipt,
+    requestBytes: requestBytes!,
+  }
 }
 
 test('new session to two-week export and memory clear', async ({ page }) => {
@@ -119,7 +146,44 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   }).locator('..')
   await expect(recap).toContainText('12–13')
   await expect(recap).toContainText('12')
-  const exported = await downloadSession(page)
+  const clearSessionButton = page.getByRole('button', {
+    name: '结束并清空会话',
+  })
+  await expect(clearSessionButton).toBeDisabled()
+
+  let failedRequestBytes: Buffer | undefined
+  await page.route('**/__gate1/capture', async (route) => {
+    failedRequestBytes = route.request().postDataBuffer() ?? undefined
+    await route.fulfill({
+      status: 500,
+      contentType: 'application/json; charset=utf-8',
+      body: JSON.stringify({ error: '技术验证注入：证据目录暂不可写' }),
+    })
+  })
+  await page.getByRole('button', { name: '下载匿名 JSON' }).click()
+  await expect(page.getByRole('alert')).toHaveText(
+    '技术验证注入：证据目录暂不可写',
+  )
+  expect(failedRequestBytes).toBeDefined()
+  await expect(meta).toContainText(firstSessionId)
+  await expect(clearSessionButton).toBeDisabled()
+
+  await page.unroute('**/__gate1/capture')
+  const { exported, receipt, requestBytes } = await downloadSession(page)
+  expect(requestBytes.equals(failedRequestBytes!)).toBe(true)
+  expect(receipt).toMatchObject({
+    schemaVersion: 'gate1-capture-receipt-v1',
+    captureVersion: 'gate1-capture-host-v1',
+    sampleId: 'M-C',
+    sessionId: firstSessionId,
+    buildId: buildMetadata.buildId,
+    gitSha: buildMetadata.gitSha,
+    artifactHash: buildMetadata.artifactHash,
+  })
+  await expect(page.getByText(/已保存并校验 tick 2010/)).toHaveText(
+    '已保存并校验 tick 2010 的匿名记录。',
+  )
+  await expect(clearSessionButton).toBeEnabled()
 
   expect(exported).toMatchObject({
     schemaVersion: 'gate1-playtest-v1',
@@ -148,6 +212,11 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   )
   expect(exported.speedTrajectory.map((entry: { speed: number }) => entry.speed)).toContain(8)
   expect(
+    exported.telemetry.filter(
+      (entry: { type: string }) => entry.type === 'export-created',
+    ),
+  ).toHaveLength(1)
+  expect(
     exported.actions.find(
       (action: { action: { type: string } }) =>
         action.action.type === 'UNDO_SCHEDULE',
@@ -169,7 +238,7 @@ test('new session to two-week export and memory clear', async ({ page }) => {
     expect(exportedText).not.toContain(forbidden)
   }
 
-  await page.getByRole('button', { name: '结束并清空会话' }).click()
+  await clearSessionButton.click()
   await expect(
     page.getByRole('heading', { name: '开始匿名新会话' }),
   ).toBeVisible()
@@ -183,18 +252,15 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   const secondMeta = page.getByRole('region', { name: '当前测试会话元数据' })
   const secondSessionId = (await secondMeta.locator('div').last().locator('strong').textContent())!
   expect(secondSessionId).not.toBe(firstSessionId)
-
-  const cleanExport = await downloadSession(page)
-  expect(cleanExport.meta.sessionId).toBe(secondSessionId)
-  expect(cleanExport.actions).toEqual([])
-  expect(cleanExport.domainEvents).toEqual([])
-  expect(cleanExport.finalTick).toBe(54)
-  expect(cleanExport.recap).toEqual([])
+  await expect(secondMeta).not.toContainText(firstSessionId)
+  await expect(page.getByRole('button', { name: '下载匿名 JSON' })).toBeDisabled()
+  await expect(page.getByRole('heading', { name: '因果记录' })).toHaveCount(0)
   expect(
     await page.evaluate(
       () => document.documentElement.scrollWidth <= document.documentElement.clientWidth,
     ),
   ).toBe(true)
-  expect(consoleErrors).toEqual([])
+  expect(consoleErrors).toHaveLength(1)
+  expect(consoleErrors[0]).toContain('500')
   expect(pageErrors).toEqual([])
 })

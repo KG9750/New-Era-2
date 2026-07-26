@@ -1,5 +1,6 @@
 import { createHash } from 'node:crypto'
 import {
+  copyFileSync,
   readdirSync,
   readFileSync,
   renameSync,
@@ -64,6 +65,11 @@ const initialStateHash = initialStateHashResult.stdout.trim()
 if (!/^fnv1a32-[a-f0-9]{8}$/.test(initialStateHash)) {
   fail(`固定初态哈希格式无效：${initialStateHash}`)
 }
+
+copyFileSync(
+  join(prototypeRoot, 'scripts', 'playtest-host.mjs'),
+  join(distRoot, 'playtest-host.mjs'),
+)
 
 function collectFiles(directory) {
   return readdirSync(directory)
