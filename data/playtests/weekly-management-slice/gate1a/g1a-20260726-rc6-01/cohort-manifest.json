@@ -1,0 +1,270 @@
+{
+  "schemaVersion": "gate1a-cohort-manifest-v2",
+  "cohortId": "g1a-20260726-rc6-01",
+  "status": "FROZEN_PENDING_INDEPENDENT_REVIEW",
+  "frozenAtUtc": "2026-07-26T13:56:26Z",
+  "gate": "Gate 1A",
+  "operator": "/root",
+  "operatorDisplayName": "Codex root agent",
+  "supersedes": {
+    "cohortId": "g1a-20260726-rc5-01",
+    "reason": "RC5 could persist only completed two-week sessions. A reproducible product block before tick 2010 could not retain raw JSON, SHA sidecar and canonical receipt, creating selection bias. RC6 adds a fail-closed blocked capture without relaxing the completed-session contract.",
+    "historyDisposition": {
+      "A09": "SUPERSEDED_RC_REVOKED_AFTER_SESSION",
+      "A10-A15": "NOT_STARTED",
+      "priorNumbersReusable": false
+    }
+  },
+  "releaseCandidate": {
+    "ref": "refs/heads/codex/gate1-rc-20260726.6",
+    "buildId": "g1-rc-20260726.6",
+    "gitSha": "affc5d8a0c9664a3724d1c31cb3d67682c818af9",
+    "gitTree": "58d37186e6cc0491c7c819ed5e2ddda760d77e4f",
+    "sourceTreeManifestHash": "33c9ad2eb1b586790497445313d61905646a0aebdc741f085c68ea7ea95c9576",
+    "sourceTreeManifestHashAlgorithm": "sha256-git-blob-path-manifest-v1",
+    "sourceTreeManifestScope": "tracked prototype/ files sorted by path; each line is <path><TAB><git-blob-object-id><LF>, including final LF",
+    "sourceTreeFileCount": 39,
+    "artifactHash": "096a4cd2d971be5b0503f1727ec02505f3d3a1a54a2c01d2afa0ff369d1df2ee",
+    "artifactHashAlgorithm": "sha256-canonical-file-manifest-v1",
+    "artifactManifest": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc6-01/rc-dist/artifact-manifest.json",
+      "sha256": "d9944fbb7b48baf9f607cf43f72f862cd3ec4f3933f409d4ef55bfa3de099b6c"
+    },
+    "rcBuild": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc6-01/rc-dist/rc-build.json",
+      "sha256": "a97c634469e4b1e985f1568d86eb5024f43ad810eb5f9ad892d43e9dbb85399b"
+    },
+    "captureHost": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc6-01/rc-dist/playtest-host.mjs",
+      "sha256": "b5173afb1fe4bd98d70ed8f96d249eb6234f94c8ac7e263d191bfb35e4a150fb"
+    },
+    "deterministicArchive": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc6-01/rc-dist.tar",
+      "sha256": "a8de5f7ab63e1afc5d16c3279e6db37602779a90d3d44dec2e17df0a68394385",
+      "format": "ustar",
+      "determinism": "sorted paths; mtime 2000-01-01T00:00:00Z; uid/gid 0; root/root; no macOS metadata"
+    },
+    "initialStateHash": "fnv1a32-33a16fbf",
+    "initialStateHashAlgorithm": "fnv1a32-stable-json-v1",
+    "scenarioId": "gate1-two-week-management",
+    "scenarioVersion": "0.4.0",
+    "fixedSeed": 104729
+  },
+  "protocol": {
+    "protocolVersion": "gate1a-agent-proxy-v4",
+    "playerPacketVersion": "gate1a-neutral-player-packet-v4",
+    "playerPacket": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc6-01/player-packet.md",
+      "sha256": "e46bd4d5cd4361c39881829f3a779fb5b4b17c8d49be298a8d9416e76a115b25"
+    },
+    "postSessionInterviewVersion": "gate1a-post-session-interview-v2",
+    "postSessionInterview": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc6-01/post-session-interview.md",
+      "sha256": "dada280e66e1f3260a4d2480b4725e352aef23e8cb151f438562441d4087ef11"
+    },
+    "interviewReleaseCondition": "Only after complete or blocked capture, browser download and session clear have all been verified.",
+    "completeCaptureContract": {
+      "captureKind": "complete",
+      "finalTick": 2010,
+      "isComplete": true,
+      "completedWeekCount": 2,
+      "recapCount": 2,
+      "terminalMarker": "export-created",
+      "blockedMarkerAllowed": false
+    },
+    "blockedCaptureContract": {
+      "captureKind": "blocked",
+      "blockedAtTick": "integer < 2010 and equal to finalTick",
+      "isComplete": false,
+      "reason": "trimmed non-empty string, 1-240 characters",
+      "terminalMarker": "blocked-capture-created",
+      "completeMarkerAllowed": false
+    }
+  },
+  "environment": {
+    "entryUrl": "http://127.0.0.1:4195/",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "inputMode": "Chrome UI mouse and keyboard only",
+    "locale": "zh-CN",
+    "timezone": "Asia/Shanghai",
+    "captureHost": {
+      "workingDirectory": ".",
+      "command": "node data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc6-01/rc-dist/playtest-host.mjs --host 127.0.0.1 --port 4195 --capture-dir data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc6-01/captures",
+      "captureDirectory": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc6-01/captures",
+      "explicitCaptureDirectoryRequired": true,
+      "loopbackOnly": true
+    }
+  },
+  "samplePlan": {
+    "primarySamples": [
+      "A16",
+      "A17",
+      "A18",
+      "A19",
+      "A20",
+      "A21",
+      "A22"
+    ],
+    "batches": [
+      {
+        "batchId": "Batch 1",
+        "samples": [
+          "A16",
+          "A17",
+          "A18"
+        ]
+      },
+      {
+        "batchId": "Batch 2",
+        "samples": [
+          "A19",
+          "A20",
+          "A21"
+        ]
+      },
+      {
+        "batchId": "Batch 3",
+        "samples": [
+          "A22"
+        ]
+      }
+    ],
+    "replacementStartsAt": "A23",
+    "requiredValidSamples": 7,
+    "batchIsolationRequired": true,
+    "crossSampleCommunicationAllowed": false,
+    "priorNumbersExcluded": [
+      "A01",
+      "A02",
+      "A03",
+      "A04",
+      "A05",
+      "A06",
+      "A07",
+      "A08",
+      "A09",
+      "A10",
+      "A11",
+      "A12",
+      "A13",
+      "A14",
+      "A15"
+    ]
+  },
+  "verification": {
+    "cleanClones": [
+      "/tmp/new-era-g1a-rc6-a.riTbGy/repo",
+      "/tmp/new-era-g1a-rc6-b.hxIdkh/repo"
+    ],
+    "npmCi": {
+      "status": "PASS",
+      "vulnerabilities": 0
+    },
+    "toolchain": {
+      "node": "24.18.0",
+      "vite": "8.1.5",
+      "viteReactPlugin": "6.0.4",
+      "vitest": "4.1.10",
+      "viteNode": "6.0.0",
+      "playwright": "1.62.0"
+    },
+    "lint": "PASS",
+    "vitest": {
+      "status": "PASS",
+      "files": 7,
+      "tests": 47
+    },
+    "hostSourceSyntax": "PASS",
+    "hostDistSyntax": "PASS",
+    "rcVerify": "PASS",
+    "frozenDistMatchesBothCleanClones": true,
+    "deterministicArchiveMatchesBothCleanClones": true,
+    "chromiumE2E": {
+      "status": "PASS",
+      "projects": [
+        "1440x900",
+        "1280x720"
+      ],
+      "passed": 16,
+      "total": 16
+    },
+    "codeReview": {
+      "decision": "CODE_REVIEW=YES",
+      "p0": 0,
+      "p1": 0,
+      "p2": 1,
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc6-01/evidence/rc6-code-review.md",
+      "sha256": "36b6fb4a3b452f5b8766b85228a367aa1c6a4879b611e4e8f592b87a3f709cd1"
+    },
+    "freezeAudit": {
+      "status": "PASS_PENDING_INDEPENDENT_DECISION",
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc6-01/evidence/rc-freeze-audit.md",
+      "sha256": "0528a8a4aa3172f663bc4400ca15d7591a495a118ff392d5c69d10251bdf233d"
+    },
+    "noGate2Code": {
+      "value": true,
+      "evidence": "RC5-to-RC6 prototype changes are limited to blocked capture UI, telemetry/export, host validation and public regression coverage."
+    }
+  },
+  "authorityReferences": [
+    {
+      "path": "docs/design-docs/weekly-plan-production-forecast-slice-v0.1.md",
+      "sha256": "2d489fdf5964bf3550fb72dff6dfbd44164dbb40c81a22f64b00be8e431ac9f5"
+    },
+    {
+      "path": "docs/exec-plans/active/2026-07-26-gate1-agent-test-operations.md",
+      "sha256": "cef7694c19e0c5789e295a77ffb3210f169d43006bf602098b46064b7ca75383"
+    },
+    {
+      "path": "docs/exec-plans/active/2026-07-26-react-web-gate-1-2-development-plan.md",
+      "sha256": "62b027157f37f29b847f34dd282f99259716798b3ba1e7bd19bc0c389b4b20ef"
+    },
+    {
+      "path": "docs/exec-plans/active/2026-07-26-v0.4-prototype-validation-plan.md",
+      "sha256": "3aa96180727db87de3c314e973a1f65bbae8b2f9e9bfc8d5648bed039a8d7208"
+    },
+    {
+      "path": "docs/product-specs/weekly-management-slice-playtest-v0.1.md",
+      "sha256": "d51b32ac8368d77dad8dd1a85bf2e156ee6a75425d0c749c6212a1e6d6cadaac"
+    },
+    {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc5-01/SUPERSEDED.md",
+      "sha256": "f054b283b6485d342f5cb3fcc67d242a546be5f5950ca30d54ab36a0bedbf719"
+    },
+    {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc6-01/player-packet.md",
+      "sha256": "e46bd4d5cd4361c39881829f3a779fb5b4b17c8d49be298a8d9416e76a115b25"
+    },
+    {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc6-01/post-session-interview.md",
+      "sha256": "dada280e66e1f3260a4d2480b4725e352aef23e8cb151f438562441d4087ef11"
+    }
+  ],
+  "launchGate": {
+    "independentFreezeReviewRequired": true,
+    "requiredDecision": "RC_FREEZE=YES",
+    "formalSamplesStarted": false,
+    "issuesMayBeCreatedBeforeFreezePass": false
+  },
+  "trackLocks": {
+    "gate1A": "FROZEN_PENDING_INDEPENDENT_REVIEW",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED",
+    "noGate2Code": true
+  },
+  "excludedFromFormalSamples": [
+    "M-A",
+    "M-B",
+    "M-C",
+    "TECH-A97",
+    "TECH-A98",
+    "TECH-A99",
+    "TECH-P00",
+    "TECH-P98",
+    "RC4:A01",
+    "RC5:A09"
+  ]
+}

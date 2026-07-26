@@ -1,9 +1,9 @@
 # Gate 1 双轨测试合同独立复核
 
 > 历史说明：本报告复核的是最初双轨基线，当时运营负责人和 roster 分别为
-> `/root`、A01–A07/A08+。RC4 A01 后的当前权威修订见
-> `2026-07-26-gate1-agent-test-operations.md`：运营负责人为 Planck，RC5 roster
-> 为 A09–A15，替补从 A16 开始。本报告的原始裁定不回写或伪装成 RC5 复核。
+> `/root`、A01–A07/A08+。当前权威修订见
+> `2026-07-26-gate1-agent-test-operations.md`：运营负责人为 `/root`，RC6 roster
+> 为 A16–A22，替补从 A23 开始。本报告的原始裁定不回写或伪装成 RC6 复核。
 
 **项目：** Project-004-New Era 2
 **日期：** 2026-07-26
