@@ -147,6 +147,17 @@
       "affectedCompletion": false,
       "independentOccurrenceCountIncludingThisSample": 2,
       "independentP1Established": false
+    },
+    {
+      "id": "A34-SYM-02",
+      "clusterKey": "CANDIDATE_EDIT_WEEK_ATTRIBUTION_AT_BOUNDARY",
+      "description": "A day-8 schedule edit made after CONTINUE_TO_NEXT_WEEK at tick 1002 was exported with candidateEditGroups.weekIndex=0 and counted in week 1.",
+      "source": "machine action sequence, affected day-8 block and agent interview",
+      "severitySuggestion": "P2",
+      "affectedCompletion": false,
+      "operatorAdjudicationRequired": true,
+      "independentOccurrenceCountIncludingThisSample": 2,
+      "independentP1Established": false
     }
   ],
   "subjectiveHumanFields": "not_applicable_agent_proxy",

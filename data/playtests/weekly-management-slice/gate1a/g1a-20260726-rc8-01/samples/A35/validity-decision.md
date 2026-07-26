@@ -36,8 +36,14 @@
 
 ## 症状
 
-本场无新增 P0/P1/P2。A35 未报告
-`WEEK2_PRESTART_TIME_LABEL_TRANSITION`，不增加该聚类的独立样本数。
+`A35-SYM-01 / CANDIDATE_EDIT_WEEK_ATTRIBUTION_AT_BOUNDARY`
+
+换周后 tick 仍为 1002，导致第 8 日编辑被机器归入 Week 1。本场通过动作顺序
+与目标格完成运营 override；这是继 A31、A34 后第三个有效独立复现，聚类确认
+为系统性 P2，不影响玩法完成或样本有效性。
+
+A35 未报告 `WEEK2_PRESTART_TIME_LABEL_TRANSITION`，不增加该聚类的独立
+样本数。
 
 ## 代理指标原始值
 
