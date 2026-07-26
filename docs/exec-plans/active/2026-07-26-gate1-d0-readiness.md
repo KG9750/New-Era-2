@@ -44,7 +44,7 @@ RC8 冻结通过后已创建 A30–A36。A30 因同一 host 出现时间重叠�
 | 独立冻结复核 | 完成 | fresh clone 复算为 `P0=0 / P1=0 / P2=0 / RC_FREEZE=YES`；记录见 RC8 `evidence/independent-freeze-review.md` |
 | Gate 1H 暂缓边界 | 完成 | 真人主持、候选人台账与知情同意在恢复 Gate 1H 前另行准备；当前保持 `PENDING` |
 | Gate 2 解锁规则 | 完成 | Gate 1A 任何结论都不解锁 Gate 2；只有 Gate 1H `PASS` 才能解锁规格工作 |
-| Issue 状态迁移 | 待收口 | #7 已关闭；#8 保持 `[Gate 1H][DEFERRED]` + `needs-info`；#32–#39 已完成或历史化；#9 在最终报告推送后关闭 |
+| Issue 状态迁移 | 完成 | #7、#9、#32–#39 已关闭；#8 保持 `[Gate 1H][DEFERRED]` + `needs-info`；Gate 1A 最终报告已推送 |
 
 ## 2. D0 边界
 
