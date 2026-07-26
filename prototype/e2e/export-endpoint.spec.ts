@@ -273,6 +273,97 @@ test('playtest host captures an unfinished blocked record as verifiable evidence
   })
 })
 
+test('playtest host preserves an incomplete blocked record at the terminal tick', async ({
+  request,
+}) => {
+  const buildMetadata = await readBuildMetadata(request)
+  const payload = {
+    ...validBlockedPayload(buildMetadata),
+    blockedAtTick: 2010,
+    finalTick: 2010,
+    telemetry: [
+      {
+        type: 'blocked-capture-created',
+        atTick: 2010,
+        machineOffsetMs: 1000,
+      },
+    ],
+  }
+
+  const capture = await request.post('/__gate1/capture', {
+    data: JSON.stringify(payload),
+    headers: { 'Content-Type': 'application/json' },
+  })
+
+  expect(capture.status()).toBe(201)
+  await expect(capture.json()).resolves.toMatchObject({
+    captureKind: 'blocked',
+    blockedAtTick: 2010,
+    isComplete: false,
+  })
+})
+
+test('playtest host preserves a terminal completion-flag failure after both recaps', async ({
+  request,
+}) => {
+  const buildMetadata = await readBuildMetadata(request)
+  const completePayload = validPayload(buildMetadata)
+  const payload = {
+    ...completePayload,
+    captureKind: 'blocked',
+    blockedAtTick: 2010,
+    blockedReason: '两周复盘均已生成，但完成状态未生效',
+    finalState: {
+      ...completePayload.finalState,
+      isComplete: false,
+    },
+    telemetry: [
+      {
+        type: 'blocked-capture-created',
+        atTick: 2010,
+        machineOffsetMs: 1000,
+      },
+    ],
+  }
+
+  const capture = await request.post('/__gate1/capture', {
+    data: JSON.stringify(payload),
+    headers: { 'Content-Type': 'application/json' },
+  })
+
+  expect(capture.status()).toBe(201)
+  await expect(capture.json()).resolves.toMatchObject({
+    captureKind: 'blocked',
+    blockedAtTick: 2010,
+    isComplete: false,
+  })
+})
+
+test('playtest host rejects blocked evidence before the scenario start tick', async ({
+  request,
+}) => {
+  const buildMetadata = await readBuildMetadata(request)
+  const payload = {
+    ...validBlockedPayload(buildMetadata),
+    blockedAtTick: 0,
+    finalTick: 0,
+    telemetry: [
+      {
+        type: 'blocked-capture-created',
+        atTick: 0,
+        machineOffsetMs: 1000,
+      },
+    ],
+  }
+
+  const capture = await request.post('/__gate1/capture', {
+    data: JSON.stringify(payload),
+    headers: { 'Content-Type': 'application/json' },
+  })
+
+  expect(capture.status()).toBe(400)
+})
+
 test('playtest host rejects an empty or oversized blocked reason', async ({
   request,
 }) => {

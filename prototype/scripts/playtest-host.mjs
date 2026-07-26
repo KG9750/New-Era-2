@@ -16,6 +16,7 @@ const CAPTURE_PATH = '/__gate1/capture'
 const CAPTURE_VERSION = 'gate1-capture-host-v1'
 const MAX_EXPORT_BYTES = 2 * 1024 * 1024
 const MAX_BLOCKED_REASON_LENGTH = 240
+const SCENARIO_START_TICK = 54
 const BUILD_ID_PATTERN = /^g1-(?:rc|e2e)-[a-z0-9.-]+$/i
 const SAMPLE_ID_PATTERN = /^(?:(?:A|P)\d{2,}|M-[ABC])$/
 const SESSION_ID_PATTERN = /^[a-f0-9]{8}(?:-[a-f0-9]{4}){3}-[a-f0-9]{12}$/i
@@ -238,8 +239,8 @@ function validExport(value, buildMetadata) {
   if (isBlocked) {
     return (
       Number.isInteger(value.blockedAtTick) &&
-      value.blockedAtTick >= 0 &&
-      value.blockedAtTick < 2010 &&
+      value.blockedAtTick >= SCENARIO_START_TICK &&
+      value.blockedAtTick <= 2010 &&
       value.finalTick === value.blockedAtTick &&
       typeof value.blockedReason === 'string' &&
       value.blockedReason === value.blockedReason.trim() &&
@@ -248,11 +249,11 @@ function validExport(value, buildMetadata) {
       value.finalState.isComplete === false &&
       Number.isInteger(value.finalState.completedWeekCount) &&
       value.finalState.completedWeekCount >= 0 &&
-      value.finalState.completedWeekCount <= 1 &&
+      value.finalState.completedWeekCount <= 2 &&
       value.finalState.recapCount === value.finalState.completedWeekCount &&
       value.recap.length === value.finalState.recapCount &&
       JSON.stringify(recapWeekIndexes) ===
-        JSON.stringify(value.recap.length === 1 ? [0] : []) &&
+        JSON.stringify(value.recap.map((_, weekIndex) => weekIndex)) &&
       exportCreated.length === 0 &&
       blockedCaptureCreated.length === 1 &&
       blockedCaptureCreated[0].atTick === value.blockedAtTick
