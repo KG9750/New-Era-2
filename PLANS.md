@@ -8,7 +8,7 @@ Execution-plan entrypoint for `Project-004-New Era 2`.
 - `docs/exec-plans/active/2026-07-26-react-web-gate-1-2-development-plan.md` — Gate 1 React Web 灰盒的 D0 开工门与 15–18 个净开发工作日垂直切片计划；先执行 Gate 1A agent 代理验证，Gate 1H 真人验证暂缓。
 - `docs/exec-plans/active/2026-07-26-gate1-agent-test-operations.md` — Gate 1 双轨测试运营合同；定义 `M-A`–`M-C`、`A01`–`A07`、同一 RC、隔离、替补和报告边界。
 - `docs/exec-plans/active/2026-07-26-gate1-dual-track-independent-review.md` — 双轨合同独立复核；最终 P0=0 / P1=0 / P2=0 / REVIEW_PASS。
-- `docs/exec-plans/active/2026-07-26-gate1-d0-readiness.md` — D0-A 已 `READY`；#2–#6、`M-A`–`M-C` 和正式 RC 构建均已完成；首个 cohort 开跑前被否决，新 cohort `g1a-20260726-rc2-02` 等待独立冻结复核。
+- `docs/exec-plans/active/2026-07-26-gate1-d0-readiness.md` — D0-A 已 `READY`；#2–#7、`M-A`–`M-C` 和正式 RC 均已完成；新 cohort `g1a-20260726-rc2-02` 已取得 `RC_FREEZE=YES`，进入 A01–A07 运营。
 
 ## Directories
 
