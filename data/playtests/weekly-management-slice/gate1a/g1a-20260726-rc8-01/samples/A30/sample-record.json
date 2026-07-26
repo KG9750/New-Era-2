@@ -5,17 +5,25 @@
   "sampleKind": "primary",
   "batchId": "Batch 1",
   "issue": 32,
-  "operator": "/root",
+  "operator": "/root/gate1a_test_ops_lead",
   "sealedAtUtc": "2026-07-26T16:06:44Z",
+  "adjudicatedAtUtc": "2026-07-26T16:16:15Z",
   "identityAndIsolation": {
-    "agentTask": "/root/gate1a_a30",
+    "agentTask": "/root/rc3_ui_audit/rc7_independent_freeze/rc8_independent_freeze/a30_player",
     "agentSessionId": null,
     "agentSessionIdReason": "collaboration_tool_did_not_expose_session_uuid",
     "freshContextAttestation": true,
     "freshContextMechanism": "fork_turns=none",
-    "freshBrowserEvidence": "new agent browser tab opened on the blank entry; preflight localStorage was empty before release",
+    "freshBrowserEvidence": "not established after audit; two application sessions overlapped on the same host",
     "browserProfileUuidExposed": false,
     "contextContaminationDetected": false,
+    "applicationSessionContaminationDetected": true,
+    "identityAttributionStatus": "UNVERIFIABLE",
+    "assignedSampleId": "A30",
+    "agentObservedSampleId": "M-C",
+    "agentControlledPageCount": 1,
+    "agentControlledSecondPage": false,
+    "unexpectedConcurrentSessionDetected": true,
     "priorPrototypeExposure": false,
     "readOnlyAttestation": true,
     "playerPacketReleasedBeforePlay": true,
@@ -36,6 +44,7 @@
     "inputMode": "browser-pointer-keyboard"
   },
   "applicationSession": {
+    "attributionStatus": "UNATTRIBUTED_A30_LABELED_CANDIDATE_CAPTURE",
     "sessionId": "6e3bad8c-234f-4171-a843-8bd815ea7e6c",
     "machineStartedAtEpochMs": 1785081565221,
     "machineEndedAtEpochMs": 1785081763969,
@@ -50,6 +59,22 @@
     "exportReceiptObserved": "已保存并校验 tick 2010 的匿名记录。",
     "clearCompleted": true,
     "clearEvidence": "Agent reported return to the 开始匿名新会话 entry after clearing."
+  },
+  "unexpectedConcurrentSession": {
+    "sampleId": "M-C",
+    "sessionId": "0809d5c5-8f73-48ca-a25e-0cb73d8dc625",
+    "machineStartedAtEpochMs": 1785081644511,
+    "machineEndedAtEpochMs": 1785081859103,
+    "overlapWithCandidateA30Ms": 119458,
+    "captureKind": "complete",
+    "finalTick": 2010,
+    "exportFilePath": "captures/g1-rc-20260726.8-M-C-0809d5c5-8f73-48ca-a25e-0cb73d8dc625.json",
+    "exportFileSha256": "f6b62ac9cdea9525df8670e679a4a2a0577d3474f2d883ff8cb6bd157bbde2c4",
+    "exportFileSizeBytes": 63176,
+    "agentAttribution": "ATTESTED_NOT_MACHINE_BOUND",
+    "formalSampleEligibility": false,
+    "disposition": "QUARANTINED_UNAUTHORIZED_CONCURRENT_SESSION",
+    "renameOrPromoteProhibited": true
   },
   "machineEvidence": {
     "exportFilePath": "captures/g1-rc-20260726.8-A30-6e3bad8c-234f-4171-a843-8bd815ea7e6c.json",
@@ -82,6 +107,7 @@
     }
   ],
   "agentReportedEvidence": {
+    "reliabilityStatus": "CONFLICTING_SESSION_IDENTITY_STATEMENTS_NOT_AGGREGATABLE",
     "initialObservation": "本周最需要先补上水泵第 2 个预防性检修块；如果周三前不补，水泵停机会让当前轻度粮食缺口下探成严重短缺。",
     "completionSignal": "PLAYTHROUGH_COMPLETE；保存完成；浏览器下载完成；清空完成并返回开始匿名新会话。",
     "threeProblemIdentification": {
@@ -121,19 +147,29 @@
     }
   ],
   "subjectiveHumanFields": "not_applicable_agent_proxy",
+  "decisionHistory": [
+    {
+      "status": "VALID",
+      "reasonCode": "COMPLETE_CAPTURE_AND_PROTOCOL_COMPLIANCE",
+      "sealedAtUtc": "2026-07-26T16:06:44Z",
+      "superseded": true,
+      "supersededReason": "Later technical audit established two overlapping sessions and contradicted the delegated agent's A30 identity attribution."
+    }
+  ],
   "validityDecision": {
-    "status": "VALID",
-    "reasonCode": "COMPLETE_CAPTURE_AND_PROTOCOL_COMPLIANCE",
-    "reason": "RC fingerprint, fresh context, read-only UI operation, two-week completion, server raw/sidecar/receipt, byte-identical browser download and post-save clearing all satisfy the frozen contract.",
+    "status": "INVALID_TECHNICAL",
+    "reasonCode": "INVALID_TECHNICAL_CONCURRENT_SESSION_CONTAMINATION",
+    "reason": "The delegated agent attested that it controlled only one page whose visible sample ID was always M-C, while the host captured overlapping complete A30 and M-C sessions. The A30-labeled capture cannot be attributed to the delegated agent, and M-C is excluded by the frozen manifest.",
     "negativeOutcomeExcludedBecauseOfResult": false,
     "productObservationsRetained": true,
-    "includedInSevenValidSampleDenominator": true,
+    "productMetricsAggregatable": false,
+    "includedInSevenValidSampleDenominator": false,
     "sampleIdReusable": false,
-    "replacementRequired": false,
-    "replacementSampleId": null
+    "replacementRequired": true,
+    "replacementSampleId": "A37"
   },
   "trackLocks": {
-    "gate1A": "IN_PROGRESS_1_OF_7_VALID",
+    "gate1A": "RUNNING_0_OF_7_VALID_A37_PENDING",
     "gate1H": "PENDING",
     "gate2": "LOCKED"
   }

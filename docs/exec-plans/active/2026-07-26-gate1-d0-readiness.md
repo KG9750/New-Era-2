@@ -8,6 +8,18 @@
 
 ---
 
+## 执行后置状态
+
+RC8 冻结通过后已创建 A30–A36。首场 A30 因同一 host 出现时间重叠的
+A30/M-C 两个会话，且受委派 agent 只确认操作 M-C，最终裁定为
+`INVALID_TECHNICAL_CONCURRENT_SESSION_CONTAMINATION`。当前有效样本为
+`0/7`，A37 为首个替补；A31 在逐场 host、浏览器页面和 capture inventory
+隔离预检完成前暂停。该事件不改变 RC8 指纹，不构成产品玩法失败。
+
+- Gate 1A：`RUNNING_0_OF_7_VALID_A37_PENDING`
+- Gate 1H：`PENDING`
+- Gate 2：`LOCKED`
+
 ## 1. 当前检查结果
 
 | D0 条件 | 状态 | 证据或剩余动作 |
