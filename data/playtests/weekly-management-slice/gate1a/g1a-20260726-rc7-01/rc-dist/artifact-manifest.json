@@ -2,19 +2,19 @@
   "schemaVersion": "gate1-artifact-manifest-v1",
   "files": [
     {
+      "path": "assets/index-BiU0Zr0d.js",
+      "size": 258084,
+      "sha256": "dcff16c00d78d95d5b25ddeb4a6f63f2f12e006f63c5ab695a10883740f4809c"
+    },
+    {
       "path": "assets/index-CKvZx6LA.css",
       "size": 16292,
       "sha256": "7487e57f3dff89b067156685b5ef9eec6c25d14553066baa574d2f643cebfb83"
     },
     {
-      "path": "assets/index-DHeSMru0.js",
-      "size": 257770,
-      "sha256": "a191810d8634f3afc8fc7cda76455a209b5b157b71b06aada266ef485d729406"
-    },
-    {
       "path": "index.html",
       "size": 468,
-      "sha256": "7cb7a8af9e2abcca77e79c84f6f568f5c7b9134759370d61b30552a93f1f533a"
+      "sha256": "8cfe81b119c8901ba38cc77c18f08aa1167d1f1685d6670a85320707f75bd734"
     },
     {
       "path": "playtest-host.mjs",

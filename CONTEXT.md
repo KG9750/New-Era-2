@@ -17,7 +17,7 @@ This file is the top-level context entrypoint for the project.
 - Gate 0 已 `PASS`：总控计划、两周切片规格和玩家测试协议已建立；这只证明验证合同成立，不代表玩法已被玩家证明。
 - Gate 1 采用双轨：Gate 1A 已授权使用 7 个独立 agent 样本，Gate 1H 真人验证暂缓；Gate 1A 不能替代 Gate 1H，也不能解锁 Gate 2。
 - D0-A 的开发前提已 `READY`：双轨基线为 `2550617be5eff4226e9e140be741d619fcb6f5a3`；当前根 agent `/root` 担任测试运营负责人，Gate 1A 汇总为 #9。
-- Gate 1 两周 RC7 已固定为 `refs/heads/codex/gate1-rc-20260726.7`，指向提交 `d8bb0728b61eb6a189a5d4726177761e92ca89f7`；artifact 为 `1c608ae5c6de53557d8fae1d2250236241d645a195d92a1e272735b33882450f`。cohort `g1a-20260726-rc7-01` 正在制备，尚未取得独立 `RC_FREEZE=YES`。
+- Gate 1 两周 RC7 已固定为 `refs/heads/codex/gate1-rc-20260726.7`，指向提交 `03973fcfc0c244555e7e4a4c623eec3fb8b8e032`；artifact 为 `e0cf7c78251642a54f88845c61aa214e9e91076b3e432fb8399bd873ef0fe49b`。cohort `g1a-20260726-rc7-01` 已完成冻结制备，正在等待独立复核，尚未取得 `RC_FREEZE=YES`。
 - `g1a-20260726-rc2-01` 因玩家包诱导风险被否决；rc2-02 因 Vite 7 基线偏差被替代；rc3-01 因独立审查发现两项状态一致性 P1 被替代。三者均未产生正式样本。
 - `M-A`–`M-C` 已完成且不进入正式分母；RC6 的冻结通过因终局 blocked capture 后置 P1 被撤回，#7 已重新打开。
 - RC4 已永久作废：A01 完成两周、导出回执和清空，但匿名 JSON 不可核验，按冻结规则判为 `INVALID_TECHNICAL` 并永久保留；A02–A08 均不迁入 RC5。

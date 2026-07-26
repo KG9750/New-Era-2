@@ -14,13 +14,13 @@
 | 字段 | 冻结值 |
 |---|---|
 | RC ref | `refs/heads/codex/gate1-rc-20260726.7` |
-| Git SHA | `d8bb0728b61eb6a189a5d4726177761e92ca89f7` |
-| Git tree | `60f28b748f05a9ffebe2a53831c551b53c35c2f3` |
-| source-tree hash | `bafa4f3b4974bd4a470a8f8fab3cd568b1827f64dfc507ba2dd58291264622bb` |
+| Git SHA | `03973fcfc0c244555e7e4a4c623eec3fb8b8e032` |
+| Git tree | `341e0de0352181ce84067c45bff99248f03a5b70` |
+| source-tree hash | `22133fccaa2459d9d3414a1728fdb332ccdfc344dd126f444b67a3c3224d5adb` |
 | source-tree algorithm | `sha256-git-blob-path-manifest-v1` |
 | source-tree file count | 39 |
 | build ID | `g1-rc-20260726.7` |
-| artifact hash | `1c608ae5c6de53557d8fae1d2250236241d645a195d92a1e272735b33882450f` |
+| artifact hash | `e0cf7c78251642a54f88845c61aa214e9e91076b3e432fb8399bd873ef0fe49b` |
 | initial state | `fnv1a32-33a16fbf` |
 | scenario | `gate1-two-week-management` / `0.4.0` |
 | fixed seed | `104729` |
@@ -40,28 +40,34 @@ RC7 在不放宽完整场次合同的前提下：
 - 完整场次仍严格要求 tick 2010、`isComplete=true`、两周、两份 recap 和
   唯一 `export-created`。
 
-独立代码复审为 `CODE_REVIEW=PASS`、P0=0、P1=0、P2=0。详见
+未参与实现和冻结制备的独立 source reviewer 对最终源给出
+`CODE_REVIEW=PASS`、P0=0、P1=0、P2=0：确认第二周化肥使用证据按 action
+顺序正确派生；blocked capture 保存失败后以同一 raw 重试，保持唯一 blocked
+marker、零 complete marker、失败时冻结输入和禁止清空、成功后才允许清空。
+代码复审不等于独立冻结裁定，当前仍等待 `RC_FREEZE=YES`。详见
 `evidence/rc7-code-review.md`。
 
 ## 双 clean clone 复算
 
-两个 clean clone 均从远端提交 `d8bb0728…` 构建：
+两个 clean clone 均从远端提交
+`03973fcfc0c244555e7e4a4c623eec3fb8b8e032` 构建：
 
-- clone A：`/tmp/new-era-g1a-rc7-a.l8u8qz/repo`
-- clone B：`/tmp/new-era-g1a-rc7-b.xwoI0D/repo`
+- clone A：`/tmp/new-era-rc7-final-a2.DMTjvX/repo`
+- clone B：`/tmp/new-era-rc7-final-b2.o18Z8X/repo`
 
 两者均使用 Node `v24.18.0`、npm `11.16.0`，并通过：
 
-- `npm ci`，0 vulnerabilities；
+- `npm ci`，各安装并审计 129 个 packages，0 vulnerabilities；
+- 独立 `npm audit`，两边均为 0 vulnerabilities；
 - lint；
-- Vitest 7 个文件、47/47；
+- Vitest 7 个文件、48/48；
 - RC build 与 `rc:verify`；
 - host source/dist `node --check`；
 - fresh dist 的文件集合和字节比对。
 
-clone A 的 Chromium 在 `1440×900` 与 `1280×720` 各 11/11，共 22/22 通过。
-新增覆盖两类终局 blocked payload 与 tick 0 拒绝；原 complete、普通 blocked、
-原因边界、模式矛盾、sidecar 篡改、恢复、完整两周下载和清空回归均继续通过。
+两个 clone 的 Chromium 均在 `1440×900` 与 `1280×720` 各 11/11，每个 clone
+共 22/22 通过。覆盖两类终局 blocked payload、tick 0 拒绝、complete、普通
+blocked、原因边界、模式矛盾、sidecar 篡改、恢复、完整两周下载和清空。
 
 ## 确定性 archive
 
@@ -71,10 +77,10 @@ uid/gid 0、owner/group `root`、无 xattrs 和 macOS metadata 生成
 
 | 文件 | SHA-256 |
 |---|---|
-| `rc-dist/artifact-manifest.json` | `22087fbd85cf18a3174f2112379fa720038403f41891decb592fcdde5de4014d` |
-| `rc-dist/rc-build.json` | `a6d932b299251e25852bc91459c19a9ef89226b28d5700a86caf34858c59c7e9` |
+| `rc-dist/artifact-manifest.json` | `01648a718eecac743aa60e7c94f73f1c71bdfb02086056d15ad4e7104541c407` |
+| `rc-dist/rc-build.json` | `1168c752e0324c2a73cb1f89a8a15dd7b9ae04e8bcca1c6074eede4bbb11a58a` |
 | `rc-dist/playtest-host.mjs` | `84859a4840b54580162b709d52beacd5fa550ec318c6830d1a8cdb6df1b97f05` |
-| `rc-dist.tar` | `490dbaba9d17e1fd2c76b064c4726f37ac34852ea81a64b6deba759d3541dbf2` |
+| `rc-dist.tar` | `6c38cccbb4c315c3d322c111e4303d5ab52e0ded68935290ca7abd907af37157` |
 
 两个 clean clone 分别重建 archive，得到相同 SHA，并与冻结 archive 逐字节一致。
 

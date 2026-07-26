@@ -2,7 +2,7 @@
   "schemaVersion": "gate1a-cohort-manifest-v3",
   "cohortId": "g1a-20260726-rc7-01",
   "status": "FROZEN_PENDING_INDEPENDENT_REVIEW",
-  "frozenAtUtc": "2026-07-26T14:38:45Z",
+  "frozenAtUtc": "2026-07-26T14:59:18Z",
   "gate": "Gate 1A",
   "operator": "/root",
   "operatorDisplayName": "Codex root agent",
@@ -18,21 +18,21 @@
   "releaseCandidate": {
     "ref": "refs/heads/codex/gate1-rc-20260726.7",
     "buildId": "g1-rc-20260726.7",
-    "gitSha": "d8bb0728b61eb6a189a5d4726177761e92ca89f7",
-    "gitTree": "60f28b748f05a9ffebe2a53831c551b53c35c2f3",
-    "sourceTreeManifestHash": "bafa4f3b4974bd4a470a8f8fab3cd568b1827f64dfc507ba2dd58291264622bb",
+    "gitSha": "03973fcfc0c244555e7e4a4c623eec3fb8b8e032",
+    "gitTree": "341e0de0352181ce84067c45bff99248f03a5b70",
+    "sourceTreeManifestHash": "22133fccaa2459d9d3414a1728fdb332ccdfc344dd126f444b67a3c3224d5adb",
     "sourceTreeManifestHashAlgorithm": "sha256-git-blob-path-manifest-v1",
     "sourceTreeManifestScope": "tracked prototype/ files sorted by path; each line is <path><TAB><git-blob-object-id><LF>, including final LF",
     "sourceTreeFileCount": 39,
-    "artifactHash": "1c608ae5c6de53557d8fae1d2250236241d645a195d92a1e272735b33882450f",
+    "artifactHash": "e0cf7c78251642a54f88845c61aa214e9e91076b3e432fb8399bd873ef0fe49b",
     "artifactHashAlgorithm": "sha256-canonical-file-manifest-v1",
     "artifactManifest": {
       "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc7-01/rc-dist/artifact-manifest.json",
-      "sha256": "22087fbd85cf18a3174f2112379fa720038403f41891decb592fcdde5de4014d"
+      "sha256": "01648a718eecac743aa60e7c94f73f1c71bdfb02086056d15ad4e7104541c407"
     },
     "rcBuild": {
       "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc7-01/rc-dist/rc-build.json",
-      "sha256": "a6d932b299251e25852bc91459c19a9ef89226b28d5700a86caf34858c59c7e9"
+      "sha256": "1168c752e0324c2a73cb1f89a8a15dd7b9ae04e8bcca1c6074eede4bbb11a58a"
     },
     "captureHost": {
       "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc7-01/rc-dist/playtest-host.mjs",
@@ -40,7 +40,7 @@
     },
     "deterministicArchive": {
       "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc7-01/rc-dist.tar",
-      "sha256": "490dbaba9d17e1fd2c76b064c4726f37ac34852ea81a64b6deba759d3541dbf2",
+      "sha256": "6c38cccbb4c315c3d322c111e4303d5ab52e0ded68935290ca7abd907af37157",
       "format": "ustar",
       "determinism": "sorted paths; mtime 2000-01-01T00:00:00Z; uid/gid 0; root/root; no xattrs or macOS metadata"
     },
@@ -166,10 +166,14 @@
   },
   "verification": {
     "cleanClones": [
-      "/tmp/new-era-g1a-rc7-a.l8u8qz/repo",
-      "/tmp/new-era-g1a-rc7-b.xwoI0D/repo"
+      "/tmp/new-era-rc7-final-a2.DMTjvX/repo",
+      "/tmp/new-era-rc7-final-b2.o18Z8X/repo"
     ],
     "npmCi": {
+      "status": "PASS",
+      "vulnerabilities": 0
+    },
+    "npmAudit": {
       "status": "PASS",
       "vulnerabilities": 0
     },
@@ -186,7 +190,7 @@
     "vitest": {
       "status": "PASS",
       "files": 7,
-      "tests": 47
+      "tests": 48
     },
     "hostSourceSyntax": "PASS",
     "hostDistSyntax": "PASS",
@@ -204,20 +208,23 @@
     },
     "codeReview": {
       "decision": "CODE_REVIEW=PASS",
+      "reviewedGitSha": "03973fcfc0c244555e7e4a4c623eec3fb8b8e032",
+      "reviewerIndependence": "reviewer did not participate in RC7 implementation or freeze preparation",
+      "scope": "final RC7 source; source review is not an independent freeze decision",
       "p0": 0,
       "p1": 0,
       "p2": 0,
       "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc7-01/evidence/rc7-code-review.md",
-      "sha256": "076655541cfd9b935547121bd7d20e7549c0cdc0095adb897b00794170c4b328"
+      "sha256": "3531c038b9fa4fcc15bbec73d3a043d9243c20dae952b9e2531a7554dd8b9f28"
     },
     "freezeAudit": {
       "status": "PASS_PENDING_INDEPENDENT_DECISION",
       "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc7-01/evidence/rc-freeze-audit.md",
-      "sha256": "55dd2bd5129e78bef7600cff3f99c97a4eedadb2bd3c7644473652b0bdf02324"
+      "sha256": "e3ad473a5d242a6ef4bdcf26f12085d7d3c4cff517d9df759301c52352b8c49f"
     },
     "noGate2Code": {
       "value": true,
-      "evidence": "RC6-to-RC7 prototype changes are limited to capture-host terminal blocked-state validation and public endpoint regression coverage."
+      "evidence": "RC6-to-RC7 prototype changes are limited to capture-host terminal blocked-state validation, capture regressions, and correcting visible fertilizer-use evidence; no Gate 2 implementation is present."
     }
   },
   "authorityReferences": [

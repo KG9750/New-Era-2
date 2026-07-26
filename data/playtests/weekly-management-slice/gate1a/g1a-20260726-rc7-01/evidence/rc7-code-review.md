@@ -8,9 +8,9 @@
 - P1：0
 - P2：0
 
-审查员未参与 RC7 候选修复，只读检查 `d8bb0728b61eb6a189a5d4726177761e92ca89f7`
-相对 RC6 的 host 与公开 endpoint E2E 改动。该审查不等同于 cohort 独立冻结
-复核。
+审查员未参与 RC7 实现或本次冻结制备，只读复审最终源
+`03973fcfc0c244555e7e4a4c623eec3fb8b8e032`。本记录不等同于 cohort 独立
+冻结复核，也不授予 `RC_FREEZE=YES`。
 
 ## 通过项
 
@@ -24,17 +24,24 @@
   合同保持；
 - 完整场次仍严格要求 tick 2010、`isComplete=true`、两周、两份 recap 和唯一
   `export-created`；
-- 改动只有 capture host 与公开 endpoint E2E，未修改模拟、场景、数值、阈值
-  或 Gate 2。
+- 化肥使用周次由 `USE_FERTILIZER` 与 `CONTINUE_TO_NEXT_WEEK` 在 action log
+  中的顺序派生；第二周使用不再错误显示为第一周证据；
+- blocked capture 首次保存返回 409 后，重试复用完全相同的 `rawJson`，保持
+  恰一个 `blocked-capture-created`、零个 `export-created`；
+- 首次保存失败后冻结阻断原因并禁止清空；成功回执后才允许清空；
+- 未修改模拟、场景、数值、阈值或 Gate 2。
 
 ## TDD 与回归
 
 - RED：两类合法终局 blocked payload 原均返回 400；tick 0 原返回 201；
 - GREEN：两类终局 blocked payload 返回 201；tick 0 返回 400；
-- Node 24.18.0：lint 通过、Vitest 47/47、双视口 Chromium 22/22；
+- 独立 source reviewer：`npm run test:run -- tests/App.test.tsx` 为 12/12，
+  lint 通过，完整 Vitest 为 48/48；
+- 冻结制备的两个 clean clone 双视口 Chromium 均为 22/22；
 - `git diff --check` 通过。
 
 ## 边界
 
-本记录只证明 RC7 代码复审没有 P0/P1/P2。RC7 仍须完成 cohort manifest、
-archive 复算和独立 `RC_FREEZE=YES`，才允许创建或启动 A23–A29。
+本记录只证明最终源代码复审没有 P0/P1/P2。cohort manifest 和 archive 已完成
+复算，但仍须由未参与实现和制备的独立冻结 reviewer 给出
+`RC_FREEZE=YES`，才允许创建或启动 A23–A29。
