@@ -25,7 +25,7 @@ This file is the top-level context entrypoint for the project.
 - RC5 因无法保存中途产品阻断的三件套而撤回开跑许可：A09 固定为 `SUPERSEDED_RC_REVOKED_AFTER_SESSION` 并排除，A10–A15 未启动，#18–#24 已历史化。
 - RC6 因拒绝 `tick=2010 / isComplete=false` 的合法终局阻断而作废：A16–A22 未启动，#25–#31 已历史化，编号不复用。
 - RC7 因冻结 tar 的 UTC 配方不一致及随后出现的第二周化肥证据修复而预启动作废：A23–A29 未创建 Issue、未启动 player agent，编号不复用。
-- Gate 1A 当前为 `RUNNING_2_OF_7_VALID_A37_PENDING`：A30 因并发 A30/M-C 身份污染而技术无效，A37 为首个替补；A31 已通过交接对账确认为有效；A32 已按逐场隔离协议完成、保存、逐字节核验浏览器下载、清空和访谈 V4，裁定为有效且无新增 P0/P1/P2。
+- Gate 1A 当前为 `RUNNING_3_OF_7_VALID_A37_PENDING`：A30 因并发 A30/M-C 身份污染而技术无效，A37 为首个替补；A31–A33 有效。A33 登记单场 P2 `WEEK2_PRESTART_TIME_LABEL_TRANSITION`，未影响决策、完成、保存或清空，尚不构成独立 P1。
 - React + TypeScript + Vite 是 Gate 1 实施介质；Node `v24.18.0` 已在 `/opt/homebrew/opt/node@24/bin/` 验证并由 `.node-version` 固定，实施 shell 仍需优先使用该路径。
 - Gate 1 当前估算为 15–18 个净开发工作日；D0、里程碑代理试玩、正式 Gate 1A 运营和报告时间另计，Gate 1H 真人运营时间暂不排期。
 - Gate 2 仍为 `LOCKED`；只有 Gate 1H 获得真人 `PASS` 后才允许编写 Gate 2 规格，不提前实现主题、NPC、排名或豁免。

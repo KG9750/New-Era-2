@@ -1,0 +1,2905 @@
+{
+  "schemaVersion": "gate1-playtest-v1",
+  "meta": {
+    "sampleId": "A33",
+    "sessionId": "b9f37d56-7a5a-42b3-9188-cda1e52ab365",
+    "buildId": "g1-rc-20260726.8",
+    "gitSha": "03973fcfc0c244555e7e4a4c623eec3fb8b8e032",
+    "artifactHash": "e0cf7c78251642a54f88845c61aa214e9e91076b3e432fb8399bd873ef0fe49b",
+    "scenarioId": "gate1-two-week-management",
+    "scenarioVersion": "0.4.0",
+    "fixedSeed": 104729,
+    "initialStateHash": "fnv1a32-33a16fbf",
+    "viewport": "1440x900",
+    "inputDevice": "browser-pointer-keyboard"
+  },
+  "machineTiming": {
+    "machineStartedAtEpochMs": 1785085660029,
+    "machineEndedAtEpochMs": 1785085982030,
+    "machineElapsedMs": 322015,
+    "week1RawDurationMs": 123620,
+    "week2RawDurationMs": 109705
+  },
+  "actions": [
+    {
+      "id": "action-0001",
+      "sequence": 1,
+      "atTick": 54,
+      "action": {
+        "type": "CHANGE_ACTIVITY",
+        "activity": "repair"
+      },
+      "affectedCellIds": [
+        "lin-he:d1:b1"
+      ],
+      "undoOfActionId": null
+    },
+    {
+      "id": "action-0002",
+      "sequence": 2,
+      "atTick": 54,
+      "action": {
+        "type": "SET_PAUSED",
+        "paused": false
+      },
+      "affectedCellIds": [],
+      "undoOfActionId": null
+    },
+    {
+      "id": "action-0003",
+      "sequence": 3,
+      "atTick": 342,
+      "action": {
+        "type": "SET_PAUSED",
+        "paused": false
+      },
+      "affectedCellIds": [],
+      "undoOfActionId": null
+    },
+    {
+      "id": "action-0004",
+      "sequence": 4,
+      "atTick": 1002,
+      "action": {
+        "type": "CONTINUE_TO_NEXT_WEEK"
+      },
+      "affectedCellIds": [],
+      "undoOfActionId": null
+    },
+    {
+      "id": "action-0005",
+      "sequence": 5,
+      "atTick": 1002,
+      "action": {
+        "type": "RESOLVE_LIN_HE_REQUEST",
+        "decision": "accepted"
+      },
+      "affectedCellIds": [
+        "lin-he:d8:b0"
+      ],
+      "undoOfActionId": null
+    },
+    {
+      "id": "action-0006",
+      "sequence": 6,
+      "atTick": 1002,
+      "action": {
+        "type": "USE_FERTILIZER"
+      },
+      "affectedCellIds": [],
+      "undoOfActionId": null
+    },
+    {
+      "id": "action-0007",
+      "sequence": 7,
+      "atTick": 1002,
+      "action": {
+        "type": "SET_PAUSED",
+        "paused": false
+      },
+      "affectedCellIds": [],
+      "undoOfActionId": null
+    }
+  ],
+  "candidateEditGroups": [
+    {
+      "actionId": "action-0001",
+      "weekIndex": 0,
+      "actionType": "CHANGE_ACTIVITY",
+      "affectedCellIds": [
+        "lin-he:d1:b1"
+      ],
+      "undoActionIds": []
+    }
+  ],
+  "domainEvents": [
+    {
+      "sequence": 1,
+      "eventId": "action-0001",
+      "type": "activity-changed",
+      "atTick": 54,
+      "before": {
+        "low": 3,
+        "high": 11
+      },
+      "after": {
+        "low": 9,
+        "high": 9
+      }
+    },
+    {
+      "sequence": 2,
+      "eventId": "action-0002",
+      "type": "clock-changed",
+      "atTick": 54
+    },
+    {
+      "sequence": 3,
+      "eventId": "pump-incident-day-3",
+      "type": "pump-incident",
+      "atTick": 342,
+      "before": {
+        "low": 9,
+        "high": 9
+      },
+      "after": {
+        "low": 8,
+        "high": 9
+      }
+    },
+    {
+      "sequence": 4,
+      "eventId": "action-0003",
+      "type": "clock-changed",
+      "atTick": 342
+    },
+    {
+      "sequence": 5,
+      "eventId": "week-1-ended",
+      "type": "week-ended",
+      "atTick": 1002
+    },
+    {
+      "sequence": 6,
+      "eventId": "action-0004",
+      "type": "clock-changed",
+      "atTick": 1002
+    },
+    {
+      "sequence": 7,
+      "eventId": "action-0005",
+      "type": "lin-he-request-resolved",
+      "atTick": 1002,
+      "before": {
+        "low": 10,
+        "high": 11
+      },
+      "after": {
+        "low": 8,
+        "high": 9
+      }
+    },
+    {
+      "sequence": 8,
+      "eventId": "action-0006",
+      "type": "fertilizer-used",
+      "atTick": 1002,
+      "before": {
+        "low": 8,
+        "high": 9
+      },
+      "after": {
+        "low": 14,
+        "high": 15
+      }
+    },
+    {
+      "sequence": 9,
+      "eventId": "action-0007",
+      "type": "clock-changed",
+      "atTick": 1002
+    },
+    {
+      "sequence": 10,
+      "eventId": "week-2-ended",
+      "type": "week-ended",
+      "atTick": 2010
+    }
+  ],
+  "telemetry": [
+    {
+      "type": "session-started",
+      "atTick": 54,
+      "machineOffsetMs": 0,
+      "weekIndex": 0,
+      "sequence": 1
+    },
+    {
+      "type": "week-started",
+      "atTick": 54,
+      "machineOffsetMs": 0,
+      "weekIndex": 0,
+      "sequence": 2
+    },
+    {
+      "type": "speed-changed",
+      "atTick": 54,
+      "machineOffsetMs": 0,
+      "speed": 3,
+      "sequence": 3
+    },
+    {
+      "type": "player-action-applied",
+      "atTick": 54,
+      "machineOffsetMs": 45798,
+      "fromTick": 54,
+      "toTick": 54,
+      "actionId": "action-0001",
+      "domainEventIds": [
+        "action-0001"
+      ],
+      "sequence": 4
+    },
+    {
+      "type": "speed-changed",
+      "atTick": 54,
+      "machineOffsetMs": 73246,
+      "speed": 8,
+      "sequence": 5
+    },
+    {
+      "type": "player-action-applied",
+      "atTick": 54,
+      "machineOffsetMs": 73534,
+      "fromTick": 54,
+      "toTick": 54,
+      "actionId": "action-0002",
+      "domainEventIds": [
+        "action-0002"
+      ],
+      "sequence": 6
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 62,
+      "machineOffsetMs": 73789,
+      "speed": 8,
+      "fromTick": 54,
+      "toTick": 62,
+      "domainEventIds": [],
+      "sequence": 7
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 70,
+      "machineOffsetMs": 74038,
+      "speed": 8,
+      "fromTick": 62,
+      "toTick": 70,
+      "domainEventIds": [],
+      "sequence": 8
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 78,
+      "machineOffsetMs": 74289,
+      "speed": 8,
+      "fromTick": 70,
+      "toTick": 78,
+      "domainEventIds": [],
+      "sequence": 9
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 86,
+      "machineOffsetMs": 74540,
+      "speed": 8,
+      "fromTick": 78,
+      "toTick": 86,
+      "domainEventIds": [],
+      "sequence": 10
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 94,
+      "machineOffsetMs": 74790,
+      "speed": 8,
+      "fromTick": 86,
+      "toTick": 94,
+      "domainEventIds": [],
+      "sequence": 11
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 102,
+      "machineOffsetMs": 75038,
+      "speed": 8,
+      "fromTick": 94,
+      "toTick": 102,
+      "domainEventIds": [],
+      "sequence": 12
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 110,
+      "machineOffsetMs": 75291,
+      "speed": 8,
+      "fromTick": 102,
+      "toTick": 110,
+      "domainEventIds": [],
+      "sequence": 13
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 118,
+      "machineOffsetMs": 75538,
+      "speed": 8,
+      "fromTick": 110,
+      "toTick": 118,
+      "domainEventIds": [],
+      "sequence": 14
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 126,
+      "machineOffsetMs": 75790,
+      "speed": 8,
+      "fromTick": 118,
+      "toTick": 126,
+      "domainEventIds": [],
+      "sequence": 15
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 134,
+      "machineOffsetMs": 76040,
+      "speed": 8,
+      "fromTick": 126,
+      "toTick": 134,
+      "domainEventIds": [],
+      "sequence": 16
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 142,
+      "machineOffsetMs": 76290,
+      "speed": 8,
+      "fromTick": 134,
+      "toTick": 142,
+      "domainEventIds": [],
+      "sequence": 17
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 150,
+      "machineOffsetMs": 76540,
+      "speed": 8,
+      "fromTick": 142,
+      "toTick": 150,
+      "domainEventIds": [],
+      "sequence": 18
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 158,
+      "machineOffsetMs": 76790,
+      "speed": 8,
+      "fromTick": 150,
+      "toTick": 158,
+      "domainEventIds": [],
+      "sequence": 19
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 166,
+      "machineOffsetMs": 77040,
+      "speed": 8,
+      "fromTick": 158,
+      "toTick": 166,
+      "domainEventIds": [],
+      "sequence": 20
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 174,
+      "machineOffsetMs": 77289,
+      "speed": 8,
+      "fromTick": 166,
+      "toTick": 174,
+      "domainEventIds": [],
+      "sequence": 21
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 182,
+      "machineOffsetMs": 77538,
+      "speed": 8,
+      "fromTick": 174,
+      "toTick": 182,
+      "domainEventIds": [],
+      "sequence": 22
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 190,
+      "machineOffsetMs": 77790,
+      "speed": 8,
+      "fromTick": 182,
+      "toTick": 190,
+      "domainEventIds": [],
+      "sequence": 23
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 198,
+      "machineOffsetMs": 78040,
+      "speed": 8,
+      "fromTick": 190,
+      "toTick": 198,
+      "domainEventIds": [],
+      "sequence": 24
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 206,
+      "machineOffsetMs": 78290,
+      "speed": 8,
+      "fromTick": 198,
+      "toTick": 206,
+      "domainEventIds": [],
+      "sequence": 25
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 214,
+      "machineOffsetMs": 78540,
+      "speed": 8,
+      "fromTick": 206,
+      "toTick": 214,
+      "domainEventIds": [],
+      "sequence": 26
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 222,
+      "machineOffsetMs": 78790,
+      "speed": 8,
+      "fromTick": 214,
+      "toTick": 222,
+      "domainEventIds": [],
+      "sequence": 27
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 230,
+      "machineOffsetMs": 79040,
+      "speed": 8,
+      "fromTick": 222,
+      "toTick": 230,
+      "domainEventIds": [],
+      "sequence": 28
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 238,
+      "machineOffsetMs": 79288,
+      "speed": 8,
+      "fromTick": 230,
+      "toTick": 238,
+      "domainEventIds": [],
+      "sequence": 29
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 246,
+      "machineOffsetMs": 79539,
+      "speed": 8,
+      "fromTick": 238,
+      "toTick": 246,
+      "domainEventIds": [],
+      "sequence": 30
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 254,
+      "machineOffsetMs": 79790,
+      "speed": 8,
+      "fromTick": 246,
+      "toTick": 254,
+      "domainEventIds": [],
+      "sequence": 31
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 262,
+      "machineOffsetMs": 80039,
+      "speed": 8,
+      "fromTick": 254,
+      "toTick": 262,
+      "domainEventIds": [],
+      "sequence": 32
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 270,
+      "machineOffsetMs": 80288,
+      "speed": 8,
+      "fromTick": 262,
+      "toTick": 270,
+      "domainEventIds": [],
+      "sequence": 33
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 278,
+      "machineOffsetMs": 80540,
+      "speed": 8,
+      "fromTick": 270,
+      "toTick": 278,
+      "domainEventIds": [],
+      "sequence": 34
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 286,
+      "machineOffsetMs": 80789,
+      "speed": 8,
+      "fromTick": 278,
+      "toTick": 286,
+      "domainEventIds": [],
+      "sequence": 35
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 294,
+      "machineOffsetMs": 81039,
+      "speed": 8,
+      "fromTick": 286,
+      "toTick": 294,
+      "domainEventIds": [],
+      "sequence": 36
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 302,
+      "machineOffsetMs": 81290,
+      "speed": 8,
+      "fromTick": 294,
+      "toTick": 302,
+      "domainEventIds": [],
+      "sequence": 37
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 310,
+      "machineOffsetMs": 81540,
+      "speed": 8,
+      "fromTick": 302,
+      "toTick": 310,
+      "domainEventIds": [],
+      "sequence": 38
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 318,
+      "machineOffsetMs": 81791,
+      "speed": 8,
+      "fromTick": 310,
+      "toTick": 318,
+      "domainEventIds": [],
+      "sequence": 39
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 326,
+      "machineOffsetMs": 82038,
+      "speed": 8,
+      "fromTick": 318,
+      "toTick": 326,
+      "domainEventIds": [],
+      "sequence": 40
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 334,
+      "machineOffsetMs": 82290,
+      "speed": 8,
+      "fromTick": 326,
+      "toTick": 334,
+      "domainEventIds": [],
+      "sequence": 41
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 342,
+      "machineOffsetMs": 82540,
+      "speed": 8,
+      "fromTick": 334,
+      "toTick": 342,
+      "domainEventIds": [
+        "pump-incident-day-3"
+      ],
+      "sequence": 42
+    },
+    {
+      "type": "auto-pause-triggered",
+      "atTick": 342,
+      "machineOffsetMs": 82540,
+      "speed": 8,
+      "domainEventIds": [
+        "pump-incident-day-3"
+      ],
+      "sequence": 43
+    },
+    {
+      "type": "player-action-applied",
+      "atTick": 342,
+      "machineOffsetMs": 102867,
+      "fromTick": 342,
+      "toTick": 342,
+      "actionId": "action-0003",
+      "domainEventIds": [
+        "action-0003"
+      ],
+      "sequence": 44
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 350,
+      "machineOffsetMs": 103120,
+      "speed": 8,
+      "fromTick": 342,
+      "toTick": 350,
+      "domainEventIds": [],
+      "sequence": 45
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 358,
+      "machineOffsetMs": 103369,
+      "speed": 8,
+      "fromTick": 350,
+      "toTick": 358,
+      "domainEventIds": [],
+      "sequence": 46
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 366,
+      "machineOffsetMs": 103620,
+      "speed": 8,
+      "fromTick": 358,
+      "toTick": 366,
+      "domainEventIds": [],
+      "sequence": 47
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 374,
+      "machineOffsetMs": 103871,
+      "speed": 8,
+      "fromTick": 366,
+      "toTick": 374,
+      "domainEventIds": [],
+      "sequence": 48
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 382,
+      "machineOffsetMs": 104120,
+      "speed": 8,
+      "fromTick": 374,
+      "toTick": 382,
+      "domainEventIds": [],
+      "sequence": 49
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 390,
+      "machineOffsetMs": 104370,
+      "speed": 8,
+      "fromTick": 382,
+      "toTick": 390,
+      "domainEventIds": [],
+      "sequence": 50
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 398,
+      "machineOffsetMs": 104621,
+      "speed": 8,
+      "fromTick": 390,
+      "toTick": 398,
+      "domainEventIds": [],
+      "sequence": 51
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 406,
+      "machineOffsetMs": 104871,
+      "speed": 8,
+      "fromTick": 398,
+      "toTick": 406,
+      "domainEventIds": [],
+      "sequence": 52
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 414,
+      "machineOffsetMs": 105120,
+      "speed": 8,
+      "fromTick": 406,
+      "toTick": 414,
+      "domainEventIds": [],
+      "sequence": 53
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 422,
+      "machineOffsetMs": 105370,
+      "speed": 8,
+      "fromTick": 414,
+      "toTick": 422,
+      "domainEventIds": [],
+      "sequence": 54
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 430,
+      "machineOffsetMs": 105620,
+      "speed": 8,
+      "fromTick": 422,
+      "toTick": 430,
+      "domainEventIds": [],
+      "sequence": 55
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 438,
+      "machineOffsetMs": 105871,
+      "speed": 8,
+      "fromTick": 430,
+      "toTick": 438,
+      "domainEventIds": [],
+      "sequence": 56
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 446,
+      "machineOffsetMs": 106121,
+      "speed": 8,
+      "fromTick": 438,
+      "toTick": 446,
+      "domainEventIds": [],
+      "sequence": 57
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 454,
+      "machineOffsetMs": 106370,
+      "speed": 8,
+      "fromTick": 446,
+      "toTick": 454,
+      "domainEventIds": [],
+      "sequence": 58
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 462,
+      "machineOffsetMs": 106621,
+      "speed": 8,
+      "fromTick": 454,
+      "toTick": 462,
+      "domainEventIds": [],
+      "sequence": 59
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 470,
+      "machineOffsetMs": 106870,
+      "speed": 8,
+      "fromTick": 462,
+      "toTick": 470,
+      "domainEventIds": [],
+      "sequence": 60
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 478,
+      "machineOffsetMs": 107119,
+      "speed": 8,
+      "fromTick": 470,
+      "toTick": 478,
+      "domainEventIds": [],
+      "sequence": 61
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 486,
+      "machineOffsetMs": 107371,
+      "speed": 8,
+      "fromTick": 478,
+      "toTick": 486,
+      "domainEventIds": [],
+      "sequence": 62
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 494,
+      "machineOffsetMs": 107621,
+      "speed": 8,
+      "fromTick": 486,
+      "toTick": 494,
+      "domainEventIds": [],
+      "sequence": 63
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 502,
+      "machineOffsetMs": 107870,
+      "speed": 8,
+      "fromTick": 494,
+      "toTick": 502,
+      "domainEventIds": [],
+      "sequence": 64
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 510,
+      "machineOffsetMs": 108120,
+      "speed": 8,
+      "fromTick": 502,
+      "toTick": 510,
+      "domainEventIds": [],
+      "sequence": 65
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 518,
+      "machineOffsetMs": 108371,
+      "speed": 8,
+      "fromTick": 510,
+      "toTick": 518,
+      "domainEventIds": [],
+      "sequence": 66
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 526,
+      "machineOffsetMs": 108620,
+      "speed": 8,
+      "fromTick": 518,
+      "toTick": 526,
+      "domainEventIds": [],
+      "sequence": 67
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 534,
+      "machineOffsetMs": 108871,
+      "speed": 8,
+      "fromTick": 526,
+      "toTick": 534,
+      "domainEventIds": [],
+      "sequence": 68
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 542,
+      "machineOffsetMs": 109121,
+      "speed": 8,
+      "fromTick": 534,
+      "toTick": 542,
+      "domainEventIds": [],
+      "sequence": 69
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 550,
+      "machineOffsetMs": 109370,
+      "speed": 8,
+      "fromTick": 542,
+      "toTick": 550,
+      "domainEventIds": [],
+      "sequence": 70
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 558,
+      "machineOffsetMs": 109620,
+      "speed": 8,
+      "fromTick": 550,
+      "toTick": 558,
+      "domainEventIds": [],
+      "sequence": 71
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 566,
+      "machineOffsetMs": 109871,
+      "speed": 8,
+      "fromTick": 558,
+      "toTick": 566,
+      "domainEventIds": [],
+      "sequence": 72
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 574,
+      "machineOffsetMs": 110119,
+      "speed": 8,
+      "fromTick": 566,
+      "toTick": 574,
+      "domainEventIds": [],
+      "sequence": 73
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 582,
+      "machineOffsetMs": 110370,
+      "speed": 8,
+      "fromTick": 574,
+      "toTick": 582,
+      "domainEventIds": [],
+      "sequence": 74
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 590,
+      "machineOffsetMs": 110620,
+      "speed": 8,
+      "fromTick": 582,
+      "toTick": 590,
+      "domainEventIds": [],
+      "sequence": 75
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 598,
+      "machineOffsetMs": 110869,
+      "speed": 8,
+      "fromTick": 590,
+      "toTick": 598,
+      "domainEventIds": [],
+      "sequence": 76
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 606,
+      "machineOffsetMs": 111120,
+      "speed": 8,
+      "fromTick": 598,
+      "toTick": 606,
+      "domainEventIds": [],
+      "sequence": 77
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 614,
+      "machineOffsetMs": 111369,
+      "speed": 8,
+      "fromTick": 606,
+      "toTick": 614,
+      "domainEventIds": [],
+      "sequence": 78
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 622,
+      "machineOffsetMs": 111620,
+      "speed": 8,
+      "fromTick": 614,
+      "toTick": 622,
+      "domainEventIds": [],
+      "sequence": 79
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 630,
+      "machineOffsetMs": 111869,
+      "speed": 8,
+      "fromTick": 622,
+      "toTick": 630,
+      "domainEventIds": [],
+      "sequence": 80
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 638,
+      "machineOffsetMs": 112128,
+      "speed": 8,
+      "fromTick": 630,
+      "toTick": 638,
+      "domainEventIds": [],
+      "sequence": 81
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 646,
+      "machineOffsetMs": 112370,
+      "speed": 8,
+      "fromTick": 638,
+      "toTick": 646,
+      "domainEventIds": [],
+      "sequence": 82
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 654,
+      "machineOffsetMs": 112621,
+      "speed": 8,
+      "fromTick": 646,
+      "toTick": 654,
+      "domainEventIds": [],
+      "sequence": 83
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 662,
+      "machineOffsetMs": 112871,
+      "speed": 8,
+      "fromTick": 654,
+      "toTick": 662,
+      "domainEventIds": [],
+      "sequence": 84
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 670,
+      "machineOffsetMs": 113121,
+      "speed": 8,
+      "fromTick": 662,
+      "toTick": 670,
+      "domainEventIds": [],
+      "sequence": 85
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 678,
+      "machineOffsetMs": 113370,
+      "speed": 8,
+      "fromTick": 670,
+      "toTick": 678,
+      "domainEventIds": [],
+      "sequence": 86
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 686,
+      "machineOffsetMs": 113621,
+      "speed": 8,
+      "fromTick": 678,
+      "toTick": 686,
+      "domainEventIds": [],
+      "sequence": 87
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 694,
+      "machineOffsetMs": 113870,
+      "speed": 8,
+      "fromTick": 686,
+      "toTick": 694,
+      "domainEventIds": [],
+      "sequence": 88
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 702,
+      "machineOffsetMs": 114121,
+      "speed": 8,
+      "fromTick": 694,
+      "toTick": 702,
+      "domainEventIds": [],
+      "sequence": 89
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 710,
+      "machineOffsetMs": 114371,
+      "speed": 8,
+      "fromTick": 702,
+      "toTick": 710,
+      "domainEventIds": [],
+      "sequence": 90
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 718,
+      "machineOffsetMs": 114621,
+      "speed": 8,
+      "fromTick": 710,
+      "toTick": 718,
+      "domainEventIds": [],
+      "sequence": 91
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 726,
+      "machineOffsetMs": 114870,
+      "speed": 8,
+      "fromTick": 718,
+      "toTick": 726,
+      "domainEventIds": [],
+      "sequence": 92
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 734,
+      "machineOffsetMs": 115121,
+      "speed": 8,
+      "fromTick": 726,
+      "toTick": 734,
+      "domainEventIds": [],
+      "sequence": 93
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 742,
+      "machineOffsetMs": 115370,
+      "speed": 8,
+      "fromTick": 734,
+      "toTick": 742,
+      "domainEventIds": [],
+      "sequence": 94
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 750,
+      "machineOffsetMs": 115619,
+      "speed": 8,
+      "fromTick": 742,
+      "toTick": 750,
+      "domainEventIds": [],
+      "sequence": 95
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 758,
+      "machineOffsetMs": 115871,
+      "speed": 8,
+      "fromTick": 750,
+      "toTick": 758,
+      "domainEventIds": [],
+      "sequence": 96
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 766,
+      "machineOffsetMs": 116121,
+      "speed": 8,
+      "fromTick": 758,
+      "toTick": 766,
+      "domainEventIds": [],
+      "sequence": 97
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 774,
+      "machineOffsetMs": 116368,
+      "speed": 8,
+      "fromTick": 766,
+      "toTick": 774,
+      "domainEventIds": [],
+      "sequence": 98
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 782,
+      "machineOffsetMs": 116621,
+      "speed": 8,
+      "fromTick": 774,
+      "toTick": 782,
+      "domainEventIds": [],
+      "sequence": 99
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 790,
+      "machineOffsetMs": 116871,
+      "speed": 8,
+      "fromTick": 782,
+      "toTick": 790,
+      "domainEventIds": [],
+      "sequence": 100
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 798,
+      "machineOffsetMs": 117121,
+      "speed": 8,
+      "fromTick": 790,
+      "toTick": 798,
+      "domainEventIds": [],
+      "sequence": 101
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 806,
+      "machineOffsetMs": 117370,
+      "speed": 8,
+      "fromTick": 798,
+      "toTick": 806,
+      "domainEventIds": [],
+      "sequence": 102
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 814,
+      "machineOffsetMs": 117621,
+      "speed": 8,
+      "fromTick": 806,
+      "toTick": 814,
+      "domainEventIds": [],
+      "sequence": 103
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 822,
+      "machineOffsetMs": 117870,
+      "speed": 8,
+      "fromTick": 814,
+      "toTick": 822,
+      "domainEventIds": [],
+      "sequence": 104
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 830,
+      "machineOffsetMs": 118121,
+      "speed": 8,
+      "fromTick": 822,
+      "toTick": 830,
+      "domainEventIds": [],
+      "sequence": 105
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 838,
+      "machineOffsetMs": 118370,
+      "speed": 8,
+      "fromTick": 830,
+      "toTick": 838,
+      "domainEventIds": [],
+      "sequence": 106
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 846,
+      "machineOffsetMs": 118621,
+      "speed": 8,
+      "fromTick": 838,
+      "toTick": 846,
+      "domainEventIds": [],
+      "sequence": 107
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 854,
+      "machineOffsetMs": 118871,
+      "speed": 8,
+      "fromTick": 846,
+      "toTick": 854,
+      "domainEventIds": [],
+      "sequence": 108
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 862,
+      "machineOffsetMs": 119121,
+      "speed": 8,
+      "fromTick": 854,
+      "toTick": 862,
+      "domainEventIds": [],
+      "sequence": 109
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 870,
+      "machineOffsetMs": 119370,
+      "speed": 8,
+      "fromTick": 862,
+      "toTick": 870,
+      "domainEventIds": [],
+      "sequence": 110
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 878,
+      "machineOffsetMs": 119619,
+      "speed": 8,
+      "fromTick": 870,
+      "toTick": 878,
+      "domainEventIds": [],
+      "sequence": 111
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 886,
+      "machineOffsetMs": 119871,
+      "speed": 8,
+      "fromTick": 878,
+      "toTick": 886,
+      "domainEventIds": [],
+      "sequence": 112
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 894,
+      "machineOffsetMs": 120119,
+      "speed": 8,
+      "fromTick": 886,
+      "toTick": 894,
+      "domainEventIds": [],
+      "sequence": 113
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 902,
+      "machineOffsetMs": 120370,
+      "speed": 8,
+      "fromTick": 894,
+      "toTick": 902,
+      "domainEventIds": [],
+      "sequence": 114
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 910,
+      "machineOffsetMs": 120620,
+      "speed": 8,
+      "fromTick": 902,
+      "toTick": 910,
+      "domainEventIds": [],
+      "sequence": 115
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 918,
+      "machineOffsetMs": 120870,
+      "speed": 8,
+      "fromTick": 910,
+      "toTick": 918,
+      "domainEventIds": [],
+      "sequence": 116
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 926,
+      "machineOffsetMs": 121121,
+      "speed": 8,
+      "fromTick": 918,
+      "toTick": 926,
+      "domainEventIds": [],
+      "sequence": 117
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 934,
+      "machineOffsetMs": 121371,
+      "speed": 8,
+      "fromTick": 926,
+      "toTick": 934,
+      "domainEventIds": [],
+      "sequence": 118
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 942,
+      "machineOffsetMs": 121621,
+      "speed": 8,
+      "fromTick": 934,
+      "toTick": 942,
+      "domainEventIds": [],
+      "sequence": 119
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 950,
+      "machineOffsetMs": 121870,
+      "speed": 8,
+      "fromTick": 942,
+      "toTick": 950,
+      "domainEventIds": [],
+      "sequence": 120
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 958,
+      "machineOffsetMs": 122121,
+      "speed": 8,
+      "fromTick": 950,
+      "toTick": 958,
+      "domainEventIds": [],
+      "sequence": 121
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 966,
+      "machineOffsetMs": 122371,
+      "speed": 8,
+      "fromTick": 958,
+      "toTick": 966,
+      "domainEventIds": [],
+      "sequence": 122
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 974,
+      "machineOffsetMs": 122621,
+      "speed": 8,
+      "fromTick": 966,
+      "toTick": 974,
+      "domainEventIds": [],
+      "sequence": 123
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 982,
+      "machineOffsetMs": 122870,
+      "speed": 8,
+      "fromTick": 974,
+      "toTick": 982,
+      "domainEventIds": [],
+      "sequence": 124
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 990,
+      "machineOffsetMs": 123121,
+      "speed": 8,
+      "fromTick": 982,
+      "toTick": 990,
+      "domainEventIds": [],
+      "sequence": 125
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 998,
+      "machineOffsetMs": 123371,
+      "speed": 8,
+      "fromTick": 990,
+      "toTick": 998,
+      "domainEventIds": [],
+      "sequence": 126
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1002,
+      "machineOffsetMs": 123620,
+      "speed": 8,
+      "fromTick": 998,
+      "toTick": 1002,
+      "domainEventIds": [
+        "week-1-ended"
+      ],
+      "sequence": 127
+    },
+    {
+      "type": "auto-pause-triggered",
+      "atTick": 1002,
+      "machineOffsetMs": 123620,
+      "speed": 8,
+      "domainEventIds": [
+        "week-1-ended"
+      ],
+      "sequence": 128
+    },
+    {
+      "type": "week-completed",
+      "atTick": 1002,
+      "machineOffsetMs": 123620,
+      "weekIndex": 0,
+      "sequence": 129
+    },
+    {
+      "type": "player-action-applied",
+      "atTick": 1002,
+      "machineOffsetMs": 158129,
+      "fromTick": 1002,
+      "toTick": 1002,
+      "actionId": "action-0004",
+      "domainEventIds": [
+        "action-0004"
+      ],
+      "sequence": 130
+    },
+    {
+      "type": "week-started",
+      "atTick": 1002,
+      "machineOffsetMs": 158129,
+      "weekIndex": 1,
+      "sequence": 131
+    },
+    {
+      "type": "player-action-applied",
+      "atTick": 1002,
+      "machineOffsetMs": 196680,
+      "fromTick": 1002,
+      "toTick": 1002,
+      "actionId": "action-0005",
+      "domainEventIds": [
+        "action-0005"
+      ],
+      "sequence": 132
+    },
+    {
+      "type": "player-action-applied",
+      "atTick": 1002,
+      "machineOffsetMs": 218680,
+      "fromTick": 1002,
+      "toTick": 1002,
+      "actionId": "action-0006",
+      "domainEventIds": [
+        "action-0006"
+      ],
+      "sequence": 133
+    },
+    {
+      "type": "player-action-applied",
+      "atTick": 1002,
+      "machineOffsetMs": 236330,
+      "fromTick": 1002,
+      "toTick": 1002,
+      "actionId": "action-0007",
+      "domainEventIds": [
+        "action-0007"
+      ],
+      "sequence": 134
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1010,
+      "machineOffsetMs": 236584,
+      "speed": 8,
+      "fromTick": 1002,
+      "toTick": 1010,
+      "domainEventIds": [],
+      "sequence": 135
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1018,
+      "machineOffsetMs": 236832,
+      "speed": 8,
+      "fromTick": 1010,
+      "toTick": 1018,
+      "domainEventIds": [],
+      "sequence": 136
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1026,
+      "machineOffsetMs": 237082,
+      "speed": 8,
+      "fromTick": 1018,
+      "toTick": 1026,
+      "domainEventIds": [],
+      "sequence": 137
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1034,
+      "machineOffsetMs": 237333,
+      "speed": 8,
+      "fromTick": 1026,
+      "toTick": 1034,
+      "domainEventIds": [],
+      "sequence": 138
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1042,
+      "machineOffsetMs": 237584,
+      "speed": 8,
+      "fromTick": 1034,
+      "toTick": 1042,
+      "domainEventIds": [],
+      "sequence": 139
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1050,
+      "machineOffsetMs": 237831,
+      "speed": 8,
+      "fromTick": 1042,
+      "toTick": 1050,
+      "domainEventIds": [],
+      "sequence": 140
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1058,
+      "machineOffsetMs": 238084,
+      "speed": 8,
+      "fromTick": 1050,
+      "toTick": 1058,
+      "domainEventIds": [],
+      "sequence": 141
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1066,
+      "machineOffsetMs": 238333,
+      "speed": 8,
+      "fromTick": 1058,
+      "toTick": 1066,
+      "domainEventIds": [],
+      "sequence": 142
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1074,
+      "machineOffsetMs": 238583,
+      "speed": 8,
+      "fromTick": 1066,
+      "toTick": 1074,
+      "domainEventIds": [],
+      "sequence": 143
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1082,
+      "machineOffsetMs": 238833,
+      "speed": 8,
+      "fromTick": 1074,
+      "toTick": 1082,
+      "domainEventIds": [],
+      "sequence": 144
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1090,
+      "machineOffsetMs": 239083,
+      "speed": 8,
+      "fromTick": 1082,
+      "toTick": 1090,
+      "domainEventIds": [],
+      "sequence": 145
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1098,
+      "machineOffsetMs": 239333,
+      "speed": 8,
+      "fromTick": 1090,
+      "toTick": 1098,
+      "domainEventIds": [],
+      "sequence": 146
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1106,
+      "machineOffsetMs": 239583,
+      "speed": 8,
+      "fromTick": 1098,
+      "toTick": 1106,
+      "domainEventIds": [],
+      "sequence": 147
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1114,
+      "machineOffsetMs": 239832,
+      "speed": 8,
+      "fromTick": 1106,
+      "toTick": 1114,
+      "domainEventIds": [],
+      "sequence": 148
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1122,
+      "machineOffsetMs": 240083,
+      "speed": 8,
+      "fromTick": 1114,
+      "toTick": 1122,
+      "domainEventIds": [],
+      "sequence": 149
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1130,
+      "machineOffsetMs": 240334,
+      "speed": 8,
+      "fromTick": 1122,
+      "toTick": 1130,
+      "domainEventIds": [],
+      "sequence": 150
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1138,
+      "machineOffsetMs": 240583,
+      "speed": 8,
+      "fromTick": 1130,
+      "toTick": 1138,
+      "domainEventIds": [],
+      "sequence": 151
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1146,
+      "machineOffsetMs": 240834,
+      "speed": 8,
+      "fromTick": 1138,
+      "toTick": 1146,
+      "domainEventIds": [],
+      "sequence": 152
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1154,
+      "machineOffsetMs": 241082,
+      "speed": 8,
+      "fromTick": 1146,
+      "toTick": 1154,
+      "domainEventIds": [],
+      "sequence": 153
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1162,
+      "machineOffsetMs": 241334,
+      "speed": 8,
+      "fromTick": 1154,
+      "toTick": 1162,
+      "domainEventIds": [],
+      "sequence": 154
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1170,
+      "machineOffsetMs": 241583,
+      "speed": 8,
+      "fromTick": 1162,
+      "toTick": 1170,
+      "domainEventIds": [],
+      "sequence": 155
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1178,
+      "machineOffsetMs": 241832,
+      "speed": 8,
+      "fromTick": 1170,
+      "toTick": 1178,
+      "domainEventIds": [],
+      "sequence": 156
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1186,
+      "machineOffsetMs": 242082,
+      "speed": 8,
+      "fromTick": 1178,
+      "toTick": 1186,
+      "domainEventIds": [],
+      "sequence": 157
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1194,
+      "machineOffsetMs": 242333,
+      "speed": 8,
+      "fromTick": 1186,
+      "toTick": 1194,
+      "domainEventIds": [],
+      "sequence": 158
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1202,
+      "machineOffsetMs": 242583,
+      "speed": 8,
+      "fromTick": 1194,
+      "toTick": 1202,
+      "domainEventIds": [],
+      "sequence": 159
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1210,
+      "machineOffsetMs": 242834,
+      "speed": 8,
+      "fromTick": 1202,
+      "toTick": 1210,
+      "domainEventIds": [],
+      "sequence": 160
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1218,
+      "machineOffsetMs": 243084,
+      "speed": 8,
+      "fromTick": 1210,
+      "toTick": 1218,
+      "domainEventIds": [],
+      "sequence": 161
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1226,
+      "machineOffsetMs": 243334,
+      "speed": 8,
+      "fromTick": 1218,
+      "toTick": 1226,
+      "domainEventIds": [],
+      "sequence": 162
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1234,
+      "machineOffsetMs": 243584,
+      "speed": 8,
+      "fromTick": 1226,
+      "toTick": 1234,
+      "domainEventIds": [],
+      "sequence": 163
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1242,
+      "machineOffsetMs": 243831,
+      "speed": 8,
+      "fromTick": 1234,
+      "toTick": 1242,
+      "domainEventIds": [],
+      "sequence": 164
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1250,
+      "machineOffsetMs": 244082,
+      "speed": 8,
+      "fromTick": 1242,
+      "toTick": 1250,
+      "domainEventIds": [],
+      "sequence": 165
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1258,
+      "machineOffsetMs": 244334,
+      "speed": 8,
+      "fromTick": 1250,
+      "toTick": 1258,
+      "domainEventIds": [],
+      "sequence": 166
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1266,
+      "machineOffsetMs": 244584,
+      "speed": 8,
+      "fromTick": 1258,
+      "toTick": 1266,
+      "domainEventIds": [],
+      "sequence": 167
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1274,
+      "machineOffsetMs": 244834,
+      "speed": 8,
+      "fromTick": 1266,
+      "toTick": 1274,
+      "domainEventIds": [],
+      "sequence": 168
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1282,
+      "machineOffsetMs": 245084,
+      "speed": 8,
+      "fromTick": 1274,
+      "toTick": 1282,
+      "domainEventIds": [],
+      "sequence": 169
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1290,
+      "machineOffsetMs": 245334,
+      "speed": 8,
+      "fromTick": 1282,
+      "toTick": 1290,
+      "domainEventIds": [],
+      "sequence": 170
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1298,
+      "machineOffsetMs": 245583,
+      "speed": 8,
+      "fromTick": 1290,
+      "toTick": 1298,
+      "domainEventIds": [],
+      "sequence": 171
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1306,
+      "machineOffsetMs": 245833,
+      "speed": 8,
+      "fromTick": 1298,
+      "toTick": 1306,
+      "domainEventIds": [],
+      "sequence": 172
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1314,
+      "machineOffsetMs": 246082,
+      "speed": 8,
+      "fromTick": 1306,
+      "toTick": 1314,
+      "domainEventIds": [],
+      "sequence": 173
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1322,
+      "machineOffsetMs": 246334,
+      "speed": 8,
+      "fromTick": 1314,
+      "toTick": 1322,
+      "domainEventIds": [],
+      "sequence": 174
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1330,
+      "machineOffsetMs": 246583,
+      "speed": 8,
+      "fromTick": 1322,
+      "toTick": 1330,
+      "domainEventIds": [],
+      "sequence": 175
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1338,
+      "machineOffsetMs": 246834,
+      "speed": 8,
+      "fromTick": 1330,
+      "toTick": 1338,
+      "domainEventIds": [],
+      "sequence": 176
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1346,
+      "machineOffsetMs": 247083,
+      "speed": 8,
+      "fromTick": 1338,
+      "toTick": 1346,
+      "domainEventIds": [],
+      "sequence": 177
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1354,
+      "machineOffsetMs": 247333,
+      "speed": 8,
+      "fromTick": 1346,
+      "toTick": 1354,
+      "domainEventIds": [],
+      "sequence": 178
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1362,
+      "machineOffsetMs": 247584,
+      "speed": 8,
+      "fromTick": 1354,
+      "toTick": 1362,
+      "domainEventIds": [],
+      "sequence": 179
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1370,
+      "machineOffsetMs": 247833,
+      "speed": 8,
+      "fromTick": 1362,
+      "toTick": 1370,
+      "domainEventIds": [],
+      "sequence": 180
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1378,
+      "machineOffsetMs": 248083,
+      "speed": 8,
+      "fromTick": 1370,
+      "toTick": 1378,
+      "domainEventIds": [],
+      "sequence": 181
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1386,
+      "machineOffsetMs": 248333,
+      "speed": 8,
+      "fromTick": 1378,
+      "toTick": 1386,
+      "domainEventIds": [],
+      "sequence": 182
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1394,
+      "machineOffsetMs": 248584,
+      "speed": 8,
+      "fromTick": 1386,
+      "toTick": 1394,
+      "domainEventIds": [],
+      "sequence": 183
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1402,
+      "machineOffsetMs": 248833,
+      "speed": 8,
+      "fromTick": 1394,
+      "toTick": 1402,
+      "domainEventIds": [],
+      "sequence": 184
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1410,
+      "machineOffsetMs": 249083,
+      "speed": 8,
+      "fromTick": 1402,
+      "toTick": 1410,
+      "domainEventIds": [],
+      "sequence": 185
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1418,
+      "machineOffsetMs": 249334,
+      "speed": 8,
+      "fromTick": 1410,
+      "toTick": 1418,
+      "domainEventIds": [],
+      "sequence": 186
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1426,
+      "machineOffsetMs": 249582,
+      "speed": 8,
+      "fromTick": 1418,
+      "toTick": 1426,
+      "domainEventIds": [],
+      "sequence": 187
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1434,
+      "machineOffsetMs": 249831,
+      "speed": 8,
+      "fromTick": 1426,
+      "toTick": 1434,
+      "domainEventIds": [],
+      "sequence": 188
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1442,
+      "machineOffsetMs": 250084,
+      "speed": 8,
+      "fromTick": 1434,
+      "toTick": 1442,
+      "domainEventIds": [],
+      "sequence": 189
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1450,
+      "machineOffsetMs": 250334,
+      "speed": 8,
+      "fromTick": 1442,
+      "toTick": 1450,
+      "domainEventIds": [],
+      "sequence": 190
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1458,
+      "machineOffsetMs": 250584,
+      "speed": 8,
+      "fromTick": 1450,
+      "toTick": 1458,
+      "domainEventIds": [],
+      "sequence": 191
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1466,
+      "machineOffsetMs": 250833,
+      "speed": 8,
+      "fromTick": 1458,
+      "toTick": 1466,
+      "domainEventIds": [],
+      "sequence": 192
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1474,
+      "machineOffsetMs": 251082,
+      "speed": 8,
+      "fromTick": 1466,
+      "toTick": 1474,
+      "domainEventIds": [],
+      "sequence": 193
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1482,
+      "machineOffsetMs": 251333,
+      "speed": 8,
+      "fromTick": 1474,
+      "toTick": 1482,
+      "domainEventIds": [],
+      "sequence": 194
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1490,
+      "machineOffsetMs": 251583,
+      "speed": 8,
+      "fromTick": 1482,
+      "toTick": 1490,
+      "domainEventIds": [],
+      "sequence": 195
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1498,
+      "machineOffsetMs": 251834,
+      "speed": 8,
+      "fromTick": 1490,
+      "toTick": 1498,
+      "domainEventIds": [],
+      "sequence": 196
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1506,
+      "machineOffsetMs": 252082,
+      "speed": 8,
+      "fromTick": 1498,
+      "toTick": 1506,
+      "domainEventIds": [],
+      "sequence": 197
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1514,
+      "machineOffsetMs": 252333,
+      "speed": 8,
+      "fromTick": 1506,
+      "toTick": 1514,
+      "domainEventIds": [],
+      "sequence": 198
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1522,
+      "machineOffsetMs": 252583,
+      "speed": 8,
+      "fromTick": 1514,
+      "toTick": 1522,
+      "domainEventIds": [],
+      "sequence": 199
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1530,
+      "machineOffsetMs": 252834,
+      "speed": 8,
+      "fromTick": 1522,
+      "toTick": 1530,
+      "domainEventIds": [],
+      "sequence": 200
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1538,
+      "machineOffsetMs": 253084,
+      "speed": 8,
+      "fromTick": 1530,
+      "toTick": 1538,
+      "domainEventIds": [],
+      "sequence": 201
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1546,
+      "machineOffsetMs": 253333,
+      "speed": 8,
+      "fromTick": 1538,
+      "toTick": 1546,
+      "domainEventIds": [],
+      "sequence": 202
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1554,
+      "machineOffsetMs": 253583,
+      "speed": 8,
+      "fromTick": 1546,
+      "toTick": 1554,
+      "domainEventIds": [],
+      "sequence": 203
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1562,
+      "machineOffsetMs": 253833,
+      "speed": 8,
+      "fromTick": 1554,
+      "toTick": 1562,
+      "domainEventIds": [],
+      "sequence": 204
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1570,
+      "machineOffsetMs": 254083,
+      "speed": 8,
+      "fromTick": 1562,
+      "toTick": 1570,
+      "domainEventIds": [],
+      "sequence": 205
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1578,
+      "machineOffsetMs": 254333,
+      "speed": 8,
+      "fromTick": 1570,
+      "toTick": 1578,
+      "domainEventIds": [],
+      "sequence": 206
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1586,
+      "machineOffsetMs": 254583,
+      "speed": 8,
+      "fromTick": 1578,
+      "toTick": 1586,
+      "domainEventIds": [],
+      "sequence": 207
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1594,
+      "machineOffsetMs": 254832,
+      "speed": 8,
+      "fromTick": 1586,
+      "toTick": 1594,
+      "domainEventIds": [],
+      "sequence": 208
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1602,
+      "machineOffsetMs": 255083,
+      "speed": 8,
+      "fromTick": 1594,
+      "toTick": 1602,
+      "domainEventIds": [],
+      "sequence": 209
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1610,
+      "machineOffsetMs": 255332,
+      "speed": 8,
+      "fromTick": 1602,
+      "toTick": 1610,
+      "domainEventIds": [],
+      "sequence": 210
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1618,
+      "machineOffsetMs": 255583,
+      "speed": 8,
+      "fromTick": 1610,
+      "toTick": 1618,
+      "domainEventIds": [],
+      "sequence": 211
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1626,
+      "machineOffsetMs": 255834,
+      "speed": 8,
+      "fromTick": 1618,
+      "toTick": 1626,
+      "domainEventIds": [],
+      "sequence": 212
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1634,
+      "machineOffsetMs": 256084,
+      "speed": 8,
+      "fromTick": 1626,
+      "toTick": 1634,
+      "domainEventIds": [],
+      "sequence": 213
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1642,
+      "machineOffsetMs": 256332,
+      "speed": 8,
+      "fromTick": 1634,
+      "toTick": 1642,
+      "domainEventIds": [],
+      "sequence": 214
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1650,
+      "machineOffsetMs": 256583,
+      "speed": 8,
+      "fromTick": 1642,
+      "toTick": 1650,
+      "domainEventIds": [],
+      "sequence": 215
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1658,
+      "machineOffsetMs": 256832,
+      "speed": 8,
+      "fromTick": 1650,
+      "toTick": 1658,
+      "domainEventIds": [],
+      "sequence": 216
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1666,
+      "machineOffsetMs": 257082,
+      "speed": 8,
+      "fromTick": 1658,
+      "toTick": 1666,
+      "domainEventIds": [],
+      "sequence": 217
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1674,
+      "machineOffsetMs": 257334,
+      "speed": 8,
+      "fromTick": 1666,
+      "toTick": 1674,
+      "domainEventIds": [],
+      "sequence": 218
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1682,
+      "machineOffsetMs": 257584,
+      "speed": 8,
+      "fromTick": 1674,
+      "toTick": 1682,
+      "domainEventIds": [],
+      "sequence": 219
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1690,
+      "machineOffsetMs": 257833,
+      "speed": 8,
+      "fromTick": 1682,
+      "toTick": 1690,
+      "domainEventIds": [],
+      "sequence": 220
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1698,
+      "machineOffsetMs": 258083,
+      "speed": 8,
+      "fromTick": 1690,
+      "toTick": 1698,
+      "domainEventIds": [],
+      "sequence": 221
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1706,
+      "machineOffsetMs": 258334,
+      "speed": 8,
+      "fromTick": 1698,
+      "toTick": 1706,
+      "domainEventIds": [],
+      "sequence": 222
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1714,
+      "machineOffsetMs": 258583,
+      "speed": 8,
+      "fromTick": 1706,
+      "toTick": 1714,
+      "domainEventIds": [],
+      "sequence": 223
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1722,
+      "machineOffsetMs": 258833,
+      "speed": 8,
+      "fromTick": 1714,
+      "toTick": 1722,
+      "domainEventIds": [],
+      "sequence": 224
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1730,
+      "machineOffsetMs": 259084,
+      "speed": 8,
+      "fromTick": 1722,
+      "toTick": 1730,
+      "domainEventIds": [],
+      "sequence": 225
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1738,
+      "machineOffsetMs": 259333,
+      "speed": 8,
+      "fromTick": 1730,
+      "toTick": 1738,
+      "domainEventIds": [],
+      "sequence": 226
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1746,
+      "machineOffsetMs": 259582,
+      "speed": 8,
+      "fromTick": 1738,
+      "toTick": 1746,
+      "domainEventIds": [],
+      "sequence": 227
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1754,
+      "machineOffsetMs": 259832,
+      "speed": 8,
+      "fromTick": 1746,
+      "toTick": 1754,
+      "domainEventIds": [],
+      "sequence": 228
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1762,
+      "machineOffsetMs": 260084,
+      "speed": 8,
+      "fromTick": 1754,
+      "toTick": 1762,
+      "domainEventIds": [],
+      "sequence": 229
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1770,
+      "machineOffsetMs": 260334,
+      "speed": 8,
+      "fromTick": 1762,
+      "toTick": 1770,
+      "domainEventIds": [],
+      "sequence": 230
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1778,
+      "machineOffsetMs": 260583,
+      "speed": 8,
+      "fromTick": 1770,
+      "toTick": 1778,
+      "domainEventIds": [],
+      "sequence": 231
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1786,
+      "machineOffsetMs": 260833,
+      "speed": 8,
+      "fromTick": 1778,
+      "toTick": 1786,
+      "domainEventIds": [],
+      "sequence": 232
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1794,
+      "machineOffsetMs": 261083,
+      "speed": 8,
+      "fromTick": 1786,
+      "toTick": 1794,
+      "domainEventIds": [],
+      "sequence": 233
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1802,
+      "machineOffsetMs": 261334,
+      "speed": 8,
+      "fromTick": 1794,
+      "toTick": 1802,
+      "domainEventIds": [],
+      "sequence": 234
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1810,
+      "machineOffsetMs": 261584,
+      "speed": 8,
+      "fromTick": 1802,
+      "toTick": 1810,
+      "domainEventIds": [],
+      "sequence": 235
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1818,
+      "machineOffsetMs": 261833,
+      "speed": 8,
+      "fromTick": 1810,
+      "toTick": 1818,
+      "domainEventIds": [],
+      "sequence": 236
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1826,
+      "machineOffsetMs": 262083,
+      "speed": 8,
+      "fromTick": 1818,
+      "toTick": 1826,
+      "domainEventIds": [],
+      "sequence": 237
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1834,
+      "machineOffsetMs": 262334,
+      "speed": 8,
+      "fromTick": 1826,
+      "toTick": 1834,
+      "domainEventIds": [],
+      "sequence": 238
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1842,
+      "machineOffsetMs": 262583,
+      "speed": 8,
+      "fromTick": 1834,
+      "toTick": 1842,
+      "domainEventIds": [],
+      "sequence": 239
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1850,
+      "machineOffsetMs": 262834,
+      "speed": 8,
+      "fromTick": 1842,
+      "toTick": 1850,
+      "domainEventIds": [],
+      "sequence": 240
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1858,
+      "machineOffsetMs": 263082,
+      "speed": 8,
+      "fromTick": 1850,
+      "toTick": 1858,
+      "domainEventIds": [],
+      "sequence": 241
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1866,
+      "machineOffsetMs": 263334,
+      "speed": 8,
+      "fromTick": 1858,
+      "toTick": 1866,
+      "domainEventIds": [],
+      "sequence": 242
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1874,
+      "machineOffsetMs": 263584,
+      "speed": 8,
+      "fromTick": 1866,
+      "toTick": 1874,
+      "domainEventIds": [],
+      "sequence": 243
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1882,
+      "machineOffsetMs": 263832,
+      "speed": 8,
+      "fromTick": 1874,
+      "toTick": 1882,
+      "domainEventIds": [],
+      "sequence": 244
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1890,
+      "machineOffsetMs": 264082,
+      "speed": 8,
+      "fromTick": 1882,
+      "toTick": 1890,
+      "domainEventIds": [],
+      "sequence": 245
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1898,
+      "machineOffsetMs": 264333,
+      "speed": 8,
+      "fromTick": 1890,
+      "toTick": 1898,
+      "domainEventIds": [],
+      "sequence": 246
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1906,
+      "machineOffsetMs": 264584,
+      "speed": 8,
+      "fromTick": 1898,
+      "toTick": 1906,
+      "domainEventIds": [],
+      "sequence": 247
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1914,
+      "machineOffsetMs": 264833,
+      "speed": 8,
+      "fromTick": 1906,
+      "toTick": 1914,
+      "domainEventIds": [],
+      "sequence": 248
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1922,
+      "machineOffsetMs": 265083,
+      "speed": 8,
+      "fromTick": 1914,
+      "toTick": 1922,
+      "domainEventIds": [],
+      "sequence": 249
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1930,
+      "machineOffsetMs": 265332,
+      "speed": 8,
+      "fromTick": 1922,
+      "toTick": 1930,
+      "domainEventIds": [],
+      "sequence": 250
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1938,
+      "machineOffsetMs": 265584,
+      "speed": 8,
+      "fromTick": 1930,
+      "toTick": 1938,
+      "domainEventIds": [],
+      "sequence": 251
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1946,
+      "machineOffsetMs": 265834,
+      "speed": 8,
+      "fromTick": 1938,
+      "toTick": 1946,
+      "domainEventIds": [],
+      "sequence": 252
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1954,
+      "machineOffsetMs": 266084,
+      "speed": 8,
+      "fromTick": 1946,
+      "toTick": 1954,
+      "domainEventIds": [],
+      "sequence": 253
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1962,
+      "machineOffsetMs": 266332,
+      "speed": 8,
+      "fromTick": 1954,
+      "toTick": 1962,
+      "domainEventIds": [],
+      "sequence": 254
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1970,
+      "machineOffsetMs": 266583,
+      "speed": 8,
+      "fromTick": 1962,
+      "toTick": 1970,
+      "domainEventIds": [],
+      "sequence": 255
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1978,
+      "machineOffsetMs": 266834,
+      "speed": 8,
+      "fromTick": 1970,
+      "toTick": 1978,
+      "domainEventIds": [],
+      "sequence": 256
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1986,
+      "machineOffsetMs": 267084,
+      "speed": 8,
+      "fromTick": 1978,
+      "toTick": 1986,
+      "domainEventIds": [],
+      "sequence": 257
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1994,
+      "machineOffsetMs": 267333,
+      "speed": 8,
+      "fromTick": 1986,
+      "toTick": 1994,
+      "domainEventIds": [],
+      "sequence": 258
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 2002,
+      "machineOffsetMs": 267583,
+      "speed": 8,
+      "fromTick": 1994,
+      "toTick": 2002,
+      "domainEventIds": [],
+      "sequence": 259
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 2010,
+      "machineOffsetMs": 267834,
+      "speed": 8,
+      "fromTick": 2002,
+      "toTick": 2010,
+      "domainEventIds": [
+        "week-2-ended"
+      ],
+      "sequence": 260
+    },
+    {
+      "type": "auto-pause-triggered",
+      "atTick": 2010,
+      "machineOffsetMs": 267834,
+      "speed": 8,
+      "domainEventIds": [
+        "week-2-ended"
+      ],
+      "sequence": 261
+    },
+    {
+      "type": "week-completed",
+      "atTick": 2010,
+      "machineOffsetMs": 267834,
+      "weekIndex": 1,
+      "sequence": 262
+    },
+    {
+      "type": "export-created",
+      "atTick": 2010,
+      "machineOffsetMs": 322015,
+      "sequence": 263
+    }
+  ],
+  "speedTrajectory": [
+    {
+      "sequence": 1,
+      "atTick": 54,
+      "machineOffsetMs": 0,
+      "speed": 3
+    },
+    {
+      "sequence": 2,
+      "atTick": 54,
+      "machineOffsetMs": 73246,
+      "speed": 8
+    }
+  ],
+  "finalTick": 2010,
+  "finalStateHash": "fnv1a32-cc5713b4",
+  "finalState": {
+    "isComplete": true,
+    "completedWeekCount": 2,
+    "recapCount": 2,
+    "processedScriptEventIds": [
+      "pump-incident-day-3",
+      "lin-he-request-deadline"
+    ]
+  },
+  "recap": [
+    {
+      "weekIndex": 0,
+      "planned": {
+        "low": 9,
+        "high": 9
+      },
+      "actual": 8,
+      "itemIds": [
+        "week-1-food-result",
+        "week-1-pump-risk",
+        "week-1-pump-incident",
+        "week-1-transport-result"
+      ],
+      "sourceIds": [
+        "food-forecast",
+        "pump-preventive-maintenance",
+        "pump-incident-day-3",
+        "north-loop"
+      ]
+    },
+    {
+      "weekIndex": 1,
+      "planned": {
+        "low": 14,
+        "high": 15
+      },
+      "actual": 14,
+      "itemIds": [
+        "week-2-food-result",
+        "week-2-lin-he-request",
+        "week-2-transport-result"
+      ],
+      "sourceIds": [
+        "food-forecast",
+        "lin-he-request-accepted",
+        "north-loop"
+      ]
+    }
+  ],
+  "summary": {
+    "week1CandidateEditCount": 1,
+    "week2CandidateEditCount": 0
+  }
+}
