@@ -1,0 +1,438 @@
+:root {
+  color: #282a24;
+  background: #e8e1d5;
+  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-synthesis: none;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-width: 1024px;
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 12% 8%, rgba(255, 255, 255, 0.65), transparent 28rem),
+    #e8e1d5;
+}
+
+button {
+  color: inherit;
+  font: inherit;
+}
+
+.app-shell {
+  width: min(1180px, calc(100% - 64px));
+  margin: 0 auto;
+  padding: 34px 0 72px;
+}
+
+.topbar {
+  position: relative;
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 32px;
+  padding-bottom: 22px;
+}
+
+h1, h2, p {
+  margin-top: 0;
+}
+
+h1 {
+  margin-bottom: 0;
+  font-family: Georgia, "Songti SC", serif;
+  font-size: 32px;
+}
+
+h2 {
+  margin-bottom: 0;
+  font-size: 20px;
+}
+
+.eyebrow {
+  margin-bottom: 6px;
+  color: #717165;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.clock-panel {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.clock-panel > div:first-child {
+  display: grid;
+  gap: 4px;
+  min-width: 130px;
+}
+
+.clock-panel span {
+  color: #74766b;
+  font-size: 13px;
+}
+
+.speed-controls {
+  display: flex;
+  overflow: hidden;
+  border: 1px solid #bbb5a9;
+  border-radius: 9px;
+  background: rgba(255, 255, 255, 0.45);
+}
+
+.speed-controls button {
+  border: 0;
+  border-right: 1px solid #c9c3b7;
+  padding: 9px 11px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.speed-controls button:last-child {
+  border-right: 0;
+}
+
+.speed-controls button.active {
+  background: #d8cfbd;
+  font-weight: 800;
+}
+
+.speed-controls .play-button {
+  min-width: 96px;
+  background: #3f5848;
+  color: white;
+  font-weight: 750;
+}
+
+.speed-controls button:disabled,
+.activity-options button:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.progress-track {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  height: 3px;
+  overflow: hidden;
+  background: #cbc4b8;
+}
+
+.progress-track span {
+  display: block;
+  height: 100%;
+  background: #67816f;
+  transition: width 180ms linear;
+}
+
+.briefing {
+  padding: 30px 0;
+}
+
+.section-heading,
+.panel-title {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 24px;
+}
+
+.count-chip,
+.skill-chip,
+.status-chip {
+  border-radius: 99px;
+  padding: 6px 10px;
+  background: #d9d2c4;
+  color: #53584e;
+  font-size: 12px;
+  font-weight: 750;
+}
+
+.issue-card {
+  width: 100%;
+  margin-top: 18px;
+  border: 1px solid #c4b8a1;
+  border-left: 5px solid #af744f;
+  border-radius: 12px;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 18px;
+  text-align: left;
+  background: #f5efe4;
+  box-shadow: 0 10px 30px rgba(74, 62, 44, 0.07);
+  cursor: pointer;
+}
+
+.issue-card:hover,
+.issue-card.selected {
+  border-color: #886249;
+  background: #fffaf0;
+}
+
+.issue-icon {
+  display: grid;
+  place-items: center;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: #b56f49;
+  color: white;
+  font-weight: 900;
+}
+
+.issue-copy {
+  display: grid;
+  gap: 5px;
+}
+
+.issue-copy strong {
+  font-size: 17px;
+}
+
+.issue-copy small,
+.block-time,
+.activity-editor small {
+  color: #737266;
+}
+
+.issue-action {
+  color: #724c35;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.workspace-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 0.95fr) minmax(0, 1.15fr);
+  gap: 20px;
+}
+
+.panel,
+.recap,
+.history {
+  border: 1px solid #c9c2b6;
+  border-radius: 12px;
+  padding: 24px;
+  background: rgba(249, 246, 239, 0.9);
+}
+
+.focused-panel {
+  outline: 3px solid rgba(80, 113, 90, 0.2);
+  border-color: #69816f;
+}
+
+.block-time {
+  margin-top: 12px;
+  font-size: 13px;
+}
+
+.empty-prompt {
+  margin: 34px 0 12px;
+  color: #74766d;
+}
+
+.activity-editor {
+  margin-top: 28px;
+}
+
+.activity-editor > p {
+  margin-bottom: 10px;
+  font-weight: 700;
+}
+
+.activity-options {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.activity-options button {
+  border: 1px solid #bbb4a7;
+  border-radius: 9px;
+  padding: 16px 12px;
+  display: grid;
+  gap: 6px;
+  background: #eee8dc;
+  cursor: pointer;
+}
+
+.activity-options button[aria-pressed="true"] {
+  border-color: #4f6c59;
+  background: #dfe9dd;
+  box-shadow: inset 0 0 0 1px #4f6c59;
+  font-weight: 800;
+}
+
+.forecast-number {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  margin: 24px 0;
+}
+
+.forecast-number span,
+.forecast-number small {
+  color: #717368;
+}
+
+.forecast-number strong {
+  grid-row: span 2;
+  font-family: Georgia, serif;
+  font-size: 52px;
+  line-height: 1;
+}
+
+.forecast-formula {
+  margin: 0;
+  border-top: 1px solid #d7d0c4;
+  border-bottom: 1px solid #d7d0c4;
+}
+
+.forecast-formula div {
+  display: flex;
+  justify-content: space-between;
+  padding: 10px 0;
+}
+
+.forecast-formula dt,
+.forecast-formula dd {
+  margin: 0;
+}
+
+.forecast-formula dd {
+  font-weight: 750;
+}
+
+.explanation {
+  margin-top: 20px;
+  font-size: 14px;
+}
+
+.explanation ul,
+.recap ol {
+  margin: 10px 0 0;
+  padding-left: 20px;
+}
+
+.explanation li,
+.recap li {
+  margin: 7px 0;
+  line-height: 1.5;
+}
+
+.status-风险未消除,
+.status-事件下调 {
+  background: #ead0c0;
+  color: #7f3f2e;
+}
+
+.status-风险收窄 {
+  background: #d8e6d6;
+  color: #385944;
+}
+
+.event-banner {
+  margin-top: 20px;
+  border-radius: 12px;
+  padding: 22px 24px;
+  display: grid;
+  grid-template-columns: 0.85fr 1.15fr;
+  gap: 28px;
+  background: #3d5145;
+  color: white;
+  box-shadow: 0 12px 30px rgba(46, 64, 52, 0.18);
+}
+
+.event-banner .eyebrow {
+  color: #c7d8cb;
+}
+
+.event-banner p:last-child {
+  margin: 0;
+  align-self: center;
+  line-height: 1.55;
+}
+
+.recap {
+  margin-top: 20px;
+  background: #f6f1e7;
+}
+
+.recap-headline {
+  margin: 12px 0 20px;
+  color: #526353;
+  font-size: 18px;
+  font-weight: 750;
+}
+
+.recap-numbers {
+  display: flex;
+  gap: 12px;
+}
+
+.recap-numbers div {
+  min-width: 150px;
+  border-radius: 8px;
+  padding: 14px;
+  display: grid;
+  gap: 5px;
+  background: #e5ded1;
+}
+
+.recap-numbers span {
+  color: #747267;
+  font-size: 12px;
+}
+
+.recap-numbers strong {
+  font-size: 26px;
+}
+
+.history {
+  margin-top: 20px;
+}
+
+.history ol {
+  margin: 16px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.history li {
+  display: grid;
+  grid-template-columns: 120px 190px 1fr;
+  gap: 14px;
+  border-top: 1px solid #d5cec1;
+  padding: 13px 0;
+  font-size: 13px;
+}
+
+.history li > span {
+  color: #73736a;
+}
+
+.history li p {
+  margin: 0;
+}
+
+@media (max-width: 1100px) {
+  .app-shell {
+    width: calc(100% - 40px);
+  }
+
+  .clock-panel {
+    gap: 12px;
+  }
+}
