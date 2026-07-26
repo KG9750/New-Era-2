@@ -1,0 +1,161 @@
+{
+  "schemaVersion": "gate1a-sample-record-v1",
+  "sampleId": "A36",
+  "cohortId": "g1a-20260726-rc8-01",
+  "sampleKind": "primary",
+  "batchId": "Batch 3",
+  "issue": 38,
+  "operator": "/root",
+  "validityAdjudicator": "/root/gate1a_test_ops_lead",
+  "sealedAtUtc": "2026-07-26T18:12:00Z",
+  "identityAndIsolation": {
+    "agentTask": "/root/a36_player",
+    "agentSessionId": null,
+    "agentSessionIdReason": "collaboration_tool_did_not_expose_session_uuid",
+    "freshContextAttestation": true,
+    "freshContextMechanism": "fork_turns=none",
+    "freshBrowserEvidence": "new isolated agent browser context released after Batch 2 evidence commits; root observed one host and no concurrent player task",
+    "browserProfileUuidExposed": false,
+    "contextContaminationDetected": false,
+    "priorPrototypeExposure": false,
+    "readOnlyAttestation": true,
+    "playerPacketReleasedBeforePlay": true,
+    "postSessionInterviewReleasedAfterPlayDownloadAndClear": true
+  },
+  "releaseCandidate": {
+    "buildId": "g1-rc-20260726.8",
+    "gitSha": "03973fcfc0c244555e7e4a4c623eec3fb8b8e032",
+    "artifactHash": "e0cf7c78251642a54f88845c61aa214e9e91076b3e432fb8399bd873ef0fe49b",
+    "scenarioId": "gate1-two-week-management",
+    "scenarioVersion": "0.4.0",
+    "fixedSeed": 104729,
+    "initialStateHash": "fnv1a32-33a16fbf",
+    "protocolVersion": "gate1a-agent-proxy-v6",
+    "playerPacketHash": "9a5653dbfdb616936b81ef511e9503e209e5dbfe692a89db98a2091f880d1205",
+    "postSessionInterviewHash": "8beabc12ab995b330d78f4cdfbbf16377f024737c2ae4fcecf477d291e7a8aa5",
+    "viewport": "1440x900",
+    "inputMode": "browser-pointer-keyboard"
+  },
+  "applicationSession": {
+    "sessionId": "657ff8b3-8d9d-4414-9ea0-381a44849ab1",
+    "machineStartedAtEpochMs": 1785088916442,
+    "machineEndedAtEpochMs": 1785089212206,
+    "machineElapsedMs": 295762,
+    "week1RawDurationMs": 118635,
+    "week2RawDurationMs": 88938,
+    "captureKind": "complete",
+    "finalTick": 2010,
+    "twoWeeksCompleted": true,
+    "recapCount": 2,
+    "exportTriggered": true,
+    "exportReceiptObserved": "已保存并校验 tick 2010 的匿名记录。",
+    "clearCompleted": true,
+    "clearEvidence": "Agent returned to the 开始匿名新会话 entry and stopped without starting another session."
+  },
+  "machineEvidence": {
+    "exportFilePath": "captures/g1-rc-20260726.8-A36-657ff8b3-8d9d-4414-9ea0-381a44849ab1.json",
+    "exportFileSha256": "a8e5250e4de3b6737c2de560296f9e0bb00de3c21607b34f0f79d63920f97a2d",
+    "exportFileSizeBytes": 62752,
+    "receiptPath": "captures/g1-rc-20260726.8-A36-657ff8b3-8d9d-4414-9ea0-381a44849ab1.json.receipt.json",
+    "sha256SidecarPath": "captures/g1-rc-20260726.8-A36-657ff8b3-8d9d-4414-9ea0-381a44849ab1.json.sha256",
+    "browserDownloadPath": "/Users/leo/Downloads/g1-rc-20260726.8-A36-657ff8b3-8d9d-4414-9ea0-381a44849ab1.json",
+    "browserDownloadEventCompleted": true,
+    "browserDownloadSha256": "a8e5250e4de3b6737c2de560296f9e0bb00de3c21607b34f0f79d63920f97a2d",
+    "browserDownloadSizeBytes": 62752,
+    "browserDownloadMatchesServerRaw": true,
+    "browserDownloadComparison": "cmp byte-identical",
+    "actions": 7,
+    "domainEvents": 10,
+    "telemetry": 263,
+    "machineWeek1CandidateEditCount": 2,
+    "machineWeek2CandidateEditCount": 0,
+    "week1ValidEditCount": 2,
+    "week2ValidEditCount": 0,
+    "completeMarkerCount": 1,
+    "blockedMarkerCount": 0
+  },
+  "candidateEditAdjudication": [
+    {
+      "actionId": "action-0001",
+      "weekIndex": 0,
+      "machineWeekIndex": 0,
+      "actionType": "CHANGE_ACTIVITY",
+      "valid": true,
+      "undoActionIds": []
+    },
+    {
+      "actionId": "action-0002",
+      "weekIndex": 0,
+      "machineWeekIndex": 0,
+      "actionType": "OPEN_TRANSPORT_SHORTCUT",
+      "valid": true,
+      "undoActionIds": []
+    }
+  ],
+  "agentReportedEvidence": {
+    "initialObservation": "这周最需要先补齐水泵的第 2 个预防性维修块；若周三前不处理，粮食预测下限会进一步恶化为严重短缺。",
+    "completionSignal": "PLAYTHROUGH_COMPLETE；保存、下载和清空完成并返回新会话入口。",
+    "threeProblemIdentification": {
+      "foodShortage": true,
+      "pumpPreventiveMaintenance": true,
+      "transportLoss": true,
+      "identifiedInInitialObservation": 2,
+      "identifiedOverall": 3
+    },
+    "predictionExplanationProvided": true,
+    "personAndDecisionImpactProvided": true,
+    "mapEnteredDecision": true,
+    "mapActionTaken": true,
+    "week2ScheduleExpanded": false,
+    "week2FullInspection": false,
+    "week2FullReplan": false,
+    "verbatimOutputPath": "samples/A36/agent-verbatim-output.md"
+  },
+  "hostPrompts": [
+    {
+      "stage": "post-playthrough-save",
+      "kind": "neutral-technical-evidence-check",
+      "changedCoreTask": false,
+      "strategyLeak": false,
+      "agentWaitedForReply": true
+    },
+    {
+      "stage": "post-save-clear",
+      "kind": "neutral-technical-evidence-check",
+      "changedCoreTask": false,
+      "strategyLeak": false,
+      "agentWaitedForReply": true
+    }
+  ],
+  "technicalInterruptions": [],
+  "symptoms": [
+    {
+      "id": "A36-SYM-01",
+      "clusterKey": "WEEK2_PRESTART_TIME_LABEL_TRANSITION",
+      "description": "The week 2 page was visible while the pre-run clock still read 周日 23:00; after run began the clock advanced into the continuous day sequence.",
+      "source": "agent interview",
+      "severitySuggestion": "P2",
+      "affectedCompletion": false,
+      "independentOccurrenceCountIncludingThisSample": 3,
+      "clusterDisposition": "CONFIRMED_SYSTEMATIC_P2",
+      "independentP1Established": false
+    }
+  ],
+  "subjectiveHumanFields": "not_applicable_agent_proxy",
+  "validityDecision": {
+    "status": "VALID",
+    "reasonCode": "VALID_COMPLETE_CAPTURE_AND_PROTOCOL_COMPLIANCE",
+    "reason": "Fresh A36 context, frozen RC fingerprint, two-week completion, complete raw/SHA/receipt, byte-identical browser download, post-save clear and V4 satisfy the frozen protocol.",
+    "negativeOutcomeExcludedBecauseOfResult": false,
+    "productObservationsRetained": true,
+    "includedInSevenValidSampleDenominator": true,
+    "sampleIdReusable": false,
+    "replacementRequired": false,
+    "replacementSampleId": null
+  },
+  "trackLocks": {
+    "gate1A": "RUNNING_6_OF_7_VALID_A37_PENDING",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED"
+  }
+}
