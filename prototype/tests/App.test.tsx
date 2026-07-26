@@ -221,6 +221,10 @@ describe('minimal weekly flow UI', () => {
     fireEvent.click(screen.getByRole('button', { name: /林禾请求周二 B1 学习/ }))
     expect(screen.getByRole('button', { name: '接受学习请求' })).toBeInTheDocument()
     expect(screen.getByRole('button', { name: '拒绝并保留农务' })).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: '使用化肥：粮食 +6' }))
+    expect(
+      screen.getByRole('button', { name: /化肥已在第二周使用/ }),
+    ).toHaveTextContent('本周已使用化肥，库存为 0')
     expect(screen.getByLabelText('聚落时钟')).toHaveTextContent('已暂停')
     expect(screen.queryByRole('button', { name: /水泵需要 2 个预防性维修块/ })).not.toBeInTheDocument()
   })
@@ -342,5 +346,113 @@ describe('minimal weekly flow UI', () => {
     expect(
       screen.getByRole('heading', { name: '开始匿名新会话' }),
     ).toBeInTheDocument()
+  })
+
+  it('keeps one blocked capture immutable across a failed save and retry', async () => {
+    const requestBodies: string[] = []
+    const fixedSha256 = 'cd'.repeat(32)
+    const realCrypto = globalThis.crypto
+    const cryptoMock = {
+      randomUUID: realCrypto.randomUUID.bind(realCrypto),
+      subtle: {
+        digest: vi
+          .fn()
+          .mockResolvedValue(Uint8Array.from({ length: 32 }, () => 0xcd).buffer),
+      },
+    } as unknown as Crypto
+    vi.stubGlobal('crypto', cryptoMock)
+    const fetchMock = vi.fn(async (_input: RequestInfo | URL, init?: RequestInit) => {
+      const rawJson = String(init?.body)
+      requestBodies.push(rawJson)
+      if (requestBodies.length === 1) {
+        return new Response(
+          JSON.stringify({ error: '同一会话证据链缺失或不一致' }),
+          {
+            status: 409,
+            headers: { 'Content-Type': 'application/json' },
+          },
+        )
+      }
+      const payload = JSON.parse(rawJson)
+      const filename =
+        `${payload.meta.buildId}-${payload.meta.sampleId}-${payload.meta.sessionId}.json`
+      return new Response(
+        JSON.stringify({
+          schemaVersion: 'gate1-capture-receipt-v1',
+          captureVersion: 'gate1-capture-host-v1',
+          filename,
+          bytes: new TextEncoder().encode(rawJson).byteLength,
+          sha256: fixedSha256,
+          capturedAtUtc: '2026-07-26T06:00:00.000Z',
+          sampleId: payload.meta.sampleId,
+          sessionId: payload.meta.sessionId,
+          buildId: payload.meta.buildId,
+          gitSha: payload.meta.gitSha,
+          artifactHash: payload.meta.artifactHash,
+          downloadUrl: '/__gate1/capture/123e4567-e89b-42d3-a456-426614174001',
+          captureKind: 'blocked',
+          blockedAtTick: payload.blockedAtTick,
+          isComplete: false,
+        }),
+        {
+          status: 201,
+          headers: { 'Content-Type': 'application/json' },
+        },
+      )
+    })
+    vi.stubGlobal('fetch', fetchMock)
+    const anchorClick = vi
+      .spyOn(HTMLAnchorElement.prototype, 'click')
+      .mockImplementation(() => undefined)
+
+    renderStartedApp()
+    const clearButton = screen.getByRole('button', {
+      name: '结束并清空会话',
+    })
+    const blockedReason = screen.getByRole('textbox', {
+      name: /阻断原因/,
+    })
+    fireEvent.change(blockedReason, {
+      target: { value: 'tick 54 无法继续，复现步骤固定。' },
+    })
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: '保存阻断记录' }))
+    })
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      '同一会话证据链缺失或不一致',
+    )
+    expect(blockedReason).toBeDisabled()
+    expect(clearButton).toBeDisabled()
+    expect(
+      screen.getByRole('button', { name: '保存阻断记录' }),
+    ).toBeEnabled()
+    expect(anchorClick).not.toHaveBeenCalled()
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole('button', { name: '保存阻断记录' }))
+    })
+    expect(screen.getByText(/已保存并校验 tick 54/)).toHaveTextContent(
+      '已保存并校验 tick 54 的阻断记录（非完整场次）。',
+    )
+
+    expect(fetchMock).toHaveBeenCalledTimes(2)
+    expect(requestBodies[1]).toBe(requestBodies[0])
+    const payload = JSON.parse(requestBodies[1])
+    expect(payload.captureKind).toBe('blocked')
+    expect(payload.blockedAtTick).toBe(54)
+    expect(payload.finalState.isComplete).toBe(false)
+    expect(
+      payload.telemetry.filter(
+        (entry: { type: string }) => entry.type === 'blocked-capture-created',
+      ),
+    ).toHaveLength(1)
+    expect(
+      payload.telemetry.filter(
+        (entry: { type: string }) => entry.type === 'export-created',
+      ),
+    ).toHaveLength(0)
+    expect(anchorClick).toHaveBeenCalledTimes(1)
+    expect(clearButton).toBeEnabled()
   })
 })

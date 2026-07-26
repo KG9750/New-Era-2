@@ -278,6 +278,25 @@ export function App({ buildMetadata }: AppProps) {
     simulation.currentTick >= 144 * 7
       ? 2
       : 1
+  const fertilizerActionIndex = simulation.actionLog.findIndex(
+    (entry) => entry.action.type === 'USE_FERTILIZER',
+  )
+  const fertilizerUsedAtTick =
+    fertilizerActionIndex >= 0
+      ? simulation.actionLog[fertilizerActionIndex].atTick
+      : undefined
+  const secondWeekStartedAtActionIndex = simulation.actionLog.findIndex(
+    (entry) => entry.action.type === 'CONTINUE_TO_NEXT_WEEK',
+  )
+  const fertilizerUsedWeek =
+    fertilizerUsedAtTick === undefined
+      ? null
+      : fertilizerUsedAtTick < scenario.weekEndTicks[0] ||
+          (fertilizerUsedAtTick === scenario.weekEndTicks[0] &&
+            (secondWeekStartedAtActionIndex < 0 ||
+              fertilizerActionIndex < secondWeekStartedAtActionIndex))
+        ? 1
+        : 2
   const pumpBlock = resolveScheduleBlock(
     simulation,
     PUMP_MAINTENANCE_BLOCK_ID,
@@ -705,12 +724,18 @@ export function App({ buildMetadata }: AppProps) {
                 <span className="issue-icon" aria-hidden="true">+</span>
                 <span className="issue-copy">
                   <strong>
-                    {simulation.fertilizerUsed ? '化肥已在第一周使用' : '化肥仍有一次机会'}
+                    {fertilizerUsedWeek === 1
+                      ? '化肥已在第一周使用'
+                      : fertilizerUsedWeek === 2
+                        ? '化肥已在第二周使用'
+                        : '化肥仍有一次机会'}
                   </strong>
                   <span>
-                    {simulation.fertilizerUsed
+                    {fertilizerUsedWeek === 1
                       ? '第二周没有额外化肥可补粮。'
-                      : '可用粮食 +6 弥补学习或已知缺口。'}
+                      : fertilizerUsedWeek === 2
+                        ? '本周已使用化肥，库存为 0。'
+                        : '可用粮食 +6 弥补学习或已知缺口。'}
                   </span>
                   <small>新增例外 · 只影响粮食，不改变维修保障</small>
                 </span>
