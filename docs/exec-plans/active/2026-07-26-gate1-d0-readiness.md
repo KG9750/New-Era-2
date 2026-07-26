@@ -23,7 +23,7 @@
 | Gate 1A 七个独立席位 | 待冻结通过后创建 | 汇总 #9；RC6 独立 `RC_FREEZE=YES` 后创建 A16–A22。#10–#24 均只作 RC4/RC5 历史 |
 | Gate 1 正式 RC | 完成 | `refs/heads/codex/gate1-rc-20260726.6` 固定指向 `affc5d8a0c9664a3724d1c31cb3d67682c818af9`；双 clean clone 得到相同 Vite 8 artifact、初态和确定性 archive |
 | Gate 1A cohort manifest | 制备中 | `g1a-20260726-rc6-01` 固定 A16–A22、显式 capture dir、玩家包 V4、访谈 V2，以及 complete/blocked 两种三件套规则 |
-| 独立冻结复核 | 待执行 | 必须由未参与 RC6 实现、代码复审和冻结制备的 reviewer 从远端复算并给出 `RC_FREEZE=YES`；#7 当前保持 `OPEN` |
+| 独立冻结复核 | 待执行 | 必须由未参与 RC6 实现和冻结制备的 reviewer 从远端复算并给出 `RC_FREEZE=YES`；#7 当前保持 `OPEN` |
 | Gate 1H 暂缓边界 | 完成 | 真人主持、候选人台账与知情同意在恢复 Gate 1H 前另行准备；当前保持 `PENDING` |
 | Gate 2 解锁规则 | 完成 | Gate 1A 任何结论都不解锁 Gate 2；只有 Gate 1H `PASS` 才能解锁规格工作 |
 | Issue 状态迁移 | 部分完成 | #8 保持 `[Gate 1H][DEFERRED]` + `needs-info`；#7 与 #9 保持 `OPEN`；#10–#24 已历史化；A16–A22 只在 RC6 冻结通过后创建 |

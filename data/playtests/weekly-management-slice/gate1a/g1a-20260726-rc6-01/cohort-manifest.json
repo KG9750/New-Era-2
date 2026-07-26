@@ -202,7 +202,7 @@
     "freezeAudit": {
       "status": "PASS_PENDING_INDEPENDENT_DECISION",
       "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc6-01/evidence/rc-freeze-audit.md",
-      "sha256": "0528a8a4aa3172f663bc4400ca15d7591a495a118ff392d5c69d10251bdf233d"
+      "sha256": "3504e47b6e6957dd7c7f7bff5fbdf65a60e64e78bfe0ee98eadccb919fd23d58"
     },
     "noGate2Code": {
       "value": true,

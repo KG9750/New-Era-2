@@ -6,7 +6,7 @@
 独立冻结复核的技术条件。
 
 本记录不是最终 `RC_FREEZE=YES` 决定，也不是正式代理样本。只有未参与 RC6
-实现、代码复审和本次冻结制备的独立 agent 对远端证据给出
+实现和本次冻结制备的独立 agent 对远端证据给出
 `RC_FREEZE=YES` 后，才允许开始 A16–A22。
 
 ## RC 身份
@@ -111,7 +111,7 @@ node data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc6-01/rc-dist/p
 ## 边界
 
 - 当前状态为 `FROZEN_PENDING_INDEPENDENT_REVIEW`；
-- A16 前必须由未参与实现、代码复审和冻结制备的新 agent 从远端复核；
+- A16 前必须由未参与实现和冻结制备的独立 agent 从远端复核；
 - #7 保持 `OPEN`，#9 保持 `OPEN`；
 - Gate 1H 保持 `PENDING`；
 - Gate 2 保持 `LOCKED`；
