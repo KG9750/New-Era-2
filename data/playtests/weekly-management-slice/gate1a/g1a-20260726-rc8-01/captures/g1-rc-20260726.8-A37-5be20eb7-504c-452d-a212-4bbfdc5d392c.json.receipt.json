@@ -1,0 +1,13 @@
+{
+  "schemaVersion": "gate1-capture-receipt-v1",
+  "captureVersion": "gate1-capture-host-v1",
+  "filename": "g1-rc-20260726.8-A37-5be20eb7-504c-452d-a212-4bbfdc5d392c.json",
+  "bytes": 63485,
+  "sha256": "7fc68d63d0691499022fe93ee1fe31ec070d8ea8cc86999451b5f01afe7107a1",
+  "capturedAtUtc": "2026-07-26T18:22:51.966Z",
+  "sampleId": "A37",
+  "sessionId": "5be20eb7-504c-452d-a212-4bbfdc5d392c",
+  "buildId": "g1-rc-20260726.8",
+  "gitSha": "03973fcfc0c244555e7e4a4c623eec3fb8b8e032",
+  "artifactHash": "e0cf7c78251642a54f88845c61aa214e9e91076b3e432fb8399bd873ef0fe49b"
+}

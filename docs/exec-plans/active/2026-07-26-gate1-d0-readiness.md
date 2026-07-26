@@ -15,13 +15,13 @@ RC8 冻结通过后已创建 A30–A36。A30 因同一 host 出现时间重叠�
 被误判为未知 actor；随后本地提交 `3fdbc2f` 补齐 `/root/gate1a_a31`、
 `fork_turns=none`、玩家包、首次观察、同页冻结续存、字节一致下载、清空和
 访谈 V4，且机器时间不与 A30/M-C 重叠，独立运营负责人最终修订为有效。
-随后 A32–A36 在单一 host 与各自全新 agent 上下文中完成保存、逐字节下载
-核验、清空和访谈 V4，均裁定为有效。A33、A34、A36 三个有效独立样本复现
-`WEEK2_PRESTART_TIME_LABEL_TRANSITION`，确认为系统性 P2；未造成阻断、误判
-或错误操作，不构成独立 P1。当前有效样本为 `6/7`。这些运营事件均不改变
-RC8 指纹，不构成产品玩法失败。
+随后 A32–A37 在单一 host 与各自全新 agent 上下文中完成保存、逐字节下载
+核验、清空和访谈 V4，均裁定为有效；A37 完成对 A30 的替补。A33、A34、A36、
+A37 四个有效独立样本复现 `WEEK2_PRESTART_TIME_LABEL_TRANSITION`，确认为
+系统性 P2；未造成阻断、误判或错误操作，不构成独立 P1。A31–A37 共七个有效
+样本已齐，等待冻结阈值汇总。这些运营事件均不改变 RC8 指纹。
 
-- Gate 1A：`RUNNING_6_OF_7_VALID_A37_PENDING`
+- Gate 1A：`SEALING_7_OF_7_VALID_PENDING_AGGREGATION`
 - Gate 1H：`PENDING`
 - Gate 2：`LOCKED`
 
