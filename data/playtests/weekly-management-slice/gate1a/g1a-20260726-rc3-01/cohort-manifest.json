@@ -1,0 +1,182 @@
+{
+  "schemaVersion": "gate1a-cohort-manifest-v1",
+  "cohortId": "g1a-20260726-rc3-01",
+  "status": "FROZEN_PENDING_INDEPENDENT_REVIEW",
+  "frozenAtUtc": "2026-07-26T08:51:19Z",
+  "gate": "Gate 1A",
+  "operator": "/root",
+  "supersedes": {
+    "cohortId": "g1a-20260726-rc2-01",
+    "reason": "RC2 used Vite 7.3.6 while the authoritative development plan requires Vite 8; no formal sample had started."
+  },
+  "releaseCandidate": {
+    "ref": "refs/heads/codex/gate1-rc-20260726.3",
+    "buildId": "g1-rc-20260726.3",
+    "gitSha": "57621e670e69a2b4c7c283a6614ab1bdefd71ca1",
+    "gitTree": "60bfedd43321d5f7ff29a9e7b6dcc5e49fe25536",
+    "sourceTreeManifestHash": "6c2ffe8e0edd2097f88d2589313ecd41a68a0e3cf68674302b459a87440efb36",
+    "sourceTreeManifestHashAlgorithm": "sha256-git-blob-path-manifest-v1",
+    "sourceTreeManifestScope": "tracked prototype/ files sorted by path; each line is <path><TAB><git-blob-object-id><LF>, including final LF",
+    "sourceTreeFileCount": 37,
+    "artifactHash": "6c173733662fdb79160d6188c4fb8883d87d2e68dea5c47c632e373b13b2c725",
+    "artifactHashAlgorithm": "sha256-canonical-file-manifest-v1",
+    "artifactManifest": {
+      "path": "rc-dist/artifact-manifest.json",
+      "sha256": "dfc52462e57a43ee150e77f8701f5084ae06ba0928f56972693a921102725aae"
+    },
+    "buildMetadata": {
+      "path": "rc-dist/rc-build.json",
+      "sha256": "2ff64c82c2341758d339e5e1e987286be8c13bb93c86e4f4570952924a1cb4ad"
+    },
+    "detachedArchive": {
+      "path": "rc-dist.tar",
+      "format": "ustar",
+      "sha256": "9813823966382d6c01bcb175a6d477fd6d96d7d78e5fb9b5fc034c5063989c63"
+    },
+    "scenarioId": "gate1-two-week-management",
+    "scenarioVersion": "0.4.0",
+    "fixedSeed": 104729,
+    "initialStateHash": "fnv1a32-33a16fbf",
+    "initialStateHashAlgorithm": "fnv1a32-stable-json-v1"
+  },
+  "protocol": {
+    "protocolVersion": "gate1a-agent-ops-v1",
+    "hostProtocol": {
+      "path": "docs/exec-plans/active/2026-07-26-gate1-agent-test-operations.md",
+      "sha256": "7ff09779507b0632741ec66d3ebf2ddc43ae5d1e8dba704a9d049de7cbfcc0d2"
+    },
+    "playtestSpecification": {
+      "path": "docs/product-specs/weekly-management-slice-playtest-v0.1.md",
+      "sha256": "b480b0032ea2d65e3371af1e9fef5fe37128501f31ecba665863218c632dd718"
+    },
+    "playerPacketVersion": "gate1a-neutral-player-packet-v1",
+    "playerPacket": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc3-01/player-packet.md",
+      "sha256": "d2719175551bc9057ed5dda64def3073e68dd8ae5f15d0ef08abca5cd8945a7c"
+    }
+  },
+  "environment": {
+    "url": "http://127.0.0.1:4192/",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "frozenValue": "1440x900"
+    },
+    "inputMode": "Chrome agent UI control",
+    "browser": "Chrome",
+    "browserProfile": "Speed",
+    "browserVersion": null,
+    "browserVersionReason": "The Chrome agent control plane did not expose a version value.",
+    "locale": "zh-CN",
+    "timezone": "Asia/Shanghai"
+  },
+  "samplePlan": {
+    "primarySamples": [
+      "A01",
+      "A02",
+      "A03",
+      "A04",
+      "A05",
+      "A06",
+      "A07"
+    ],
+    "batches": [
+      {
+        "batchId": "Batch 1",
+        "samples": [
+          "A01",
+          "A02",
+          "A03"
+        ]
+      },
+      {
+        "batchId": "Batch 2",
+        "samples": [
+          "A04",
+          "A05",
+          "A06"
+        ]
+      },
+      {
+        "batchId": "Batch 3",
+        "samples": [
+          "A07"
+        ]
+      }
+    ],
+    "replacementStartsAt": "A08",
+    "requiredValidSamples": 7,
+    "batchIsolationRequired": true,
+    "crossSampleCommunicationAllowed": false
+  },
+  "verification": {
+    "cleanClones": 2,
+    "npmCi": {
+      "status": "PASS",
+      "vulnerabilities": 0
+    },
+    "toolchain": {
+      "node": "24.18.0",
+      "vite": "8.1.5",
+      "viteReactPlugin": "6.0.4",
+      "vitest": "4.1.10",
+      "viteNode": "6.0.0",
+      "playwright": "1.62.0"
+    },
+    "lint": "PASS",
+    "vitest": {
+      "status": "PASS",
+      "files": 7,
+      "tests": 44
+    },
+    "rcVerify": "PASS",
+    "chromiumE2E": {
+      "status": "PASS",
+      "projects": [
+        "1440x900",
+        "1280x720"
+      ],
+      "passed": 2,
+      "total": 2
+    },
+    "technicalUiAudit": {
+      "status": "PASS",
+      "sampleId": "TECH-A98",
+      "uiSampleId": "A98",
+      "includedInGate1A": false,
+      "recordPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc3-01/evidence/TECH-A98-ui-audit.md",
+      "recordSha256": "65dccbc11658fcbd073a8bf9f3eb857c624562474f2851db149abd9d799b35ed",
+      "downloadEventCaptured": false,
+      "downloadReceiptObserved": "已导出 tick 2010 的匿名记录",
+      "downloadPayloadCoveredByChromiumE2E": true
+    },
+    "freezeAudit": {
+      "status": "PASS_PENDING_INDEPENDENT_DECISION",
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc3-01/evidence/rc-freeze-audit.md",
+      "sha256": "85d45777730d99b74dfdf35f3c903856748ba1b34776b82533309812a340beb0"
+    },
+    "noGate2Code": {
+      "value": true,
+      "evidence": "The only RC2-to-RC3 source changes are package.json and package-lock.json toolchain dependencies."
+    }
+  },
+  "launchGate": {
+    "independentFreezeReviewRequired": true,
+    "requiredDecision": "RC_FREEZE=YES",
+    "formalSamplesStarted": false
+  },
+  "trackLocks": {
+    "gate1A": "FROZEN_PENDING_INDEPENDENT_REVIEW",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED",
+    "noGate2Code": true
+  },
+  "excludedFromFormalSamples": [
+    "M-A",
+    "M-B",
+    "M-C",
+    "TECH-A98",
+    "TECH-A99",
+    "TECH-P00"
+  ]
+}
