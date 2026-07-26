@@ -40,7 +40,7 @@
     "initialStateHashAlgorithm": "fnv1a32-stable-json-v1"
   },
   "protocol": {
-    "protocolVersion": "gate1a-agent-ops-v1",
+    "protocolVersion": "gate1a-agent-ops-v2-two-stage",
     "hostProtocol": {
       "path": "docs/exec-plans/active/2026-07-26-gate1-agent-test-operations.md",
       "sha256": "7ff09779507b0632741ec66d3ebf2ddc43ae5d1e8dba704a9d049de7cbfcc0d2"
@@ -49,10 +49,16 @@
       "path": "docs/product-specs/weekly-management-slice-playtest-v0.1.md",
       "sha256": "b480b0032ea2d65e3371af1e9fef5fe37128501f31ecba665863218c632dd718"
     },
-    "playerPacketVersion": "gate1a-neutral-player-packet-v1",
+    "playerPacketVersion": "gate1a-neutral-player-packet-v2",
     "playerPacket": {
       "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc3-01/player-packet.md",
-      "sha256": "d2719175551bc9057ed5dda64def3073e68dd8ae5f15d0ef08abca5cd8945a7c"
+      "sha256": "a77b475be19f8d0916bc91fd6d8177a01b8a6651a8e91509880228cd00b324ff"
+    },
+    "postSessionInterviewVersion": "gate1a-post-session-interview-v1",
+    "postSessionInterview": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc3-01/post-session-interview.md",
+      "sha256": "c680c5fe4c7d1fed5e60403e457fcadeba1256423088e7c9e62ac253d8e4db00",
+      "releaseTiming": "after-playthrough-download-and-clear"
     }
   },
   "environment": {
@@ -153,7 +159,7 @@
     "freezeAudit": {
       "status": "PASS_PENDING_INDEPENDENT_DECISION",
       "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc3-01/evidence/rc-freeze-audit.md",
-      "sha256": "85d45777730d99b74dfdf35f3c903856748ba1b34776b82533309812a340beb0"
+      "sha256": "89900791ee9cad5527645176863f844e4bc477d35944692f16ea4c4735d7b25e"
     },
     "noGate2Code": {
       "value": true,

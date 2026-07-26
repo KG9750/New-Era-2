@@ -92,6 +92,12 @@ npm run rc:build -- \
 
 无流程阻断。完整记录见 `evidence/TECH-A98-ui-audit.md`。该场不计入 A01–A07。
 
+## 正式样本协议
+
+正式 A01–A07 使用两阶段协议：agent 开始前只收到中性玩家包；完成两周、下载并
+清空会话后，测试运营负责人再发送统一结束访谈。结束访谈、评分阈值、其他样本
+结果和已知缺陷不得在试玩前泄露。
+
 ## 边界
 
 - 当前状态为 `FROZEN_PENDING_INDEPENDENT_REVIEW`；
