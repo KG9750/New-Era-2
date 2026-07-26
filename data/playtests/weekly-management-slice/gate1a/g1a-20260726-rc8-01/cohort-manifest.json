@@ -1,0 +1,292 @@
+{
+  "schemaVersion": "gate1a-cohort-manifest-v3",
+  "cohortId": "g1a-20260726-rc8-01",
+  "status": "FROZEN_PENDING_INDEPENDENT_REVIEW",
+  "frozenAtUtc": "2026-07-26T15:18:05Z",
+  "gate": "Gate 1A",
+  "operator": "/root",
+  "operatorDisplayName": "Codex root agent",
+  "supersedes": {
+    "cohortId": "g1a-20260726-rc7-01",
+    "reason": "RC7 was invalidated before launch by a timezone-dependent archive header and then by a player-visible second-week fertilizer evidence correction. RC8 also adds an explicit same-bytes retry regression without changing the capture contract.",
+    "historyDisposition": {
+      "A23-A29": "MANIFEST_ONLY_ISSUES_NOT_CREATED_SAMPLES_NOT_STARTED",
+      "issues": "none",
+      "priorNumbersReusable": false
+    }
+  },
+  "releaseCandidate": {
+    "ref": "refs/heads/codex/gate1-rc-20260726.8",
+    "buildId": "g1-rc-20260726.8",
+    "gitSha": "03973fcfc0c244555e7e4a4c623eec3fb8b8e032",
+    "gitTree": "341e0de0352181ce84067c45bff99248f03a5b70",
+    "sourceTreeManifestHash": "22133fccaa2459d9d3414a1728fdb332ccdfc344dd126f444b67a3c3224d5adb",
+    "sourceTreeManifestHashAlgorithm": "sha256-git-blob-path-manifest-v1",
+    "sourceTreeManifestScope": "tracked prototype/ files sorted by path; each line is <path><TAB><git-blob-object-id><LF>, including final LF",
+    "sourceTreeFileCount": 39,
+    "artifactHash": "e0cf7c78251642a54f88845c61aa214e9e91076b3e432fb8399bd873ef0fe49b",
+    "artifactHashAlgorithm": "sha256-canonical-file-manifest-v1",
+    "artifactManifest": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc8-01/rc-dist/artifact-manifest.json",
+      "sha256": "01648a718eecac743aa60e7c94f73f1c71bdfb02086056d15ad4e7104541c407"
+    },
+    "rcBuild": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc8-01/rc-dist/rc-build.json",
+      "sha256": "ea4a65c0cccc0e590e0d309dd802d80a008bf8b703ba8786725fbf1936882521"
+    },
+    "captureHost": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc8-01/rc-dist/playtest-host.mjs",
+      "sha256": "84859a4840b54580162b709d52beacd5fa550ec318c6830d1a8cdb6df1b97f05"
+    },
+    "deterministicArchive": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc8-01/rc-dist.tar",
+      "sha256": "ad963ce348527d588865fc7891e0207859456a61e8fa65a0d4c6bcc1fc10617e",
+      "format": "ustar",
+      "determinism": "explicit TZ=UTC before setting every entry mtime to 2000-01-01T00:00:00Z; header epoch 946684800; sorted paths; uid/gid 0; root/root; no xattrs or macOS metadata"
+    },
+    "initialStateHash": "fnv1a32-33a16fbf",
+    "initialStateHashAlgorithm": "fnv1a32-stable-json-v1",
+    "scenarioId": "gate1-two-week-management",
+    "scenarioVersion": "0.4.0",
+    "fixedSeed": 104729
+  },
+  "protocol": {
+    "protocolVersion": "gate1a-agent-proxy-v6",
+    "playerPacketVersion": "gate1a-neutral-player-packet-v6",
+    "playerPacket": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc8-01/player-packet.md",
+      "sha256": "9a5653dbfdb616936b81ef511e9503e209e5dbfe692a89db98a2091f880d1205"
+    },
+    "postSessionInterviewVersion": "gate1a-post-session-interview-v4",
+    "postSessionInterview": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc8-01/post-session-interview.md",
+      "sha256": "8beabc12ab995b330d78f4cdfbbf16377f024737c2ae4fcecf477d291e7a8aa5"
+    },
+    "interviewReleaseCondition": "Only after complete or blocked capture, browser download and session clear have all been verified.",
+    "completeCaptureContract": {
+      "captureKind": "complete",
+      "finalTick": 2010,
+      "isComplete": true,
+      "completedWeekCount": 2,
+      "recapCount": 2,
+      "terminalMarker": "export-created",
+      "blockedMarkerAllowed": false
+    },
+    "blockedCaptureContract": {
+      "captureKind": "blocked",
+      "blockedAtTick": "integer between 54 and 2010 inclusive and equal to finalTick",
+      "isComplete": false,
+      "completedWeekCount": "integer between 0 and 2 inclusive",
+      "recapContract": "recapCount equals completedWeekCount; recap array uses contiguous weekIndex values from 0",
+      "reason": "trimmed non-empty string, 1-240 characters",
+      "terminalCompletionFlagFailureAllowed": true,
+      "terminalMarker": "blocked-capture-created",
+      "completeMarkerAllowed": false,
+      "retryContract": "after a failed save the same frozen raw JSON bytes must be posted again; reason, simulation and clear remain locked until success"
+    }
+  },
+  "environment": {
+    "entryUrl": "http://127.0.0.1:4197/",
+    "viewport": {
+      "width": 1440,
+      "height": 900
+    },
+    "inputMode": "Chrome UI mouse and keyboard only",
+    "locale": "zh-CN",
+    "timezone": "Asia/Shanghai",
+    "captureHost": {
+      "workingDirectory": ".",
+      "command": "node data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc8-01/rc-dist/playtest-host.mjs --host 127.0.0.1 --port 4197 --capture-dir data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc8-01/captures",
+      "captureDirectory": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc8-01/captures",
+      "explicitCaptureDirectoryRequired": true,
+      "loopbackOnly": true
+    }
+  },
+  "samplePlan": {
+    "primarySamples": [
+      "A30",
+      "A31",
+      "A32",
+      "A33",
+      "A34",
+      "A35",
+      "A36"
+    ],
+    "batches": [
+      {
+        "batchId": "Batch 1",
+        "samples": [
+          "A30",
+          "A31",
+          "A32"
+        ]
+      },
+      {
+        "batchId": "Batch 2",
+        "samples": [
+          "A33",
+          "A34",
+          "A35"
+        ]
+      },
+      {
+        "batchId": "Batch 3",
+        "samples": [
+          "A36"
+        ]
+      }
+    ],
+    "replacementStartsAt": "A37",
+    "requiredValidSamples": 7,
+    "batchIsolationRequired": true,
+    "crossSampleCommunicationAllowed": false,
+    "priorNumbersExcluded": [
+      "A01",
+      "A02",
+      "A03",
+      "A04",
+      "A05",
+      "A06",
+      "A07",
+      "A08",
+      "A09",
+      "A10",
+      "A11",
+      "A12",
+      "A13",
+      "A14",
+      "A15",
+      "A16",
+      "A17",
+      "A18",
+      "A19",
+      "A20",
+      "A21",
+      "A22",
+      "A23",
+      "A24",
+      "A25",
+      "A26",
+      "A27",
+      "A28",
+      "A29"
+    ]
+  },
+  "verification": {
+    "cleanClones": [
+      "/tmp/new-era-g1a-rc8-a.Apnime/repo",
+      "/tmp/new-era-g1a-rc8-b.DH70n9/repo"
+    ],
+    "npmCi": {
+      "status": "PASS",
+      "vulnerabilities": 0
+    },
+    "toolchain": {
+      "node": "24.18.0",
+      "npm": "11.16.0",
+      "vite": "8.1.5",
+      "viteReactPlugin": "6.0.4",
+      "vitest": "4.1.10",
+      "viteNode": "6.0.0",
+      "playwright": "1.62.0"
+    },
+    "lint": "PASS",
+    "vitest": {
+      "status": "PASS",
+      "files": 7,
+      "tests": 48
+    },
+    "hostSourceSyntax": "PASS",
+    "hostDistSyntax": "PASS",
+    "rcVerify": "PASS",
+    "frozenDistMatchesBothCleanClones": true,
+    "deterministicArchiveMatchesBothCleanClones": true,
+    "archiveHeaderEpoch": 946684800,
+    "chromiumE2E": {
+      "status": "PASS",
+      "projects": [
+        "1440x900",
+        "1280x720"
+      ],
+      "passed": 22,
+      "total": 22
+    },
+    "codeReview": {
+      "decision": "CODE_REVIEW=PASS",
+      "p0": 0,
+      "p1": 0,
+      "p2": 0,
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc8-01/evidence/rc8-code-review.md",
+      "sha256": "10f3b9e0c28f9840e35eafbd6367245568068196947c8faade7c8d7a0cfe8d83"
+    },
+    "freezeAudit": {
+      "status": "PASS_PENDING_INDEPENDENT_DECISION",
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc8-01/evidence/rc-freeze-audit.md",
+      "sha256": "ac24146d21c054db37d6125de70b78cb27c53526cef6877a7ceb125468bcf279"
+    },
+    "noGate2Code": {
+      "value": true,
+      "evidence": "RC7-to-RC8 prototype changes are limited to player-visible second-week fertilizer evidence and the same-bytes blocked retry regression test."
+    }
+  },
+  "authorityReferences": [
+    {
+      "path": "docs/design-docs/weekly-plan-production-forecast-slice-v0.1.md",
+      "sha256": "2d641861742426c84a572654fd0d835cfb62e904e86e1287b56797cd2d1612ed"
+    },
+    {
+      "path": "docs/exec-plans/active/2026-07-26-gate1-agent-test-operations.md",
+      "sha256": "c045aeee0c740b120927fcfeea190c7b4f8e77237a27cf075c78b6f095777fd2"
+    },
+    {
+      "path": "docs/exec-plans/active/2026-07-26-react-web-gate-1-2-development-plan.md",
+      "sha256": "7b0526667f68e415232b468a08f0383c86e0549573dfc0dce254bf74ca9188f1"
+    },
+    {
+      "path": "docs/exec-plans/active/2026-07-26-v0.4-prototype-validation-plan.md",
+      "sha256": "2e3cef3be9198aa38ede0e3d956ad7ee328285476249b30d17759db649dae551"
+    },
+    {
+      "path": "docs/product-specs/weekly-management-slice-playtest-v0.1.md",
+      "sha256": "50d99bffc336c42e7cd59059eb10d428c7b8c5bcb6c1a8f62cd772a092dc76fe"
+    },
+    {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc7-01/SUPERSEDED.md",
+      "sha256": "fd1c36cd0aee91bd2ff2bb748689f9fc9520ad835164c3af6343becf9fc5ece5"
+    },
+    {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc8-01/player-packet.md",
+      "sha256": "9a5653dbfdb616936b81ef511e9503e209e5dbfe692a89db98a2091f880d1205"
+    },
+    {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc8-01/post-session-interview.md",
+      "sha256": "8beabc12ab995b330d78f4cdfbbf16377f024737c2ae4fcecf477d291e7a8aa5"
+    }
+  ],
+  "launchGate": {
+    "independentFreezeReviewRequired": true,
+    "requiredDecision": "RC_FREEZE=YES",
+    "formalSamplesStarted": false,
+    "issuesMayBeCreatedBeforeFreezePass": false
+  },
+  "trackLocks": {
+    "gate1A": "FROZEN_PENDING_INDEPENDENT_REVIEW",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED",
+    "noGate2Code": true
+  },
+  "excludedFromFormalSamples": [
+    "M-A",
+    "M-B",
+    "M-C",
+    "TECH-A97",
+    "TECH-A98",
+    "TECH-A99",
+    "TECH-P00",
+    "TECH-P98",
+    "RC4:A01",
+    "RC5:A09",
+    "RC6:A16-A22",
+    "RC7:A23-A29"
+  ]
+}

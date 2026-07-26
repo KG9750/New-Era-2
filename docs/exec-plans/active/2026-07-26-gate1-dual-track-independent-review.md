@@ -2,8 +2,8 @@
 
 > 历史说明：本报告复核的是最初双轨基线，当时运营负责人和 roster 分别为
 > `/root`、A01–A07/A08+。当前权威修订见
-> `2026-07-26-gate1-agent-test-operations.md`：运营负责人为 `/root`，RC7 roster
-> 为 A23–A29，替补从 A30 开始。本报告的原始裁定不回写或伪装成 RC7 复核。
+> `2026-07-26-gate1-agent-test-operations.md`：运营负责人为 `/root`，RC8 roster
+> 为 A30–A36，替补从 A37 开始。本报告的原始裁定不回写或伪装成 RC8 复核。
 
 **项目：** Project-004-New Era 2
 **日期：** 2026-07-26
