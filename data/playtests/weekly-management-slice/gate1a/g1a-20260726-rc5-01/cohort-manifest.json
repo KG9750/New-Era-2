@@ -1,0 +1,225 @@
+{
+  "schemaVersion": "gate1a-cohort-manifest-v1",
+  "cohortId": "g1a-20260726-rc5-01",
+  "status": "FROZEN_PENDING_INDEPENDENT_REVIEW",
+  "frozenAtUtc": "2026-07-26T12:27:15Z",
+  "gate": "Gate 1A",
+  "operator": "/root/gate1_test_coordinator",
+  "operatorDisplayName": "Planck",
+  "supersedes": {
+    "cohortId": "g1a-20260726-rc4-01",
+    "reason": "RC4 A01 exposed an unrecoverable anonymous-JSON retention failure. RC5 adds verified loopback write-once capture, changing Git SHA, artifact and operating conditions; RC4 records remain preserved and excluded."
+  },
+  "releaseCandidate": {
+    "ref": "refs/heads/codex/gate1-rc-20260726.5",
+    "buildId": "g1-rc-20260726.5",
+    "gitSha": "2d40aa102bd51107c07cbe176f798a93a37663f3",
+    "gitTree": "c152f1487ec370a4b6534adf0bac92336b8186d8",
+    "sourceTreeManifestHash": "9a81cf360f9b9efd80e67327ba0fc0d4723ed3865421eaded81219f198502d27",
+    "sourceTreeManifestHashAlgorithm": "sha256-git-blob-path-manifest-v1",
+    "sourceTreeManifestScope": "tracked prototype/ files sorted by path; each line is <path><TAB><git-blob-object-id><LF>, including final LF",
+    "sourceTreeFileCount": 39,
+    "artifactHash": "ec09284f9dfb7976356a510b1039092f85dc91dd6eb94e649ca138040431d65f",
+    "artifactHashAlgorithm": "sha256-canonical-file-manifest-v1",
+    "artifactManifest": {
+      "path": "rc-dist/artifact-manifest.json",
+      "sha256": "da92f5489601f7a17fc805753d8aba881ee851eee0220f3a2faab970e2cf850d"
+    },
+    "buildMetadata": {
+      "path": "rc-dist/rc-build.json",
+      "sha256": "8945aed3b344a97ea1e48d97100dee95156fefc4bf53ecb21e66cd0f22120f40"
+    },
+    "captureHost": {
+      "path": "rc-dist/playtest-host.mjs",
+      "sha256": "29c676e4804499a2a01beded4c55d1d2098c0340d7c5ec80475e12874a1c7388"
+    },
+    "detachedArchive": {
+      "path": "rc-dist.tar",
+      "format": "ustar",
+      "sha256": "c449247c34615e7fb2f19e8372588f70a26dba55b7203c1faac31f25721b52c3",
+      "determinism": "sorted paths; mtime 2000-01-01T00:00:00Z; uid/gid 0; root/root; no macOS metadata; no recursive duplicate entries"
+    },
+    "scenarioId": "gate1-two-week-management",
+    "scenarioVersion": "0.4.0",
+    "fixedSeed": 104729,
+    "initialStateHash": "fnv1a32-33a16fbf",
+    "initialStateHashAlgorithm": "fnv1a32-stable-json-v1"
+  },
+  "protocol": {
+    "protocolVersion": "gate1a-agent-ops-v3-loopback-capture",
+    "hostProtocol": {
+      "path": "docs/exec-plans/active/2026-07-26-gate1-agent-test-operations.md",
+      "sha256": "f62c91270a0d4e234afde0d17bc881849087d8fd8ac06988e0e3fce4293f95bb"
+    },
+    "playtestSpecification": {
+      "path": "docs/product-specs/weekly-management-slice-playtest-v0.1.md",
+      "sha256": "b480b0032ea2d65e3371af1e9fef5fe37128501f31ecba665863218c632dd718"
+    },
+    "playerPacketVersion": "gate1a-neutral-player-packet-v3",
+    "playerPacket": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc5-01/player-packet.md",
+      "sha256": "11ad11d18eed1257865a9a34db8951de3303bd3a0d77f3e50e223a0a4da906b7"
+    },
+    "postSessionInterviewVersion": "gate1a-post-session-interview-v1",
+    "postSessionInterview": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc5-01/post-session-interview.md",
+      "sha256": "cbbea4cb479cacd751cbc25cd9d5da0ac8f65ec33a739111458b2f43cb2106e1",
+      "releaseTiming": "after-playthrough-save-download-and-clear"
+    }
+  },
+  "environment": {
+    "url": "http://127.0.0.1:4194/",
+    "viewport": {
+      "width": 1440,
+      "height": 900,
+      "frozenValue": "1440x900"
+    },
+    "inputMode": "Chrome agent UI control",
+    "browser": "Chrome",
+    "browserProfile": "Speed",
+    "browserVersion": null,
+    "browserVersionReason": "The Chrome agent control plane did not expose a version value.",
+    "locale": "zh-CN",
+    "timezone": "Asia/Shanghai",
+    "captureHost": {
+      "workingDirectory": ".",
+      "command": "node data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc5-01/rc-dist/playtest-host.mjs --host 127.0.0.1 --port 4194 --capture-dir data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc5-01/captures",
+      "captureDirectory": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc5-01/captures",
+      "explicitCaptureDirectoryRequired": true,
+      "loopbackOnly": true
+    }
+  },
+  "samplePlan": {
+    "primarySamples": [
+      "A09",
+      "A10",
+      "A11",
+      "A12",
+      "A13",
+      "A14",
+      "A15"
+    ],
+    "batches": [
+      {
+        "batchId": "Batch 1",
+        "samples": [
+          "A09",
+          "A10",
+          "A11"
+        ]
+      },
+      {
+        "batchId": "Batch 2",
+        "samples": [
+          "A12",
+          "A13",
+          "A14"
+        ]
+      },
+      {
+        "batchId": "Batch 3",
+        "samples": [
+          "A15"
+        ]
+      }
+    ],
+    "replacementStartsAt": "A16",
+    "requiredValidSamples": 7,
+    "batchIsolationRequired": true,
+    "crossSampleCommunicationAllowed": false,
+    "priorNumbersExcluded": [
+      "A01",
+      "A02",
+      "A03",
+      "A04",
+      "A05",
+      "A06",
+      "A07",
+      "A08"
+    ]
+  },
+  "verification": {
+    "cleanClones": [
+      "/tmp/new-era-g1a-rc5-a.GNhAjo/repo",
+      "/tmp/new-era-g1a-rc5-b.fP6CZ3/repo"
+    ],
+    "npmCi": {
+      "status": "PASS",
+      "vulnerabilities": 0
+    },
+    "toolchain": {
+      "node": "24.18.0",
+      "vite": "8.1.5",
+      "viteReactPlugin": "6.0.4",
+      "vitest": "4.1.10",
+      "viteNode": "6.0.0",
+      "playwright": "1.62.0"
+    },
+    "lint": "PASS",
+    "vitest": {
+      "status": "PASS",
+      "files": 7,
+      "tests": 47
+    },
+    "hostSyntax": "PASS",
+    "rcVerify": "PASS",
+    "frozenDistMatchesBothCleanClones": true,
+    "deterministicArchiveMatchesBothCleanClones": true,
+    "chromiumE2E": {
+      "status": "PASS",
+      "projects": [
+        "1440x900",
+        "1280x720"
+      ],
+      "passed": 10,
+      "total": 10
+    },
+    "technicalCaptureAudit": {
+      "status": "PASS",
+      "sampleId": "TECH-P98",
+      "uiSampleId": "P98",
+      "includedInGate1A": false,
+      "includedInGate1H": false,
+      "uiSampleIdPermanentlyReservedForTechnicalEvidence": true,
+      "recordPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc5-01/evidence/TECH-P98-capture-audit.md",
+      "recordSha256": "b2d1fae780e41c7381e28341b7e5109fa1618ce1e66267333c889a57865ce064",
+      "captureFilename": "g1-rc-20260726.5-P98-c5602ff6-cf5d-4277-adda-5b0813630316.json",
+      "captureBytes": 62761,
+      "captureSha256": "5319377ce23276fa41e40d0be873d01f44d3f68380bf8e90eb11ebb60f42e498",
+      "downloadEventState": "completed",
+      "downloadMatchesServerRaw": true,
+      "tripletPersistsAfterSessionClear": true
+    },
+    "freezeAudit": {
+      "status": "PASS_PENDING_INDEPENDENT_DECISION",
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc5-01/evidence/rc-freeze-audit.md",
+      "sha256": "c924b8b6dd87a849ff3e1d0d0c101333fdbdf29c85b8b61bbf87d36a904d8fe8"
+    },
+    "noGate2Code": {
+      "value": true,
+      "evidence": "RC4-to-RC5 prototype changes are limited to Gate 1 capture, export confirmation, host packaging and regression coverage."
+    }
+  },
+  "launchGate": {
+    "independentFreezeReviewRequired": true,
+    "requiredDecision": "RC_FREEZE=YES",
+    "formalSamplesStarted": false
+  },
+  "trackLocks": {
+    "gate1A": "FROZEN_PENDING_INDEPENDENT_REVIEW",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED",
+    "noGate2Code": true
+  },
+  "excludedFromFormalSamples": [
+    "M-A",
+    "M-B",
+    "M-C",
+    "TECH-A97",
+    "TECH-A98",
+    "TECH-A99",
+    "TECH-P00",
+    "TECH-P98",
+    "RC4:A01"
+  ]
+}
