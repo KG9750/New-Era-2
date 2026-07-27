@@ -934,6 +934,83 @@ describe('Gate 1 capture host contracts', () => {
     ).toBe(false)
   })
 
+  it('rejects duplicate C03 action ids and sequences before resolving settled outcomes', () => {
+    const { metadata, payload } = v03Export(
+      undefined,
+      'complete',
+    )
+    const clone = () =>
+      JSON.parse(JSON.stringify(payload))
+
+    const duplicateId = clone()
+    const duplicateIdActions =
+      duplicateId.actions.filter(
+        ({ type }: { type: string }) =>
+          type === 'COMMIT_MANAGEMENT_CHOICE',
+      )
+    duplicateIdActions[1].id = duplicateIdActions[0].id
+    expect(
+      validateCanonicalManagementLedger(duplicateId),
+    ).toMatchObject({
+      ok: false,
+      code: 'V03_ACTION_MISMATCH',
+    })
+    expect(
+      validateCapturedExport(duplicateId, metadata),
+    ).toBe(false)
+
+    const duplicateSequence = clone()
+    const duplicateSequenceActions =
+      duplicateSequence.actions.filter(
+        ({ type }: { type: string }) =>
+          type === 'COMMIT_MANAGEMENT_CHOICE',
+      )
+    duplicateSequenceActions[1].sequence =
+      duplicateSequenceActions[0].sequence
+    duplicateSequenceActions[1].committedAtSequence =
+      duplicateSequenceActions[0].committedAtSequence
+    expect(
+      validateCanonicalManagementLedger(duplicateSequence),
+    ).toMatchObject({
+      ok: false,
+      code: 'V03_ACTION_MISMATCH',
+    })
+    expect(
+      validateCapturedExport(duplicateSequence, metadata),
+    ).toBe(false)
+  })
+
+  it('rejects settled-prefixed recap fields without a settled outcome', () => {
+    const { metadata, payload } = v03Export(
+      undefined,
+      'complete',
+      'direct-edit',
+    )
+    const tampered = JSON.parse(JSON.stringify(payload))
+    const recap = tampered.recap[0]
+    const itemIndex = recap.sourceIds.indexOf(
+      'choice:w0:preventive-capacity',
+    )
+    expect(
+      tampered.settledManagementOutcomesV03.some(
+        ({ choiceSetId }: { choiceSetId: string }) =>
+          choiceSetId ===
+          'choice:w0:preventive-capacity',
+      ),
+    ).toBe(false)
+    recap.itemValues[itemIndex].settledUnexpectedValue = 1
+
+    expect(
+      validateCanonicalManagementLedger(tampered),
+    ).toMatchObject({
+      ok: false,
+      code: 'V03_RECAP_MISMATCH',
+    })
+    expect(
+      validateCapturedExport(tampered, metadata),
+    ).toBe(false)
+  })
+
   it('accepts strict v2 complete and blocked production exports', () => {
     const complete = v2CompleteExport()
     const blocked = v2BlockedExport()

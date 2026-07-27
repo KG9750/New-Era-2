@@ -222,6 +222,7 @@ describe('C03 management choice domain', () => {
       'retain-rest-capacity',
     )
     const commitment = state.managementChoices.commitments[0]
+    expect(commitment.actionId).toBe('action-0001')
     const readiness = commitment.consequences.find(
       (item) =>
         item.consequenceId ===
@@ -278,6 +279,45 @@ describe('C03 management choice domain', () => {
       settledAfterValue: 1,
       settledDelta: 1,
     })
+  })
+
+  it('refuses to settle against an ambiguous preexisting action sequence', () => {
+    let state = choose(
+      initial(),
+      1,
+      'retain-rest-capacity',
+    )
+    state = {
+      ...state,
+      actionLog: [
+        ...state.actionLog,
+        {
+          ...state.actionLog[0],
+          id: 'action-ambiguous',
+        },
+      ],
+    }
+    state = act(state, 2, {
+      type: 'SET_PAUSED',
+      paused: false,
+    })
+    state = advanceSimulation(
+      state,
+      scenario.pumpEventTick,
+      scenario,
+    ).state
+    state = act(state, 3, {
+      type: 'SET_PAUSED',
+      paused: false,
+    })
+
+    expect(() =>
+      advanceSimulation(
+        state,
+        scenario.weekEndTick,
+        scenario,
+      ),
+    ).toThrow('cannot be settled')
   })
 
   it('appends the canonical W2 economic outcome without rewriting the W1 settlement', () => {

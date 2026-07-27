@@ -1180,6 +1180,27 @@
         "accepted": false,
         "errorCode": "V03_RECAP_MISMATCH"
       }
+    },
+    {
+      "file": "playtest-v03/duplicate-action-id-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V03_ACTION_MISMATCH"
+      }
+    },
+    {
+      "file": "playtest-v03/duplicate-action-sequence-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V03_ACTION_MISMATCH"
+      }
+    },
+    {
+      "file": "playtest-v03/unsettled-recap-settled-field-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V03_RECAP_MISMATCH"
+      }
     }
   ]
 }
