@@ -12,6 +12,8 @@ import {
   GATE1_FOOD_TARGET,
   GATE1_REPAIR_TARGET,
 } from '../src/sim/forecast'
+import { sha256Canonical } from '../src/sim/canonical-hash'
+import legacyBaseline from './fixtures/legacy/branch-matrix-v050-normalized-baseline.json'
 
 const LEGACY_CHOICE_SET_IDS = Object.keys(
   GATE1_CHOICE_SET_ORACLE,
@@ -357,21 +359,56 @@ describe('Gate 1 RC9 branch-matrix oracle', () => {
     })
   })
 
-  it('freezes the legacy option-by-policy vectors independently of the C03 scenario bump', async () => {
-    const matrix = {
-      ...buildGate1BranchMatrixOracle(scenario),
-      scenarioVersion: '0.5.0',
+  it('matches the normalized legacy-only baseline independently of C03 fields', () => {
+    const matrix = buildGate1BranchMatrixOracle(scenario)
+    const projection = {
+      scenarioVersion:
+        legacyBaseline.projection.normalizedScenarioVersion,
+      completeTrajectoryCount:
+        matrix.completeTrajectoryCount,
+      axes: matrix.axes,
+      contexts: matrix.contexts.filter(
+        ({ choiceSetId }) =>
+          !legacyBaseline.projection.excludedChoiceSetIds.includes(
+            choiceSetId,
+          ),
+      ),
+      weekOneOutcomes: matrix.weekOneOutcomes,
     }
-    const bytes = await globalThis.crypto.subtle.digest(
-      'SHA-256',
-      new TextEncoder().encode(JSON.stringify(matrix)),
+    const contextCountsByChoiceSet = Object.fromEntries(
+      LEGACY_CHOICE_SET_IDS.map((choiceSetId) => [
+        choiceSetId,
+        projection.contexts.filter(
+          (context) =>
+            context.choiceSetId === choiceSetId,
+        ).length,
+      ]),
     )
-    const digest = [...new Uint8Array(bytes)]
-      .map((byte) => byte.toString(16).padStart(2, '0'))
-      .join('')
 
-    expect(digest).toBe(
-      'c400755ff33e8497ae7e5c35e1cd6845c2f4b7c5de255ba91f5d7771ca412578',
+    expect(legacyBaseline).toMatchObject({
+      parentBaselineSha:
+        '73a373fe001c1eb70e57d37553802ed284919e92',
+      projection: {
+        normalizedScenarioVersion: '0.5.0',
+        canonicalization:
+          'recursive-key-sort-json-v1',
+        excludedChoiceSetIds: [
+          'choice:w0:preventive-capacity',
+          'choice:w1:recovery-allocation',
+        ],
+      },
+    })
+    expect(projection.completeTrajectoryCount).toBe(
+      legacyBaseline.expected.completeTrajectoryCount,
+    )
+    expect(projection.contexts).toHaveLength(
+      legacyBaseline.expected.contextCount,
+    )
+    expect(contextCountsByChoiceSet).toEqual(
+      legacyBaseline.expected.contextCountsByChoiceSet,
+    )
+    expect(sha256Canonical(projection)).toBe(
+      legacyBaseline.expected.canonicalJsonSha256,
     )
   })
 })

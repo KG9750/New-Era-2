@@ -1249,6 +1249,10 @@ function createV2Export(
           effectOwnershipV03: {
             ...state.managementChoices.effectOwnership,
           },
+          settledManagementOutcomesV03:
+            state.managementChoices.settledOutcomes.map(
+              (outcome) => ({ ...outcome }),
+            ),
         }
       : {}),
     domainEvents: recorder.domainEvents.map((event) => ({ ...event })),
@@ -1306,6 +1310,13 @@ function createV2Export(
       actual: week.actual,
       itemIds: week.items.map((item) => item.id),
       sourceIds: week.items.map((item) => item.sourceId),
+      ...(isV03
+        ? {
+            itemValues: week.items.map((item) => ({
+              ...item.values,
+            })),
+          }
+        : {}),
     })),
     weekRecaps: state.recaps.map((_, weekIndex) => ({ weekIndex })),
     summary: {

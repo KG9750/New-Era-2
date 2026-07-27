@@ -21,7 +21,7 @@
       "scenarioVersion": "0.5.1",
       "protocolVersion": "weekly-management-slice-playtest-v0.3",
       "fixedSeed": 104729,
-      "initialStateHash": "fnv1a32-6b11fd08",
+      "initialStateHash": "fnv1a32-1f72f2d0",
       "viewport": "unknown",
       "inputDevice": "browser-pointer-keyboard"
     },
@@ -777,6 +777,13 @@
           "pump-incident-day-3",
           "choice:w0:preventive-capacity",
           "north-loop"
+        ],
+        "itemValues": [
+          {},
+          {},
+          {},
+          {},
+          {}
         ]
       }
     ],
@@ -792,6 +799,7 @@
       "week2CandidateManagementCount": 1,
       "week1C03TerminalCommitmentCount": 0,
       "week2C03TerminalCommitmentCount": 2
-    }
+    },
+    "settledManagementOutcomesV03": []
   }
 }

@@ -1,0 +1,41 @@
+{
+  "fixtureVersion": "gate1-legacy-branch-matrix-baseline-v1",
+  "parentBaselineSha": "73a373fe001c1eb70e57d37553802ed284919e92",
+  "projection": {
+    "normalizedScenarioVersion": "0.5.0",
+    "canonicalization": "recursive-key-sort-json-v1",
+    "includedTopLevelFields": [
+      "scenarioVersion",
+      "completeTrajectoryCount",
+      "axes",
+      "contexts",
+      "weekOneOutcomes"
+    ],
+    "excludedChoiceSetIds": [
+      "choice:w0:preventive-capacity",
+      "choice:w1:recovery-allocation"
+    ],
+    "excludedRuntimeFields": [
+      "managementChoices",
+      "managementChoiceOpportunitiesV03",
+      "managementChoiceCommitmentsV03",
+      "settledManagementOutcomesV03",
+      "effectOwnershipV03",
+      "itemValues"
+    ]
+  },
+  "expected": {
+    "completeTrajectoryCount": 288,
+    "contextCount": 132,
+    "contextCountsByChoiceSet": {
+      "choice:w0:food-plan": 1,
+      "choice:w0:pump-repair": 1,
+      "choice:w0:transport-route": 1,
+      "choice:w1:transport-route": 32,
+      "choice:w0:fertilizer": 1,
+      "choice:w1:fertilizer": 32,
+      "choice:w1:lin-he-study": 64
+    },
+    "canonicalJsonSha256": "786a82f927f1c6d7f84eed11be11750b169e7ea6c4f84a071267aba4def132bd"
+  }
+}

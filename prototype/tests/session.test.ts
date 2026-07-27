@@ -22,7 +22,7 @@ const TEST_BUILD_METADATA = {
   artifactHash: '2'.repeat(64),
   artifactHashAlgorithm: 'sha256-canonical-file-manifest-v1' as const,
   artifactManifestPath: 'artifact-manifest.json' as const,
-  initialStateHash: 'fnv1a32-6b11fd08',
+  initialStateHash: 'fnv1a32-1f72f2d0',
   initialStateHashAlgorithm: 'fnv1a32-stable-json-v1' as const,
 }
 
@@ -30,7 +30,7 @@ describe('Gate 1 playtest evidence contract', () => {
   it('freezes the canonical 0.5.1 initial-state hash', () => {
     expect(
       stableStateHash(scenario.createInitialState()),
-    ).toBe('fnv1a32-6b11fd08')
+    ).toBe('fnv1a32-1f72f2d0')
   })
 
   it('accepts only canonical RC9 agent and technical sample ids', () => {

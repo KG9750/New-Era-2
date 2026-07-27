@@ -105,6 +105,7 @@ const V03_EXPORT_KEYS = [
   'managementChoiceOpportunitiesV03',
   'protocolVersion',
   'scenarioVersion',
+  'settledManagementOutcomesV03',
 ]
 const V03_BLOCKED_EXPORT_KEYS = [
   ...V03_EXPORT_KEYS,
@@ -2441,261 +2442,6 @@ function validV2Export(value, buildMetadata) {
   )
 }
 
-function sameStringArray(left, right) {
-  return (
-    Array.isArray(left) &&
-    Array.isArray(right) &&
-    left.length === right.length &&
-    left.every(
-      (entry, index) =>
-        typeof entry === 'string' && entry === right[index],
-    )
-  )
-}
-
-function validV03Ledger(value) {
-  const { meta } = value
-  if (
-    !Array.isArray(value.managementChoiceOpportunitiesV03) ||
-    !Array.isArray(value.managementChoiceCommitmentsV03) ||
-    !isRecord(value.effectOwnershipV03) ||
-    value.managementChoiceOpportunitiesV03.length < 1 ||
-    value.managementChoiceOpportunitiesV03.length > 2
-  ) {
-    return false
-  }
-  const opportunities = new Map()
-  for (const opportunity of value.managementChoiceOpportunitiesV03) {
-    if (
-      !isRecord(opportunity) ||
-      typeof opportunity.opportunityId !== 'string' ||
-      opportunities.has(opportunity.opportunityId) ||
-      opportunity.candidateId !== null ||
-      opportunity.diagnosisId !== meta.diagnosisId ||
-      opportunity.sessionId !== meta.sessionId ||
-      opportunity.candidateBuildAuthorityHash !==
-        meta.candidateBuildAuthorityHash ||
-      ![0, 1].includes(opportunity.week) ||
-      !Number.isInteger(opportunity.stateRevision) ||
-      !ARTIFACT_HASH_PATTERN.test(
-        opportunity.projectionBaseHash ?? '',
-      ) ||
-      opportunity.commitCause !== 'opportunity-created' ||
-      !Array.isArray(opportunity.requiredConsequenceIds) ||
-      !Array.isArray(opportunity.effectFingerprints) ||
-      ![
-        'open',
-        'omitted',
-        'unqualified-direct-edit',
-        'schedule-preventive-maintenance',
-        'retain-rest-capacity',
-        'allocate-repair-buffer',
-        'allocate-food-production',
-      ].includes(opportunity.terminalState)
-    ) {
-      return false
-    }
-    const w1 =
-      opportunity.choiceSetId ===
-      'choice:w0:preventive-capacity'
-    const w2 =
-      opportunity.choiceSetId ===
-      'choice:w1:recovery-allocation'
-    if (
-      (!w1 && !w2) ||
-      (w1 &&
-        (opportunity.week !== 0 ||
-          opportunity.decisionIntentId !==
-            'w0:preventive-capacity:pump' ||
-          opportunity.resourceClaimRef !==
-            'schedule-slot:lin-he:d1:b1')) ||
-      (w2 &&
-        (opportunity.week !== 1 ||
-          opportunity.decisionIntentId !==
-            'w1:recovery-allocation:pump-vs-food' ||
-          opportunity.resourceClaimRef !==
-            'schedule-slot:chen-du:d10:b2'))
-    ) {
-      return false
-    }
-    opportunities.set(opportunity.opportunityId, opportunity)
-  }
-
-  const commitmentKeys = new Set()
-  const ownedFingerprints = new Map()
-  for (const commitment of value.managementChoiceCommitmentsV03) {
-    const opportunity = opportunities.get(
-      commitment?.opportunityId,
-    )
-    const action = value.actions.find(
-      (entry) =>
-        entry.type === 'COMMIT_MANAGEMENT_CHOICE' &&
-        entry.opportunityId === commitment?.opportunityId,
-    )
-    const key = `${commitment?.diagnosisId}:${commitment?.week}:${commitment?.decisionIntentId}`
-    if (
-      !isRecord(commitment) ||
-      opportunity === undefined ||
-      commitmentKeys.has(key) ||
-      commitment.commitCause !==
-        'explicit-candidate-action' ||
-      commitment.terminalState !== commitment.candidateId ||
-      opportunity.terminalState !== commitment.candidateId ||
-      commitment.choiceSetId !== opportunity.choiceSetId ||
-      commitment.decisionIntentId !==
-        opportunity.decisionIntentId ||
-      commitment.diagnosisId !== opportunity.diagnosisId ||
-      commitment.sessionId !== opportunity.sessionId ||
-      commitment.candidateBuildAuthorityHash !==
-        opportunity.candidateBuildAuthorityHash ||
-      commitment.resourceClaimRef !==
-        opportunity.resourceClaimRef ||
-      !Number.isInteger(commitment.stateRevision) ||
-      commitment.stateRevision + 1 !==
-        opportunity.stateRevision ||
-      !ARTIFACT_HASH_PATTERN.test(
-        commitment.projectionBaseHash ?? '',
-      ) ||
-      !ARTIFACT_HASH_PATTERN.test(
-        commitment.candidateProjectionHash ?? '',
-      ) ||
-      typeof commitment.idempotencyKey !== 'string' ||
-      commitment.idempotencyKey.length === 0 ||
-      !Number.isInteger(commitment.committedAtSequence) ||
-      !Array.isArray(commitment.consequences) ||
-      commitment.consequences.length === 0 ||
-      action === undefined ||
-      action.choiceSetId !== commitment.choiceSetId ||
-      action.candidateId !== commitment.candidateId ||
-      action.stateRevision !== commitment.stateRevision ||
-      action.projectionBaseHash !==
-        commitment.projectionBaseHash ||
-      action.candidateProjectionHash !==
-        commitment.candidateProjectionHash ||
-      action.idempotencyKey !== commitment.idempotencyKey ||
-      action.commitCause !== 'explicit-candidate-action'
-    ) {
-      return false
-    }
-    const consequenceIds = commitment.consequences.map(
-      (entry) => entry?.consequenceId,
-    )
-    const fingerprints = commitment.consequences.map(
-      (entry) => entry?.effectFingerprint,
-    )
-    if (
-      !sameStringArray(
-        commitment.requiredConsequenceIds,
-        consequenceIds,
-      ) ||
-      !sameStringArray(
-        commitment.effectFingerprints,
-        fingerprints,
-      ) ||
-      !sameStringArray(
-        opportunity.effectFingerprints,
-        fingerprints,
-      )
-    ) {
-      return false
-    }
-    for (const consequence of commitment.consequences) {
-      if (
-        !isRecord(consequence) ||
-        consequence.opportunityId !==
-          commitment.opportunityId ||
-        consequence.decisionIntentId !==
-          commitment.decisionIntentId ||
-        consequence.choiceSetId !== commitment.choiceSetId ||
-        consequence.candidateId !== commitment.candidateId ||
-        consequence.diagnosisId !== commitment.diagnosisId ||
-        consequence.sessionId !== commitment.sessionId ||
-        consequence.candidateBuildAuthorityHash !==
-          commitment.candidateBuildAuthorityHash ||
-        consequence.commitCause !==
-          'explicit-candidate-action' ||
-        consequence.resourceClaimRef !==
-          commitment.resourceClaimRef ||
-        consequence.terminalState !== commitment.candidateId ||
-        consequence.stateRevision !== commitment.stateRevision ||
-        consequence.committedAtSequence !==
-          commitment.committedAtSequence ||
-        consequence.beforeValue === consequence.afterValue ||
-        typeof consequence.effectFingerprint !== 'string' ||
-        !/^effect:[a-f0-9]{64}$/.test(
-          consequence.effectFingerprint,
-        ) ||
-        ownedFingerprints.has(consequence.effectFingerprint)
-      ) {
-        return false
-      }
-      ownedFingerprints.set(
-        consequence.effectFingerprint,
-        commitment.decisionIntentId,
-      )
-    }
-    if (
-      commitment.choiceSetId ===
-      'choice:w1:recovery-allocation'
-    ) {
-      const economic = commitment.consequences.filter(
-        (entry) =>
-          entry.objectRef === 'forecast:ending-repair' ||
-          entry.objectRef === 'forecast:ending-food',
-      )
-      const schedule = commitment.consequences.filter(
-        (entry) =>
-          entry.objectRef === 'chen-du:d10:b2' &&
-          entry.beforeValue === 'rest',
-      )
-      if (
-        economic.length !== 1 ||
-        schedule.length !== 1 ||
-        economic[0].afterValue - economic[0].beforeValue !== 1 ||
-        (commitment.candidateId ===
-          'allocate-repair-buffer'
-          ? economic[0].objectRef !==
-              'forecast:ending-repair' ||
-            schedule[0].afterValue !== 'repair'
-          : economic[0].objectRef !==
-              'forecast:ending-food' ||
-            schedule[0].afterValue !== 'food')
-      ) {
-        return false
-      }
-    }
-    if (
-      commitment.candidateId === 'retain-rest-capacity' &&
-      (
-        commitment.consequences.length !== 3 ||
-        commitment.consequences.some(
-          (entry) =>
-            ![
-              'water-pump:preventive-capacity-allocation',
-              'lin-he:recovery-units',
-              'settlement:personnel-readiness',
-            ].includes(entry.objectRef),
-        )
-      )
-    ) {
-      return false
-    }
-    commitmentKeys.add(key)
-  }
-  if (
-    Object.keys(value.effectOwnershipV03).length !==
-    ownedFingerprints.size
-  ) {
-    return false
-  }
-  for (const [fingerprint, owner] of ownedFingerprints) {
-    if (value.effectOwnershipV03[fingerprint] !== owner) {
-      return false
-    }
-  }
-  return true
-}
-
 function legacyV2Projection(value) {
   const legacy = structuredClone(value)
   delete legacy.protocolVersion
@@ -2703,6 +2449,7 @@ function legacyV2Projection(value) {
   delete legacy.managementChoiceOpportunitiesV03
   delete legacy.managementChoiceCommitmentsV03
   delete legacy.effectOwnershipV03
+  delete legacy.settledManagementOutcomesV03
   delete legacy.meta.diagnosisId
   delete legacy.meta.candidateBuildAuthorityHash
   delete legacy.meta.protocolVersion
@@ -2718,6 +2465,9 @@ function legacyV2Projection(value) {
   delete legacy.finalState.recoveryAllocationActivity
   delete legacy.finalState.linHeRecoveryUnits
   delete legacy.finalState.personnelReadiness
+  legacy.recap = legacy.recap.map(
+    ({ itemValues: _itemValues, ...recap }) => recap,
+  )
   const managementActionIds = new Set(
     legacy.actions
       .filter(

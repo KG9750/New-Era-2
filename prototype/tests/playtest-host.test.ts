@@ -866,6 +866,74 @@ describe('Gate 1 capture host contracts', () => {
     expect(validateCapturedExport(noOp, metadata)).toBe(false)
   })
 
+  it('requires every settled commitment to round-trip through the immutable outcome and recap values', () => {
+    const { metadata, payload } = v03Export(
+      undefined,
+      'complete',
+    )
+    const clone = () =>
+      JSON.parse(JSON.stringify(payload))
+
+    expect(payload.settledManagementOutcomesV03).toHaveLength(2)
+    const blocked = v03Export(undefined, 'blocked')
+    expect(
+      blocked.payload.settledManagementOutcomesV03,
+    ).toHaveLength(1)
+    expect(
+      validateCanonicalManagementLedger(blocked.payload),
+    ).toMatchObject({ ok: true })
+
+    const mutations = [
+      (tampered: typeof payload) => {
+        tampered.settledManagementOutcomesV03!.pop()
+      },
+      (tampered: typeof payload) => {
+        tampered.settledManagementOutcomesV03![0].afterValue += 1
+      },
+      (tampered: typeof payload) => {
+        tampered.settledManagementOutcomesV03![0].candidateId =
+          'schedule-preventive-maintenance'
+      },
+      (tampered: typeof payload) => {
+        tampered.settledManagementOutcomesV03![0].consequenceId =
+          'consequence:w0:preventive-capacity:recovery-load'
+      },
+      (tampered: typeof payload) => {
+        tampered.settledManagementOutcomesV03![0].actionId =
+          'action-9999'
+      },
+    ]
+    for (const mutate of mutations) {
+      const tampered = clone()
+      mutate(tampered)
+      expect(
+        validateCanonicalManagementLedger(tampered),
+      ).toMatchObject({
+        ok: false,
+        code: 'V03_SETTLED_OUTCOME_MISMATCH',
+      })
+      expect(
+        validateCapturedExport(tampered, metadata),
+      ).toBe(false)
+    }
+
+    const recapMismatch = clone()
+    const recap = recapMismatch.recap[0]
+    const itemIndex = recap.sourceIds.indexOf(
+      'choice:w0:preventive-capacity',
+    )
+    recap.itemValues[itemIndex].settledAfterValue += 1
+    expect(
+      validateCanonicalManagementLedger(recapMismatch),
+    ).toMatchObject({
+      ok: false,
+      code: 'V03_RECAP_MISMATCH',
+    })
+    expect(
+      validateCapturedExport(recapMismatch, metadata),
+    ).toBe(false)
+  })
+
   it('accepts strict v2 complete and blocked production exports', () => {
     const complete = v2CompleteExport()
     const blocked = v2BlockedExport()

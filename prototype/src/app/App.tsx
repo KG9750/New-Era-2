@@ -76,6 +76,7 @@ interface AppProps {
   buildMetadata: RcBuildMetadata
   sessionAuthorityProvider?(
     sampleId: string,
+    options: { signal: AbortSignal },
   ):
     | HostIssuedSessionAuthority
     | Promise<HostIssuedSessionAuthority>
@@ -120,6 +121,7 @@ type CaptureStatus = 'idle' | 'saving' | 'saved' | 'error'
 type CaptureKind = PendingCapture['captureKind']
 
 const MAX_BLOCKED_REASON_LENGTH = 240
+const SESSION_AUTHORITY_TIMEOUT_MS = 5_000
 
 const ACTIVITY_LABELS: Readonly<Record<Activity, string>> = {
   food: '农务',
@@ -178,6 +180,7 @@ const MANAGEMENT_CHOICE_ERROR_MESSAGES = {
 
 async function requestSessionAuthority(
   sampleId: string,
+  { signal }: { signal: AbortSignal },
 ): Promise<HostIssuedSessionAuthority> {
   const response = await fetch('/__gate1/session-authority', {
     method: 'POST',
@@ -185,6 +188,7 @@ async function requestSessionAuthority(
       'Content-Type': 'application/json; charset=utf-8',
     },
     body: JSON.stringify({ sampleId }),
+    signal,
   })
   const body: unknown = await response.json()
   if (!response.ok) {
@@ -416,6 +420,9 @@ export function App({
   const pendingCaptureRef = useRef<PendingCapture | null>(null)
   const comparisonCloseRef = useRef<HTMLButtonElement | null>(null)
   const comparisonTriggerRef = useRef<HTMLButtonElement | null>(null)
+  const sessionStartAttemptRef = useRef(0)
+  const sessionStartAbortRef =
+    useRef<AbortController | null>(null)
   const foodForecast = useMemo(() => calculateFoodForecast(simulation), [simulation])
   const repairForecast = useMemo(() => calculateRepairForecast(simulation), [simulation])
   const progress = selectProgress(simulation, scenario)
@@ -584,6 +591,14 @@ export function App({
     }
   }, [focusedIssue])
 
+  useEffect(
+    () => () => {
+      sessionStartAttemptRef.current += 1
+      sessionStartAbortRef.current?.abort()
+    },
+    [],
+  )
+
   function installSession(
     sampleId: string,
     authority: HostIssuedSessionAuthority,
@@ -628,22 +643,64 @@ export function App({
   }
 
   function startSession(sampleId: string) {
+    const attempt = sessionStartAttemptRef.current + 1
+    sessionStartAttemptRef.current = attempt
+    sessionStartAbortRef.current?.abort()
+    const controller = new AbortController()
+    sessionStartAbortRef.current = controller
     setSessionStarting(true)
     setSessionStartError(undefined)
+    let timedOut = false
+    const timeoutId = window.setTimeout(() => {
+      timedOut = true
+      controller.abort()
+    }, SESSION_AUTHORITY_TIMEOUT_MS)
+    const aborted = new Promise<never>((_resolve, reject) => {
+      controller.signal.addEventListener(
+        'abort',
+        () => reject(new Error('会话登记请求已取消。')),
+        { once: true },
+      )
+    })
+    const finish = () => {
+      window.clearTimeout(timeoutId)
+      if (sessionStartAttemptRef.current !== attempt) return
+      sessionStartAbortRef.current = null
+      setSessionStarting(false)
+    }
+    const fail = (error: unknown) => {
+      if (sessionStartAttemptRef.current !== attempt) return
+      failSessionStart(
+        timedOut
+          ? new Error('会话登记超时，请重试。')
+          : error,
+      )
+    }
     try {
-      const issued = sessionAuthorityProvider(sampleId)
+      const issued = sessionAuthorityProvider(sampleId, {
+        signal: controller.signal,
+      })
       if (issued instanceof Promise) {
-        void issued
-          .then((authority) => installSession(sampleId, authority))
-          .catch(failSessionStart)
-          .finally(() => setSessionStarting(false))
+        void Promise.race([issued, aborted])
+          .then((authority) => {
+            if (
+              sessionStartAttemptRef.current === attempt &&
+              !controller.signal.aborted
+            ) {
+              installSession(sampleId, authority)
+            }
+          })
+          .catch(fail)
+          .finally(finish)
         return
       }
-      installSession(sampleId, issued)
-      setSessionStarting(false)
+      if (!controller.signal.aborted) {
+        installSession(sampleId, issued)
+      }
+      finish()
     } catch (error) {
-      failSessionStart(error)
-      setSessionStarting(false)
+      fail(error)
+      finish()
     }
   }
 
@@ -913,10 +970,10 @@ export function App({
                 description={
                   preventiveCapacityTerminal ===
                   'schedule-preventive-maintenance'
-                    ? '一个休息格已原子分配给第二次预防检修，设备暴露降为 low。'
+                    ? '一个休息格已原子分配给第二次预防检修，设备暴露降为低。'
                     : preventiveCapacityTerminal ===
                         'retain-rest-capacity'
-                      ? '已指定保护性恢复，人员准备度 +1；设备暴露保持 high。'
+                      ? '已指定保护性恢复，人员准备度 +1；设备暴露保持高。'
                       : '同一个休息格只能用于第二次预防检修或专项保护性恢复；跳过只保留普通休息。'
                 }
                 icon="!"
@@ -1045,7 +1102,7 @@ export function App({
             </button>
           </div>
           <p className="comparison-intro">
-            两项同时可见；打开、关闭或定位不会提交。明确选择后立即原子兑现，不能改选。跳过会保留普通休息，但没有专项 recovery 或 readiness 提升。
+            两项同时可见；打开、关闭或定位不会提交。明确选择后立即原子兑现，不能改选。跳过会保留普通休息，但没有专项恢复或准备度提升。
           </p>
           <div
             className="comparison-options two-options"
@@ -1055,7 +1112,7 @@ export function App({
             <article className="comparison-option" role="listitem">
               <strong>安排第二次预防检修</strong>
               <span>
-                成本：消耗林禾第2日 B2 的休息；收益：设备暴露 high → low。
+                成本：消耗林禾第2日 B2 的休息；收益：设备暴露高 → 低。
               </span>
               <small>
                 放弃人员恢复；W2 设备恢复负荷为 1。
@@ -1083,7 +1140,7 @@ export function App({
             <article className="comparison-option" role="listitem">
               <strong>指定保护性恢复</strong>
               <span>
-                成本：设备暴露保持 high；收益：林禾恢复 1，终局人员准备度 +1。
+                成本：设备暴露保持高；收益：林禾恢复 1，终局人员准备度 +1。
               </span>
               <small>
                 放弃第二次检修；W2 设备恢复负荷为 2。

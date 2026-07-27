@@ -526,6 +526,7 @@ export const gate1WeekOneScenario: ScenarioDefinition = {
           recoveryAllocation: null,
         },
         commitments: [],
+        settledOutcomes: [],
         effectOwnership: {},
         equipmentExposure: 'high',
         equipmentRecoveryLoad: 2,

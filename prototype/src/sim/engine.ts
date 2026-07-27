@@ -167,6 +167,83 @@ function appendTimeline(
   return [...state.timeline, { ...entry, order: state.timeline.length + 1 }]
 }
 
+const SETTLED_CONSEQUENCE_BY_CANDIDATE = {
+  'schedule-preventive-maintenance':
+    'consequence:w0:preventive-capacity:recovery-load',
+  'retain-rest-capacity':
+    'consequence:w0:preventive-capacity:personnel-readiness',
+  'allocate-repair-buffer':
+    'consequence:w1:recovery-allocation:ending-repair',
+  'allocate-food-production':
+    'consequence:w1:recovery-allocation:ending-food',
+} as const
+
+function settleManagementOutcome(
+  state: SimulationState,
+  settledWeek: 0 | 1,
+  settledAtTick: number,
+): SimulationState {
+  const commitment = state.managementChoices.commitments.find(
+    (item) => item.week === settledWeek,
+  )
+  if (commitment === undefined) return state
+  if (
+    state.managementChoices.settledOutcomes.some(
+      (item) => item.choiceSetId === commitment.choiceSetId,
+    )
+  ) {
+    return state
+  }
+  const consequenceId =
+    SETTLED_CONSEQUENCE_BY_CANDIDATE[commitment.candidateId]
+  const consequence = commitment.consequences.find(
+    (item) => item.consequenceId === consequenceId,
+  )
+  const action = state.actionLog.find(
+    (item) => item.sequence === commitment.committedAtSequence,
+  )
+  if (
+    consequence === undefined ||
+    typeof consequence.beforeValue !== 'number' ||
+    typeof consequence.afterValue !== 'number' ||
+    action?.action.type !== 'COMMIT_MANAGEMENT_CHOICE'
+  ) {
+    throw new Error(
+      `Management commitment ${commitment.choiceSetId} cannot be settled`,
+    )
+  }
+  return {
+    ...state,
+    managementChoices: {
+      ...state.managementChoices,
+      settledOutcomes: [
+        ...state.managementChoices.settledOutcomes,
+        {
+          choiceSetId: commitment.choiceSetId,
+          decisionIntentId: commitment.decisionIntentId,
+          candidateId: commitment.candidateId,
+          consequenceId: consequence.consequenceId,
+          effectFingerprint: consequence.effectFingerprint,
+          beforeValue: consequence.beforeValue,
+          afterValue: consequence.afterValue,
+          delta:
+            consequence.afterValue - consequence.beforeValue,
+          settledWeek,
+          settledAtTick,
+          diagnosisId: commitment.diagnosisId,
+          sessionId: commitment.sessionId,
+          candidateBuildAuthorityHash:
+            commitment.candidateBuildAuthorityHash,
+          sessionAuthorityToken:
+            commitment.sessionAuthorityToken,
+          actionId: action.id,
+          actionSequence: action.sequence,
+        },
+      ],
+    },
+  }
+}
+
 export function applyPlayerAction(
   state: SimulationState,
   envelope: PlayerActionEnvelope,
@@ -912,6 +989,12 @@ function createRecap(state: SimulationState, weekIndex: number): WeekendRecap {
       : state.managementChoices.opportunities
           .recoveryAllocation
   if (managementOpportunity !== null) {
+    const settledOutcome =
+      state.managementChoices.settledOutcomes.find(
+        (outcome) =>
+          outcome.choiceSetId ===
+          managementOpportunity.choiceSetId,
+      )
     const terminal = managementOpportunity.terminalState
     const committed =
       terminal !== 'open' &&
@@ -961,6 +1044,15 @@ function createRecap(state: SimulationState, weekIndex: number): WeekendRecap {
           terminal === 'allocate-food-production' ? 1 : 0,
         endingRepairDelta:
           terminal === 'allocate-repair-buffer' ? 1 : 0,
+        ...(settledOutcome === undefined
+          ? {}
+          : {
+              settledBeforeValue:
+                settledOutcome.beforeValue,
+              settledAfterValue:
+                settledOutcome.afterValue,
+              settledDelta: settledOutcome.delta,
+            }),
       },
     })
   }
@@ -1119,7 +1211,58 @@ export function advanceSimulation(
     )
     .sort((left, right) => left.tick - right.tick)[0]
 
-  if (managementDeadline !== undefined) {
+  const nextEvent = [...scenario.scriptedEvents]
+    .sort((left, right) => left.atTick - right.atTick)
+    .find(
+      (event) =>
+        event.atTick >= state.currentTick &&
+        event.atTick <= targetTick &&
+        !state.processedScriptEventIds.includes(event.id),
+    )
+  const endingWeekIndex = scenario.weekEndTicks.findIndex(
+    (tick, index) =>
+      tick >= state.currentTick &&
+      tick <= targetTick &&
+      !state.completedWeekIndexes.includes(index),
+  )
+  const nextCandidate = [
+    ...(managementDeadline === undefined
+      ? []
+      : [
+          {
+            kind: 'management-deadline' as const,
+            tick: managementDeadline.tick,
+            priority: 0,
+          },
+        ]),
+    ...(nextEvent === undefined
+      ? []
+      : [
+          {
+            kind: 'scripted-event' as const,
+            tick: nextEvent.atTick,
+            priority: 1,
+          },
+        ]),
+    ...(endingWeekIndex < 0
+      ? []
+      : [
+          {
+            kind: 'week-end' as const,
+            tick: scenario.weekEndTicks[endingWeekIndex],
+            priority: 2,
+          },
+        ]),
+  ].sort(
+    (left, right) =>
+      left.tick - right.tick ||
+      left.priority - right.priority,
+  )[0]
+
+  if (
+    nextCandidate?.kind === 'management-deadline' &&
+    managementDeadline !== undefined
+  ) {
     const deadlineState = managementDeadline.freeze({
       ...expireScheduleLayers(state, managementDeadline.tick),
       currentTick: managementDeadline.tick,
@@ -1129,16 +1272,10 @@ export function advanceSimulation(
       : { state: deadlineState, events: [] }
   }
 
-  const nextEvent = [...scenario.scriptedEvents]
-    .sort((left, right) => left.atTick - right.atTick)
-    .find(
-      (event) =>
-        event.atTick >= state.currentTick &&
-        event.atTick <= targetTick &&
-        !state.processedScriptEventIds.includes(event.id),
-    )
-
-  if (nextEvent) {
+  if (
+    nextCandidate?.kind === 'scripted-event' &&
+    nextEvent !== undefined
+  ) {
     const before = rangeOf(state)
     const expired = expireScheduleLayers(state, nextEvent.atTick)
     if (nextEvent.type === 'LIN_HE_REQUEST_DEADLINE') {
@@ -1240,19 +1377,20 @@ export function advanceSimulation(
     }
   }
 
-  const endingWeekIndex = scenario.weekEndTicks.findIndex(
-    (tick, index) =>
-      tick >= state.currentTick &&
-      tick <= targetTick &&
-      !state.completedWeekIndexes.includes(index),
-  )
-
-  if (endingWeekIndex >= 0) {
+  if (
+    nextCandidate?.kind === 'week-end' &&
+    endingWeekIndex >= 0
+  ) {
     const currentTick = scenario.weekEndTicks[endingWeekIndex]
-    const terminalState =
+    const frozenState =
       endingWeekIndex === 1
         ? freezeRecoveryAllocationOpportunity(state)
         : freezePreventiveCapacityOpportunity(state)
+    const terminalState = settleManagementOutcome(
+      frozenState,
+      endingWeekIndex as 0 | 1,
+      currentTick,
+    )
     const recap = createRecap(
       { ...terminalState, currentTick },
       endingWeekIndex,

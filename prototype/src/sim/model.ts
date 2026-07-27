@@ -119,6 +119,25 @@ export interface ManagementChoiceCommitment {
   consequences: readonly ManagementChoiceConsequence[]
 }
 
+export interface ManagementChoiceSettledOutcome {
+  choiceSetId: ManagementChoiceSetId
+  decisionIntentId: ManagementDecisionIntentId
+  candidateId: ManagementCandidateId
+  consequenceId: string
+  effectFingerprint: string
+  beforeValue: number
+  afterValue: number
+  delta: number
+  settledWeek: 0 | 1
+  settledAtTick: number
+  diagnosisId: string
+  sessionId: string
+  candidateBuildAuthorityHash: string
+  sessionAuthorityToken: string
+  actionId: string
+  actionSequence: number
+}
+
 export interface ManagementChoiceCommitRequest {
   opportunityId: string
   choiceSetId: ManagementChoiceSetId
@@ -141,6 +160,7 @@ export interface ManagementChoiceState {
     recoveryAllocation: ManagementChoiceOpportunity | null
   }
   commitments: readonly ManagementChoiceCommitment[]
+  settledOutcomes: readonly ManagementChoiceSettledOutcome[]
   effectOwnership: Readonly<Record<string, ManagementDecisionIntentId>>
   equipmentExposure: EquipmentExposure
   equipmentRecoveryLoad: 0 | 1 | 2

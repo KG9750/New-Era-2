@@ -1145,6 +1145,41 @@
         "accepted": false,
         "errorCode": "V03_COMPLETE_TERMINALS"
       }
+    },
+    {
+      "file": "playtest-v03/settled-outcome-missing-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V03_SETTLED_OUTCOME_MISMATCH"
+      }
+    },
+    {
+      "file": "playtest-v03/settled-outcome-value-tamper-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V03_SETTLED_OUTCOME_MISMATCH"
+      }
+    },
+    {
+      "file": "playtest-v03/settled-outcome-candidate-tamper-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V03_SETTLED_OUTCOME_MISMATCH"
+      }
+    },
+    {
+      "file": "playtest-v03/settled-outcome-consequence-tamper-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V03_SETTLED_OUTCOME_MISMATCH"
+      }
+    },
+    {
+      "file": "playtest-v03/recap-settled-value-tamper-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V03_RECAP_MISMATCH"
+      }
     }
   ]
 }
