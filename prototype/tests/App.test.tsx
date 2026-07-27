@@ -35,9 +35,191 @@ describe('minimal weekly flow UI', () => {
     renderStartedApp()
 
     expect(screen.getByRole('heading', { name: '本周三项取舍' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: /水泵需要 2 个预防性维修块/ })).toBeInTheDocument()
-    expect(screen.getByText(/点击“水泵需要 2 个预防性维修块”/)).toBeInTheDocument()
+    const scheduleEntry = screen.getByRole('button', { name: '定位日程方案' })
+    expect(scheduleEntry).toBeInTheDocument()
+    expect(scheduleEntry.closest('article')).toHaveTextContent('水泵预防检修仍有缺口')
+    expect(scheduleEntry.closest('article')).not.toHaveTextContent(/乔磐|林禾|周二|B2/)
+    expect(screen.getByText(/从周初摘要定位预防检修日程/)).toBeInTheDocument()
     expect(screen.queryByText('112')).not.toBeInTheDocument()
+  })
+
+  it('opens an unbiased repair comparison without mutating authority', async () => {
+    renderStartedApp()
+    const repairPanel = screen.getByRole('heading', { name: '维修保障' }).closest('section')
+    expect(repairPanel).not.toBeNull()
+    const forecastBefore = repairPanel!.textContent
+    const comparisonTrigger = screen.getByRole('button', { name: '比较责任方向' })
+
+    fireEvent.click(comparisonTrigger)
+
+    const dialog = screen.getByRole('dialog', { name: '先比较后果，再把人员责任落到日程' })
+    const optionList = within(dialog).getByRole('list', { name: '维修责任可行方案' })
+    const optionButtons = within(optionList).getAllByRole('button')
+    expect(optionButtons).toHaveLength(3)
+    expect(optionButtons.map((button) => button.className)).toEqual([
+      'comparison-option-action',
+      'comparison-option-action',
+      'comparison-option-action',
+    ])
+    for (const button of optionButtons) {
+      expect(button).toHaveAttribute('aria-pressed', 'false')
+      expect(button.className).not.toMatch(/primary|recommended/)
+    }
+    expect(dialog).not.toHaveTextContent(/推荐/)
+    expect(screen.getByRole('button', { name: '关闭比较' })).toHaveFocus()
+    expect(repairPanel!.textContent).toBe(forecastBefore)
+    expect(screen.queryByRole('list', { name: '维修责任日程方案' })).not.toBeInTheDocument()
+
+    fireEvent.keyDown(dialog, { key: 'Enter' })
+    fireEvent.keyDown(dialog, { key: ' ' })
+    expect(repairPanel!.textContent).toBe(forecastBefore)
+    expect(screen.queryByRole('list', { name: '维修责任日程方案' })).not.toBeInTheDocument()
+
+    await act(async () => {
+      fireEvent.keyDown(dialog, { key: 'Escape' })
+      await Promise.resolve()
+    })
+    expect(screen.queryByRole('dialog')).not.toBeInTheDocument()
+    expect(comparisonTrigger).toHaveFocus()
+  })
+
+  it('keeps a responsibility direction non-numeric until a concrete schedule is confirmed', () => {
+    renderStartedApp()
+    const repairPanel = screen.getByRole('heading', { name: '维修保障' }).closest('section')
+    const forecastBefore = repairPanel!.textContent
+
+    fireEvent.click(screen.getByRole('button', { name: '比较责任方向' }))
+    fireEvent.click(screen.getByRole('button', { name: '选择跨岗交接' }))
+
+    expect(repairPanel!.textContent).toBe(forecastBefore)
+    const scheduleOptions = screen.getByRole('list', { name: '维修责任日程方案' })
+    expect(within(scheduleOptions).getAllByRole('listitem')).toHaveLength(2)
+    expect(within(scheduleOptions).getByRole('button', { name: '确认陈渡日程' })).toBeInTheDocument()
+    expect(within(scheduleOptions).getByRole('button', { name: '确认苏霁日程' })).toBeInTheDocument()
+
+    fireEvent.click(within(scheduleOptions).getByRole('button', { name: '确认陈渡日程' }))
+
+    expect(repairPanel!.textContent).not.toBe(forecastBefore)
+    expect(screen.getByRole('status')).toHaveTextContent('陈渡的维修责任已由日程确认')
+    expect(screen.getByRole('button', { name: '查看责任结果' })).toBeInTheDocument()
+  })
+
+  it('blocks a no-op responsibility confirmation and recovers through schedule undo', () => {
+    renderStartedApp()
+    fireEvent.click(screen.getByRole('button', { name: '展开完整周计划' }))
+    const grid = screen.getByRole('grid', { name: '第 1 周完整计划' })
+    fireEvent.click(
+      within(grid).getByRole('gridcell', {
+        name: /乔磐 第4日 B3 16–19 休息/,
+      }),
+    )
+    fireEvent.change(screen.getByLabelText('批量活动'), {
+      target: { value: 'repair' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: '修改所选格' }))
+
+    fireEvent.click(screen.getByRole('button', { name: '比较责任方向' }))
+    fireEvent.click(screen.getByRole('button', { name: '选择维修专员承担' }))
+
+    fireEvent.click(
+      within(grid).getByRole('gridcell', {
+        name: /乔磐 第4日 B3 16–19 维修/,
+      }),
+    )
+    expect(
+      screen.getByRole('button', { name: '所选格已是此活动' }),
+    ).toBeDisabled()
+
+    const noOpConfirmation = screen.getByRole('button', {
+      name: '已是维修，不能重复确认',
+    })
+    expect(noOpConfirmation).toBeDisabled()
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      '请先撤销包含它的旧事务，或改选其他责任方向',
+    )
+
+    fireEvent.click(screen.getByRole('button', { name: '撤销上次日程修改' }))
+    const validConfirmation = screen.getByRole('button', {
+      name: '确认乔磐日程',
+    })
+    expect(validConfirmation).toBeEnabled()
+    fireEvent.click(validConfirmation)
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '乔磐的维修责任已由日程确认',
+    )
+  })
+
+  it('blocks a masked-scope copy from silently confirming responsibility', () => {
+    renderStartedApp()
+    fireEvent.click(screen.getByRole('button', { name: '展开完整周计划' }))
+    const grid = screen.getByRole('grid', { name: '第 1 周完整计划' })
+
+    fireEvent.click(
+      within(grid).getByRole('gridcell', {
+        name: /乔磐 第4日 B3 16–19 休息/,
+      }),
+    )
+    fireEvent.change(screen.getByLabelText('批量活动'), {
+      target: { value: 'repair' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: '修改所选格' }))
+
+    fireEvent.click(
+      within(grid).getByRole('gridcell', {
+        name: /乔磐 第5日 B4 20–23 社交/,
+      }),
+    )
+    fireEvent.change(screen.getByLabelText('生效范围'), {
+      target: { value: 'immediate' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: '修改所选格' }))
+
+    fireEvent.click(screen.getByRole('button', { name: '比较责任方向' }))
+    fireEvent.click(screen.getByRole('button', { name: '选择维修专员承担' }))
+    fireEvent.change(screen.getByLabelText('复制成员'), {
+      target: { value: 'qiao-pan' },
+    })
+    fireEvent.change(screen.getByLabelText('复制来源日'), {
+      target: { value: '4' },
+    })
+    fireEvent.change(screen.getByLabelText('复制目标日'), {
+      target: { value: '3' },
+    })
+    fireEvent.change(screen.getByLabelText('生效范围'), {
+      target: { value: 'base' },
+    })
+
+    expect(
+      screen.getByRole('button', {
+        name: '责任格已是维修，先撤销旧事务',
+      }),
+    ).toBeDisabled()
+  })
+
+  it('blocks pump shortcuts when an immediate layer masks their weekly edit', () => {
+    renderStartedApp()
+    fireEvent.click(screen.getByRole('button', { name: '展开完整周计划' }))
+    const grid = screen.getByRole('grid', { name: '第 1 周完整计划' })
+    fireEvent.click(
+      within(grid).getByRole('gridcell', {
+        name: /林禾 第2日 B2 13–16 休息/,
+      }),
+    )
+    fireEvent.change(screen.getByLabelText('批量活动'), {
+      target: { value: 'repair' },
+    })
+    fireEvent.change(screen.getByLabelText('生效范围'), {
+      target: { value: 'immediate' },
+    })
+    fireEvent.click(screen.getByRole('button', { name: '修改所选格' }))
+
+    fireEvent.click(screen.getByRole('button', { name: '查看检修结果' }))
+
+    expect(screen.getByRole('button', { name: '保留休息' })).toBeDisabled()
+    expect(screen.getByRole('button', { name: '补足第 2 个检修块' })).toBeDisabled()
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      '快捷按钮无法覆盖；请在完整周计划中撤销或修改即时层',
+    )
   })
 
   it('locates the activity block and immediately updates forecast and reason', () => {
@@ -46,20 +228,18 @@ describe('minimal weekly flow UI', () => {
     const forecastPanel = screen.getByRole('heading', { name: '粮食' }).closest('section')
     expect(forecastPanel).not.toBeNull()
     expect(within(forecastPanel!).getByText('3–11')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: /水泵需要 2 个预防性维修块/ }))
-    expect(
-      screen.getByRole('button', { name: /水泵需要 2 个预防性维修块/ }),
-    ).toHaveTextContent('已定位 · 待处理')
+    fireEvent.click(screen.getByRole('button', { name: '定位日程方案' }))
+    expect(screen.getByRole('button', { name: '保留休息' })).toBeDisabled()
     fireEvent.click(screen.getByRole('button', { name: /补足第 2 个检修块/ }))
 
     expect(screen.getByRole('button', { name: /补足第 2 个检修块/ })).toHaveAttribute(
       'aria-pressed',
       'true',
     )
+    expect(screen.getByRole('button', { name: /补足第 2 个检修块/ })).toBeDisabled()
     expect(within(forecastPanel!).getByText('9')).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: /水泵检修已安排 2 个维修块/ }),
-    ).toHaveTextContent('已安排 · 等待事件')
+    expect(screen.getByText('水泵预防检修已经成形')).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '查看检修结果' })).toBeInTheDocument()
     expect(screen.getByText(/已安排 2 个水泵维修块/)).toBeInTheDocument()
     expect(screen.getByText(/粮食 3–11 → 9；维修保障/)).toBeInTheDocument()
   })
@@ -67,7 +247,7 @@ describe('minimal weekly flow UI', () => {
   it('keeps the pump summary and located block label in sync with the chosen plan', () => {
     renderStartedApp()
 
-    fireEvent.click(screen.getByRole('button', { name: /水泵需要 2 个预防性维修块/ }))
+    fireEvent.click(screen.getByRole('button', { name: '定位日程方案' }))
     const schedulePanel = screen.getByRole('heading', {
       name: '林禾 · 周二 B2',
     }).closest('section')
@@ -77,9 +257,7 @@ describe('minimal weekly flow UI', () => {
     fireEvent.click(screen.getByRole('button', { name: /补足第 2 个检修块/ }))
 
     expect(within(schedulePanel!).getByText('维修 · 本周例外')).toBeInTheDocument()
-    expect(
-      screen.getByRole('button', { name: /水泵检修已安排 2 个维修块/ }),
-    ).toBeInTheDocument()
+    expect(screen.getByText('水泵预防检修已经成形')).toBeInTheDocument()
   })
 
   it('keeps the 112-cell week grid behind disclosure and supports one batch action', () => {
@@ -232,18 +410,25 @@ describe('minimal weekly flow UI', () => {
     expect(screen.getByLabelText('聚落时钟')).toHaveTextContent('周一 09:00')
     expect(screen.getByText('基础计划已继承')).toBeInTheDocument()
     expect(screen.getAllByText(/第一周一次性例外已结算失效/).length).toBeGreaterThan(0)
-    expect(screen.getByRole('button', { name: /林禾请求周二 B1 学习/ })).toBeInTheDocument()
+    expect(screen.getByRole('button', { name: '比较回应方案' })).toBeInTheDocument()
     expect(screen.getByRole('heading', { name: '林禾 · 周二 B1' })).toBeInTheDocument()
-    expect(screen.queryByText(/点击“水泵需要 2 个预防性维修块”/)).not.toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: /林禾请求周二 B1 学习/ }))
-    expect(screen.getByRole('button', { name: '接受学习请求' })).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '拒绝并保留农务' })).toBeInTheDocument()
+    expect(screen.queryByText(/从周初摘要定位预防检修日程/)).not.toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: '比较回应方案' }))
+    const requestDialog = screen.getByRole('dialog', { name: '林禾的学习请求' })
+    const requestActions = within(requestDialog).getAllByRole('button')
+      .filter((button) => button.className === 'comparison-option-action')
+    expect(requestActions).toHaveLength(2)
+    expect(requestActions[0].className).toBe(requestActions[1].className)
+    expect(screen.getByRole('button', { name: '关闭比较' })).toHaveFocus()
     fireEvent.click(screen.getByRole('button', { name: '使用化肥：粮食 +6' }))
     expect(
-      screen.getByRole('button', { name: /化肥已在第二周使用/ }),
+      screen.getByRole('button', { name: '定位资源取舍' }).closest('article'),
+    ).toHaveTextContent('化肥已在第二周使用')
+    expect(
+      screen.getByRole('button', { name: '定位资源取舍' }).closest('article'),
     ).toHaveTextContent('本周已使用化肥，库存为 0')
     expect(screen.getByLabelText('聚落时钟')).toHaveTextContent('已暂停')
-    expect(screen.queryByRole('button', { name: /水泵需要 2 个预防性维修块/ })).not.toBeInTheDocument()
+    expect(screen.queryByRole('button', { name: '定位日程方案' })).not.toBeInTheDocument()
   })
 
   it('keeps one complete export immutable across a failed save and retry', async () => {
@@ -318,7 +503,7 @@ describe('minimal weekly flow UI', () => {
       screen.getByRole('button', { name: '开启短通路 · 维修保障 −1' }),
     )
     fireEvent.click(
-      screen.getByRole('button', { name: /林禾请求周二 B1 学习/ }),
+      screen.getByRole('button', { name: '比较回应方案' }),
     )
     fireEvent.click(screen.getByRole('button', { name: '接受学习请求' }))
     fireEvent.click(screen.getByRole('button', { name: '开始运行' }))
@@ -354,19 +539,31 @@ describe('minimal weekly flow UI', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2)
     expect(requestBodies[1]).toBe(requestBodies[0])
     const payload = JSON.parse(requestBodies[1])
+    const continueAction = payload.actions.find(
+      (entry: { id: string; type: string }) =>
+        entry.type === 'CONTINUE_TO_NEXT_WEEK',
+    )
+    expect(continueAction).toBeDefined()
     expect(
-      payload.actions.find(
-        (entry: { action: { type: string } }) =>
-          entry.action.type === 'CONTINUE_TO_NEXT_WEEK',
-      )?.atTick,
-    ).toBe(1002)
+      payload.domainEvents.find(
+        (entry: { eventId: string }) => entry.eventId === continueAction.id,
+      ),
+    ).toMatchObject({ type: 'clock-changed', atTick: 1002 })
     expect(
       payload.candidateEditGroups,
     ).toEqual(
       expect.arrayContaining([
         expect.objectContaining({
-          actionType: 'OPEN_TRANSPORT_SHORTCUT',
-          weekIndex: 1,
+          groupId: 'legacy:w1:transport-route',
+          actionIds: [expect.any(String)],
+        }),
+      ]),
+    )
+    expect(payload.candidateManagementCommitmentGroups).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          decisionIntentId: 'w1:transport-route',
+          finalDisposition: 'committed',
         }),
       ]),
     )

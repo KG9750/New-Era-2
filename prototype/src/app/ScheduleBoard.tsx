@@ -10,10 +10,12 @@ import {
   BLOCK_LABELS,
   CHARACTERS,
   DAY_LABELS,
+  REPAIR_RESPONSIBILITY_SCHEDULE_OPTIONS,
   blockEndTick,
   createBlockId,
   findQiaoPanBoundaryWarning,
   isLinHeRequestBlockLocked,
+  parseBlockId,
   resolveScheduleBlock,
 } from '../sim/schedule'
 
@@ -32,6 +34,165 @@ interface ScheduleBoardProps {
   submit(action: PlayerAction): void
 }
 
+interface RepairResponsibilityScheduleProps {
+  simulation: SimulationState
+  submit(action: PlayerAction): void
+}
+
+function visibleActivityAfterScheduleEdit(
+  simulation: SimulationState,
+  blockId: string,
+  activity: Activity,
+  scope: ScheduleScope,
+) {
+  const currentActivity = resolveScheduleBlock(simulation, blockId).activity
+  if (
+    scope === 'base' &&
+    (
+      simulation.immediateAdjustments[blockId] !== undefined ||
+      simulation.weeklyOverrides[blockId] !== undefined
+    )
+  ) {
+    return currentActivity
+  }
+  if (
+    scope === 'weekly' &&
+    simulation.immediateAdjustments[blockId] !== undefined
+  ) {
+    return currentActivity
+  }
+  return activity
+}
+
+function scheduleEditChangesVisibleActivity(
+  simulation: SimulationState,
+  blockId: string,
+  activity: Activity,
+  scope: ScheduleScope,
+) {
+  return (
+    resolveScheduleBlock(simulation, blockId).activity !==
+    visibleActivityAfterScheduleEdit(
+      simulation,
+      blockId,
+      activity,
+      scope,
+    )
+  )
+}
+
+export function RepairResponsibilitySchedule({
+  simulation,
+  submit,
+}: RepairResponsibilityScheduleProps) {
+  if (simulation.repairResponsibility === 'debt' && simulation.repairDebt) {
+    return (
+      <div className="responsibility-result" role="status">
+        <strong>维修欠账已经记录</strong>
+        <span>本周代价 −{simulation.repairDebt.weeklyPenalty}，到 tick {simulation.repairDebt.dueTick} 结清。</span>
+        <small>{simulation.repairDebt.nextConsequence}</small>
+      </div>
+    )
+  }
+
+  if (
+    simulation.repairResponsibility === 'scheduled' &&
+    simulation.repairResponsibilityAssignment
+  ) {
+    const assignment = simulation.repairResponsibilityAssignment
+    const actor = CHARACTERS.find((character) => character.id === assignment.actorId)
+    const block = parseBlockId(assignment.blockId)
+    return (
+      <div className="responsibility-result" role="status">
+        <strong>{actor?.name}的维修责任已由日程确认</strong>
+        <span>
+          {DAY_LABELS[block.dayIndex]} {BLOCK_LABELS[block.blockIndex]} ·
+          维修产出 +{assignment.repairOutputDelta} · 人物负荷 +{assignment.characterLoadCost}
+        </span>
+        <small>这次确认已经进入供需预测、人物记录与周末复盘。</small>
+      </div>
+    )
+  }
+
+  if (simulation.repairResponsibilitySelection === null) {
+    return (
+      <p className="empty-prompt">
+        先在上方比较三个责任方向；打开比较不会改变日程或供需。
+      </p>
+    )
+  }
+
+  const options = REPAIR_RESPONSIBILITY_SCHEDULE_OPTIONS.filter(
+    (option) => option.direction === simulation.repairResponsibilitySelection,
+  )
+
+  return (
+    <div className="responsibility-schedule">
+      <div>
+        <strong>确认具体日程</strong>
+        <p>
+          {simulation.repairResponsibilitySelection === 'qiao-pan'
+            ? '维修专员方向有一个冻结实现。'
+            : '跨岗交接有两个可行实现，请比较原岗位与人物负荷。'}
+        </p>
+      </div>
+      <div
+        aria-label="维修责任日程方案"
+        className="responsibility-schedule-options"
+        role="list"
+      >
+        {options.map((option) => {
+          const actor = CHARACTERS.find(
+            (character) => character.id === option.actorId,
+          )
+          const parsed = parseBlockId(option.blockId)
+          const current = resolveScheduleBlock(simulation, option.blockId)
+          const isPast = blockEndTick(option.blockId) <= simulation.currentTick
+          const isNoOp = current.activity === 'repair'
+          return (
+            <article
+              className="responsibility-schedule-option"
+              key={option.blockId}
+              role="listitem"
+            >
+              <strong>{actor?.name} · {DAY_LABELS[parsed.dayIndex]} {BLOCK_LABELS[parsed.blockIndex]}</strong>
+              <span>当前：{ACTIVITY_LABELS[current.activity]} · {current.source}</span>
+              <small>
+                确认后：维修产出 +{option.repairOutputDelta} · 人物负荷 +{option.characterLoadCost}
+              </small>
+              <button
+                aria-pressed={false}
+                className="responsibility-schedule-action"
+                disabled={isPast || isNoOp}
+                onClick={() =>
+                  submit({
+                    type: 'EDIT_SCHEDULE',
+                    blockIds: [option.blockId],
+                    activity: 'repair',
+                    scope: 'weekly',
+                  })
+                }
+                type="button"
+              >
+                {isPast
+                  ? '该活动块已经执行'
+                  : isNoOp
+                    ? '已是维修，不能重复确认'
+                    : `确认${actor?.name}日程`}
+              </button>
+              {isNoOp && (
+                <small className="responsibility-noop-warning" role="alert">
+                  该格来自更早的日程修改；请先撤销包含它的旧事务，或改选其他责任方向。
+                </small>
+              )}
+            </article>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 export function ScheduleBoard({
   currentWeekIndex,
   simulation,
@@ -47,14 +208,25 @@ export function ScheduleBoard({
   const [targetDayOffset, setTargetDayOffset] = useState(1)
 
   const firstDay = weekIndex * 7
+  const changedSelectedIds = selectedIds.filter(
+    (blockId) =>
+      scheduleEditChangesVisibleActivity(
+        simulation,
+        blockId,
+        activity,
+        scope,
+      ),
+  )
   const editAction: Extract<PlayerAction, { type: 'EDIT_SCHEDULE' }> = {
     type: 'EDIT_SCHEDULE',
-    blockIds: selectedIds,
+    blockIds: changedSelectedIds,
     activity,
     scope,
   }
   const editBoundaryWarning =
-    selectedIds.length > 0 ? findQiaoPanBoundaryWarning(simulation, editAction) : null
+    changedSelectedIds.length > 0
+      ? findQiaoPanBoundaryWarning(simulation, editAction)
+      : null
   const copyAction: Extract<PlayerAction, { type: 'COPY_DAY' }> = {
     type: 'COPY_DAY',
     characterId: copyCharacter,
@@ -77,6 +249,59 @@ export function ScheduleBoard({
       createBlockId(copyCharacter, firstDay + targetDayOffset, blockIndex),
     ),
   )
+  const copyPairs = [0, 1, 2, 3].map((blockIndex) => {
+    const sourceBlockId = createBlockId(
+      copyCharacter,
+      firstDay + sourceDayOffset,
+      blockIndex,
+    )
+    const targetBlockId = createBlockId(
+      copyCharacter,
+      firstDay + targetDayOffset,
+      blockIndex,
+    )
+    const sourceActivity = resolveScheduleBlock(
+      simulation,
+      sourceBlockId,
+    ).activity
+    return {
+      projectedActivity: visibleActivityAfterScheduleEdit(
+        simulation,
+        targetBlockId,
+        sourceActivity,
+        scope,
+      ),
+      sourceActivity,
+      targetActivity: resolveScheduleBlock(simulation, targetBlockId).activity,
+      targetBlockId,
+    }
+  })
+  const copyIsNoOp = copyPairs.every(
+    ({ sourceActivity, targetBlockId }) =>
+      !scheduleEditChangesVisibleActivity(
+        simulation,
+        targetBlockId,
+        sourceActivity,
+        scope,
+      ),
+  )
+  const selectedResponsibilityOptionIds = new Set(
+    REPAIR_RESPONSIBILITY_SCHEDULE_OPTIONS
+      .filter(
+        (option) =>
+          option.direction === simulation.repairResponsibilitySelection,
+      )
+      .map((option) => option.blockId),
+  )
+  const copyWouldNoOpConfirmResponsibility =
+    simulation.repairResponsibility === 'unresolved' &&
+    simulation.repairResponsibilitySelection !== null &&
+    copyPairs.some(
+      ({ projectedActivity, targetActivity, targetBlockId }) =>
+        selectedResponsibilityOptionIds.has(targetBlockId) &&
+        projectedActivity === 'repair' &&
+        targetActivity === 'repair',
+    )
 
   function toggleBlock(blockId: string) {
     setSelectedIds((current) =>
@@ -87,13 +312,17 @@ export function ScheduleBoard({
   }
 
   function applyEdit() {
-    if (selectedIds.length === 0 || editBoundaryWarning) return
+    if (changedSelectedIds.length === 0 || editBoundaryWarning) return
     submit(editAction)
     setSelectedIds([])
   }
 
   function copyDay() {
-    if (copyBoundaryWarning) return
+    if (
+      copyBoundaryWarning ||
+      copyIsNoOp ||
+      copyWouldNoOpConfirmResponsibility
+    ) return
     submit(copyAction)
   }
 
@@ -171,15 +400,20 @@ export function ScheduleBoard({
           </select>
         </label>
         <button
-          disabled={selectedIds.length === 0 || editBoundaryWarning !== null}
+          disabled={
+            changedSelectedIds.length === 0 ||
+            editBoundaryWarning !== null
+          }
           onClick={applyEdit}
           type="button"
         >
           {editBoundaryWarning
             ? '先调整红线冲突'
-            : selectedIds.length > 1
-              ? `批量修改 ${selectedIds.length} 格`
-              : '修改所选格'}
+            : selectedIds.length > 0 && changedSelectedIds.length === 0
+              ? '所选格已是此活动'
+              : changedSelectedIds.length > 1
+                ? `批量修改 ${changedSelectedIds.length} 格`
+                : '修改所选格'}
         </button>
         <button
           className="secondary-button"
@@ -286,7 +520,9 @@ export function ScheduleBoard({
             sourceDayOffset === targetDayOffset ||
             copyBoundaryWarning !== null ||
             copyTargetsPast ||
-            copyTouchesRequestBlock
+            copyTouchesRequestBlock ||
+            copyIsNoOp ||
+            copyWouldNoOpConfirmResponsibility
           }
           onClick={copyDay}
           type="button"
@@ -295,7 +531,11 @@ export function ScheduleBoard({
             ? '复制会触发红线'
             : copyTouchesRequestBlock
               ? '目标日含人物请求'
-              : '复制这一天'}
+              : copyWouldNoOpConfirmResponsibility
+                ? '责任格已是维修，先撤销旧事务'
+                : copyIsNoOp
+                  ? '目标日无需修改'
+                  : '复制这一天'}
         </button>
       </div>
       {copyBoundaryWarning && (

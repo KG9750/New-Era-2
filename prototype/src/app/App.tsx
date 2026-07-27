@@ -39,7 +39,10 @@ import type {
   SessionRecorder,
 } from '../telemetry/session'
 import { MapPanel } from './MapPanel'
-import { ScheduleBoard } from './ScheduleBoard'
+import {
+  RepairResponsibilitySchedule,
+  ScheduleBoard,
+} from './ScheduleBoard'
 import { SessionGate } from './SessionGate'
 
 type Speed = 1 | 3 | 8
@@ -48,6 +51,17 @@ type SupplyForecast = FoodForecast | RepairForecast
 
 interface AppProps {
   buildMetadata: RcBuildMetadata
+}
+
+interface IssueSummaryCardProps {
+  actionLabel: string
+  description: string
+  icon: string
+  meta: string
+  onOpen(trigger: HTMLButtonElement): void
+  resolved?: boolean
+  selected?: boolean
+  title: string
 }
 
 interface CaptureReceipt {
@@ -152,10 +166,16 @@ function validCaptureReceipt(
         !('isComplete' in receipt)
 }
 
-function SupplyForecastCard({ forecast }: { forecast: SupplyForecast }) {
+function SupplyForecastCard({
+  focused = false,
+  forecast,
+}: {
+  focused?: boolean
+  forecast: SupplyForecast
+}) {
   return (
     <section
-      className="panel forecast-panel"
+      className={`panel forecast-panel ${focused ? 'focused-panel' : ''}`}
       aria-labelledby={`${forecast.id}-forecast-title`}
     >
       <div className="panel-title">
@@ -185,6 +205,37 @@ function SupplyForecastCard({ forecast }: { forecast: SupplyForecast }) {
         </ul>
       </div>
     </section>
+  )
+}
+
+function IssueSummaryCard({
+  actionLabel,
+  description,
+  icon,
+  meta,
+  onOpen,
+  resolved = false,
+  selected = false,
+  title,
+}: IssueSummaryCardProps) {
+  return (
+    <article
+      className={`issue-card ${selected ? 'selected' : ''} ${resolved ? 'resolved' : ''}`}
+    >
+      <span className="issue-icon" aria-hidden="true">{icon}</span>
+      <span className="issue-copy">
+        <strong>{title}</strong>
+        <span>{description}</span>
+        <small>{meta}</small>
+      </span>
+      <button
+        className="issue-action-button"
+        onClick={(event) => onOpen(event.currentTarget)}
+        type="button"
+      >
+        {actionLabel}
+      </button>
+    </article>
   )
 }
 
@@ -270,6 +321,8 @@ export function App({ buildMetadata }: AppProps) {
   const nextActionSequence = useRef(1)
   const recorderRef = useRef<SessionRecorder | null>(null)
   const pendingCaptureRef = useRef<PendingCapture | null>(null)
+  const comparisonCloseRef = useRef<HTMLButtonElement | null>(null)
+  const comparisonTriggerRef = useRef<HTMLButtonElement | null>(null)
   const foodForecast = useMemo(() => calculateFoodForecast(simulation), [simulation])
   const repairForecast = useMemo(() => calculateRepairForecast(simulation), [simulation])
   const progress = selectProgress(simulation, scenario)
@@ -284,6 +337,8 @@ export function App({ buildMetadata }: AppProps) {
     PUMP_MAINTENANCE_BLOCK_ID,
   )
   const pumpPlanReady = hasPreventiveMaintenance(simulation)
+  const pumpActivityMaskedByImmediate =
+    simulation.immediateAdjustments[PUMP_MAINTENANCE_BLOCK_ID] !== undefined
   const transportRoute = selectTransportRoute(simulation)
   const latestBlockingEvent = simulation.isPaused
     ? [...simulation.timeline].reverse().find(
@@ -293,18 +348,16 @@ export function App({ buildMetadata }: AppProps) {
           !item.id.endsWith('-ended'),
       )
     : undefined
-  const pumpIncidentResolved = simulation.processedScriptEventIds.includes(
-    'pump-incident-day-3',
-  )
-  const pumpIssueStatus = pumpIncidentResolved
-    ? simulation.pumpStatus === 'protected'
-      ? '已兑现 · 检修奏效'
-      : '已兑现 · 水泵停机'
-    : pumpPlanReady
-      ? '已安排 · 等待事件'
-      : focusedIssue === 'pump'
-        ? '已定位 · 待处理'
-        : '定位安排 →'
+  const repairResponsibilityResolved =
+    simulation.repairResponsibility !== 'unresolved'
+  const repairResponsibilityTitle =
+    simulation.repairResponsibility === 'scheduled'
+      ? '维修责任已写入日程'
+      : simulation.repairResponsibility === 'debt'
+        ? '维修欠账已接受'
+        : simulation.repairResponsibilitySelection === null
+          ? '水泵维修责任尚未落地'
+          : '责任方向已选，等待日程确认'
 
   function submit(action: PlayerAction) {
     if (!recorderRef.current || blockedCaptureFrozen) return
@@ -323,6 +376,20 @@ export function App({ buildMetadata }: AppProps) {
     const result = applyPlayerAction(simulation, envelope, scenario)
     recordPlayerTransition(recorderRef.current, simulation, envelope, result)
     setSimulation(result.state)
+  }
+
+  function openComparison(
+    issue: Extract<FocusedIssue, 'repair' | 'lin-request'>,
+    trigger: HTMLButtonElement,
+  ) {
+    comparisonTriggerRef.current = trigger
+    setFocusedIssue(issue)
+  }
+
+  function closeComparison() {
+    const trigger = comparisonTriggerRef.current
+    setFocusedIssue(null)
+    queueMicrotask(() => trigger?.focus())
   }
 
   useEffect(() => {
@@ -354,6 +421,12 @@ export function App({ buildMetadata }: AppProps) {
     simulation.recap,
     speed,
   ])
+
+  useEffect(() => {
+    if (focusedIssue === 'repair' || focusedIssue === 'lin-request') {
+      comparisonCloseRef.current?.focus()
+    }
+  }, [focusedIssue])
 
   function startSession(sampleId: string) {
     const state = initialState()
@@ -607,161 +680,279 @@ export function App({ buildMetadata }: AppProps) {
         <div className="issue-list">
           {currentWeek === 1 ? (
             <>
-          <button
-            className={`issue-card ${focusedIssue === 'food' ? 'selected' : ''} ${foodForecast.acceptedRisk ? 'accepted' : ''}`}
-            onClick={() => setFocusedIssue('food')}
-            type="button"
-          >
-            <span className="issue-icon" aria-hidden="true">!</span>
-            <span className="issue-copy">
-              <strong>粮食预计{foodForecast.status}</strong>
-              <span>期末库存 {formatRange(foodForecast.endingStock)}；可以补产能，也可以明确承担轻度缺口。</span>
-              <small>{foodForecast.acceptedRisk ? '已接受风险，不再作为未处理错误' : '影响：粮食、化肥与共享劳动力'}</small>
-            </span>
-            <span className="issue-action">
-              {foodForecast.acceptedRisk
-                ? '已接受 · 风险保留'
-                : focusedIssue === 'food'
-                  ? '已定位 · 待决定'
-                  : '查看原因 →'}
-            </span>
-          </button>
-          <button
-            className={`issue-card ${focusedIssue === 'pump' ? 'selected' : ''} ${pumpPlanReady ? 'resolved' : ''}`}
-            onClick={() => setFocusedIssue('pump')}
-            type="button"
-          >
-            <span className="issue-icon" aria-hidden="true">!</span>
-            <span className="issue-copy">
-              <strong>
-                {pumpPlanReady
-                  ? '水泵检修已安排 2 个维修块'
-                  : '水泵需要 2 个预防性维修块'}
-              </strong>
-              <span>
-                {pumpPlanReady
-                  ? '乔磐与林禾已各排 1 块；周三前的已知停机下探已从预测区间移除。'
-                  : '乔磐已排 1 块；周三前再补 1 块，否则粮食下探会成为严重短缺。'}
-              </span>
-              <small>
-                {pumpPlanReady
-                  ? '已安排 · 影响：粮食与维修保障'
-                  : '影响：乔磐、林禾 · 周二 · 粮食与维修保障'}
-              </small>
-            </span>
-            <span className="issue-action">
-              {pumpIssueStatus}
-            </span>
-          </button>
-          <button
-            className={`issue-card ${focusedIssue === 'repair' ? 'selected' : ''}`}
-            onClick={() => setFocusedIssue('repair')}
-            type="button"
-          >
-            <span className="issue-icon" aria-hidden="true">!</span>
-            <span className="issue-copy">
-              <strong>维修保障处于{repairForecast.status}</strong>
-              <span>期末库存 {formatRange(repairForecast.endingStock)}；把人调去维修会挤占粮食或物流。</span>
-              <small>影响：乔磐效率、维修工坊与共享劳动力</small>
-            </span>
-            <span className="issue-action">
-              {focusedIssue === 'repair' ? '已定位 · 待权衡' : '查看原因 →'}
-            </span>
-          </button>
+              <IssueSummaryCard
+                actionLabel={foodForecast.acceptedRisk ? '查看已接受风险' : '查看粮食取舍'}
+                description={`期末库存 ${formatRange(foodForecast.endingStock)}；可补产能，也可承担可见缺口。`}
+                icon="!"
+                meta={foodForecast.acceptedRisk
+                  ? '风险已接受 · 数学预测保持不变'
+                  : '后果：粮食、化肥与共享劳动力'}
+                onOpen={() => setFocusedIssue('food')}
+                resolved={foodForecast.acceptedRisk}
+                selected={focusedIssue === 'food'}
+                title={`粮食预计${foodForecast.status}`}
+              />
+              <IssueSummaryCard
+                actionLabel={pumpPlanReady ? '查看检修结果' : '定位日程方案'}
+                description={pumpPlanReady
+                  ? '两个预防性维修活动块已经形成，已知停机下探已从预测区间移除。'
+                  : '还缺一个预防性维修活动块；逾期会同时压低粮食与维修保障。'}
+                icon="!"
+                meta={pumpPlanReady
+                  ? '已安排 · 后果：粮食与维修保障'
+                  : '责任方向：调整成员日程'}
+                onOpen={() => setFocusedIssue('pump')}
+                resolved={pumpPlanReady}
+                selected={focusedIssue === 'pump'}
+                title={pumpPlanReady
+                  ? '水泵预防检修已经成形'
+                  : '水泵预防检修仍有缺口'}
+              />
+              <IssueSummaryCard
+                actionLabel={repairResponsibilityResolved ? '查看责任结果' : '比较责任方向'}
+                description={simulation.repairResponsibility === 'debt'
+                  ? '本周和第二周各承担 3 点代价，终局结清。'
+                  : '可由维修专员承担、跨岗交接，或接受有期限的维修欠账。'}
+                icon="责"
+                meta={`后果：维修保障 ${formatRange(repairForecast.endingStock)}、人物负荷与跨周欠账`}
+                onOpen={(trigger) => openComparison('repair', trigger)}
+                resolved={repairResponsibilityResolved}
+                selected={focusedIssue === 'repair'}
+                title={repairResponsibilityTitle}
+              />
             </>
           ) : (
             <>
-              <button
-                className={`issue-card ${focusedIssue === 'lin-request' ? 'selected' : ''} ${simulation.linHeRequestDecision !== 'pending' ? 'resolved' : ''}`}
-                onClick={() => setFocusedIssue('lin-request')}
-                type="button"
-              >
-                <span className="issue-icon" aria-hidden="true">人</span>
-                <span className="issue-copy">
-                  <strong>林禾请求周二 B1 学习</strong>
-                  <span>
-                    接受会让本周粮食产出 −2；拒绝或逾期会写入不同人物记录。
-                  </span>
-                  <small>
-                    {simulation.linHeRequestDecision === 'pending'
-                      ? '新增例外 · 周二 B1 前答复'
-                      : `已${simulation.linHeRequestDecision === 'accepted' ? '接受' : '拒绝'} · 目标块已锁定`}
-                  </small>
-                </span>
-                <span className="issue-action">
-                  {simulation.linHeRequestDecision === 'accepted'
-                    ? '已接受 · 已锁定'
-                    : simulation.linHeRequestDecision === 'declined'
-                      ? '已拒绝 · 保留农务'
-                      : focusedIssue === 'lin-request'
-                        ? '已定位 · 待答复'
-                        : '处理请求 →'}
-                </span>
-              </button>
-              <button
-                className="issue-card"
-                onClick={() => setFocusedIssue('food')}
-                type="button"
-              >
-                <span className="issue-icon" aria-hidden="true">+</span>
-                <span className="issue-copy">
-                  <strong>
-                    {fertilizerUsedWeek === 1
-                      ? '化肥已在第一周使用'
-                      : fertilizerUsedWeek === 2
-                        ? '化肥已在第二周使用'
-                        : '化肥仍有一次机会'}
-                  </strong>
-                  <span>
-                    {fertilizerUsedWeek === 1
-                      ? '第二周没有额外化肥可补粮。'
-                      : fertilizerUsedWeek === 2
-                        ? '本周已使用化肥，库存为 0。'
-                        : '可用粮食 +6 弥补学习或已知缺口。'}
-                  </span>
-                  <small>新增例外 · 只影响粮食，不改变维修保障</small>
-                </span>
-                <span className="issue-action">查看资源 →</span>
-              </button>
-              <button
-                className={`issue-card ${focusedIssue === 'transport' ? 'selected' : ''} ${transportRoute.id === 'south-shortcut' ? 'resolved' : ''}`}
-                onClick={() => setFocusedIssue('transport')}
-                type="button"
-              >
-                <span className="issue-icon" aria-hidden="true">路</span>
-                <span className="issue-copy">
-                  <strong>
-                    {transportRoute.id === 'south-shortcut'
-                      ? '南侧短通路已继承'
-                      : '北侧长路仍造成运输损耗'}
-                  </strong>
-                  <span>
-                    当前 {transportRoute.distanceMeters} 米 / {transportRoute.travelMinutes} 分钟，
-                    粮食损耗 {transportRoute.foodLoss}。
-                  </span>
-                  <small>
-                    {transportRoute.id === 'south-shortcut'
-                      ? '继承结果 · 无需重复设置'
-                      : '本周首次运输前仍可调整'}
-                  </small>
-                </span>
-                <span className="issue-action">
-                  {transportRoute.id === 'south-shortcut'
-                    ? '已调整 · 已继承'
-                    : focusedIssue === 'transport'
-                      ? '已定位 · 待决定'
-                      : '查看地图 →'}
-                </span>
-              </button>
+              <IssueSummaryCard
+                actionLabel={simulation.linHeRequestDecision === 'pending'
+                  ? '比较回应方案'
+                  : '查看回应结果'}
+                description="接受会降低本周粮食产出；拒绝或逾期会留下不同的人物记录。"
+                icon="人"
+                meta={simulation.linHeRequestDecision === 'pending'
+                  ? '新增例外 · 在请求时限前答复'
+                  : '回应已记录 · 对应活动块已锁定'}
+                onOpen={(trigger) => openComparison('lin-request', trigger)}
+                resolved={simulation.linHeRequestDecision !== 'pending'}
+                selected={focusedIssue === 'lin-request'}
+                title="一项成员发展请求待回应"
+              />
+              <IssueSummaryCard
+                actionLabel="定位资源取舍"
+                description={fertilizerUsedWeek === 1
+                  ? '第二周没有额外化肥可补粮。'
+                  : fertilizerUsedWeek === 2
+                    ? '本周已使用化肥，库存为 0。'
+                    : '可用粮食 +6 弥补学习或已知缺口，也可保留到终局。'}
+                icon="+"
+                meta="后果：粮食与终局保留资产"
+                onOpen={() => setFocusedIssue('food')}
+                resolved={fertilizerUsedWeek !== null}
+                selected={focusedIssue === 'food'}
+                title={fertilizerUsedWeek === 1
+                  ? '化肥已在第一周使用'
+                  : fertilizerUsedWeek === 2
+                    ? '化肥已在第二周使用'
+                    : '化肥仍有一次机会'}
+              />
+              <IssueSummaryCard
+                actionLabel="查看路线方案"
+                description={`当前 ${transportRoute.distanceMeters} 米 / ${transportRoute.travelMinutes} 分钟，粮食损耗 ${transportRoute.foodLoss}。`}
+                icon="路"
+                meta={transportRoute.id === 'south-shortcut'
+                  ? '继承结果 · 无需重复设置'
+                  : '责任方向：在首次运输前确认路线'}
+                onOpen={() => setFocusedIssue('transport')}
+                resolved={transportRoute.id === 'south-shortcut'}
+                selected={focusedIssue === 'transport'}
+                title={transportRoute.id === 'south-shortcut'
+                  ? '短通路结果已继承'
+                  : '当前运输路线存在损耗'}
+              />
             </>
           )}
         </div>
       </section>
 
+      {currentWeek === 1 && focusedIssue === 'repair' && (
+        <section
+          aria-labelledby="repair-comparison-title"
+          aria-modal="false"
+          className="choice-comparison"
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') {
+              event.preventDefault()
+              closeComparison()
+              return
+            }
+            if (
+              event.target === event.currentTarget &&
+              (event.key === 'Enter' || event.key === ' ')
+            ) {
+              event.preventDefault()
+            }
+          }}
+          role="dialog"
+        >
+          <div className="comparison-heading">
+            <div>
+              <p className="eyebrow">责任方向比较</p>
+              <h2 id="repair-comparison-title">先比较后果，再把人员责任落到日程</h2>
+            </div>
+            <button
+              className="comparison-close"
+              onClick={closeComparison}
+              ref={comparisonCloseRef}
+              type="button"
+            >
+              关闭比较
+            </button>
+          </div>
+          <p className="comparison-intro">
+            三条当前可行方向同时展示；打开此处不会改变预测，选择人员方向后仍须确认具体日程。
+          </p>
+          <div className="comparison-options" role="list" aria-label="维修责任可行方案">
+            <article className="comparison-option" role="listitem">
+              <strong>维修专员承担</strong>
+              <span>乔磐接手：维修产出 +2，人物负荷 +2；会占用一个休息活动块。</span>
+              <small>责任只有在对应日程确认后才兑现。</small>
+              <button
+                aria-pressed={simulation.repairResponsibilitySelection === 'qiao-pan'}
+                className="comparison-option-action"
+                disabled={
+                  repairResponsibilityResolved ||
+                  simulation.repairResponsibilitySelection === 'qiao-pan'
+                }
+                onClick={() =>
+                  submit({
+                    type: 'SELECT_REPAIR_RESPONSIBILITY',
+                    responsible: 'qiao-pan',
+                  })
+                }
+                type="button"
+              >
+                选择维修专员承担
+              </button>
+            </article>
+            <article className="comparison-option" role="listitem">
+              <strong>跨岗交接</strong>
+              <span>陈渡或苏霁接手：维修产出 +1；两种日程的人物负荷与原岗位代价不同。</span>
+              <small>下一步会同时展示两种可确认的日程实现。</small>
+              <button
+                aria-pressed={simulation.repairResponsibilitySelection === 'handoff'}
+                className="comparison-option-action"
+                disabled={
+                  repairResponsibilityResolved ||
+                  simulation.repairResponsibilitySelection === 'handoff'
+                }
+                onClick={() =>
+                  submit({
+                    type: 'SELECT_REPAIR_RESPONSIBILITY',
+                    responsible: 'handoff',
+                  })
+                }
+                type="button"
+              >
+                选择跨岗交接
+              </button>
+            </article>
+            <article className="comparison-option" role="listitem">
+              <strong>接受维修欠账</strong>
+              <span>不改日程；本周立即承担 3 点代价，第二周再累计 3 点。</span>
+              <small>欠账在 tick 2010 结清，并进入两周复盘。</small>
+              <button
+                aria-pressed={simulation.repairResponsibility === 'debt'}
+                className="comparison-option-action"
+                disabled={repairResponsibilityResolved}
+                onClick={() => submit({ type: 'ACCEPT_REPAIR_DEBT' })}
+                type="button"
+              >
+                接受维修欠账
+              </button>
+            </article>
+          </div>
+        </section>
+      )}
+
+      {currentWeek === 2 && focusedIssue === 'lin-request' && (
+        <section
+          aria-labelledby="request-comparison-title"
+          aria-modal="false"
+          className="choice-comparison"
+          onKeyDown={(event) => {
+            if (event.key === 'Escape') {
+              event.preventDefault()
+              closeComparison()
+              return
+            }
+            if (
+              event.target === event.currentTarget &&
+              (event.key === 'Enter' || event.key === ' ')
+            ) {
+              event.preventDefault()
+            }
+          }}
+          role="dialog"
+        >
+          <div className="comparison-heading">
+            <div>
+              <p className="eyebrow">人物请求比较</p>
+              <h2 id="request-comparison-title">林禾的学习请求</h2>
+            </div>
+            <button
+              className="comparison-close"
+              onClick={closeComparison}
+              ref={comparisonCloseRef}
+              type="button"
+            >
+              关闭比较
+            </button>
+          </div>
+          <p className="comparison-intro">
+            两种回应同时展示；没有默认选择，只有点击具体回应才会改动日程与人物记录。
+          </p>
+          <div className="comparison-options two-options" role="list" aria-label="学习请求可行方案">
+            <article className="comparison-option" role="listitem">
+              <strong>接受学习请求</strong>
+              <span>把第二周对应农务活动块改为学习；本周粮食产出 −2。</span>
+              <small>写入学习承诺，目标活动块随后锁定。</small>
+              <button
+                aria-pressed={simulation.linHeRequestDecision === 'accepted'}
+                className="comparison-option-action"
+                disabled={simulation.linHeRequestDecision !== 'pending'}
+                onClick={() =>
+                  submit({ type: 'RESOLVE_LIN_HE_REQUEST', decision: 'accepted' })
+                }
+                type="button"
+              >
+                接受学习请求
+              </button>
+            </article>
+            <article className="comparison-option" role="listitem">
+              <strong>拒绝并保留农务</strong>
+              <span>保留当前农务活动块；粮食产出不变。</span>
+              <small>写入本次拒绝，目标活动块随后锁定。</small>
+              <button
+                aria-pressed={simulation.linHeRequestDecision === 'declined'}
+                className="comparison-option-action"
+                disabled={simulation.linHeRequestDecision !== 'pending'}
+                onClick={() =>
+                  submit({ type: 'RESOLVE_LIN_HE_REQUEST', decision: 'declined' })
+                }
+                type="button"
+              >
+                拒绝并保留农务
+              </button>
+            </article>
+          </div>
+        </section>
+      )}
+
       <div className="workspace-grid">
         <section
           className={`panel schedule-panel ${
             focusedIssue === 'pump' ||
+            (currentWeek === 1 && focusedIssue === 'repair') ||
             (currentWeek === 2 && focusedIssue === 'lin-request')
               ? 'focused-panel'
               : ''
@@ -772,17 +963,31 @@ export function App({ buildMetadata }: AppProps) {
             <div>
               <p className="eyebrow">成员安排</p>
               <h2 id="schedule-title">
-                {currentWeek === 1 ? '林禾 · 周二 B2' : '林禾 · 周二 B1'}
+                {currentWeek === 1 && focusedIssue === 'repair'
+                  ? '维修责任日程'
+                  : currentWeek === 1
+                    ? '林禾 · 周二 B2'
+                    : '林禾 · 周二 B1'}
               </h2>
             </div>
             <span className="skill-chip">
-              {currentWeek === 1
+              {currentWeek === 1 && focusedIssue === 'repair'
+                ? simulation.repairResponsibility === 'scheduled'
+                  ? '责任已兑现'
+                  : simulation.repairResponsibility === 'debt'
+                    ? '欠账已记录'
+                    : simulation.repairResponsibilitySelection === null
+                      ? '等待方向'
+                      : '等待日程确认'
+                : currentWeek === 1
                 ? `${ACTIVITY_LABELS[pumpBlock.activity]} · ${pumpBlock.source}`
                 : '新增请求'}
             </span>
           </div>
           <p className="block-time">
-            {currentWeek === 1
+            {currentWeek === 1 && focusedIssue === 'repair'
+              ? '方向选择本身不增加维修产出；具体活动块确认后才进入供需预测。'
+              : currentWeek === 1
               ? '周二 13:00–16:00 · 水泵检修第 2 / 2 块'
               : '第二周周二 09:00–12:00 · 农务 / 学习请求'}
           </p>
@@ -793,36 +998,21 @@ export function App({ buildMetadata }: AppProps) {
               </p>
             ) : focusedIssue !== 'lin-request' ? (
               <p className="empty-prompt">
-                点击“林禾请求周二 B1 学习”，只处理这个新增例外。
+                从周初摘要打开成员请求，只处理这一项新增例外。
               </p>
             ) : (
-              <div className="activity-editor">
-                <p>“我想用这一块学习。眼前会少 2 份粮食产出。”</p>
-                <div className="request-actions">
-                  <button
-                    onClick={() =>
-                      submit({ type: 'RESOLVE_LIN_HE_REQUEST', decision: 'accepted' })
-                    }
-                    type="button"
-                  >
-                    接受学习请求
-                  </button>
-                  <button
-                    className="secondary-button"
-                    onClick={() =>
-                      submit({ type: 'RESOLVE_LIN_HE_REQUEST', decision: 'declined' })
-                    }
-                    type="button"
-                  >
-                    拒绝并保留农务
-                  </button>
-                </div>
-                <small>决定后目标块锁定，不能再用普通日程编辑覆盖。</small>
-              </div>
+              <p className="empty-prompt">
+                两种回应已在上方同层级展示；此处只标明请求对应的日程位置。
+              </p>
             )
+          ) : focusedIssue === 'repair' ? (
+            <RepairResponsibilitySchedule
+              simulation={simulation}
+              submit={submit}
+            />
           ) : focusedIssue !== 'pump' ? (
             <p className="empty-prompt">
-              点击“水泵需要 2 个预防性维修块”，定位缺少的检修块。
+              从周初摘要定位预防检修日程，或比较维修责任方向。
             </p>
           ) : (
             <div className="activity-editor">
@@ -833,7 +1023,11 @@ export function App({ buildMetadata }: AppProps) {
                     resolveScheduleBlock(simulation, PUMP_MAINTENANCE_BLOCK_ID).activity ===
                     'rest'
                   }
-                  disabled={!canEditPumpPlan}
+                  disabled={
+                    !canEditPumpPlan ||
+                    pumpActivityMaskedByImmediate ||
+                    pumpBlock.activity === 'rest'
+                  }
                   onClick={() => submit({ type: 'CHANGE_ACTIVITY', activity: 'rest' })}
                   type="button"
                 >
@@ -845,7 +1039,11 @@ export function App({ buildMetadata }: AppProps) {
                     resolveScheduleBlock(simulation, PUMP_MAINTENANCE_BLOCK_ID).activity ===
                     'repair'
                   }
-                  disabled={!canEditPumpPlan}
+                  disabled={
+                    !canEditPumpPlan ||
+                    pumpActivityMaskedByImmediate ||
+                    pumpBlock.activity === 'repair'
+                  }
                   onClick={() => submit({ type: 'CHANGE_ACTIVITY', activity: 'repair' })}
                   type="button"
                 >
@@ -856,14 +1054,25 @@ export function App({ buildMetadata }: AppProps) {
               <small>
                 人物与设施联动：林禾的维修效率低于乔磐，且这块会进入共享劳动力总额。
               </small>
+              {pumpActivityMaskedByImmediate && (
+                <small className="responsibility-noop-warning" role="alert">
+                  该格存在即时调整，快捷按钮无法覆盖；请在完整周计划中撤销或修改即时层。
+                </small>
+              )}
               {!canEditPumpPlan && <small>水泵事件已发生，过去的预防性安排不能追溯修改。</small>}
             </div>
           )}
         </section>
 
         <div className="supply-stack">
-          <SupplyForecastCard forecast={foodForecast} />
-          <SupplyForecastCard forecast={repairForecast} />
+          <SupplyForecastCard
+            focused={focusedIssue === 'food'}
+            forecast={foodForecast}
+          />
+          <SupplyForecastCard
+            focused={focusedIssue === 'repair'}
+            forecast={repairForecast}
+          />
         </div>
       </div>
 
