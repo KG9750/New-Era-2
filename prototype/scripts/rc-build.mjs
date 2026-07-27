@@ -70,6 +70,14 @@ copyFileSync(
   join(prototypeRoot, 'scripts', 'playtest-host.mjs'),
   join(distRoot, 'playtest-host.mjs'),
 )
+copyFileSync(
+  join(
+    prototypeRoot,
+    'scripts',
+    'management-ledger-contract.mjs',
+  ),
+  join(distRoot, 'management-ledger-contract.mjs'),
+)
 
 function collectFiles(directory) {
   return readdirSync(directory)

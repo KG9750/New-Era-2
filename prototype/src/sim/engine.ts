@@ -37,6 +37,8 @@ import {
 } from './transport'
 import { weekIndexForTick } from './week-phase'
 import {
+  PREVENTIVE_CAPACITY_DEADLINE_TICK,
+  RECOVERY_ALLOCATION_DEADLINE_TICK,
   commitManagementChoice,
   freezePreventiveCapacityOpportunity,
   freezeRecoveryAllocationOpportunity,
@@ -927,7 +929,7 @@ function createRecap(state: SimulationState, weekIndex: number): WeekendRecap {
             ? terminal ===
               'schedule-preventive-maintenance'
               ? '预防容量分配给第二次检修'
-              : '预防容量保留为休息'
+              : '预防容量用于保护性恢复'
             : '预防容量机会未形成合格承诺'
           : committed
             ? terminal === 'allocate-repair-buffer'
@@ -936,8 +938,20 @@ function createRecap(state: SimulationState, weekIndex: number): WeekendRecap {
             : '恢复资源机会未形成合格承诺',
       detail:
         weekIndex === 0
-          ? `terminalState=${terminal}；设备暴露 ${state.managementChoices.equipmentExposure}；恢复负荷 ${state.managementChoices.equipmentRecoveryLoad}；林禾恢复 ${state.managementChoices.linHeRecoveryUnits}；人员准备度 ${state.managementChoices.personnelReadiness}。`
-          : `terminalState=${terminal}；同一应急班次只兑现所选路线，设备恢复负荷保持 ${state.managementChoices.equipmentRecoveryLoad}。`,
+          ? terminal === 'schedule-preventive-maintenance'
+            ? '林禾把专项恢复时段改为第二次检修，设备暴露降低，第二周恢复负荷随之减轻。'
+            : terminal === 'retain-rest-capacity'
+              ? '林禾完成专项保护性恢复，人员准备度提高；水泵仍以较高暴露进入第二周。'
+              : terminal === 'unqualified-direct-edit'
+                ? '目标日程格曾被直接修改，真实经营结果继续生效，但本次没有形成可核验的管理意图承诺。'
+                : '管理者没有指定专项方案；林禾按普通休息执行，未获得专项恢复或人员准备度提升。'
+          : terminal === 'allocate-repair-buffer'
+            ? '唯一应急班次用于维修备件，期末维修保障增加 1，粮食预测不变。'
+            : terminal === 'allocate-food-production'
+              ? '唯一应急班次用于粮食生产，期末粮食增加 1，维修保障预测不变。'
+              : terminal === 'unqualified-direct-edit'
+                ? '目标日程格曾被直接修改，真实经营结果继续生效，但本次没有形成可核验的恢复资源承诺。'
+                : '管理者没有指定应急班次用途，本周未获得额外粮食或维修保障。',
       values: {
         equipmentRecoveryLoad:
           state.managementChoices.equipmentRecoveryLoad,
@@ -1081,6 +1095,38 @@ export function advanceSimulation(
   if (state.recap !== null && targetTick > state.currentTick) {
     weekIndexForTick(targetTick, scenario)
     throw new Error('请先完成周末复盘并进入下一周')
+  }
+
+  const managementDeadline = [
+    {
+      tick: PREVENTIVE_CAPACITY_DEADLINE_TICK,
+      opportunity:
+        state.managementChoices.opportunities.preventiveCapacity,
+      freeze: freezePreventiveCapacityOpportunity,
+    },
+    {
+      tick: RECOVERY_ALLOCATION_DEADLINE_TICK,
+      opportunity:
+        state.managementChoices.opportunities.recoveryAllocation,
+      freeze: freezeRecoveryAllocationOpportunity,
+    },
+  ]
+    .filter(
+      ({ tick, opportunity }) =>
+        opportunity?.terminalState === 'open' &&
+        state.currentTick <= tick &&
+        targetTick >= tick,
+    )
+    .sort((left, right) => left.tick - right.tick)[0]
+
+  if (managementDeadline !== undefined) {
+    const deadlineState = managementDeadline.freeze({
+      ...expireScheduleLayers(state, managementDeadline.tick),
+      currentTick: managementDeadline.tick,
+    })
+    return targetTick > managementDeadline.tick
+      ? advanceSimulation(deadlineState, targetTick, scenario)
+      : { state: deadlineState, events: [] }
   }
 
   const nextEvent = [...scenario.scriptedEvents]

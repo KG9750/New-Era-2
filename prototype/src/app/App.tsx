@@ -1,8 +1,15 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import type { RcBuildMetadata } from '../build-metadata'
 import { gate1WeekOneScenario as scenario } from '../scenario/gate1-week-one'
-import { advanceSimulation, applyPlayerAction, createPlayerAction } from '../sim/engine'
 import {
+  ManagementChoiceCommitError,
+  advanceSimulation,
+  applyPlayerAction,
+  createPlayerAction,
+} from '../sim/engine'
+import {
+  GATE1_FOOD_TARGET,
+  GATE1_REPAIR_TARGET,
   calculateFoodForecast,
   calculateRepairForecast,
   formatRange,
@@ -26,6 +33,7 @@ import {
   RECOVERY_ALLOCATION_CHOICE_SET_ID,
   bindManagementChoiceAuthority,
   createManagementChoiceCommitRequest,
+  infrastructurePressure,
   isManagementChoiceActive,
 } from '../sim/management-choices'
 import type { ManagementCandidateId } from '../sim/model'
@@ -42,6 +50,7 @@ import {
   recordSpeedChange,
 } from '../telemetry/session'
 import type {
+  HostIssuedSessionAuthority,
   PlaytestSessionMeta,
   SessionRecorder,
 } from '../telemetry/session'
@@ -65,6 +74,11 @@ type SupplyForecast = FoodForecast | RepairForecast
 
 interface AppProps {
   buildMetadata: RcBuildMetadata
+  sessionAuthorityProvider?(
+    sampleId: string,
+  ):
+    | HostIssuedSessionAuthority
+    | Promise<HostIssuedSessionAuthority>
 }
 
 interface IssueSummaryCardProps {
@@ -137,6 +151,63 @@ function captureErrorMessage(value: unknown, fallback: string) {
     return value.error
   }
   return fallback
+}
+
+const MANAGEMENT_CHOICE_ERROR_MESSAGES = {
+  STATE_REVISION_CONFLICT:
+    '状态刚刚发生变化，请重新打开比较后再选择。',
+  OPPORTUNITY_ALREADY_COMMITTED:
+    '这个经营取舍已经结束，不能重复提交。',
+  OPPORTUNITY_MISMATCH:
+    '当前比较已失效，请关闭后重新打开。',
+  AUTHORITY_MISMATCH:
+    '当前会话登记不一致，请结束本场并重新创建会话。',
+  STALE_PROJECTION:
+    '经营预测已经变化，请重新查看两项后果。',
+  CANDIDATE_NOT_IN_CHOICE_SET:
+    '该方案不属于当前经营取舍。',
+  ORIGINAL_ACTIVITY_MISMATCH:
+    '目标日程格已被直接修改；真实经营结果保留，但不会补记本次管理意图。',
+  OPPORTUNITY_NOT_ACTIVE:
+    '该经营取舍已过时限，不能再提交。',
+  EFFECT_ALREADY_OWNED:
+    '这项经营后果已经由另一项承诺占用。',
+  CANONICAL_DELTA_MISMATCH:
+    '当前方案无法兑现页面展示的固定后果。',
+} as const
+
+async function requestSessionAuthority(
+  sampleId: string,
+): Promise<HostIssuedSessionAuthority> {
+  const response = await fetch('/__gate1/session-authority', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json; charset=utf-8',
+    },
+    body: JSON.stringify({ sampleId }),
+  })
+  const body: unknown = await response.json()
+  if (!response.ok) {
+    throw new Error(
+      captureErrorMessage(body, '无法向本机构建登记测试会话。'),
+    )
+  }
+  if (
+    !body ||
+    typeof body !== 'object' ||
+    !('diagnosisId' in body) ||
+    !('sessionId' in body) ||
+    !('candidateBuildAuthorityHash' in body) ||
+    !('sessionAuthorityToken' in body) ||
+    body.diagnosisId !== sampleId ||
+    typeof body.sessionId !== 'string' ||
+    typeof body.candidateBuildAuthorityHash !== 'string' ||
+    typeof body.sessionAuthorityToken !== 'string' ||
+    !/^[a-f0-9]{64}$/.test(body.sessionAuthorityToken)
+  ) {
+    throw new Error('本机构建返回了无效的会话登记。')
+  }
+  return body as HostIssuedSessionAuthority
 }
 
 function validCaptureReceipt(
@@ -320,7 +391,10 @@ export function CharacterDecisionPanel({
   )
 }
 
-export function App({ buildMetadata }: AppProps) {
+export function App({
+  buildMetadata,
+  sessionAuthorityProvider = requestSessionAuthority,
+}: AppProps) {
   const [simulation, setSimulation] = useState(initialState)
   const [speed, setSpeed] = useState<Speed>(3)
   const [focusedIssue, setFocusedIssue] = useState<FocusedIssue>(null)
@@ -333,6 +407,9 @@ export function App({ buildMetadata }: AppProps) {
   const [blockedReason, setBlockedReason] = useState('')
   const [blockedCaptureFrozen, setBlockedCaptureFrozen] = useState(false)
   const [choiceError, setChoiceError] = useState<string>()
+  const [sessionStartError, setSessionStartError] =
+    useState<string>()
+  const [sessionStarting, setSessionStarting] = useState(false)
   const nextActionSequence = useRef(1)
   const simulationRef = useRef(simulation)
   const recorderRef = useRef<SessionRecorder | null>(null)
@@ -385,6 +462,15 @@ export function App({ buildMetadata }: AppProps) {
     'allocate-repair-buffer',
     'allocate-food-production',
   ].includes(recoveryAllocationTerminal)
+  const recoveryLoadStatus =
+    simulation.managementChoices.equipmentRecoveryLoad <= 1
+      ? '稳定'
+      : '脆弱'
+  const currentInfrastructurePressure =
+    infrastructurePressure(
+      repairForecast.endingStock.high,
+      simulation.managementChoices.equipmentRecoveryLoad,
+    )
 
   function submit(action: PlayerAction) {
     if (!recorderRef.current || blockedCaptureFrozen) return
@@ -424,7 +510,8 @@ export function App({ buildMetadata }: AppProps) {
           choiceSetId,
           candidateId,
           [
-            current.managementChoices.authority?.sessionId,
+            current.managementChoices.authority
+              ?.sessionAuthorityToken,
             choiceSetId,
             current.stateRevision,
             candidateId,
@@ -437,9 +524,11 @@ export function App({ buildMetadata }: AppProps) {
       setChoiceError(undefined)
     } catch (error) {
       setChoiceError(
-        error instanceof Error
-          ? error.message
-          : '管理选择提交失败。',
+        error instanceof ManagementChoiceCommitError
+          ? MANAGEMENT_CHOICE_ERROR_MESSAGES[error.code]
+          : error instanceof Error
+            ? error.message
+            : '管理选择提交失败。',
       )
     }
   }
@@ -495,17 +584,22 @@ export function App({ buildMetadata }: AppProps) {
     }
   }, [focusedIssue])
 
-  function startSession(sampleId: string) {
+  function installSession(
+    sampleId: string,
+    authority: HostIssuedSessionAuthority,
+  ) {
     const state = initialState()
-    const recorder = createSessionRecorder(sampleId, state, buildMetadata)
+    const recorder = createSessionRecorder(
+      sampleId,
+      state,
+      buildMetadata,
+      Date.now(),
+      performance.now(),
+      authority,
+    )
     const sessionState = bindManagementChoiceAuthority(
       state,
-      {
-        diagnosisId: recorder.meta.diagnosisId,
-        sessionId: recorder.meta.sessionId,
-        candidateBuildAuthorityHash:
-          recorder.meta.candidateBuildAuthorityHash,
-      },
+      authority,
     )
     recorderRef.current = recorder
     simulationRef.current = sessionState
@@ -523,6 +617,34 @@ export function App({ buildMetadata }: AppProps) {
     pendingCaptureRef.current = null
     setActiveSession(recorder.meta)
     setWasSessionCleared(false)
+  }
+
+  function failSessionStart(error: unknown) {
+    setSessionStartError(
+      error instanceof Error
+        ? error.message
+        : '无法创建本地测试会话。',
+    )
+  }
+
+  function startSession(sampleId: string) {
+    setSessionStarting(true)
+    setSessionStartError(undefined)
+    try {
+      const issued = sessionAuthorityProvider(sampleId)
+      if (issued instanceof Promise) {
+        void issued
+          .then((authority) => installSession(sampleId, authority))
+          .catch(failSessionStart)
+          .finally(() => setSessionStarting(false))
+        return
+      }
+      installSession(sampleId, issued)
+      setSessionStarting(false)
+    } catch (error) {
+      failSessionStart(error)
+      setSessionStarting(false)
+    }
   }
 
   function changeSpeed(value: Speed) {
@@ -681,6 +803,8 @@ export function App({ buildMetadata }: AppProps) {
       <SessionGate
         buildMetadata={buildMetadata}
         onStart={startSession}
+        startError={sessionStartError}
+        starting={sessionStarting}
         wasCleared={wasSessionCleared}
       />
     )
@@ -792,8 +916,8 @@ export function App({ buildMetadata }: AppProps) {
                     ? '一个休息格已原子分配给第二次预防检修，设备暴露降为 low。'
                     : preventiveCapacityTerminal ===
                         'retain-rest-capacity'
-                      ? '休息容量已保留，人员准备度 +1；设备暴露保持 high。'
-                      : '同一个休息格只能用于第二次预防检修或人员恢复，也可以跳过。'
+                      ? '已指定保护性恢复，人员准备度 +1；设备暴露保持 high。'
+                      : '同一个休息格只能用于第二次预防检修或专项保护性恢复；跳过只保留普通休息。'
                 }
                 icon="!"
                 meta="同一资源：林禾第2日 B2 · 无默认或推荐"
@@ -921,7 +1045,7 @@ export function App({ buildMetadata }: AppProps) {
             </button>
           </div>
           <p className="comparison-intro">
-            两项同时可见；打开、关闭或定位不会提交。明确选择后立即原子兑现，不能改选。
+            两项同时可见；打开、关闭或定位不会提交。明确选择后立即原子兑现，不能改选。跳过会保留普通休息，但没有专项 recovery 或 readiness 提升。
           </p>
           <div
             className="comparison-options two-options"
@@ -957,7 +1081,7 @@ export function App({ buildMetadata }: AppProps) {
               </button>
             </article>
             <article className="comparison-option" role="listitem">
-              <strong>保留休息容量</strong>
+              <strong>指定保护性恢复</strong>
               <span>
                 成本：设备暴露保持 high；收益：林禾恢复 1，终局人员准备度 +1。
               </span>
@@ -981,10 +1105,16 @@ export function App({ buildMetadata }: AppProps) {
                 }
                 type="button"
               >
-                保留休息容量
+                指定保护性恢复
               </button>
             </article>
           </div>
+          {preventiveCapacityTerminal ===
+            'unqualified-direct-edit' && (
+            <p className="choice-integrity-note" role="status">
+              目标日程格已直接编辑：真实经营结果继续生效，但系统不会事后补记本次管理意图。
+            </p>
+          )}
           {choiceError && (
             <small role="alert">{choiceError}</small>
           )}
@@ -1026,6 +1156,36 @@ export function App({ buildMetadata }: AppProps) {
             <p className="comparison-intro">
               陈渡第11日 B3（16–19）是唯一资源；两项都消耗同一个 18-tick 班次。
             </p>
+            <dl
+              aria-label="恢复资源共享状态"
+              className="shared-status-table"
+            >
+              <div>
+                <dt>当前粮食</dt>
+                <dd>
+                  {formatRange(foodForecast.endingStock)} / 目标 ≥
+                  {GATE1_FOOD_TARGET.low}
+                </dd>
+              </div>
+              <div>
+                <dt>当前维修</dt>
+                <dd>
+                  {formatRange(repairForecast.endingStock)} / 目标 ≥
+                  {GATE1_REPAIR_TARGET.low}
+                </dd>
+              </div>
+              <div>
+                <dt>设备负荷</dt>
+                <dd>
+                  {recoveryLoadStatus}（
+                  {simulation.managementChoices.equipmentRecoveryLoad}）
+                </dd>
+              </div>
+              <div>
+                <dt>基础设施压力</dt>
+                <dd>{currentInfrastructurePressure}</dd>
+              </div>
+            </dl>
             <div
               className="comparison-options two-options"
               role="list"
@@ -1042,6 +1202,19 @@ export function App({ buildMetadata }: AppProps) {
                 <small>
                   放弃粮食 +1；设备恢复负荷保持 {simulation.managementChoices.equipmentRecoveryLoad}。
                 </small>
+                <dl className="candidate-outcome-grid">
+                  <div><dt>选择后粮食</dt><dd>{formatRange(foodForecast.endingStock)}</dd></div>
+                  <div><dt>选择后维修</dt><dd>{formatRange({
+                    low: repairForecast.endingStock.low + 1,
+                    high: repairForecast.endingStock.high + 1,
+                  })}</dd></div>
+                  <div><dt>负荷</dt><dd>{recoveryLoadStatus}</dd></div>
+                  <div><dt>准备度</dt><dd>{simulation.managementChoices.personnelReadiness}</dd></div>
+                  <div><dt>压力</dt><dd>{infrastructurePressure(
+                    repairForecast.endingStock.high + 1,
+                    simulation.managementChoices.equipmentRecoveryLoad,
+                  )}</dd></div>
+                </dl>
                 <button
                   aria-pressed={
                     recoveryAllocationTerminal ===
@@ -1073,6 +1246,16 @@ export function App({ buildMetadata }: AppProps) {
                 <small>
                   放弃维修 +1；设备恢复负荷保持 {simulation.managementChoices.equipmentRecoveryLoad}。
                 </small>
+                <dl className="candidate-outcome-grid">
+                  <div><dt>选择后粮食</dt><dd>{formatRange({
+                    low: foodForecast.endingStock.low + 1,
+                    high: foodForecast.endingStock.high + 1,
+                  })}</dd></div>
+                  <div><dt>选择后维修</dt><dd>{formatRange(repairForecast.endingStock)}</dd></div>
+                  <div><dt>负荷</dt><dd>{recoveryLoadStatus}</dd></div>
+                  <div><dt>准备度</dt><dd>{simulation.managementChoices.personnelReadiness}</dd></div>
+                  <div><dt>压力</dt><dd>{currentInfrastructurePressure}</dd></div>
+                </dl>
                 <button
                   aria-pressed={
                     recoveryAllocationTerminal ===
@@ -1094,6 +1277,12 @@ export function App({ buildMetadata }: AppProps) {
                 </button>
               </article>
             </div>
+            {recoveryAllocationTerminal ===
+              'unqualified-direct-edit' && (
+              <p className="choice-integrity-note" role="status">
+                目标班次已直接编辑：真实粮食或维修结果继续生效，但系统不会事后补记本次恢复资源意图。
+              </p>
+            )}
             {choiceError && (
               <small role="alert">{choiceError}</small>
             )}

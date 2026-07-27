@@ -8,6 +8,7 @@ import {
 import { afterEach, describe, expect, it, vi } from 'vitest'
 import { App, CharacterDecisionPanel } from '../src/app/App'
 import { gate1WeekOneScenario as scenario } from '../src/scenario/gate1-week-one'
+import * as engine from '../src/sim/engine'
 
 const TEST_BUILD_METADATA = {
   buildId: 'g1-e2e-unit.1',
@@ -19,8 +20,21 @@ const TEST_BUILD_METADATA = {
   initialStateHashAlgorithm: 'fnv1a32-stable-json-v1' as const,
 }
 
+const TEST_SESSION_AUTHORITY = {
+  diagnosisId: 'A38',
+  sessionId: '11111111-1111-4111-8111-111111111111',
+  candidateBuildAuthorityHash:
+    TEST_BUILD_METADATA.artifactHash,
+  sessionAuthorityToken: '3'.repeat(64),
+}
+
 function renderStartedApp() {
-  render(<App buildMetadata={TEST_BUILD_METADATA} />)
+  render(
+    <App
+      buildMetadata={TEST_BUILD_METADATA}
+      sessionAuthorityProvider={() => TEST_SESSION_AUTHORITY}
+    />,
+  )
   fireEvent.click(screen.getByRole('button', { name: '创建固定初态会话' }))
 }
 
@@ -217,16 +231,20 @@ describe('minimal weekly flow UI', () => {
     fireEvent.click(screen.getByRole('button', { name: '修改所选格' }))
 
     fireEvent.click(screen.getByRole('button', { name: '比较容量取舍' }))
-    fireEvent.click(
-      screen.getByRole('button', { name: '安排第二次预防检修' }),
-    )
 
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      'ORIGINAL_ACTIVITY_MISMATCH',
+    const maintenance = screen.getByRole('button', {
+      name: '安排第二次预防检修',
+    })
+    const protectedRecovery = screen.getByRole('button', {
+      name: '指定保护性恢复',
+    })
+    expect(maintenance).toBeDisabled()
+    expect(protectedRecovery).toBeDisabled()
+    expect(screen.getByRole('status')).toHaveTextContent(
+      '真实经营结果继续生效，但系统不会事后补记本次管理意图',
     )
-    expect(
-      screen.getByRole('button', { name: '安排第二次预防检修' }),
-    ).toHaveAttribute('aria-pressed', 'false')
+    expect(maintenance).toHaveAttribute('aria-pressed', 'false')
+    expect(protectedRecovery).toHaveAttribute('aria-pressed', 'false')
     expect(
       screen.getByRole('button', { name: '比较容量取舍' }),
     ).toBeInTheDocument()
@@ -255,7 +273,7 @@ describe('minimal weekly flow UI', () => {
     expect(maintenance).toHaveAttribute('aria-pressed', 'true')
     expect(maintenance).toBeDisabled()
     expect(
-      within(dialog).getByRole('button', { name: '保留休息容量' }),
+      within(dialog).getByRole('button', { name: '指定保护性恢复' }),
     ).toBeDisabled()
     expect(within(forecastPanel!).getByText('9')).toBeInTheDocument()
     expect(
@@ -263,11 +281,33 @@ describe('minimal weekly flow UI', () => {
     ).toHaveTextContent('设备暴露降为 low')
   })
 
+  it('shows a player-facing message when a management choice commit is rejected', () => {
+    renderStartedApp()
+    vi.spyOn(engine, 'applyPlayerAction').mockImplementationOnce(() => {
+      throw new engine.ManagementChoiceCommitError(
+        'STATE_REVISION_CONFLICT',
+      )
+    })
+
+    fireEvent.click(
+      screen.getByRole('button', { name: '比较容量取舍' }),
+    )
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: '安排第二次预防检修',
+      }),
+    )
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      '状态刚刚发生变化，请重新打开比较后再选择。',
+    )
+  })
+
   it('keeps the retained-rest result and its committed schedule slot locked', () => {
     renderStartedApp()
 
     fireEvent.click(screen.getByRole('button', { name: '比较容量取舍' }))
-    fireEvent.click(screen.getByRole('button', { name: '保留休息容量' }))
+    fireEvent.click(screen.getByRole('button', { name: '指定保护性恢复' }))
 
     const schedulePanel = screen.getByRole('heading', {
       name: '林禾 · 周二 B2',
@@ -278,7 +318,7 @@ describe('minimal weekly flow UI', () => {
       screen.getByRole('button', { name: '查看容量结果' }).closest('article'),
     ).toHaveTextContent('人员准备度 +1')
     expect(
-      screen.getByRole('button', { name: '保留休息容量' }),
+      screen.getByRole('button', { name: '指定保护性恢复' }),
     ).toHaveAttribute('aria-pressed', 'true')
     expect(
       screen.getByRole('button', { name: '安排第二次预防检修' }),
@@ -433,6 +473,11 @@ describe('minimal weekly flow UI', () => {
     })
     expect(screen.getByRole('heading', { name: /周末偏差复盘/ })).toBeInTheDocument()
     expect(screen.getByText('本周安排已完成并结算，不是被撤销')).toBeInTheDocument()
+    const recap = screen.getByRole('heading', {
+      name: /周末偏差复盘/,
+    }).closest('section')
+    expect(recap).not.toBeNull()
+    expect(recap).not.toHaveTextContent(/terminalState=|unqualified-direct-edit/)
     expect(screen.queryByRole('heading', { name: '粮食' })).not.toBeInTheDocument()
     expect(screen.queryByRole('button', { name: '保留休息' })).not.toBeInTheDocument()
     expect(screen.getByLabelText('聚落时钟')).toHaveTextContent('复盘中')
@@ -462,6 +507,32 @@ describe('minimal weekly flow UI', () => {
     ).toHaveTextContent('本周已使用化肥，库存为 0')
     expect(screen.getByLabelText('聚落时钟')).toHaveTextContent('已暂停')
     expect(screen.queryByRole('button', { name: '定位日程方案' })).not.toBeInTheDocument()
+
+    fireEvent.click(screen.getByRole('button', { name: '比较应急班次' }))
+    const recoveryDialog = screen.getByRole('dialog', {
+      name: '同一个应急班次投向哪里',
+    })
+    const sharedState = within(recoveryDialog).getByLabelText(
+      '恢复资源共享状态',
+    )
+    expect(sharedState).toHaveTextContent('当前粮食')
+    expect(sharedState).toHaveTextContent('目标 ≥12')
+    expect(sharedState).toHaveTextContent('当前维修')
+    expect(sharedState).toHaveTextContent('目标 ≥5')
+    expect(sharedState).toHaveTextContent(/设备负荷.*(?:稳定|脆弱)/)
+    expect(sharedState).toHaveTextContent('基础设施压力')
+
+    const recoveryCandidates = within(recoveryDialog).getAllByRole(
+      'listitem',
+    )
+    expect(recoveryCandidates).toHaveLength(2)
+    for (const candidate of recoveryCandidates) {
+      expect(candidate).toHaveTextContent('选择后粮食')
+      expect(candidate).toHaveTextContent('选择后维修')
+      expect(candidate).toHaveTextContent('负荷')
+      expect(candidate).toHaveTextContent('准备度')
+      expect(candidate).toHaveTextContent('压力')
+    }
   })
 
   it('keeps one complete export immutable across a failed save and retry', async () => {

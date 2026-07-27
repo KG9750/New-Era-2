@@ -4,8 +4,10 @@ import { gate1WeekOneScenario as scenario } from '../scenario/gate1-week-one'
 
 interface SessionGateProps {
   buildMetadata: RcBuildMetadata
+  startError?: string
+  starting?: boolean
   wasCleared: boolean
-  onStart(sampleId: string): void
+  onStart(sampleId: string): void | Promise<void>
 }
 
 const SAMPLE_ID_PATTERN =
@@ -17,6 +19,8 @@ export function isRc9SampleId(sampleId: string): boolean {
 
 export function SessionGate({
   buildMetadata,
+  startError,
+  starting = false,
   wasCleared,
   onStart,
 }: SessionGateProps) {
@@ -63,17 +67,20 @@ export function SessionGate({
         {!valid && sampleId.length > 0 && (
           <p className="field-error" role="alert">请输入有效的匿名编号。</p>
         )}
+        {startError && (
+          <p className="field-error" role="alert">{startError}</p>
+        )}
         {wasCleared && (
           <p className="cleared-session-note">
             上一场已从网页内存清空；下载到操作系统的文件不受网页清空影响。
           </p>
         )}
         <button
-          disabled={!valid}
+          disabled={!valid || starting}
           onClick={() => onStart(normalizedSampleId)}
           type="button"
         >
-          创建固定初态会话
+          {starting ? '正在登记会话…' : '创建固定初态会话'}
         </button>
       </section>
     </main>

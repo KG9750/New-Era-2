@@ -309,6 +309,39 @@ h2 {
   margin: 12px 0 16px;
 }
 
+.shared-status-table {
+  border: 1px solid #c8bcaa;
+  border-radius: 10px;
+  display: grid;
+  gap: 0;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  margin: 0 0 14px;
+  overflow: hidden;
+}
+
+.shared-status-table div {
+  border-right: 1px solid #d6ccbd;
+  display: grid;
+  gap: 4px;
+  padding: 11px 12px;
+}
+
+.shared-status-table div:last-child {
+  border-right: 0;
+}
+
+.shared-status-table dt,
+.candidate-outcome-grid dt {
+  color: #6a6c64;
+  font-size: 11px;
+}
+
+.shared-status-table dd,
+.candidate-outcome-grid dd {
+  font-weight: 750;
+  margin: 0;
+}
+
 .comparison-options,
 .responsibility-schedule-options {
   display: grid;
@@ -340,6 +373,29 @@ h2 {
 .responsibility-schedule-option > small {
   color: #676a62;
   line-height: 1.45;
+}
+
+.candidate-outcome-grid {
+  display: grid;
+  gap: 6px 10px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  margin: 2px 0;
+}
+
+.candidate-outcome-grid div {
+  border-top: 1px solid #ddd2c2;
+  display: grid;
+  gap: 2px;
+  padding-top: 6px;
+}
+
+.choice-integrity-note {
+  background: #f3e6d7;
+  border: 1px solid #c69b6c;
+  border-radius: 8px;
+  color: #6e4d2e;
+  margin: 12px 0 0;
+  padding: 10px 12px;
 }
 
 .comparison-option-action,
@@ -1048,6 +1104,14 @@ h2 {
     border-left: 0;
     padding-top: 14px;
     padding-left: 0;
+  }
+
+  .shared-status-table {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .shared-status-table div:nth-child(2) {
+    border-right: 0;
   }
 }
 

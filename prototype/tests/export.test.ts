@@ -7,6 +7,7 @@ import {
 } from '../src/sim/engine'
 import { calculateFoodForecast } from '../src/sim/forecast'
 import {
+  PREVENTIVE_CAPACITY_DEADLINE_TICK,
   PREVENTIVE_CAPACITY_CHOICE_SET_ID,
   RECOVERY_ALLOCATION_CHOICE_SET_ID,
   bindManagementChoiceAuthority,
@@ -131,6 +132,8 @@ function v03BlockedExport() {
     sessionId: recorder.meta.sessionId,
     candidateBuildAuthorityHash:
       recorder.meta.candidateBuildAuthorityHash,
+    sessionAuthorityToken:
+      recorder.meta.sessionAuthorityToken,
   })
   state = commitManagementCandidate(
     recorder,
@@ -281,6 +284,67 @@ describe('Gate 1 v2 production export', () => {
       [...fingerprints].sort(),
     )
     expect(exported.candidateEditGroups).toEqual([])
+  })
+
+  it('exports the frozen omitted terminal when a blocked capture is created after the deadline', () => {
+    const initial = scenario.createInitialState()
+    const recorder = createSessionRecorder(
+      'TECH-RC9-D81',
+      initial,
+      buildMetadata(),
+      1_000,
+      100,
+    )
+    const state = bindManagementChoiceAuthority(initial, {
+      diagnosisId: recorder.meta.diagnosisId,
+      sessionId: recorder.meta.sessionId,
+      candidateBuildAuthorityHash:
+        recorder.meta.candidateBuildAuthorityHash,
+      sessionAuthorityToken:
+        recorder.meta.sessionAuthorityToken,
+    })
+    const advanced = advanceSimulation(
+      state,
+      PREVENTIVE_CAPACITY_DEADLINE_TICK + 1,
+      scenario,
+    )
+    recordSimulationAdvance(
+      recorder,
+      state,
+      advanced,
+      3,
+      120,
+    )
+    recordBlockedCaptureCreated(
+      recorder,
+      advanced.state.currentTick,
+      130,
+    )
+
+    const exported = createBlockedPlaytestExport(
+      recorder,
+      advanced.state,
+      'deadline 后保存阻断记录',
+      1_100,
+      140,
+    )
+
+    expect(exported.finalTick).toBe(
+      PREVENTIVE_CAPACITY_DEADLINE_TICK + 1,
+    )
+    expect(
+      exported.managementChoiceOpportunitiesV03,
+    ).toContainEqual(
+      expect.objectContaining({
+        choiceSetId: PREVENTIVE_CAPACITY_CHOICE_SET_ID,
+        terminalState: 'omitted',
+      }),
+    )
+    expect(exported.managementChoiceCommitmentsV03).toEqual([])
+    expect(exported.summary).toMatchObject({
+      week1C03TerminalCommitmentCount: 0,
+      week2C03TerminalCommitmentCount: 0,
+    })
   })
 
   it('classifies an accepted Lin He request into one legacy and one management group', () => {

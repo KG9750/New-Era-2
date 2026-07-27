@@ -15,6 +15,7 @@ export interface PlaytestSessionMeta {
   diagnosisId: string
   sessionId: string
   candidateBuildAuthorityHash: string
+  sessionAuthorityToken: string
   buildId: string
   gitSha: string
   artifactHash: string
@@ -25,6 +26,13 @@ export interface PlaytestSessionMeta {
   initialStateHash: string
   viewport: string
   inputDevice: 'browser-pointer-keyboard'
+}
+
+export interface HostIssuedSessionAuthority {
+  diagnosisId: string
+  sessionId: string
+  candidateBuildAuthorityHash: string
+  sessionAuthorityToken: string
 }
 
 export type TelemetryType =
@@ -117,6 +125,16 @@ function createSessionId(): string {
   return `session-${Date.now()}-${fallbackSessionSequence}`
 }
 
+function createFallbackAuthorityToken(): string {
+  if (typeof globalThis.crypto?.randomUUID === 'function') {
+    return `${globalThis.crypto.randomUUID()}${globalThis.crypto.randomUUID()}`
+      .replaceAll('-', '')
+      .toLowerCase()
+  }
+  fallbackSessionSequence += 1
+  return fallbackSessionSequence.toString(16).padStart(64, '0')
+}
+
 function machineOffset(recorder: SessionRecorder, monotonicNow: number): number {
   return Math.max(0, Math.round(monotonicNow - recorder.machineStartedAtMonotonicMs))
 }
@@ -176,6 +194,7 @@ export function createSessionRecorder(
   buildMetadata: RcBuildMetadata,
   epochNow = Date.now(),
   monotonicNow = performance.now(),
+  issuedAuthority?: HostIssuedSessionAuthority,
 ): SessionRecorder {
   const initialStateHash = stableStateHash(state)
   if (buildMetadata.initialStateHash !== initialStateHash) {
@@ -183,11 +202,26 @@ export function createSessionRecorder(
       `冻结初态指纹不一致：metadata=${buildMetadata.initialStateHash} runtime=${initialStateHash}`,
     )
   }
-  const meta: PlaytestSessionMeta = {
-    sampleId,
+  const authority = issuedAuthority ?? {
     diagnosisId: sampleId,
     sessionId: createSessionId(),
     candidateBuildAuthorityHash: buildMetadata.artifactHash,
+    sessionAuthorityToken: createFallbackAuthorityToken(),
+  }
+  if (
+    authority.diagnosisId !== sampleId ||
+    authority.candidateBuildAuthorityHash !==
+      buildMetadata.artifactHash
+  ) {
+    throw new Error('Host 会话 authority 与样本或构建不一致')
+  }
+  const meta: PlaytestSessionMeta = {
+    sampleId,
+    diagnosisId: authority.diagnosisId,
+    sessionId: authority.sessionId,
+    candidateBuildAuthorityHash:
+      authority.candidateBuildAuthorityHash,
+    sessionAuthorityToken: authority.sessionAuthorityToken,
     buildId: buildMetadata.buildId,
     gitSha: buildMetadata.gitSha,
     artifactHash: buildMetadata.artifactHash,

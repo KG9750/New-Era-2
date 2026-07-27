@@ -1,8 +1,21 @@
 // @ts-nocheck -- the production host is an ESM .mjs script without a declaration file.
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { createHash } from 'node:crypto'
+import {
+  mkdirSync,
+  mkdtempSync,
+  readFileSync,
+  rmSync,
+  writeFileSync,
+} from 'node:fs'
+import { tmpdir } from 'node:os'
+import { join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
-import { validateCapturedExport } from '../scripts/playtest-host.mjs'
+import {
+  createPlaytestHost,
+  createSessionAuthorityRegistry,
+  validateCapturedExport,
+} from '../scripts/playtest-host.mjs'
+import { validateCanonicalManagementLedger } from '../scripts/management-ledger-contract.mjs'
 import { gate1WeekOneScenario as scenario } from '../src/scenario/gate1-week-one'
 import {
   advanceSimulation,
@@ -289,29 +302,53 @@ function commitV03Candidate(
   )
 }
 
-function v03BlockedExport() {
+function v03Export(
+  issuedAuthority?: {
+    diagnosisId: string
+    sessionId: string
+    candidateBuildAuthorityHash: string
+    sessionAuthorityToken: string
+  },
+  captureKind: 'blocked' | 'complete' = 'blocked',
+  w1Mode: 'committed' | 'direct-edit' = 'committed',
+) {
   const initial = scenario.createInitialState()
   const metadata = buildMetadata()
   const recorder = createSessionRecorder(
-    'TECH-RC9-D80',
+    issuedAuthority?.diagnosisId ?? 'TECH-RC9-D80',
     initial,
     metadata,
     1_000,
     100,
+    issuedAuthority,
   )
   let state = bindManagementChoiceAuthority(initial, {
     diagnosisId: recorder.meta.diagnosisId,
     sessionId: recorder.meta.sessionId,
     candidateBuildAuthorityHash:
       recorder.meta.candidateBuildAuthorityHash,
+    sessionAuthorityToken:
+      recorder.meta.sessionAuthorityToken,
   })
-  state = commitV03Candidate(
-    recorder,
-    state,
-    1,
-    'retain-rest-capacity',
-    110,
-  )
+  state =
+    w1Mode === 'direct-edit'
+      ? recordV03Action(
+          recorder,
+          state,
+          1,
+          {
+            type: 'CHANGE_ACTIVITY',
+            activity: 'repair',
+          },
+          110,
+        )
+      : commitV03Candidate(
+          recorder,
+          state,
+          1,
+          'retain-rest-capacity',
+          110,
+        )
   state = recordV03Action(
     recorder,
     state,
@@ -366,6 +403,52 @@ function v03BlockedExport() {
     'allocate-food-production',
     170,
   )
+  if (captureKind === 'complete') {
+    state = recordV03Action(
+      recorder,
+      state,
+      6,
+      {
+        type: 'RESOLVE_LIN_HE_REQUEST',
+        decision: 'declined',
+      },
+      180,
+    )
+    state = recordV03Action(
+      recorder,
+      state,
+      7,
+      { type: 'SET_PAUSED', paused: false },
+      190,
+    )
+    advanced = advanceSimulation(
+      state,
+      scenario.simulationEndTick,
+      scenario,
+    )
+    recordSimulationAdvance(
+      recorder,
+      state,
+      advanced,
+      3,
+      200,
+    )
+    state = advanced.state
+    recordExportCreated(
+      recorder,
+      state.currentTick,
+      210,
+    )
+    return {
+      metadata,
+      payload: createPlaytestExport(
+        recorder,
+        state,
+        1_100,
+        220,
+      ),
+    }
+  }
   recordBlockedCaptureCreated(
     recorder,
     state.currentTick,
@@ -460,14 +543,273 @@ function blockedPayloadFromFixture(fileName: string) {
 }
 
 describe('Gate 1 capture host contracts', () => {
-  it('accepts an authority-bound v0.3 ledger with both C03 terminals', () => {
-    const { metadata, payload } = v03BlockedExport()
+  it('accepts a complete authority-bound v0.3 ledger with both C03 terminals', () => {
+    const { metadata, payload } = v03Export(
+      undefined,
+      'complete',
+    )
 
+    expect(payload).toMatchObject({
+      captureKind: 'complete',
+      finalState: {
+        isComplete: true,
+        completedWeekCount: 2,
+      },
+    })
+    expect(
+      payload.managementChoiceCommitmentsV03,
+    ).toHaveLength(2)
+    expect(validateCanonicalManagementLedger(payload)).toMatchObject({
+      ok: true,
+    })
     expect(validateCapturedExport(payload, metadata)).toBe(true)
+
+    const malformedAction = JSON.parse(JSON.stringify(payload))
+    malformedAction.actions.push(null)
+    expect(
+      validateCanonicalManagementLedger(malformedAction),
+    ).toMatchObject({
+      ok: false,
+      code: 'V03_LEDGER_SHAPE',
+    })
+
+    const malformedRecap = JSON.parse(JSON.stringify(payload))
+    malformedRecap.recap = [null]
+    expect(
+      validateCanonicalManagementLedger(malformedRecap),
+    ).toMatchObject({
+      ok: false,
+      code: 'V03_RECAP_MISMATCH',
+    })
+  })
+
+  it('accepts a settled W1 direct edit without treating the expired override as current state', () => {
+    const { metadata, payload } = v03Export(
+      undefined,
+      'complete',
+      'direct-edit',
+    )
+
+    expect(payload).toMatchObject({
+      finalState: {
+        preventiveCapacityActivity: 'rest',
+        equipmentExposure: 'high',
+        equipmentRecoveryLoad: 2,
+      },
+      summary: {
+        week1C03TerminalCommitmentCount: 0,
+        week2C03TerminalCommitmentCount: 1,
+      },
+    })
+    expect(
+      payload.managementChoiceOpportunitiesV03[0]
+        .terminalState,
+    ).toBe('unqualified-direct-edit')
+    expect(
+      validateCanonicalManagementLedger(payload),
+    ).toMatchObject({ ok: true })
+    expect(validateCapturedExport(payload, metadata)).toBe(true)
+
+    for (const [field, activity] of [
+      ['preventiveCapacityActivity', 'repair'],
+      ['recoveryAllocationActivity', 'food'],
+    ] as const) {
+      const tampered = JSON.parse(JSON.stringify(payload))
+      tampered.finalState[field] = activity
+      expect(
+        validateCanonicalManagementLedger(tampered),
+      ).toMatchObject({
+        ok: false,
+        code: 'V03_FINAL_STATE_MISMATCH',
+      })
+    }
+  })
+
+  it('authorizes one host-issued ledger, consumes it, and permits only a same-bytes retry', () => {
+    const metadata = buildMetadata()
+    const registry =
+      createSessionAuthorityRegistry(metadata)
+    const authority = registry.issue('TECH-RC9-D80')
+    expect(authority).not.toBeNull()
+    const { payload } = v03Export(authority!)
+    const rawBytes = Buffer.from(
+      JSON.stringify(payload, null, 2),
+    )
+    const sha256 = createHash('sha256')
+      .update(rawBytes)
+      .digest('hex')
+
+    expect(validateCapturedExport(payload, metadata)).toBe(
+      true,
+    )
+    expect(registry.authorize(payload, sha256)).toEqual({
+      ok: true,
+      replay: false,
+    })
+    expect(registry.consume(payload, sha256)).toBe(true)
+    expect(registry.authorize(payload, sha256)).toEqual({
+      ok: true,
+      replay: true,
+    })
+    expect(
+      registry.authorize(payload, 'f'.repeat(64)),
+    ).toEqual({
+      ok: false,
+      replay: false,
+    })
+    expect(
+      registry.consume(payload, 'f'.repeat(64)),
+    ).toBe(false)
+  })
+
+  it('issues authority over HTTP and accepts one legal capture plus an identical retry', async () => {
+    const tempRoot = mkdtempSync(
+      join(tmpdir(), 'new-era-c03-host-'),
+    )
+    const distRoot = join(tempRoot, 'dist')
+    const captureRoot = join(tempRoot, 'captures')
+    mkdirSync(distRoot)
+    writeFileSync(
+      join(distRoot, 'rc-build.json'),
+      `${JSON.stringify(buildMetadata())}\n`,
+    )
+    const host = createPlaytestHost({
+      captureRoot,
+      distRoot,
+      port: 0,
+    })
+    try {
+      const address = await host.start()
+      expect(address).toEqual(
+        expect.objectContaining({ port: expect.any(Number) }),
+      )
+      const baseUrl = `http://127.0.0.1:${address.port}`
+      const authorityResponse = await fetch(
+        `${baseUrl}/__gate1/session-authority`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type':
+              'application/json; charset=utf-8',
+          },
+          body: JSON.stringify({
+            sampleId: 'TECH-RC9-D80',
+          }),
+        },
+      )
+      expect(authorityResponse.status).toBe(201)
+      const authority = await authorityResponse.json()
+      const { payload } = v03Export(authority)
+      const rawJson = JSON.stringify(payload, null, 2)
+      const capture = () =>
+        fetch(`${baseUrl}/__gate1/capture`, {
+          method: 'POST',
+          headers: {
+            'Content-Type':
+              'application/json; charset=utf-8',
+          },
+          body: rawJson,
+        })
+
+      expect((await capture()).status).toBe(201)
+      expect((await capture()).status).toBe(200)
+      const differentBytes = await fetch(
+        `${baseUrl}/__gate1/capture`,
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type':
+              'application/json; charset=utf-8',
+          },
+          body: JSON.stringify(payload),
+        },
+      )
+      expect(differentBytes.status).toBe(409)
+      await expect(differentBytes.json()).resolves.toMatchObject(
+        {
+          error:
+            '会话 authority 未登记、已消费或绑定不一致',
+        },
+      )
+    } finally {
+      await new Promise<void>((resolveClose) => {
+        host.server.close(() => resolveClose())
+      })
+      rmSync(tempRoot, { recursive: true, force: true })
+    }
+  })
+
+  it('rejects an unregistered authority and every diagnosis, session, or build rebind', () => {
+    const metadata = buildMetadata()
+    const registry =
+      createSessionAuthorityRegistry(metadata)
+    const authority = registry.issue('TECH-RC9-D80')
+    const { payload } = v03Export(authority!)
+    const sha256 = createHash('sha256')
+      .update(JSON.stringify(payload, null, 2))
+      .digest('hex')
+    const clone = () =>
+      JSON.parse(JSON.stringify(payload))
+
+    const unregistered = clone()
+    unregistered.meta.sessionAuthorityToken = 'f'.repeat(64)
+    expect(
+      registry.authorize(unregistered, sha256).ok,
+    ).toBe(false)
+
+    const rebindings = [
+      {
+        diagnosisId: 'TECH-RC9-D81',
+        sampleId: 'TECH-RC9-D81',
+      },
+      {
+        sessionId:
+          '22222222-2222-4222-8222-222222222222',
+      },
+      {
+        candidateBuildAuthorityHash: 'f'.repeat(64),
+      },
+      {
+        artifactHash: 'f'.repeat(64),
+      },
+      {
+        buildId: 'g1-other-build.1',
+      },
+      {
+        gitSha: 'f'.repeat(40),
+      },
+    ]
+    for (const reboundMeta of rebindings) {
+      const rebound = clone()
+      Object.assign(rebound.meta, reboundMeta)
+      expect(
+        registry.authorize(rebound, sha256).ok,
+      ).toBe(false)
+    }
+  })
+
+  it('rejects a ledger whose action token no longer matches its authority-bound projections', () => {
+    const { metadata, payload } = v03Export()
+    const tampered = JSON.parse(JSON.stringify(payload))
+    const action = tampered.actions.find(
+      ({ type }: { type: string }) =>
+        type === 'COMMIT_MANAGEMENT_CHOICE',
+    )
+    action.sessionAuthorityToken = 'f'.repeat(64)
+
+    expect(
+      validateCanonicalManagementLedger(tampered),
+    ).toMatchObject({
+      ok: false,
+      code: 'V03_ACTION_MISMATCH',
+    })
+    expect(
+      validateCapturedExport(tampered, metadata),
+    ).toBe(false)
   })
 
   it('rejects tampered v0.3 authority, ownership, consequences, resource lot, and economic delta', () => {
-    const { metadata, payload } = v03BlockedExport()
+    const { metadata, payload } = v03Export()
     const clone = () =>
       JSON.parse(JSON.stringify(payload))
 
