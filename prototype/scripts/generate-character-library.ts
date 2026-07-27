@@ -44,13 +44,16 @@ ${rosterRows.join('\n')}
 
 - Library ID：\`${library.library_id}\`
 - World seed：\`${library.world_seed_hex}\`
+- Generator schema：\`${library.generator_schema_version}\`
 - 人数：${library.characters.length}
+- 权威机器 finding 数：${library.validation.findings.length}
 - 已实现机器合同汇总：\`${library.validation.implemented_machine_contracts_status.toUpperCase()}\`
 - 已实现机器合同无警告通过：\`${library.validation.implemented_machine_contracts_passed ? 'YES' : 'NO'}\`
 - 警告 ID：\`${library.validation.warned_ids.join(', ') || 'none'}\`
 - 机器合同作用域：\`${library.validation.scope}\`
 - 未运行 ID：\`${library.validation.not_run_ids.join(', ') || 'none'}\`
 - 完整 M12：\`${library.validation.findings.find((finding) => finding.validation_id === 'M12')?.result.toUpperCase()}\`
+- 当前生成器自重放诊断：\`${library.diagnostics.current_generator_replay.result.toUpperCase()}\`（\`authoritative=false\`，不计入聚合）
 - MBTI 分布：${Object.entries(mbtiCounts)
   .sort(([left], [right]) => left.localeCompare(right))
   .map(([type, count]) => `${type}=${count}`)

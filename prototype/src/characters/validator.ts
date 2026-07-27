@@ -21,6 +21,7 @@ import {
   type AttributeKey,
   type AttributeValues,
   type GeneratedCharacter,
+  type MbtiType,
   type SkillKey,
   type SkillValues,
   type ValidationFinding,
@@ -53,6 +54,42 @@ function isQualification(value: unknown): boolean {
     [1, 2, 3].includes(value.rank as number) &&
     typeof value.source_node_id === 'string' &&
     typeof value.evidence === 'string'
+  )
+}
+
+function isValidationFinding(value: unknown): value is ValidationFinding {
+  if (!isRecord(value)) {
+    return false
+  }
+  const expectedKeys = [
+    'evidence',
+    'executor',
+    'phase',
+    'predicate',
+    'result',
+    'reviewer',
+    'subject_id',
+    'timestamp',
+    'validation_id',
+  ]
+  return (
+    sameData(Object.keys(value).sort(), expectedKeys) &&
+    typeof value.validation_id === 'string' &&
+    value.validation_id.length > 0 &&
+    value.executor === 'machine' &&
+    ['character_generation', 'library_build'].includes(
+      value.phase as string,
+    ) &&
+    typeof value.subject_id === 'string' &&
+    value.subject_id.length > 0 &&
+    typeof value.predicate === 'string' &&
+    value.predicate.length > 0 &&
+    typeof value.evidence === 'string' &&
+    ['passed', 'blocked', 'warned', 'not_run'].includes(
+      value.result as string,
+    ) &&
+    value.reviewer === 'character-generator-v0.1' &&
+    value.timestamp === 'deterministic-build'
   )
 }
 
@@ -465,9 +502,7 @@ export function validateCharacter(
   const educationTemplate = EDUCATION_TEMPLATES.find(
     (template) => template.id === educationNode?.template_id,
   )
-  const workNode = character.biography_nodes.find(
-    (node) => node.stage === 'work',
-  )
+  const workNode = workNodes[0]
   const workTemplate = WORK_TEMPLATES.find(
     (template) => template.id === workNode?.template_id,
   )
@@ -631,65 +666,82 @@ export function validateCharacter(
       educationNode.motivation_and_hooks.length === 0
     )
   })()
-  const workTemplateOutputsValid = (() => {
-    if (workNode === undefined || workTemplate === undefined) {
-      return false
-    }
-    const modifierEntries: [AttributeKey, -1 | 1][] = [
-      [workTemplate.positive, 1],
-      [workTemplate.negative, -1],
-    ]
-    if (attributeProfile >= 3) {
-      modifierEntries.push([
-        pickAvailableAttribute(
-          characterIndex + 3,
-          new Set([workTemplate.positive, workTemplate.negative]),
-        ),
-        1,
-      ])
-    }
-    const expectedWorkQualifications =
-      characterIndex % 4 === 0 && educationTemplate !== undefined
-        ? [
-            {
-              qualification_id: educationTemplate.qualificationId,
-              rank: 2,
-              source_node_id: workNode.node_id,
-              evidence: `${educationTemplate.qualificationEvidence}，并在长期主要职责中独立使用`,
-            },
-          ]
-        : []
-    return (
-      sameData(workNode.context_tags, [
-        'work',
-        workTemplate.primary,
-        workTemplate.secondary,
-      ]) &&
-      sameData(
-        workNode.attribute_modifiers,
-        expectedModifiers(workNode.node_id, modifierEntries),
-      ) &&
-      sameData(workNode.skill_experience, [
-        {
-          skill: workTemplate.primary,
-          points: 6,
-          intensity: 'major_duty',
-        },
-        {
-          skill: workTemplate.secondary,
-          points: 4,
-          intensity: 'regular',
-        },
-      ]) &&
-      sameData(workNode.qualifications, expectedWorkQualifications) &&
-      sameData(workNode.personality_candidates, [workTemplate.trait]) &&
-      workNode.value_and_redline_candidates.length === 0 &&
-      sameData(workNode.relationship_outputs, [workTemplate.relationship]) &&
-      sameData(workNode.motivation_and_hooks, [
-        `曾任${workTemplate.experienceTitle}`,
-      ])
-    )
-  })()
+  const workTemplateOutputsValid =
+    workNodes.length > 0 &&
+    workNodes.every((candidateWorkNode, workIndex) => {
+      const candidateWorkTemplate = WORK_TEMPLATES.find(
+        (template) => template.id === candidateWorkNode.template_id,
+      )
+      if (candidateWorkTemplate === undefined) {
+        return false
+      }
+      const modifierEntries: [AttributeKey, -1 | 1][] = [
+        [candidateWorkTemplate.positive, 1],
+        [candidateWorkTemplate.negative, -1],
+      ]
+      if (workIndex === 0 && attributeProfile >= 3) {
+        modifierEntries.push([
+          pickAvailableAttribute(
+            characterIndex + 3,
+            new Set([
+              candidateWorkTemplate.positive,
+              candidateWorkTemplate.negative,
+            ]),
+          ),
+          1,
+        ])
+      }
+      const expectedWorkQualifications =
+        workIndex === 0 &&
+        characterIndex % 4 === 0 &&
+        educationTemplate !== undefined
+          ? [
+              {
+                qualification_id: educationTemplate.qualificationId,
+                rank: 2,
+                source_node_id: candidateWorkNode.node_id,
+                evidence: `${educationTemplate.qualificationEvidence}，并在长期主要职责中独立使用`,
+              },
+            ]
+          : []
+      return (
+        sameData(candidateWorkNode.context_tags, [
+          'work',
+          candidateWorkTemplate.primary,
+          candidateWorkTemplate.secondary,
+        ]) &&
+        sameData(
+          candidateWorkNode.attribute_modifiers,
+          expectedModifiers(candidateWorkNode.node_id, modifierEntries),
+        ) &&
+        sameData(candidateWorkNode.skill_experience, [
+          {
+            skill: candidateWorkTemplate.primary,
+            points: 6,
+            intensity: 'major_duty',
+          },
+          {
+            skill: candidateWorkTemplate.secondary,
+            points: 4,
+            intensity: 'regular',
+          },
+        ]) &&
+        sameData(
+          candidateWorkNode.qualifications,
+          expectedWorkQualifications,
+        ) &&
+        sameData(candidateWorkNode.personality_candidates, [
+          candidateWorkTemplate.trait,
+        ]) &&
+        candidateWorkNode.value_and_redline_candidates.length === 0 &&
+        sameData(candidateWorkNode.relationship_outputs, [
+          candidateWorkTemplate.relationship,
+        ]) &&
+        sameData(candidateWorkNode.motivation_and_hooks, [
+          `曾任${candidateWorkTemplate.experienceTitle}`,
+        ])
+      )
+    })
   const turningTemplateOutputsValid = (() => {
     if (
       turningNode === undefined ||
@@ -1126,6 +1178,270 @@ export function validateCharacterLibraryContent(
   ]
 }
 
+function frozenSeedKatFinding(): ValidationFinding {
+  const worldSeed =
+    '0000000000000000000000000000000000000000000000000000000000000001'
+  const candidateSequenceSeed = deriveSeedV1('replacement-seat', [
+    worldSeed,
+    'seat:test',
+    'loss:test',
+    'standard_12m_p01',
+  ])
+  const cycleSeed = deriveSeedV1('replacement-cycle', [
+    candidateSequenceSeed,
+    0,
+    0,
+    0,
+    'rc:loss:test',
+    'char-gen-v1',
+    { biography: '1.0.0', traits: '1.0.0' },
+    'culture-v1',
+  ])
+  const personSeed = deriveSeedV1('candidate-person', [cycleSeed])
+  const attemptSeed = deriveSeedV1('candidate-attempt', [
+    worldSeed,
+    personSeed,
+    0,
+  ])
+  const expected = [
+    '964ea7a1c6840d36b9f49f4df75e546b',
+    '1d50b638e9001a77e19abe3fd4b2c88a',
+    'cc00ead317e30f3a279f232891782066',
+    '8a0ac8633dc448667567910ae27ca29d',
+  ]
+  const actual = [candidateSequenceSeed, cycleSeed, personSeed, attemptSeed]
+
+  return machineFinding(
+    'SEED-KAT',
+    'library_build',
+    'seed_derivation_v1',
+    '冻结的席位、周期、人物与attempt已知答案向量逐项一致',
+    `actual=${actual.join(',')}; expected=${expected.join(',')}`,
+    actual.every((value, index) => value === expected[index]),
+  )
+}
+
+function m12NotRunFinding(): ValidationFinding {
+  return {
+    ...machineFinding(
+      'M12',
+      'library_build',
+      'character-library',
+      '完整GenerationContextSnapshot、generation_context_hash与席位到attempt派生证据可重放',
+      'not_implemented=GenerationContextSnapshot,generation_context_hash,seat_cycle_attempt_chain,retry_evidence',
+      true,
+    ),
+    result: 'not_run',
+  }
+}
+
+function validateCharacterLibraryDistributions(
+  subjects: readonly GeneratedCharacter[],
+): readonly ValidationFinding[] {
+  const mbtiCounts = subjects.reduce<Record<MbtiType, number>>(
+    (counts, character) => {
+      counts[character.mbti.type] += 1
+      return counts
+    },
+    Object.fromEntries(MBTI_TYPES.map((type) => [type, 0])) as Record<
+      MbtiType,
+      number
+    >,
+  )
+  const mbtiDistributionPassed =
+    subjects.length < 50 ||
+    MBTI_TYPES.every((type) => mbtiCounts[type] >= 2 && mbtiCounts[type] <= 5)
+  const mbtiFinding = machineFinding(
+    'DIST-MBTI',
+    'library_build',
+    'character-library',
+    '50人候选库覆盖16种MBTI，每型2-5人',
+    MBTI_TYPES.map((type) => `${type}=${mbtiCounts[type]}`).join(';'),
+    mbtiDistributionPassed,
+  )
+
+  const highestSkillCounts = subjects.reduce<
+    Record<MbtiType, Partial<Record<SkillKey, number>>>
+  >(
+    (counts, character) => {
+      const highestSkill = character.primary_skills[0]
+      counts[character.mbti.type][highestSkill] =
+        (counts[character.mbti.type][highestSkill] ?? 0) + 1
+      return counts
+    },
+    Object.fromEntries(MBTI_TYPES.map((type) => [type, {}])) as Record<
+      MbtiType,
+      Partial<Record<SkillKey, number>>
+    >,
+  )
+  const mbtiSkillShares = MBTI_TYPES.map((type) => {
+    const typeTotal = mbtiCounts[type]
+    const highestSharedCount = Math.max(
+      0,
+      ...Object.values(highestSkillCounts[type]),
+    )
+    return {
+      type,
+      share: typeTotal === 0 ? 0 : highestSharedCount / typeTotal,
+      counts: highestSkillCounts[type],
+    }
+  })
+  const mbtiSkillDiversityPassed =
+    subjects.length < 50 ||
+    mbtiSkillShares.every(({ share }) => share <= 0.6)
+  const mbtiSkillFinding: ValidationFinding = {
+    ...machineFinding(
+      'DIST-MBTI-SKILL',
+      'library_build',
+      'character-library',
+      '同一MBTI类型共享同一最高技能的人数不超过该类型的60%',
+      mbtiSkillShares
+        .map(
+          ({ type, share, counts }) =>
+            `${type}:max_share=${share.toFixed(3)},counts=${JSON.stringify(counts)}`,
+        )
+        .join(';'),
+      true,
+    ),
+    result: mbtiSkillDiversityPassed ? 'passed' : 'warned',
+  }
+
+  const mbtiContentDiversity = subjects.reduce<
+    Record<
+      MbtiType,
+      {
+        growth: Set<string>
+        work: Set<string>
+        turningPoint: Set<string>
+        motivation: Set<string>
+        values: Set<string>
+        redlines: Set<string>
+      }
+    >
+  >(
+    (groups, character) => {
+      const group = groups[character.mbti.type]
+      for (const node of character.biography_nodes) {
+        if (node.stage === 'growth') {
+          group.growth.add(node.template_id)
+        } else if (node.stage === 'work') {
+          group.work.add(node.template_id)
+        } else if (node.stage === 'turning_point') {
+          group.turningPoint.add(node.template_id)
+        } else if (node.stage === 'current_motivation') {
+          group.motivation.add(node.template_id)
+        }
+      }
+      group.values.add(
+        character.core_values.map((value) => value.summary).join('|'),
+      )
+      group.redlines.add(
+        character.redlines.map((redline) => redline.summary).join('|'),
+      )
+      return groups
+    },
+    Object.fromEntries(
+      MBTI_TYPES.map((type) => [
+        type,
+        {
+          growth: new Set<string>(),
+          work: new Set<string>(),
+          turningPoint: new Set<string>(),
+          motivation: new Set<string>(),
+          values: new Set<string>(),
+          redlines: new Set<string>(),
+        },
+      ]),
+    ) as Record<
+      MbtiType,
+      {
+        growth: Set<string>
+        work: Set<string>
+        turningPoint: Set<string>
+        motivation: Set<string>
+        values: Set<string>
+        redlines: Set<string>
+      }
+    >,
+  )
+  const mbtiContentDiversityPassed =
+    subjects.length < 50 ||
+    MBTI_TYPES.every((type) => {
+      const minimumDistinct = Math.min(3, mbtiCounts[type])
+      const group = mbtiContentDiversity[type]
+      return Object.values(group).every(
+        (values) => values.size >= minimumDistinct,
+      )
+    })
+  const mbtiContentFinding: ValidationFinding = {
+    ...machineFinding(
+      'DIST-MBTI-CONTENT',
+      'library_build',
+      'character-library',
+      '同一MBTI类型至少保留三种成长、工作、转折、动机、价值观和红线组合',
+      MBTI_TYPES.map((type) => {
+        const group = mbtiContentDiversity[type]
+        return `${type}:growth=${group.growth.size},work=${group.work.size},turn=${group.turningPoint.size},motivation=${group.motivation.size},values=${group.values.size},redlines=${group.redlines.size}`
+      }).join(';'),
+      true,
+    ),
+    result: mbtiContentDiversityPassed ? 'passed' : 'warned',
+  }
+
+  const addressStructureCounts = subjects.reduce<Record<string, number>>(
+    (counts, character) => {
+      const structure = character.address_rules
+        .map(
+          (rule) =>
+            `${rule.relationship}:${rule.form === character.formal_name ? 'formal' : 'contextual'}`,
+        )
+        .join('+')
+      counts[structure] = (counts[structure] ?? 0) + 1
+      return counts
+    },
+    {},
+  )
+  const largestAddressStructureCount = Math.max(
+    0,
+    ...Object.values(addressStructureCounts),
+  )
+  const addressDiversityPassed =
+    subjects.length > 0 &&
+    largestAddressStructureCount / subjects.length <= 0.5
+  const addressFinding: ValidationFinding = {
+    ...machineFinding(
+      'DIST-ADDRESS',
+      'library_build',
+      'character-library',
+      '相同聚落内部称呼结构不超过当前批次的50%',
+      Object.entries(addressStructureCounts)
+        .map(([structure, count]) => `${structure}=${count}`)
+        .join(';'),
+      true,
+    ),
+    result: addressDiversityPassed ? 'passed' : 'warned',
+  }
+
+  return [
+    mbtiFinding,
+    mbtiSkillFinding,
+    mbtiContentFinding,
+    addressFinding,
+  ]
+}
+
+export function recomputeCharacterLibraryFindings(
+  subjects: readonly GeneratedCharacter[],
+): readonly ValidationFinding[] {
+  return [
+    ...subjects.flatMap(validateCharacter),
+    ...validateCharacterLibraryContent(subjects),
+    frozenSeedKatFinding(),
+    m12NotRunFinding(),
+    ...validateCharacterLibraryDistributions(subjects),
+  ]
+}
+
 export function validateCharacterLibrary(
   subject: unknown,
 ): readonly ValidationFinding[] {
@@ -1145,6 +1461,13 @@ export function validateCharacterLibrary(
   const contentPackVersions = isRecord(subject.content_pack_versions)
     ? subject.content_pack_versions
     : undefined
+  const diagnostics = isRecord(subject.diagnostics)
+    ? subject.diagnostics
+    : undefined
+  const replayDiagnostic =
+    diagnostics && isRecord(diagnostics.current_generator_replay)
+      ? diagnostics.current_generator_replay
+      : undefined
   const worldSeedHex =
     typeof subject.world_seed_hex === 'string' ? subject.world_seed_hex : ''
   const libraryShapeValid =
@@ -1160,6 +1483,19 @@ export function validateCharacterLibrary(
     contentPackVersions?.values_and_redlines ===
       CONTENT_PACK_VERSIONS.values_and_redlines &&
     subject.culture_pack_version === CULTURE_PACK_VERSION &&
+    diagnostics !== undefined &&
+    sameData(Object.keys(diagnostics).sort(), ['current_generator_replay']) &&
+    replayDiagnostic !== undefined &&
+    sameData(Object.keys(replayDiagnostic).sort(), [
+      'authoritative',
+      'evidence',
+      'result',
+      'scope',
+    ]) &&
+    replayDiagnostic.authoritative === false &&
+    replayDiagnostic.scope === 'CURRENT_GENERATOR_SELF_REPLAY_ONLY' &&
+    ['passed', 'blocked'].includes(replayDiagnostic.result as string) &&
+    typeof replayDiagnostic.evidence === 'string' &&
     subject.characters.length >= 1 &&
     subject.characters.length <= 500
 
@@ -1206,25 +1542,35 @@ export function validateCharacterLibrary(
     : undefined
   const storedFindings =
     validation && Array.isArray(validation.findings)
-      ? validation.findings.filter(isRecord)
+      ? validation.findings.filter(isValidationFinding)
       : []
   const allStoredFindingsValid =
     validation !== undefined &&
     Array.isArray(validation.findings) &&
-    storedFindings.length === validation.findings.length &&
-    storedFindings.every(
-      (finding) =>
-        typeof finding.validation_id === 'string' &&
-        ['passed', 'blocked', 'warned', 'not_run'].includes(
-          finding.result as string,
-        ),
-    )
-  const storedNotRunIds = storedFindings
+    storedFindings.length === validation.findings.length
+  const independentlyRecomputedFindings = allCharactersValid
+    ? recomputeCharacterLibraryFindings(characters)
+    : []
+  const expectedNotRunIds = independentlyRecomputedFindings
     .filter((finding) => finding.result === 'not_run')
     .map((finding) => finding.validation_id)
-  const m12Findings = storedFindings.filter(
-    (finding) => finding.validation_id === 'M12',
-  )
+  const expectedWarnedIds = independentlyRecomputedFindings
+    .filter((finding) => finding.result === 'warned')
+    .map((finding) => finding.validation_id)
+  const expectedImplementedMachineContractsStatus =
+    !allCharactersValid ||
+    independentlyRecomputedFindings.some(
+      (finding) => finding.result === 'blocked',
+    )
+      ? 'blocked'
+      : expectedWarnedIds.length > 0
+        ? 'passed_with_warnings'
+        : 'passed'
+  const implementedMachineContractsPassed =
+    expectedImplementedMachineContractsStatus === 'passed'
+  const storedFindingsMatchRecomputation =
+    allStoredFindingsValid &&
+    sameData(storedFindings, independentlyRecomputedFindings)
   const manualReviews =
     validation && isRecord(validation.manual_reviews)
       ? validation.manual_reviews
@@ -1237,48 +1583,11 @@ export function validateCharacterLibrary(
   const notRunIdsValid =
     validation !== undefined &&
     Array.isArray(validation.not_run_ids) &&
-    validation.not_run_ids.length === 1 &&
-    validation.not_run_ids[0] === 'M12' &&
-    storedNotRunIds.length === 1 &&
-    storedNotRunIds[0] === 'M12'
-  const storedWarnedIds = storedFindings
-    .filter((finding) => finding.result === 'warned')
-    .map((finding) => finding.validation_id)
+    sameData(validation.not_run_ids, expectedNotRunIds)
   const warnedIdsValid =
     validation !== undefined &&
     Array.isArray(validation.warned_ids) &&
-    sameData(validation.warned_ids, storedWarnedIds)
-  const expectedImplementedMachineContractsStatus =
-    !allStoredFindingsValid ||
-    storedFindings.some((finding) => finding.result === 'blocked')
-      ? 'blocked'
-      : storedWarnedIds.length > 0
-        ? 'passed_with_warnings'
-        : 'passed'
-  const implementedMachineContractsPassed =
-    expectedImplementedMachineContractsStatus === 'passed'
-  const independentlyRecomputedIds = new Set([
-    'M03',
-    'M04',
-    'M05',
-    'M06',
-    'M07',
-    'M09',
-    'M10',
-  ])
-  const independentlyRecomputedFindings = allCharactersValid
-    ? [
-        ...characters.flatMap(validateCharacter),
-        ...validateCharacterLibraryContent(characters),
-      ].filter((finding) =>
-        independentlyRecomputedIds.has(finding.validation_id),
-      )
-    : []
-  const storedRecomputedFindings = storedFindings.filter((finding) =>
-    independentlyRecomputedIds.has(finding.validation_id as string),
-  )
-  const storedFindingsMatchRecomputation =
-    sameData(storedRecomputedFindings, independentlyRecomputedFindings)
+    sameData(validation.warned_ids, expectedWarnedIds)
   const envelopeValid =
     validation !== undefined &&
     validation.scope ===
@@ -1286,11 +1595,9 @@ export function validateCharacterLibrary(
     validation.implemented_machine_contracts_status ===
       expectedImplementedMachineContractsStatus &&
     validation.implemented_machine_contracts_passed ===
-      implementedMachineContractsPassed &&
+    implementedMachineContractsPassed &&
     warnedIdsValid &&
     notRunIdsValid &&
-    m12Findings.length === 1 &&
-    m12Findings[0].result === 'not_run' &&
     manualReviewsValid &&
     storedFindingsMatchRecomputation
 
@@ -1316,7 +1623,7 @@ export function validateCharacterLibrary(
       'library_build',
       'character-library',
       '保存的聚合门禁仅覆盖已实现机器合同，完整M12与E01-E06保持未运行',
-      `stored_findings_valid=${allStoredFindingsValid}; recomputed_findings_match=${storedFindingsMatchRecomputation}; aggregate_status=${expectedImplementedMachineContractsStatus}; warned_ids_valid=${warnedIdsValid}; not_run_ids_valid=${notRunIdsValid}; m12_count=${m12Findings.length}; manual_reviews_valid=${manualReviewsValid}`,
+      `stored_findings_valid=${allStoredFindingsValid}; stored_findings=${storedFindings.length}; expected_findings=${independentlyRecomputedFindings.length}; recomputed_findings_match=${storedFindingsMatchRecomputation}; aggregate_status=${expectedImplementedMachineContractsStatus}; warned_ids_valid=${warnedIdsValid}; not_run_ids_valid=${notRunIdsValid}; manual_reviews_valid=${manualReviewsValid}`,
       envelopeValid,
     ),
   ]

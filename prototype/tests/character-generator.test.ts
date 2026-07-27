@@ -354,7 +354,7 @@ describe('character generator', () => {
 
     expect(library.status).toBe('CANDIDATE_NOT_FROZEN')
     expect(library.development_stage).toBe('TECHNICAL_SPIKE_BEFORE_A1')
-    expect(library.generator_schema_version).toBe('char-gen-v0.1.3-candidate')
+    expect(library.generator_schema_version).toBe('char-gen-v0.1.4-candidate')
     expect(library.characters).toHaveLength(50)
     expect(new Set(library.characters.map((character) => character.character_id))).toHaveLength(50)
     expect(new Set(library.characters.map((character) => character.formal_name))).toHaveLength(50)
@@ -407,11 +407,18 @@ describe('character generator', () => {
         (finding) => finding.validation_id === 'SEED-KAT',
       )?.result,
     ).toBe('passed')
+    expect(library.validation.findings).toHaveLength(308)
     expect(
-      library.validation.findings.find(
+      library.validation.findings.some(
         (finding) => finding.validation_id === 'LIBRARY-REPLAY-PARTIAL',
-      )?.result,
-    ).toBe('passed')
+      ),
+    ).toBe(false)
+    expect(library.diagnostics.current_generator_replay).toEqual({
+      authoritative: false,
+      scope: 'CURRENT_GENERATOR_SELF_REPLAY_ONLY',
+      result: 'passed',
+      evidence: 'replayed=50; mismatches=0',
+    })
     expect(
       library.validation.findings.find(
         (finding) => finding.validation_id === 'M12',

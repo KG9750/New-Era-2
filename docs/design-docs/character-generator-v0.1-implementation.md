@@ -33,12 +33,13 @@ reducer、NPC dormant store 和开局四人选择器仍按规则阶段 C 单独�
 - `generateCharacter({ worldSeedHex, characterIndex, attemptIndex? })`：生成单人；
 - `validateCharacter(character)`：通过独立 `validator.ts` 接收任意反序列化数据，
   执行 M03–M07、M09，并复算履历阶段、资格 evidence、MBTI 派生类型、出身模板、
-  seed variation selector、候选库 person seed 与人物 ID；
+  seed variation selector、候选库 person seed 与人物 ID；1–3 个 `work` 节点
+  均按各自登记模板逐节点重建结构化输出；
 - `validateCharacterLibraryContent(characters)`：独立复算区分度指纹、引用和生活
   骨架，执行 M10 与候选库重复度门禁；
 - `validateCharacterLibrary(library)`：接收任意反序列化 library，校验根 seed、
-  版本、人物索引、library ID、聚合 envelope，并将保存的核心 finding 与独立
-  复算结果绑定；
+  版本、人物索引、library ID、聚合 envelope，并从人物数组独立重建完整权威
+  finding 集合；
 - `generateCharacterLibrary({ worldSeedHex, count })`：生成并校验批次；
 - `validatePopulationLimit(type, count)`：执行玩家 10 / NPC 15 人 M01 上限。
 
@@ -65,17 +66,17 @@ reducer、NPC dormant store 和开局四人选择器仍按规则阶段 C 单独�
 
 首个固定批次：
 
-- character schema：`character-v0.1.3-candidate`；
-- library schema：`character-library-v0.1.3-candidate`；
-- generator schema：`char-gen-v0.1.3-candidate`；
+- character schema：`character-v0.1.4-candidate`；
+- library schema：`character-library-v0.1.4-candidate`；
+- generator schema：`char-gen-v0.1.4-candidate`；
 - world seed：
   `9f4d6b571b07f0036b63f7d56d1b2e8c90f561f52f35db779b03e6c0a83cb9b1`；
 - 50 名人物；
-- Library ID：`character-library-6e7f25d12d440a06`；
+- Library ID：`character-library-e990760a870ff576`；
 - JSON SHA256：
-  `d549834a076ec6d7ebc8d066f56e17220aa417c88c39d784f5ef02b0ac3a2caa`；
+  `06b9248e66e0ffa7efc8fc76c8afedc55538060d71ed2a87941e0df981a7194f`；
 - roster SHA256：
-  `853daa462185c50ce402506852fa631dfbf1f9cf329d626d1e9b6228d0882e03`；
+  `d931089e38ec389c465aa70f769da773094437e3728ce2750ea689f50b0c242d`；
 - 50 个稳定人物 ID、正式姓名与区分度指纹全部唯一；
 - 50 个“成长—工作—当前动机”组合全部不同，每种重复工作连接至少两种成长背景
   和两种长期目标；
@@ -87,9 +88,11 @@ reducer、NPC dormant store 和开局四人选择器仍按规则阶段 C 单独�
 - 四种关系型内部称呼结构均未超过批次的 50%；
 - M03–M07、M09、M10 和候选库生活骨架门禁通过；
 - 五类履历模板的 ID、证据与结构化输出由 validator 从版本化内容包重建；
-- library 根 seed/版本/人物索引与 ID 通过公开 validator 复算，保存的
-  M03–M07、M09、M10 finding 与复算结果一致；
-- `SEED-KAT` 与 `LIBRARY-REPLAY-PARTIAL` 通过；
+- library 根 seed/版本/人物索引与 ID 通过公开 validator 复算；保存的 308 条
+  权威 finding 必须在 ID、顺序、数量、metadata、result 与 warning 上和复算
+  结果完全一致；
+- `SEED-KAT` 纳入权威聚合；当前生成器自重放诊断通过，但以
+  `authoritative=false` 保存且不计入聚合；
 - 聚合结果只表示当前已实现合同：
   `scope=TECHNICAL_CHARACTER_LIBRARY_IMPLEMENTED_CONTRACTS_ONLY`、
   `implemented_machine_contracts_status=passed`、
@@ -99,7 +102,8 @@ reducer、NPC dormant store 和开局四人选择器仍按规则阶段 C 单独�
   `generation_context_hash`、席位到 attempt 派生链和 32 次重试证据；
 - E01–E06 均明确保存为 `not_run`。
 
-完整机器证据保存在生成 JSON 的 `validation.findings` 中。
+完整权威机器证据保存在生成 JSON 的 `validation.findings` 中；无法由独立
+validator 重建的当前生成器自重放只保存在顶层 `diagnostics`。
 
 ## 复算
 
@@ -114,7 +118,8 @@ PATH=/opt/homebrew/opt/node@24/bin:$PATH npm run test:run -- tests/character-val
 连续两次执行 `characters:generate` 必须产生逐字节相同的 JSON 与 roster。
 `character-validator.test.ts` 直接读取已落盘 JSON，不调用生成器，并通过字段删除、
 伪造 prerequisite、履历阶段、MBTI、origin、seed provenance、模板 provenance、
-聚合 envelope、技能、资格和 fingerprint 验证门禁负例。当前候选批次已在
+聚合 envelope、缺失/残缺/重复 finding、分布伪造、warning 擦除、技能、资格
+和 fingerprint 验证门禁负例。当前候选批次已在
 Node 20.20.2、22.23.1、24.18.0
 以及 `LANG=C` / `zh_CN.UTF-8` 下复算为上述相同 SHA。
 

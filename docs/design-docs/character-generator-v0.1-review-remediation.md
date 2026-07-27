@@ -3,7 +3,7 @@
 **审查基线：** `0aa2608dc8b90f36dacdf74fdea26fba82c5d242`
 **首次整改提交：** `a7c3f09132915587b502c0598d1e21b7b7190ed3`
 **首次整改复审：** `P0=0 / P1=2 / P2=1 / REVIEW_FAIL`
-**当前整改状态：** `R3_CODE_FIXED_PENDING_REREVIEW / HUMAN_GATES_OPEN`
+**当前整改状态：** `R4_CODE_FIXED_PENDING_REREVIEW / HUMAN_GATES_OPEN`
 
 ## P1-1：机器门禁 false negative
 
@@ -26,7 +26,7 @@
 状态：`FIXED`
 
 - 冻结 KAT 单列为 `SEED-KAT=passed`；
-- 当前候选库重放单列为 `LIBRARY-REPLAY-PARTIAL=passed`；
+- 当前候选库自重放只保留为非权威 diagnostics，不再计入机器合同聚合；
 - 完整 `M12=not_run`；
 - 未实现项明确记录为 `GenerationContextSnapshot`、`generation_context_hash`、
   席位到 attempt 派生链和重试证据。
@@ -136,17 +136,44 @@
 - 新增 `warned_ids`；单人库的 `DIST-ADDRESS=warned` 回归用例固定返回
   `passed_with_warnings` 和 `implemented_machine_contracts_passed=false`。
 
+## 新一轮独立复审 P1：只校验第一段工作履历
+
+状态：`R4_CODE_FIXED_PENDING_REREVIEW`
+
+- 权威规则允许 1–3 段工作或生活经历，schema 未收紧为单段；
+- validator 改为遍历全部 `work` 节点，逐节点按各自 `WORK_TEMPLATES`
+  重建 context、属性修正、技能经历、资格、性格、关系和经历钩子；
+- 第一段工作继续承担当前生成器定义的 profile extra modifier、rank-2
+  qualification 和顶层特质/关系绑定；后续工作只使用模板基础输出，不凭空授予
+  当前内容包未定义的资格；
+- 新增第二段伪造反例、合法双工作完整人物正例和第三段伪造反例。
+
+## 新一轮独立复审 P1：聚合 envelope 未覆盖全部 finding
+
+状态：`R4_CODE_FIXED_PENDING_REREVIEW`
+
+- `recomputeCharacterLibraryFindings()` 从人物数组独立重建全部权威 finding；
+- 50 人批次固定为 308 条：每人 M03–M07、M09 共 300 条，加 M10、
+  `DIST-LIFE-HISTORY`、`SEED-KAT`、M12 和四项 `DIST-*` 共 8 条；
+- 保存集合必须在顺序、ID、数量、multiplicity、完整 metadata、evidence 和
+  result 上与复算结果完全一致；aggregate 三态、`warned_ids` 与
+  `not_run_ids` 也只从复算结果推导；
+- 无法由独立 validator 复算的当前生成器自重放从 `validation.findings` 移到
+  `diagnostics.current_generator_replay`，固定 `authoritative=false`；
+- 新增缺失 finding、残缺 metadata、重复 finding、协调伪造 MBTI 分布和擦除
+  warning 的回归反例。
+
 ## 版本与验证
 
-- character schema：`character-v0.1.3-candidate`
-- library schema：`character-library-v0.1.3-candidate`
-- generator schema：`char-gen-v0.1.3-candidate`
-- Library ID：`character-library-6e7f25d12d440a06`
+- character schema：`character-v0.1.4-candidate`
+- library schema：`character-library-v0.1.4-candidate`
+- generator schema：`char-gen-v0.1.4-candidate`
+- Library ID：`character-library-e990760a870ff576`
 - JSON SHA256：
-  `d549834a076ec6d7ebc8d066f56e17220aa417c88c39d784f5ef02b0ac3a2caa`
+  `06b9248e66e0ffa7efc8fc76c8afedc55538060d71ed2a87941e0df981a7194f`
 - roster SHA256：
-  `853daa462185c50ce402506852fa631dfbf1f9cf329d626d1e9b6228d0882e03`
-- Vitest：9 files / 87 tests
+  `d931089e38ec389c465aa70f769da773094437e3728ce2750ea689f50b0c242d`
+- Vitest：9 files / 95 tests
 - TypeScript：通过
 - Vite production build：通过
 - Node 20.20.2 / 22.23.1 / 24.18.0 与 `LANG=C` / `zh_CN.UTF-8`：

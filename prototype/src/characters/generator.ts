@@ -27,7 +27,6 @@ import {
   type GeneratedCharacter,
   type InclinationStrength,
   type MbtiProfile,
-  type MbtiType,
   type Qualification,
   type SkillExperience,
   type SkillKey,
@@ -40,8 +39,7 @@ import {
 import { selectSeededVariationAttributes } from './seeded-variation'
 import {
   machineFinding as finding,
-  validateCharacter,
-  validateCharacterLibraryContent,
+  recomputeCharacterLibraryFindings,
 } from './validator'
 import { deriveSeedV1 } from './seed'
 
@@ -610,49 +608,6 @@ export interface CharacterLibraryGenerationInput {
   count: number
 }
 
-function frozenSeedKatFinding(): ValidationFinding {
-  const worldSeed =
-    '0000000000000000000000000000000000000000000000000000000000000001'
-  const candidateSequenceSeed = deriveSeedV1('replacement-seat', [
-    worldSeed,
-    'seat:test',
-    'loss:test',
-    'standard_12m_p01',
-  ])
-  const cycleSeed = deriveSeedV1('replacement-cycle', [
-    candidateSequenceSeed,
-    0,
-    0,
-    0,
-    'rc:loss:test',
-    'char-gen-v1',
-    { biography: '1.0.0', traits: '1.0.0' },
-    'culture-v1',
-  ])
-  const personSeed = deriveSeedV1('candidate-person', [cycleSeed])
-  const attemptSeed = deriveSeedV1('candidate-attempt', [
-    worldSeed,
-    personSeed,
-    0,
-  ])
-  const expected = [
-    '964ea7a1c6840d36b9f49f4df75e546b',
-    '1d50b638e9001a77e19abe3fd4b2c88a',
-    'cc00ead317e30f3a279f232891782066',
-    '8a0ac8633dc448667567910ae27ca29d',
-  ]
-  const actual = [candidateSequenceSeed, cycleSeed, personSeed, attemptSeed]
-
-  return finding(
-    'SEED-KAT',
-    'library_build',
-    'seed_derivation_v1',
-    '冻结的席位、周期、人物与attempt已知答案向量逐项一致',
-    `actual=${actual.join(',')}; expected=${expected.join(',')}`,
-    actual.every((value, index) => value === expected[index]),
-  )
-}
-
 export function generateCharacterLibrary(
   input: CharacterLibraryGenerationInput,
 ): CharacterLibrary {
@@ -666,9 +621,6 @@ export function generateCharacterLibrary(
   const rawCharacters = Array.from({ length: input.count }, (_, characterIndex) =>
     generateCharacter({ worldSeedHex: input.worldSeedHex, characterIndex }),
   )
-  const characterFindings = rawCharacters.flatMap(validateCharacter)
-  const libraryContentFindings = validateCharacterLibraryContent(rawCharacters)
-
   const replayPassed = rawCharacters.every((character, characterIndex) => {
     const replay = generateCharacter({
       worldSeedHex: input.worldSeedHex,
@@ -676,205 +628,7 @@ export function generateCharacterLibrary(
     })
     return JSON.stringify(replay) === JSON.stringify(character)
   })
-  const replayFinding = finding(
-    'LIBRARY-REPLAY-PARTIAL',
-    'library_build',
-    'character-library',
-    '相同世界种子、人物索引与attempt在当前候选库接口中生成逐字段相同人物',
-    `replayed=${rawCharacters.length}; mismatches=${replayPassed ? 0 : 'one_or_more'}`,
-    replayPassed,
-  )
-  const m12Finding: ValidationFinding = {
-    ...finding(
-      'M12',
-      'library_build',
-      'character-library',
-      '完整GenerationContextSnapshot、generation_context_hash与席位到attempt派生证据可重放',
-      'not_implemented=GenerationContextSnapshot,generation_context_hash,seat_cycle_attempt_chain,retry_evidence',
-      true,
-    ),
-    result: 'not_run',
-  }
-
-  const mbtiCounts = rawCharacters.reduce<Record<MbtiType, number>>(
-    (counts, character) => {
-      counts[character.mbti.type] += 1
-      return counts
-    },
-    Object.fromEntries(MBTI_TYPES.map((type) => [type, 0])) as Record<MbtiType, number>,
-  )
-  const mbtiDistributionPassed =
-    input.count < 50 ||
-    MBTI_TYPES.every((type) => mbtiCounts[type] >= 2 && mbtiCounts[type] <= 5)
-  const mbtiFinding = finding(
-    'DIST-MBTI',
-    'library_build',
-    'character-library',
-    '50人候选库覆盖16种MBTI，每型2-5人',
-    MBTI_TYPES.map((type) => `${type}=${mbtiCounts[type]}`).join(';'),
-    mbtiDistributionPassed,
-  )
-  const highestSkillCounts = rawCharacters.reduce<
-    Record<MbtiType, Partial<Record<SkillKey, number>>>
-  >(
-    (counts, character) => {
-      const highestSkill = character.primary_skills[0]
-      counts[character.mbti.type][highestSkill] =
-        (counts[character.mbti.type][highestSkill] ?? 0) + 1
-      return counts
-    },
-    Object.fromEntries(MBTI_TYPES.map((type) => [type, {}])) as Record<
-      MbtiType,
-      Partial<Record<SkillKey, number>>
-    >,
-  )
-  const mbtiSkillShares = MBTI_TYPES.map((type) => {
-    const typeTotal = mbtiCounts[type]
-    const highestSharedCount = Math.max(0, ...Object.values(highestSkillCounts[type]))
-    return {
-      type,
-      share: typeTotal === 0 ? 0 : highestSharedCount / typeTotal,
-      counts: highestSkillCounts[type],
-    }
-  })
-  const mbtiSkillDiversityPassed =
-    input.count < 50 || mbtiSkillShares.every(({ share }) => share <= 0.6)
-  const mbtiSkillFinding: ValidationFinding = {
-    ...finding(
-      'DIST-MBTI-SKILL',
-      'library_build',
-      'character-library',
-      '同一MBTI类型共享同一最高技能的人数不超过该类型的60%',
-      mbtiSkillShares
-        .map(
-          ({ type, share, counts }) =>
-            `${type}:max_share=${share.toFixed(3)},counts=${JSON.stringify(counts)}`,
-        )
-        .join(';'),
-      true,
-    ),
-    result: mbtiSkillDiversityPassed ? 'passed' : 'warned',
-  }
-  const mbtiContentDiversity = rawCharacters.reduce<
-    Record<
-      MbtiType,
-      {
-        growth: Set<string>
-        work: Set<string>
-        turningPoint: Set<string>
-        motivation: Set<string>
-        values: Set<string>
-        redlines: Set<string>
-      }
-    >
-  >(
-    (groups, character) => {
-      const group = groups[character.mbti.type]
-      for (const node of character.biography_nodes) {
-        if (node.stage === 'growth') {
-          group.growth.add(node.template_id)
-        } else if (node.stage === 'work') {
-          group.work.add(node.template_id)
-        } else if (node.stage === 'turning_point') {
-          group.turningPoint.add(node.template_id)
-        } else if (node.stage === 'current_motivation') {
-          group.motivation.add(node.template_id)
-        }
-      }
-      group.values.add(
-        character.core_values.map((value) => value.summary).join('|'),
-      )
-      group.redlines.add(character.redlines.map((redline) => redline.summary).join('|'))
-      return groups
-    },
-    Object.fromEntries(
-      MBTI_TYPES.map((type) => [
-        type,
-        {
-          growth: new Set<string>(),
-          work: new Set<string>(),
-          turningPoint: new Set<string>(),
-          motivation: new Set<string>(),
-          values: new Set<string>(),
-          redlines: new Set<string>(),
-        },
-      ]),
-    ) as Record<
-      MbtiType,
-      {
-        growth: Set<string>
-        work: Set<string>
-        turningPoint: Set<string>
-        motivation: Set<string>
-        values: Set<string>
-        redlines: Set<string>
-      }
-    >,
-  )
-  const mbtiContentDiversityPassed =
-    input.count < 50 ||
-    MBTI_TYPES.every((type) => {
-      const minimumDistinct = Math.min(3, mbtiCounts[type])
-      const group = mbtiContentDiversity[type]
-      return Object.values(group).every(
-        (values) => values.size >= minimumDistinct,
-      )
-    })
-  const mbtiContentFinding: ValidationFinding = {
-    ...finding(
-      'DIST-MBTI-CONTENT',
-      'library_build',
-      'character-library',
-      '同一MBTI类型至少保留三种成长、工作、转折、动机、价值观和红线组合',
-      MBTI_TYPES.map((type) => {
-        const group = mbtiContentDiversity[type]
-        return `${type}:growth=${group.growth.size},work=${group.work.size},turn=${group.turningPoint.size},motivation=${group.motivation.size},values=${group.values.size},redlines=${group.redlines.size}`
-      }).join(';'),
-      true,
-    ),
-    result: mbtiContentDiversityPassed ? 'passed' : 'warned',
-  }
-  const addressStructureCounts = rawCharacters.reduce<Record<string, number>>(
-    (counts, character) => {
-      const structure = character.address_rules
-        .map(
-          (rule) =>
-            `${rule.relationship}:${rule.form === character.formal_name ? 'formal' : 'contextual'}`,
-        )
-        .join('+')
-      counts[structure] = (counts[structure] ?? 0) + 1
-      return counts
-    },
-    {},
-  )
-  const largestAddressStructureCount = Math.max(...Object.values(addressStructureCounts))
-  const addressDiversityPassed =
-    largestAddressStructureCount / rawCharacters.length <= 0.5
-  const addressFinding: ValidationFinding = {
-    ...finding(
-      'DIST-ADDRESS',
-      'library_build',
-      'character-library',
-      '相同聚落内部称呼结构不超过当前批次的50%',
-      Object.entries(addressStructureCounts)
-        .map(([structure, count]) => `${structure}=${count}`)
-        .join(';'),
-      true,
-    ),
-    result: addressDiversityPassed ? 'passed' : 'warned',
-  }
-
-  const findings = [
-    ...characterFindings,
-    ...libraryContentFindings,
-    frozenSeedKatFinding(),
-    replayFinding,
-    m12Finding,
-    mbtiFinding,
-    mbtiSkillFinding,
-    mbtiContentFinding,
-    addressFinding,
-  ]
+  const findings = recomputeCharacterLibraryFindings(rawCharacters)
   const hasBlockedFinding = findings.some(
     (item) => item.result === 'blocked',
   )
@@ -919,6 +673,14 @@ export function generateCharacterLibrary(
     content_pack_versions: CONTENT_PACK_VERSIONS,
     culture_pack_version: CULTURE_PACK_VERSION,
     characters,
+    diagnostics: {
+      current_generator_replay: {
+        authoritative: false,
+        scope: 'CURRENT_GENERATOR_SELF_REPLAY_ONLY',
+        result: replayPassed ? 'passed' : 'blocked',
+        evidence: `replayed=${rawCharacters.length}; mismatches=${replayPassed ? 0 : 'one_or_more'}`,
+      },
+    },
     validation: {
       scope: 'TECHNICAL_CHARACTER_LIBRARY_IMPLEMENTED_CONTRACTS_ONLY',
       implemented_machine_contracts_status:
