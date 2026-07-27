@@ -18,10 +18,8 @@ import {
   selectTransportRoute,
 } from './transport'
 
-const FOOD_CURRENT_STOCK = 18
 const FOOD_KNOWN_CONSUMPTION = 42
 const FOOD_TARGET = { low: 12, high: 20 }
-const REPAIR_CURRENT_STOCK = 9
 const REPAIR_KNOWN_CONSUMPTION = 32
 const REPAIR_TARGET = { low: 5, high: 9 }
 const BASELINE_FOOD_OUTPUT = 35
@@ -181,7 +179,9 @@ function logisticsAdjustment(allocation: LaborAllocation): number {
 
 export function calculateFoodForecast(state: SimulationState): FoodForecast {
   const allocation = calculateLaborAllocation(state)
-  const fertilizerBonus = state.fertilizerUsed ? 6 : 0
+  const currentWeekIndex = state.completedWeekIndexes.includes(0) ? 1 : 0
+  const fertilizerBonus =
+    state.fertilizer.appliedWeekIndex === currentWeekIndex ? 6 : 0
   const logisticsBonus = logisticsAdjustment(allocation)
   const transportRoute = selectTransportRoute(state)
   const grossFieldOutput =
@@ -196,13 +196,17 @@ export function calculateFoodForecast(state: SimulationState): FoodForecast {
     high: Math.max(0, facilityProduction.high + fertilizerBonus),
   }
   const endingStock = {
-    low: FOOD_CURRENT_STOCK + production.low - FOOD_KNOWN_CONSUMPTION,
-    high: FOOD_CURRENT_STOCK + production.high - FOOD_KNOWN_CONSUMPTION,
+    low: state.inventory.food + production.low - FOOD_KNOWN_CONSUMPTION,
+    high: state.inventory.food + production.high - FOOD_KNOWN_CONSUMPTION,
   }
   const status = statusFor(endingStock, FOOD_TARGET, 4)
   const requestAccepted = state.linHeRequestDecision === 'accepted'
   const modifiers = [
-    state.fertilizerUsed ? '化肥 +6' : '化肥尚未使用',
+    fertilizerBonus > 0
+      ? '化肥 +6'
+      : state.fertilizer.remainingUnits > 0
+        ? '化肥尚未使用'
+        : '化肥已于前一周使用',
     requestAccepted ? '林禾学习占用 1 个农务块' : null,
     `地图：${transportRoute.label} ${transportRoute.distanceMeters} 米 / ${transportRoute.travelMinutes} 分钟，运输损耗 ${transportRoute.foodLoss}（${transportRoute.lossSources.join('、')}）`,
     `物流排班修正 ${logisticsBonus >= 0 ? '+' : ''}${logisticsBonus}；${sharedLaborReason(allocation)}`,
@@ -211,7 +215,7 @@ export function calculateFoodForecast(state: SimulationState): FoodForecast {
   return {
     id: 'food',
     label: '粮食',
-    currentStock: FOOD_CURRENT_STOCK,
+    currentStock: state.inventory.food,
     production,
     consumption: FOOD_KNOWN_CONSUMPTION,
     endingStock,
@@ -252,13 +256,13 @@ export function calculateRepairForecast(state: SimulationState): RepairForecast 
   const production = { low: repairOutput, high: repairOutput }
   const endingStock = {
     low:
-      REPAIR_CURRENT_STOCK +
+      state.inventory.repair +
       production.low -
       REPAIR_KNOWN_CONSUMPTION -
       riskCost.low -
       transportRepairCost,
     high:
-      REPAIR_CURRENT_STOCK +
+      state.inventory.repair +
       production.high -
       REPAIR_KNOWN_CONSUMPTION -
       riskCost.high -
@@ -268,7 +272,7 @@ export function calculateRepairForecast(state: SimulationState): RepairForecast 
   return {
     id: 'repair',
     label: '维修保障',
-    currentStock: REPAIR_CURRENT_STOCK,
+    currentStock: state.inventory.repair,
     production,
     consumption: REPAIR_KNOWN_CONSUMPTION + transportRepairCost,
     endingStock,

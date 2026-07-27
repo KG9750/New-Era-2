@@ -14,7 +14,7 @@ export const WEEKLY_TRANSPORT_START_TICKS = [
 
 export const gate1WeekOneScenario: ScenarioDefinition = {
   id: 'gate1-two-week-management',
-  version: '0.4.0',
+  version: '0.5.0',
   fixedSeed: 104729,
   startTick: START_TICK,
   weekEndTick: WEEK_END_TICK,
@@ -49,10 +49,20 @@ export const gate1WeekOneScenario: ScenarioDefinition = {
       actionLog: [],
       timeline: [],
       planSnapshot: null,
+      supplyPlanSnapshot: null,
       recap: null,
       recaps: [],
       completedWeekIndexes: [],
       isComplete: false,
+      inventory: {
+        food: 18,
+        repair: 9,
+      },
+      fertilizer: {
+        initialUnits: 1,
+        appliedWeekIndex: null,
+        remainingUnits: 1,
+      },
       fertilizerUsed: false,
       acceptedFoodShortfall: false,
       linHeRequestDecision: 'pending',

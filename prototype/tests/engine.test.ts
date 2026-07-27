@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { gate1WeekOneScenario as scenario } from '../src/scenario/gate1-week-one'
 import { advanceSimulation, applyPlayerAction, createPlayerAction } from '../src/sim/engine'
-import { calculateFoodForecast } from '../src/sim/forecast'
+import { calculateFoodForecast, calculateRepairForecast } from '../src/sim/forecast'
 import type { SimulationState } from '../src/sim/model'
 
 function chooseRepair(state: SimulationState, sequence = 1) {
@@ -124,5 +124,261 @@ describe('Gate 1 minimal simulation contract', () => {
     expect(
       state.recap?.items.map((item) => `${item.title} ${item.detail}`).join(' '),
     ).toContain('水泵异常')
+  })
+
+  it('freezes both supply results in recap and commits them once on continue', () => {
+    let state = chooseRepair(scenario.createInitialState())
+    state = applyPlayerAction(
+      state,
+      createPlayerAction(2, state.currentTick, {
+        type: 'SET_PAUSED',
+        paused: false,
+      }),
+      scenario,
+    ).state
+    state = advanceSimulation(state, scenario.pumpEventTick, scenario).state
+    state = advanceSimulation(state, scenario.weekEndTick, scenario).state
+
+    expect(state.inventory).toEqual({ food: 18, repair: 9 })
+    expect(state.recap).not.toBeNull()
+    if (state.recap === null) throw new Error('Expected the week-one recap')
+    expect(state.recap.supplies.food.planned).toEqual({ low: 9, high: 9 })
+    expect(state.recap.supplies.food.actual).toBe(8)
+    expect(state.recap.supplies.food.endingStock).toBe(8)
+    expect(state.recap.supplies.repair.actual).toBe(
+      state.recap.supplies.repair.endingStock,
+    )
+    expect(state.recap.supplies.repair.reasons.length).toBeGreaterThan(0)
+
+    const weekOneActual = {
+      food: state.recap.supplies.food.actual,
+      repair: state.recap.supplies.repair.actual,
+    }
+    state = applyPlayerAction(
+      state,
+      createPlayerAction(3, state.currentTick, {
+        type: 'CONTINUE_TO_NEXT_WEEK',
+      }),
+      scenario,
+    ).state
+
+    expect(state.inventory).toEqual(weekOneActual)
+    expect(calculateFoodForecast(state).currentStock).toBe(weekOneActual.food)
+    expect(calculateRepairForecast(state).currentStock).toBe(weekOneActual.repair)
+    expect(() =>
+      applyPlayerAction(
+        state,
+        createPlayerAction(4, state.currentTick, {
+          type: 'CONTINUE_TO_NEXT_WEEK',
+        }),
+        scenario,
+      ),
+    ).toThrow('只有未完成的周末复盘')
+  })
+
+  it('records a week-one fertilizer application in the authoritative lifecycle', () => {
+    const state = applyPlayerAction(
+      scenario.createInitialState(),
+      createPlayerAction(1, scenario.startTick, {
+        type: 'USE_FERTILIZER',
+      }),
+      scenario,
+    ).state
+
+    expect(state.fertilizer).toEqual({
+      initialUnits: 1,
+      appliedWeekIndex: 0,
+      remainingUnits: 0,
+    })
+    expect(state.fertilizerUsed).toBe(true)
+  })
+
+  it('applies week-one fertilizer only to week one and preserves the spent asset in recaps', () => {
+    const initial = scenario.createInitialState()
+    const baselineProduction = calculateFoodForecast(initial).production.high
+    let state = applyPlayerAction(
+      initial,
+      createPlayerAction(1, initial.currentTick, {
+        type: 'USE_FERTILIZER',
+      }),
+      scenario,
+    ).state
+
+    expect(calculateFoodForecast(state).production.high).toBe(
+      baselineProduction + 6,
+    )
+    state = advanceSimulation(state, scenario.pumpEventTick, scenario).state
+    state = advanceSimulation(state, scenario.weekEndTick, scenario).state
+    expect(state.recap?.fertilizer).toEqual({
+      appliedWeekIndex: 0,
+      remainingUnits: 0,
+      bonus: 6,
+    })
+
+    state = applyPlayerAction(
+      state,
+      createPlayerAction(2, state.currentTick, {
+        type: 'CONTINUE_TO_NEXT_WEEK',
+      }),
+      scenario,
+    ).state
+    const unusedControl = {
+      ...state,
+      fertilizer: {
+        initialUnits: 1 as const,
+        appliedWeekIndex: null,
+        remainingUnits: 1 as const,
+      },
+      fertilizerUsed: false,
+    }
+    expect(calculateFoodForecast(state).production).toEqual(
+      calculateFoodForecast(unusedControl).production,
+    )
+
+    state = advanceSimulation(
+      state,
+      scenario.linHeRequestDeadlineTick,
+      scenario,
+    ).state
+    state = advanceSimulation(state, scenario.simulationEndTick, scenario).state
+    expect(state.recap?.fertilizer).toEqual({
+      appliedWeekIndex: 0,
+      remainingUnits: 0,
+      bonus: 0,
+    })
+  })
+
+  it('keeps fertilizer through week one and applies it only in week two', () => {
+    let state = scenario.createInitialState()
+    state = advanceSimulation(state, scenario.pumpEventTick, scenario).state
+    state = advanceSimulation(state, scenario.weekEndTick, scenario).state
+    expect(state.recap?.fertilizer).toEqual({
+      appliedWeekIndex: null,
+      remainingUnits: 1,
+      bonus: 0,
+    })
+
+    state = applyPlayerAction(
+      state,
+      createPlayerAction(1, state.currentTick, {
+        type: 'CONTINUE_TO_NEXT_WEEK',
+      }),
+      scenario,
+    ).state
+    const baselineProduction = calculateFoodForecast(state).production.high
+    state = applyPlayerAction(
+      state,
+      createPlayerAction(2, state.currentTick, {
+        type: 'USE_FERTILIZER',
+      }),
+      scenario,
+    ).state
+
+    expect(state.fertilizer).toEqual({
+      initialUnits: 1,
+      appliedWeekIndex: 1,
+      remainingUnits: 0,
+    })
+    expect(calculateFoodForecast(state).production.high).toBe(
+      baselineProduction + 6,
+    )
+
+    state = advanceSimulation(
+      state,
+      scenario.linHeRequestDeadlineTick,
+      scenario,
+    ).state
+    state = advanceSimulation(state, scenario.simulationEndTick, scenario).state
+    expect(state.recap?.fertilizer).toEqual({
+      appliedWeekIndex: 1,
+      remainingUnits: 0,
+      bonus: 6,
+    })
+  })
+
+  it('retains one fertilizer unit at the end when the player never applies it', () => {
+    let state = scenario.createInitialState()
+    state = advanceSimulation(state, scenario.pumpEventTick, scenario).state
+    state = advanceSimulation(state, scenario.weekEndTick, scenario).state
+    state = applyPlayerAction(
+      state,
+      createPlayerAction(1, state.currentTick, {
+        type: 'CONTINUE_TO_NEXT_WEEK',
+      }),
+      scenario,
+    ).state
+    state = advanceSimulation(
+      state,
+      scenario.linHeRequestDeadlineTick,
+      scenario,
+    ).state
+    state = advanceSimulation(state, scenario.simulationEndTick, scenario).state
+
+    expect(state.fertilizer).toEqual({
+      initialUnits: 1,
+      appliedWeekIndex: null,
+      remainingUnits: 1,
+    })
+    expect(state.recap?.fertilizer).toEqual({
+      appliedWeekIndex: null,
+      remainingUnits: 1,
+      bonus: 0,
+    })
+  })
+
+  it('rejects a second application from the spent fertilizer lifecycle', () => {
+    const initial = scenario.createInitialState()
+    const state = applyPlayerAction(
+      initial,
+      createPlayerAction(1, initial.currentTick, {
+        type: 'USE_FERTILIZER',
+      }),
+      scenario,
+    ).state
+    const staleCompatibilityFlag = {
+      ...state,
+      fertilizerUsed: false,
+    }
+
+    expect(() =>
+      applyPlayerAction(
+        staleCompatibilityFlag,
+        createPlayerAction(2, staleCompatibilityFlag.currentTick, {
+          type: 'USE_FERTILIZER',
+        }),
+        scenario,
+      ),
+    ).toThrow('库存中没有第二份')
+  })
+
+  it('rejects fertilizer use after the final recap has frozen the remaining asset', () => {
+    let state = scenario.createInitialState()
+    state = advanceSimulation(state, scenario.pumpEventTick, scenario).state
+    state = advanceSimulation(state, scenario.weekEndTick, scenario).state
+    state = applyPlayerAction(
+      state,
+      createPlayerAction(1, state.currentTick, {
+        type: 'CONTINUE_TO_NEXT_WEEK',
+      }),
+      scenario,
+    ).state
+    state = advanceSimulation(
+      state,
+      scenario.linHeRequestDeadlineTick,
+      scenario,
+    ).state
+    state = advanceSimulation(state, scenario.simulationEndTick, scenario).state
+
+    expect(() =>
+      applyPlayerAction(
+        state,
+        createPlayerAction(2, state.currentTick, {
+          type: 'USE_FERTILIZER',
+        }),
+        scenario,
+      ),
+    ).toThrow('周末复盘已经冻结')
+    expect(state.fertilizer.remainingUnits).toBe(1)
+    expect(state.recap?.fertilizer.remainingUnits).toBe(1)
   })
 })

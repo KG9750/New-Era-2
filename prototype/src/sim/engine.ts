@@ -56,6 +56,13 @@ function rangeOf(state: SimulationState): ForecastRange {
   return calculateFoodForecast(state).endingStock
 }
 
+function supplyPlanOf(state: SimulationState) {
+  return {
+    food: calculateFoodForecast(state).endingStock,
+    repair: calculateRepairForecast(state).endingStock,
+  }
+}
+
 function supplyChangeDetail(beforeState: SimulationState, afterState: SimulationState): string {
   const beforeFood = calculateFoodForecast(beforeState).endingStock
   const afterFood = calculateFoodForecast(afterState).endingStock
@@ -207,8 +214,22 @@ export function applyPlayerAction(
       after,
     }
   } else if (envelope.action.type === 'USE_FERTILIZER') {
-    if (state.fertilizerUsed) throw new Error('化肥已经使用，库存中没有第二份')
-    const draft: SimulationState = { ...state, fertilizerUsed: true }
+    if (state.recap !== null || state.isComplete) {
+      throw new Error('周末复盘已经冻结，不能在结算后使用化肥')
+    }
+    if (state.fertilizer.remainingUnits === 0) {
+      throw new Error('化肥已经使用，库存中没有第二份')
+    }
+    const appliedWeekIndex = state.completedWeekIndexes.includes(0) ? 1 : 0
+    const draft: SimulationState = {
+      ...state,
+      fertilizer: {
+        ...state.fertilizer,
+        appliedWeekIndex,
+        remainingUnits: 0,
+      },
+      fertilizerUsed: true,
+    }
     const after = rangeOf(draft)
     next = {
       ...draft,
@@ -325,6 +346,7 @@ export function applyPlayerAction(
       ),
     }
     const after = rangeOf(draft)
+    const afterSupplies = supplyPlanOf(draft)
     next = {
       ...draft,
       actionLog: [...state.actionLog, envelope],
@@ -343,6 +365,10 @@ export function applyPlayerAction(
         state.planSnapshot === null && !state.isPaused
           ? after
           : state.planSnapshot,
+      supplyPlanSnapshot:
+        state.supplyPlanSnapshot === null && !state.isPaused
+          ? afterSupplies
+          : state.supplyPlanSnapshot,
     }
     event = {
       id: envelope.id,
@@ -357,9 +383,14 @@ export function applyPlayerAction(
     }
     next = {
       ...state,
+      inventory: {
+        food: state.recap.supplies.food.actual,
+        repair: state.recap.supplies.repair.actual,
+      },
       recap: null,
       isPaused: true,
       planSnapshot: null,
+      supplyPlanSnapshot: null,
       scheduleTransactions: [],
       actionLog: [...state.actionLog, envelope],
       timeline: appendTimeline(state, {
@@ -391,10 +422,17 @@ export function applyPlayerAction(
       weekTwoRequestReady
         ? rangeOf(clockDraft)
         : state.planSnapshot
+    const supplyPlanSnapshot =
+      !envelope.action.paused &&
+      state.supplyPlanSnapshot === null &&
+      weekTwoRequestReady
+        ? supplyPlanOf(clockDraft)
+        : state.supplyPlanSnapshot
     next = {
       ...clockDraft,
       isPaused: envelope.action.paused,
       planSnapshot,
+      supplyPlanSnapshot,
       actionLog: [...state.actionLog, envelope],
       timeline: appendTimeline(state, {
         atTick: envelope.atTick,
@@ -422,9 +460,16 @@ export function applyPlayerAction(
 
 function createRecap(state: SimulationState, weekIndex: number): WeekendRecap {
   const planned = state.planSnapshot ?? rangeOf(state)
-  const actualRange = rangeOf(state)
+  const plannedSupplies = state.supplyPlanSnapshot ?? supplyPlanOf(state)
+  const foodForecast = calculateFoodForecast(state)
+  const repairForecast = calculateRepairForecast(state)
   const actual =
-    state.pumpStatus === 'protected' ? actualRange.low : actualRange.high
+    state.pumpStatus === 'protected'
+      ? foodForecast.endingStock.low
+      : foodForecast.endingStock.high
+  const repairActual = repairForecast.endingStock.low
+  const fertilizerBonus: 0 | 6 =
+    state.fertilizer.appliedWeekIndex === weekIndex ? 6 : 0
   const route = selectTransportRoute(state)
   const items: WeekendRecapItem[] = [
     {
@@ -519,6 +564,25 @@ function createRecap(state: SimulationState, weekIndex: number): WeekendRecap {
   return {
     planned,
     actual,
+    supplies: {
+      food: {
+        planned: plannedSupplies.food,
+        actual,
+        endingStock: actual,
+        reasons: foodForecast.reasons,
+      },
+      repair: {
+        planned: plannedSupplies.repair,
+        actual: repairActual,
+        endingStock: repairActual,
+        reasons: repairForecast.reasons,
+      },
+    },
+    fertilizer: {
+      appliedWeekIndex: state.fertilizer.appliedWeekIndex,
+      remainingUnits: state.fertilizer.remainingUnits,
+      bonus: fertilizerBonus,
+    },
     headline:
       actual >= planned.low && actual <= planned.high
         ? '实际结果落在计划区间内'
@@ -576,6 +640,8 @@ export function advanceSimulation(
       const next: SimulationState = {
         ...deadlineState,
         planSnapshot: state.planSnapshot ?? after,
+        supplyPlanSnapshot:
+          state.supplyPlanSnapshot ?? supplyPlanOf(deadlineState),
         timeline: appendTimeline(state, {
           atTick: nextEvent.atTick,
           kind: 'scripted-event',
@@ -666,6 +732,7 @@ export function advanceSimulation(
         recap,
         recaps: [...state.recaps, recap],
         planSnapshot: null,
+        supplyPlanSnapshot: null,
         timeline: appendTimeline(state, {
           atTick: currentTick,
           kind: 'scripted-event',

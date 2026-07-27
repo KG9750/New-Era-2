@@ -88,8 +88,28 @@ export interface TimelineEntry {
 export interface WeekendRecap {
   planned: ForecastRange
   actual: number
+  supplies: WeekendSupplyRecaps
+  fertilizer: WeekendFertilizerRecap
   headline: string
   items: readonly WeekendRecapItem[]
+}
+
+export interface WeekendFertilizerRecap {
+  appliedWeekIndex: 0 | 1 | null
+  remainingUnits: 0 | 1
+  bonus: 0 | 6
+}
+
+export interface WeekendSupplyRecap {
+  planned: ForecastRange
+  actual: number
+  endingStock: number
+  reasons: readonly string[]
+}
+
+export interface WeekendSupplyRecaps {
+  food: WeekendSupplyRecap
+  repair: WeekendSupplyRecap
 }
 
 export interface WeekendRecapItem {
@@ -99,6 +119,22 @@ export interface WeekendRecapItem {
   title: string
   detail: string
   values: Readonly<Record<string, number>>
+}
+
+export interface SettlementInventory {
+  food: number
+  repair: number
+}
+
+export interface FertilizerLifecycle {
+  initialUnits: 1
+  appliedWeekIndex: 0 | 1 | null
+  remainingUnits: 0 | 1
+}
+
+export interface SupplyPlanSnapshot {
+  food: ForecastRange
+  repair: ForecastRange
 }
 
 export interface SimulationState {
@@ -114,10 +150,13 @@ export interface SimulationState {
   actionLog: readonly PlayerActionEnvelope[]
   timeline: readonly TimelineEntry[]
   planSnapshot: ForecastRange | null
+  supplyPlanSnapshot: SupplyPlanSnapshot | null
   recap: WeekendRecap | null
   recaps: readonly WeekendRecap[]
   completedWeekIndexes: readonly number[]
   isComplete: boolean
+  inventory: SettlementInventory
+  fertilizer: FertilizerLifecycle
   fertilizerUsed: boolean
   acceptedFoodShortfall: boolean
   linHeRequestDecision: LinHeRequestDecision
