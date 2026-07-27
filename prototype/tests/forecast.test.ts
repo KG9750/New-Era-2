@@ -7,7 +7,7 @@ import {
 
 describe('RC9-02 inventory forecasts', () => {
   it('uses the frozen RC9 scenario version', () => {
-    expect(scenario.version).toBe('0.5.0')
+    expect(scenario.version).toBe('0.5.1')
   })
 
   it('starts with one unapplied fertilizer unit', () => {

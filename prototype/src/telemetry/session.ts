@@ -1,4 +1,7 @@
-import { gate1WeekOneScenario as scenario } from '../scenario/gate1-week-one'
+import {
+  GATE1_PROTOCOL_VERSION,
+  gate1WeekOneScenario as scenario,
+} from '../scenario/gate1-week-one'
 import type { RcBuildMetadata } from '../build-metadata'
 import type {
   DomainEvent,
@@ -9,12 +12,15 @@ import type {
 
 export interface PlaytestSessionMeta {
   sampleId: string
+  diagnosisId: string
   sessionId: string
+  candidateBuildAuthorityHash: string
   buildId: string
   gitSha: string
   artifactHash: string
   scenarioId: string
   scenarioVersion: string
+  protocolVersion: typeof GATE1_PROTOCOL_VERSION
   fixedSeed: number
   initialStateHash: string
   viewport: string
@@ -93,7 +99,7 @@ function stableJson(value: unknown): string {
   return JSON.stringify(value)
 }
 
-export function stableStateHash(state: SimulationState): string {
+export function stableStateHash(state: unknown): string {
   const input = stableJson(state)
   let hash = 0x811c9dc5
   for (let index = 0; index < input.length; index += 1) {
@@ -179,12 +185,15 @@ export function createSessionRecorder(
   }
   const meta: PlaytestSessionMeta = {
     sampleId,
+    diagnosisId: sampleId,
     sessionId: createSessionId(),
+    candidateBuildAuthorityHash: buildMetadata.artifactHash,
     buildId: buildMetadata.buildId,
     gitSha: buildMetadata.gitSha,
     artifactHash: buildMetadata.artifactHash,
     scenarioId: scenario.id,
     scenarioVersion: scenario.version,
+    protocolVersion: GATE1_PROTOCOL_VERSION,
     fixedSeed: scenario.fixedSeed,
     initialStateHash,
     viewport:

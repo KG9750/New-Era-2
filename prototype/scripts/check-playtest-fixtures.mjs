@@ -2140,6 +2140,276 @@ function validateComparisonState(input) {
   })
 }
 
+const V03_REQUIRED_CONSEQUENCES = new Map([
+  [
+    'schedule-preventive-maintenance',
+    [
+      'consequence:w0:preventive-capacity:schedule',
+      'consequence:w0:preventive-capacity:equipment-exposure',
+      'consequence:w0:preventive-capacity:recovery-load',
+    ],
+  ],
+  [
+    'retain-rest-capacity',
+    [
+      'consequence:w0:preventive-capacity:allocation',
+      'consequence:w0:preventive-capacity:rest-recovery',
+      'consequence:w0:preventive-capacity:personnel-readiness',
+    ],
+  ],
+  [
+    'allocate-repair-buffer',
+    [
+      'consequence:w1:recovery-allocation:schedule',
+      'consequence:w1:recovery-allocation:ending-repair',
+    ],
+  ],
+  [
+    'allocate-food-production',
+    [
+      'consequence:w1:recovery-allocation:schedule',
+      'consequence:w1:recovery-allocation:ending-food',
+    ],
+  ],
+])
+
+function validateV03LedgerFixture(input) {
+  if (
+    !isRecord(input) ||
+    input.schemaVersion !== 'gate1-playtest-v2' ||
+    input.protocolVersion !==
+      'weekly-management-slice-playtest-v0.3' ||
+    input.scenarioVersion !== '0.5.1' ||
+    !isRecord(input.meta) ||
+    !Array.isArray(input.actions) ||
+    !Array.isArray(input.managementChoiceOpportunitiesV03) ||
+    !Array.isArray(input.managementChoiceCommitmentsV03) ||
+    !isRecord(input.effectOwnershipV03)
+  ) {
+    return reject('V03_LEDGER_SHAPE')
+  }
+  const {
+    candidateBuildAuthorityHash,
+    diagnosisId,
+    sessionId,
+  } = input.meta
+  if (
+    typeof diagnosisId !== 'string' ||
+    typeof sessionId !== 'string' ||
+    !HEX_64.test(candidateBuildAuthorityHash ?? '')
+  ) {
+    return reject('V03_AUTHORITY_MISMATCH')
+  }
+
+  const opportunities = new Map()
+  for (const opportunity of input.managementChoiceOpportunitiesV03) {
+    const w1 =
+      opportunity?.choiceSetId ===
+      'choice:w0:preventive-capacity'
+    const w2 =
+      opportunity?.choiceSetId ===
+      'choice:w1:recovery-allocation'
+    const expectedResourceLot = w1
+      ? 'schedule-slot:lin-he:d1:b1'
+      : 'schedule-slot:chen-du:d10:b2'
+    if (
+      !isRecord(opportunity) ||
+      (!w1 && !w2) ||
+      typeof opportunity.opportunityId !== 'string' ||
+      opportunities.has(opportunity.opportunityId)
+    ) {
+      return reject('V03_LEDGER_SHAPE')
+    }
+    if (
+      opportunity.diagnosisId !== diagnosisId ||
+      opportunity.sessionId !== sessionId ||
+      opportunity.candidateBuildAuthorityHash !==
+        candidateBuildAuthorityHash
+    ) {
+      return reject('V03_AUTHORITY_MISMATCH')
+    }
+    if (opportunity.resourceClaimRef !== expectedResourceLot) {
+      return reject('V03_RESOURCE_LOT_MISMATCH')
+    }
+    opportunities.set(opportunity.opportunityId, opportunity)
+  }
+
+  const ownedFingerprints = new Map()
+  const terminalKeys = new Set()
+  for (const commitment of input.managementChoiceCommitmentsV03) {
+    const opportunity = opportunities.get(
+      commitment?.opportunityId,
+    )
+    const requiredConsequenceIds =
+      V03_REQUIRED_CONSEQUENCES.get(
+        commitment?.candidateId,
+      )
+    if (
+      !isRecord(commitment) ||
+      opportunity === undefined ||
+      requiredConsequenceIds === undefined ||
+      !Array.isArray(commitment.requiredConsequenceIds) ||
+      !Array.isArray(commitment.effectFingerprints) ||
+      !Array.isArray(commitment.consequences)
+    ) {
+      return reject('V03_LEDGER_SHAPE')
+    }
+    const terminalKey =
+      `${commitment.diagnosisId}:${commitment.week}:${commitment.decisionIntentId}`
+    if (terminalKeys.has(terminalKey)) {
+      return reject('V03_TERMINAL_DUPLICATE')
+    }
+    if (
+      commitment.diagnosisId !== diagnosisId ||
+      commitment.sessionId !== sessionId ||
+      commitment.candidateBuildAuthorityHash !==
+        candidateBuildAuthorityHash ||
+      commitment.diagnosisId !== opportunity.diagnosisId ||
+      commitment.sessionId !== opportunity.sessionId ||
+      commitment.candidateBuildAuthorityHash !==
+        opportunity.candidateBuildAuthorityHash
+    ) {
+      return reject('V03_AUTHORITY_MISMATCH')
+    }
+    if (
+      commitment.choiceSetId !== opportunity.choiceSetId ||
+      commitment.decisionIntentId !==
+        opportunity.decisionIntentId ||
+      commitment.terminalState !== commitment.candidateId ||
+      opportunity.terminalState !== commitment.candidateId
+    ) {
+      return reject('V03_TERMINAL_MISMATCH')
+    }
+    if (
+      commitment.resourceClaimRef !==
+      opportunity.resourceClaimRef
+    ) {
+      return reject('V03_RESOURCE_LOT_MISMATCH')
+    }
+    const action = input.actions.find(
+      (candidate) =>
+        candidate?.type === 'COMMIT_MANAGEMENT_CHOICE' &&
+        candidate.opportunityId === commitment.opportunityId,
+    )
+    if (
+      !isRecord(action) ||
+      action.choiceSetId !== commitment.choiceSetId ||
+      action.candidateId !== commitment.candidateId
+    ) {
+      return reject('V03_ACTION_MISMATCH')
+    }
+    const consequenceIds = commitment.consequences.map(
+      (consequence) => consequence?.consequenceId,
+    )
+    const fingerprints = commitment.consequences.map(
+      (consequence) => consequence?.effectFingerprint,
+    )
+    if (
+      !sameJson(
+        commitment.requiredConsequenceIds,
+        requiredConsequenceIds,
+      ) ||
+      !sameJson(consequenceIds, requiredConsequenceIds) ||
+      !sameJson(commitment.effectFingerprints, fingerprints) ||
+      !sameJson(opportunity.effectFingerprints, fingerprints)
+    ) {
+      return reject('V03_REQUIRED_CONSEQUENCE_MISMATCH')
+    }
+    for (const consequence of commitment.consequences) {
+      if (
+        !isRecord(consequence) ||
+        consequence.opportunityId !==
+          commitment.opportunityId ||
+        consequence.decisionIntentId !==
+          commitment.decisionIntentId ||
+        consequence.choiceSetId !== commitment.choiceSetId ||
+        consequence.candidateId !== commitment.candidateId ||
+        consequence.diagnosisId !== diagnosisId ||
+        consequence.sessionId !== sessionId ||
+        consequence.candidateBuildAuthorityHash !==
+          candidateBuildAuthorityHash
+      ) {
+        return reject('V03_AUTHORITY_MISMATCH')
+      }
+      if (
+        consequence.resourceClaimRef !==
+        commitment.resourceClaimRef
+      ) {
+        return reject('V03_RESOURCE_LOT_MISMATCH')
+      }
+      if (consequence.beforeValue === consequence.afterValue) {
+        return reject('V03_NOOP_CONSEQUENCE')
+      }
+      if (
+        typeof consequence.effectFingerprint !== 'string' ||
+        !/^effect:[a-f0-9]{64}$/.test(
+          consequence.effectFingerprint,
+        )
+      ) {
+        return reject('V03_EFFECT_FINGERPRINT')
+      }
+      if (
+        ownedFingerprints.has(consequence.effectFingerprint)
+      ) {
+        return reject('V03_EFFECT_DOUBLE_OWNER')
+      }
+      ownedFingerprints.set(
+        consequence.effectFingerprint,
+        commitment.decisionIntentId,
+      )
+    }
+    if (
+      commitment.choiceSetId ===
+      'choice:w1:recovery-allocation'
+    ) {
+      const economic = commitment.consequences.filter(
+        (consequence) =>
+          consequence.objectRef === 'forecast:ending-repair' ||
+          consequence.objectRef === 'forecast:ending-food',
+      )
+      const schedule = commitment.consequences.filter(
+        (consequence) =>
+          consequence.objectRef === 'chen-du:d10:b2' &&
+          consequence.beforeValue === 'rest',
+      )
+      const repair =
+        commitment.candidateId === 'allocate-repair-buffer'
+      if (
+        economic.length !== 1 ||
+        schedule.length !== 1 ||
+        economic[0].afterValue - economic[0].beforeValue !== 1 ||
+        economic[0].objectRef !==
+          (repair
+            ? 'forecast:ending-repair'
+            : 'forecast:ending-food') ||
+        schedule[0].afterValue !==
+          (repair ? 'repair' : 'food')
+      ) {
+        return reject('V03_ECONOMIC_DELTA_MISMATCH')
+      }
+    }
+    terminalKeys.add(terminalKey)
+  }
+
+  if (
+    Object.keys(input.effectOwnershipV03).length !==
+    ownedFingerprints.size
+  ) {
+    return reject('V03_EFFECT_OWNER_MISMATCH')
+  }
+  for (const [fingerprint, owner] of ownedFingerprints) {
+    if (input.effectOwnershipV03[fingerprint] !== owner) {
+      return reject('V03_EFFECT_OWNER_MISMATCH')
+    }
+  }
+  return accept({
+    protocolVersion: input.protocolVersion,
+    terminalCommitmentCount:
+      input.managementChoiceCommitmentsV03.length,
+    ownedEffectCount: ownedFingerprints.size,
+  })
+}
+
 function compareValue(left, right, direction) {
   if (direction === 'higher') return Math.sign(left - right)
   if (direction === 'lower') return Math.sign(right - left)
@@ -2624,6 +2894,9 @@ function validateFixture(fixture) {
   if (fixture.kind === 'playtest-export') {
     return validatePlaytestExport(fixture.input)
   }
+  if (fixture.kind === 'management-ledger-v03') {
+    return validateV03LedgerFixture(fixture.input)
+  }
   if (fixture.kind === 'comparison-state') {
     return validateComparisonState(fixture.input)
   }
@@ -2747,6 +3020,11 @@ const requiredFixtureFiles = [
   'playtest-v2/mechanical-three-committed-rejected.json',
   'playtest-v2/canonical-agent-id-leading-zero-rejected.json',
   'playtest-v2/canonical-tech-id-leading-zero-rejected.json',
+  'playtest-v03/ledger-valid.json',
+  'playtest-v03/no-op-consequence-rejected.json',
+  'playtest-v03/effect-double-owner-rejected.json',
+  'playtest-v03/cross-session-rejected.json',
+  'playtest-v03/resource-lot-rejected.json',
   'manifests/candidate-valid.json',
   'manifests/candidate-invalid-source-sha.json',
   'manifests/candidate-invalid-incomplete-authority.json',
@@ -2801,6 +3079,11 @@ const REQUIRED_FIXTURE_OUTCOMES = new Map([
   ['playtest-v2/mechanical-three-committed-rejected.json', [false, 'V2_INTENT_CONTRACT']],
   ['playtest-v2/canonical-agent-id-leading-zero-rejected.json', [false, 'SAMPLE_ID_V2']],
   ['playtest-v2/canonical-tech-id-leading-zero-rejected.json', [false, 'SAMPLE_ID_V2']],
+  ['playtest-v03/ledger-valid.json', [true, null]],
+  ['playtest-v03/no-op-consequence-rejected.json', [false, 'V03_NOOP_CONSEQUENCE']],
+  ['playtest-v03/effect-double-owner-rejected.json', [false, 'V03_EFFECT_DOUBLE_OWNER']],
+  ['playtest-v03/cross-session-rejected.json', [false, 'V03_AUTHORITY_MISMATCH']],
+  ['playtest-v03/resource-lot-rejected.json', [false, 'V03_RESOURCE_LOT_MISMATCH']],
   ['manifests/candidate-zero-id-rejected.json', [false, 'CANDIDATE_MANIFEST_SHAPE']],
   ['manifests/candidate-c02-reuses-c01-evidence-rejected.json', [false, 'CANDIDATE_MANIFEST_EVIDENCE']],
   ['manifests/candidate-c02-first-manifest-valid.json', [true, null]],
@@ -2862,7 +3145,8 @@ const declaredFixtureFiles = new Set(
 const declaredPlaytestFixtureCount = [...declaredFixtureFiles].filter(
   (path) =>
     path?.startsWith('playtest-v1/') ||
-    path?.startsWith('playtest-v2/'),
+    path?.startsWith('playtest-v2/') ||
+    path?.startsWith('playtest-v03/'),
 ).length
 if (declaredPlaytestFixtureCount < 20) {
   failures.push(
@@ -2937,6 +3221,13 @@ for (const expectation of expectations.fixtures) {
         'candidateManagementGroupIds',
         'committedCount',
         'decisionHashes',
+      ]
+    }
+    if (fixture.kind === 'management-ledger-v03') {
+      return [
+        'protocolVersion',
+        'terminalCommitmentCount',
+        'ownedEffectCount',
       ]
     }
     if (

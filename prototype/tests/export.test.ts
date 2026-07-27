@@ -6,13 +6,29 @@ import {
   createPlayerAction,
 } from '../src/sim/engine'
 import { calculateFoodForecast } from '../src/sim/forecast'
-import type { SimulationState } from '../src/sim/model'
-import { createPlaytestExport } from '../src/telemetry/export'
+import {
+  PREVENTIVE_CAPACITY_CHOICE_SET_ID,
+  RECOVERY_ALLOCATION_CHOICE_SET_ID,
+  bindManagementChoiceAuthority,
+  createManagementChoiceCommitRequest,
+} from '../src/sim/management-choices'
+import type {
+  ManagementCandidateId,
+  PlayerAction,
+  SimulationState,
+} from '../src/sim/model'
+import {
+  createBlockedPlaytestExport,
+  createPlaytestExport,
+} from '../src/telemetry/export'
 import {
   createSessionRecorder,
+  recordBlockedCaptureCreated,
   recordPlayerTransition,
+  recordSimulationAdvance,
   stableStateHash,
 } from '../src/telemetry/session'
+import type { SessionRecorder } from '../src/telemetry/session'
 
 function startWeekTwo(): SimulationState {
   let state = scenario.createInitialState()
@@ -49,7 +65,224 @@ function buildMetadata() {
   }
 }
 
+function recordAction(
+  recorder: SessionRecorder,
+  state: SimulationState,
+  sequence: number,
+  action: PlayerAction,
+  monotonicNow: number,
+) {
+  const envelope = createPlayerAction(
+    sequence,
+    state.currentTick,
+    action,
+  )
+  const result = applyPlayerAction(state, envelope, scenario)
+  recordPlayerTransition(
+    recorder,
+    state,
+    envelope,
+    result,
+    monotonicNow,
+  )
+  return result.state
+}
+
+function commitManagementCandidate(
+  recorder: SessionRecorder,
+  state: SimulationState,
+  sequence: number,
+  candidateId: ManagementCandidateId,
+  monotonicNow: number,
+) {
+  const choiceSetId =
+    candidateId === 'schedule-preventive-maintenance' ||
+    candidateId === 'retain-rest-capacity'
+      ? PREVENTIVE_CAPACITY_CHOICE_SET_ID
+      : RECOVERY_ALLOCATION_CHOICE_SET_ID
+  return recordAction(
+    recorder,
+    state,
+    sequence,
+    {
+      type: 'COMMIT_MANAGEMENT_CHOICE',
+      request: createManagementChoiceCommitRequest(
+        state,
+        choiceSetId,
+        candidateId,
+        `export-v03-${sequence}`,
+      ),
+    },
+    monotonicNow,
+  )
+}
+
+function v03BlockedExport() {
+  const initial = scenario.createInitialState()
+  const recorder = createSessionRecorder(
+    'TECH-RC9-D80',
+    initial,
+    buildMetadata(),
+    1_000,
+    100,
+  )
+  let state = bindManagementChoiceAuthority(initial, {
+    diagnosisId: recorder.meta.diagnosisId,
+    sessionId: recorder.meta.sessionId,
+    candidateBuildAuthorityHash:
+      recorder.meta.candidateBuildAuthorityHash,
+  })
+  state = commitManagementCandidate(
+    recorder,
+    state,
+    1,
+    'retain-rest-capacity',
+    110,
+  )
+  state = recordAction(
+    recorder,
+    state,
+    2,
+    { type: 'SET_PAUSED', paused: false },
+    120,
+  )
+  let advanced = advanceSimulation(
+    state,
+    scenario.pumpEventTick,
+    scenario,
+  )
+  recordSimulationAdvance(
+    recorder,
+    state,
+    advanced,
+    3,
+    130,
+  )
+  state = advanced.state
+  state = recordAction(
+    recorder,
+    state,
+    3,
+    { type: 'SET_PAUSED', paused: false },
+    140,
+  )
+  advanced = advanceSimulation(
+    state,
+    scenario.weekEndTick,
+    scenario,
+  )
+  recordSimulationAdvance(
+    recorder,
+    state,
+    advanced,
+    3,
+    150,
+  )
+  state = advanced.state
+  state = recordAction(
+    recorder,
+    state,
+    4,
+    { type: 'CONTINUE_TO_NEXT_WEEK' },
+    160,
+  )
+  state = commitManagementCandidate(
+    recorder,
+    state,
+    5,
+    'allocate-food-production',
+    170,
+  )
+  recordBlockedCaptureCreated(
+    recorder,
+    state.currentTick,
+    180,
+  )
+  return createBlockedPlaytestExport(
+    recorder,
+    state,
+    'v0.3 ledger round-trip',
+    1_100,
+    190,
+  )
+}
+
 describe('Gate 1 v2 production export', () => {
+  it('exports two authority-bound C03 terminals as one complete v0.3 ledger', () => {
+    const exported = v03BlockedExport()
+    const commitments =
+      exported.managementChoiceCommitmentsV03!
+    const opportunities =
+      exported.managementChoiceOpportunitiesV03!
+    const fingerprints = commitments.flatMap(
+      (commitment) => commitment.effectFingerprints,
+    )
+
+    expect(exported).toMatchObject({
+      schemaVersion: 'gate1-playtest-v2',
+      protocolVersion:
+        'weekly-management-slice-playtest-v0.3',
+      scenarioVersion: '0.5.1',
+      meta: {
+        diagnosisId: 'TECH-RC9-D80',
+        protocolVersion:
+          'weekly-management-slice-playtest-v0.3',
+        scenarioVersion: '0.5.1',
+      },
+      summary: {
+        week1C03TerminalCommitmentCount: 1,
+        week2C03TerminalCommitmentCount: 1,
+      },
+    })
+    expect(opportunities).toHaveLength(2)
+    expect(
+      opportunities.map((opportunity) => [
+        opportunity.choiceSetId,
+        opportunity.terminalState,
+      ]),
+    ).toEqual([
+      [
+        'choice:w0:preventive-capacity',
+        'retain-rest-capacity',
+      ],
+      [
+        'choice:w1:recovery-allocation',
+        'allocate-food-production',
+      ],
+    ])
+    expect(commitments).toHaveLength(2)
+    expect(
+      commitments.map((commitment) => [
+        commitment.choiceSetId,
+        commitment.resourceClaimRef,
+        commitment.requiredConsequenceIds,
+      ]),
+    ).toEqual([
+      [
+        'choice:w0:preventive-capacity',
+        'schedule-slot:lin-he:d1:b1',
+        [
+          'consequence:w0:preventive-capacity:allocation',
+          'consequence:w0:preventive-capacity:rest-recovery',
+          'consequence:w0:preventive-capacity:personnel-readiness',
+        ],
+      ],
+      [
+        'choice:w1:recovery-allocation',
+        'schedule-slot:chen-du:d10:b2',
+        [
+          'consequence:w1:recovery-allocation:schedule',
+          'consequence:w1:recovery-allocation:ending-food',
+        ],
+      ],
+    ])
+    expect(new Set(fingerprints).size).toBe(fingerprints.length)
+    expect(Object.keys(exported.effectOwnershipV03!).sort()).toEqual(
+      [...fingerprints].sort(),
+    )
+    expect(exported.candidateEditGroups).toEqual([])
+  })
+
   it('classifies an accepted Lin He request into one legacy and one management group', () => {
     const initial = scenario.createInitialState()
     const recorder = createSessionRecorder(

@@ -9,6 +9,8 @@ Use this index to find design documents for `Project-004-New Era 2`.
 - `item-and-manufacturing-system-v0.1.md`: **物品与制造系统设计 V0.1 R1**（已冻结：分类 / 库存 / 制造 / 维修 / 装备 / 植物与伙伴动物；Gate 1 仍仅验证化肥样本）
 - `weekly-plan-production-forecast-slice-v0.1.md`: **周计划—产能推演两周切片规格 V0.1**（RC8 authority；保留解释 RC8 失败证据）
 - `weekly-plan-production-forecast-slice-v0.2.md`: **RC9 两周切片规格 V0.2**（责任承诺模型、真实周结转、唯一周相位、一次性化肥和中性方案比较；只适用于 RC9）
+- `gate1-rc9-branch-matrix.md`: **Gate 1 RC9 branch matrix**（既有 288 条完整轨迹、132 个 context 与 production oracle 冻结摘要）
+- `gate1-c03-management-choice-authority.md`: **C03 管理选择与 Branch Matrix Authority**（W1 预防容量、W2 唯一 18-tick resource lot、原子 consequence/effect ownership；不构成 candidate/evidence）
 - `concept-design-v0.3.md`: **概念设计 V0.3**（历史稿：12 个月 / 连续时间 / 月度主题豁免 / 双战场）
 - `concept-design-discussion-v0.1.md`: **概念设计讨论稿 V0.1**（历史稿：自由意志日 / Rebalance-36 玩法框架）
 - `core-beliefs.md`: stable design principles.

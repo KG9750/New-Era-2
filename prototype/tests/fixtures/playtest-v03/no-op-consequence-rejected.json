@@ -1,0 +1,97 @@
+{
+  "fixtureId": "playtest-v03-no-op-consequence-rejected",
+  "kind": "management-ledger-v03",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "protocolVersion": "weekly-management-slice-playtest-v0.3",
+    "scenarioVersion": "0.5.1",
+    "meta": {
+      "diagnosisId": "TECH-RC9-D81",
+      "sessionId": "11111111-1111-4111-8111-111111111111",
+      "candidateBuildAuthorityHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+    },
+    "actions": [
+      {
+        "type": "COMMIT_MANAGEMENT_CHOICE",
+        "opportunityId": "opportunity:w1:recovery-allocation",
+        "choiceSetId": "choice:w1:recovery-allocation",
+        "candidateId": "allocate-food-production"
+      }
+    ],
+    "managementChoiceOpportunitiesV03": [
+      {
+        "opportunityId": "opportunity:w1:recovery-allocation",
+        "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
+        "choiceSetId": "choice:w1:recovery-allocation",
+        "week": 1,
+        "diagnosisId": "TECH-RC9-D81",
+        "sessionId": "11111111-1111-4111-8111-111111111111",
+        "candidateBuildAuthorityHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "resourceClaimRef": "schedule-slot:chen-du:d10:b2",
+        "effectFingerprints": [
+          "effect:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "effect:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        ],
+        "terminalState": "allocate-food-production"
+      }
+    ],
+    "managementChoiceCommitmentsV03": [
+      {
+        "opportunityId": "opportunity:w1:recovery-allocation",
+        "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
+        "choiceSetId": "choice:w1:recovery-allocation",
+        "candidateId": "allocate-food-production",
+        "week": 1,
+        "diagnosisId": "TECH-RC9-D81",
+        "sessionId": "11111111-1111-4111-8111-111111111111",
+        "candidateBuildAuthorityHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "resourceClaimRef": "schedule-slot:chen-du:d10:b2",
+        "requiredConsequenceIds": [
+          "consequence:w1:recovery-allocation:schedule",
+          "consequence:w1:recovery-allocation:ending-food"
+        ],
+        "effectFingerprints": [
+          "effect:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+          "effect:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        ],
+        "terminalState": "allocate-food-production",
+        "consequences": [
+          {
+            "consequenceId": "consequence:w1:recovery-allocation:schedule",
+            "opportunityId": "opportunity:w1:recovery-allocation",
+            "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
+            "choiceSetId": "choice:w1:recovery-allocation",
+            "candidateId": "allocate-food-production",
+            "diagnosisId": "TECH-RC9-D81",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "candidateBuildAuthorityHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "resourceClaimRef": "schedule-slot:chen-du:d10:b2",
+            "objectRef": "chen-du:d10:b2",
+            "effectFingerprint": "effect:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "beforeValue": "rest",
+            "afterValue": "rest"
+          },
+          {
+            "consequenceId": "consequence:w1:recovery-allocation:ending-food",
+            "opportunityId": "opportunity:w1:recovery-allocation",
+            "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
+            "choiceSetId": "choice:w1:recovery-allocation",
+            "candidateId": "allocate-food-production",
+            "diagnosisId": "TECH-RC9-D81",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "candidateBuildAuthorityHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+            "resourceClaimRef": "schedule-slot:chen-du:d10:b2",
+            "objectRef": "forecast:ending-food",
+            "effectFingerprint": "effect:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+            "beforeValue": 8,
+            "afterValue": 9
+          }
+        ]
+      }
+    ],
+    "effectOwnershipV03": {
+      "effect:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": "w1:recovery-allocation:pump-vs-food",
+      "effect:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc": "w1:recovery-allocation:pump-vs-food"
+    }
+  }
+}

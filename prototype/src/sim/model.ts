@@ -16,6 +16,136 @@ export type TransportRouteId = 'north-loop' | 'south-shortcut'
 export type RecapCategory = '计划内结果' | '已知风险' | '新事件'
 export type RepairResponsibilitySelection = 'qiao-pan' | 'handoff'
 export type RepairResponsibility = 'unresolved' | 'scheduled' | 'debt'
+export type ManagementChoiceSetId =
+  | 'choice:w0:preventive-capacity'
+  | 'choice:w1:recovery-allocation'
+export type ManagementDecisionIntentId =
+  | 'w0:preventive-capacity:pump'
+  | 'w1:recovery-allocation:pump-vs-food'
+export type PreventiveCapacityCandidateId =
+  | 'schedule-preventive-maintenance'
+  | 'retain-rest-capacity'
+export type RecoveryAllocationCandidateId =
+  | 'allocate-repair-buffer'
+  | 'allocate-food-production'
+export type ManagementCandidateId =
+  | PreventiveCapacityCandidateId
+  | RecoveryAllocationCandidateId
+export type ManagementTerminalState =
+  | 'open'
+  | 'omitted'
+  | 'unqualified-direct-edit'
+  | ManagementCandidateId
+export type EquipmentExposure = 'high' | 'low'
+
+export interface ManagementChoiceAuthority {
+  diagnosisId: string
+  sessionId: string
+  candidateBuildAuthorityHash: string
+}
+
+export interface ManagementChoiceOpportunity {
+  opportunityId: string
+  decisionIntentId: ManagementDecisionIntentId
+  choiceSetId: ManagementChoiceSetId
+  candidateId: null
+  objectRef: string
+  week: 0 | 1
+  diagnosisId: string
+  sessionId: string
+  candidateBuildAuthorityHash: string
+  stateRevision: number
+  projectionBaseHash: string
+  candidateProjectionHash: string | null
+  idempotencyKey: string | null
+  commitCause: 'opportunity-created'
+  resourceClaimRef: string
+  requiredConsequenceIds: readonly string[]
+  effectFingerprints: readonly string[]
+  terminalState: ManagementTerminalState
+  committedAtSequence: number | null
+}
+
+export interface ManagementChoiceConsequence {
+  consequenceId: string
+  opportunityId: string
+  decisionIntentId: ManagementDecisionIntentId
+  choiceSetId: ManagementChoiceSetId
+  candidateId: ManagementCandidateId
+  objectRef: string
+  week: 0 | 1
+  diagnosisId: string
+  sessionId: string
+  candidateBuildAuthorityHash: string
+  stateRevision: number
+  projectionBaseHash: string
+  candidateProjectionHash: string
+  idempotencyKey: string
+  commitCause: 'explicit-candidate-action'
+  resourceClaimRef: string
+  requiredConsequenceIds: readonly string[]
+  effectFingerprints: readonly string[]
+  terminalState: ManagementCandidateId
+  committedAtSequence: number
+  effectFingerprint: string
+  beforeValue: string | number
+  afterValue: string | number
+}
+
+export interface ManagementChoiceCommitment {
+  opportunityId: string
+  decisionIntentId: ManagementDecisionIntentId
+  choiceSetId: ManagementChoiceSetId
+  candidateId: ManagementCandidateId
+  objectRef: string
+  week: 0 | 1
+  diagnosisId: string
+  sessionId: string
+  candidateBuildAuthorityHash: string
+  stateRevision: number
+  projectionBaseHash: string
+  candidateProjectionHash: string
+  idempotencyKey: string
+  commitCause: 'explicit-candidate-action'
+  resourceClaimRef: string
+  requiredConsequenceIds: readonly string[]
+  effectFingerprints: readonly string[]
+  terminalState: ManagementCandidateId
+  committedAtSequence: number
+  consequences: readonly ManagementChoiceConsequence[]
+}
+
+export interface ManagementChoiceCommitRequest {
+  opportunityId: string
+  choiceSetId: ManagementChoiceSetId
+  candidateId: ManagementCandidateId
+  diagnosisId: string
+  sessionId: string
+  candidateBuildAuthorityHash: string
+  stateRevision: number
+  projectionBaseHash: string
+  candidateProjectionHash: string
+  idempotencyKey: string
+  commitCause: 'explicit-candidate-action'
+}
+
+export interface ManagementChoiceState {
+  authority: ManagementChoiceAuthority | null
+  opportunities: {
+    preventiveCapacity: ManagementChoiceOpportunity | null
+    recoveryAllocation: ManagementChoiceOpportunity | null
+  }
+  commitments: readonly ManagementChoiceCommitment[]
+  effectOwnership: Readonly<Record<string, ManagementDecisionIntentId>>
+  equipmentExposure: EquipmentExposure
+  equipmentRecoveryLoad: 0 | 1 | 2
+  preventiveCapacityAllocation:
+    | 'unallocated'
+    | 'maintenance'
+    | 'rest'
+  linHeRecoveryUnits: 0 | 1
+  personnelReadiness: number
+}
 
 export interface CharacterDefinition {
   id: CharacterId
@@ -162,6 +292,7 @@ export interface SupplyPlanSnapshot {
 }
 
 export interface SimulationState {
+  stateRevision: number
   currentTick: number
   isPaused: boolean
   activity: Activity
@@ -192,6 +323,7 @@ export interface SimulationState {
   repairResponsibilityAssignment: RepairResponsibilityAssignment | null
   repairDebt: RepairDebtState | null
   characterRecords: Readonly<Record<CharacterId, readonly string[]>>
+  managementChoices: ManagementChoiceState
 }
 
 export type PlayerAction =
@@ -219,6 +351,10 @@ export type PlayerAction =
   | { type: 'ACCEPT_REPAIR_DEBT' }
   | { type: 'RESOLVE_LIN_HE_REQUEST'; decision: Exclude<LinHeRequestDecision, 'pending'> }
   | { type: 'OPEN_TRANSPORT_SHORTCUT' }
+  | {
+      type: 'COMMIT_MANAGEMENT_CHOICE'
+      request: ManagementChoiceCommitRequest
+    }
   | { type: 'CONTINUE_TO_NEXT_WEEK' }
   | { type: 'SET_PAUSED'; paused: boolean }
 
@@ -266,6 +402,7 @@ export interface DomainEvent {
     | 'repair-debt-accepted'
     | 'lin-he-request-resolved'
     | 'transport-shortcut-opened'
+    | 'management-choice-committed'
     | 'clock-changed'
     | 'pump-incident'
     | 'lin-he-request-expired'

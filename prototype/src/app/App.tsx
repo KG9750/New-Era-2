@@ -17,11 +17,18 @@ import type {
 import { selectClockLabel, selectProgress } from '../sim/selectors'
 import {
   PUMP_MAINTENANCE_BLOCK_ID,
-  hasPreventiveMaintenance,
   resolveScheduleBlock,
 } from '../sim/schedule'
 import { selectTransportRoute } from '../sim/transport'
 import { weekIndexForTick } from '../sim/week-phase'
+import {
+  PREVENTIVE_CAPACITY_CHOICE_SET_ID,
+  RECOVERY_ALLOCATION_CHOICE_SET_ID,
+  bindManagementChoiceAuthority,
+  createManagementChoiceCommitRequest,
+  isManagementChoiceActive,
+} from '../sim/management-choices'
+import type { ManagementCandidateId } from '../sim/model'
 import {
   createBlockedPlaytestExport,
   createPlaytestExport,
@@ -46,7 +53,14 @@ import {
 import { SessionGate } from './SessionGate'
 
 type Speed = 1 | 3 | 8
-type FocusedIssue = 'food' | 'pump' | 'repair' | 'transport' | 'lin-request' | null
+type FocusedIssue =
+  | 'food'
+  | 'pump'
+  | 'repair'
+  | 'transport'
+  | 'lin-request'
+  | 'recovery'
+  | null
 type SupplyForecast = FoodForecast | RepairForecast
 
 interface AppProps {
@@ -318,7 +332,9 @@ export function App({ buildMetadata }: AppProps) {
   const [savedCaptureKind, setSavedCaptureKind] = useState<CaptureKind>()
   const [blockedReason, setBlockedReason] = useState('')
   const [blockedCaptureFrozen, setBlockedCaptureFrozen] = useState(false)
+  const [choiceError, setChoiceError] = useState<string>()
   const nextActionSequence = useRef(1)
+  const simulationRef = useRef(simulation)
   const recorderRef = useRef<SessionRecorder | null>(null)
   const pendingCaptureRef = useRef<PendingCapture | null>(null)
   const comparisonCloseRef = useRef<HTMLButtonElement | null>(null)
@@ -336,9 +352,6 @@ export function App({ buildMetadata }: AppProps) {
     simulation,
     PUMP_MAINTENANCE_BLOCK_ID,
   )
-  const pumpPlanReady = hasPreventiveMaintenance(simulation)
-  const pumpActivityMaskedByImmediate =
-    simulation.immediateAdjustments[PUMP_MAINTENANCE_BLOCK_ID] !== undefined
   const transportRoute = selectTransportRoute(simulation)
   const latestBlockingEvent = simulation.isPaused
     ? [...simulation.timeline].reverse().find(
@@ -358,24 +371,77 @@ export function App({ buildMetadata }: AppProps) {
         : simulation.repairResponsibilitySelection === null
           ? '水泵维修责任尚未落地'
           : '责任方向已选，等待日程确认'
+  const preventiveCapacityTerminal =
+    simulation.managementChoices.opportunities
+      .preventiveCapacity?.terminalState ?? 'open'
+  const recoveryAllocationTerminal =
+    simulation.managementChoices.opportunities
+      .recoveryAllocation?.terminalState ?? 'open'
+  const preventiveCapacityCommitted = [
+    'schedule-preventive-maintenance',
+    'retain-rest-capacity',
+  ].includes(preventiveCapacityTerminal)
+  const recoveryAllocationCommitted = [
+    'allocate-repair-buffer',
+    'allocate-food-production',
+  ].includes(recoveryAllocationTerminal)
 
   function submit(action: PlayerAction) {
     if (!recorderRef.current || blockedCaptureFrozen) return
+    const current = simulationRef.current
     const undoOfActionId =
       action.type === 'UNDO_SCHEDULE'
-        ? simulation.scheduleTransactions.at(-1)?.actionId
+        ? current.scheduleTransactions.at(-1)?.actionId
         : undefined
     const envelope = createPlayerAction(
       nextActionSequence.current,
-      simulation.currentTick,
+      current.currentTick,
       action,
       undoOfActionId,
     )
     nextActionSequence.current += 1
     if (action.type === 'CONTINUE_TO_NEXT_WEEK') setFocusedIssue(null)
-    const result = applyPlayerAction(simulation, envelope, scenario)
-    recordPlayerTransition(recorderRef.current, simulation, envelope, result)
+    const result = applyPlayerAction(current, envelope, scenario)
+    recordPlayerTransition(recorderRef.current, current, envelope, result)
+    simulationRef.current = result.state
     setSimulation(result.state)
+  }
+
+  function submitManagementChoice(
+    candidateId: ManagementCandidateId,
+  ) {
+    const current = simulationRef.current
+    const choiceSetId =
+      candidateId ===
+        'schedule-preventive-maintenance' ||
+      candidateId === 'retain-rest-capacity'
+        ? PREVENTIVE_CAPACITY_CHOICE_SET_ID
+        : RECOVERY_ALLOCATION_CHOICE_SET_ID
+    try {
+      const request =
+        createManagementChoiceCommitRequest(
+          current,
+          choiceSetId,
+          candidateId,
+          [
+            current.managementChoices.authority?.sessionId,
+            choiceSetId,
+            current.stateRevision,
+            candidateId,
+          ].join(':'),
+        )
+      submit({
+        type: 'COMMIT_MANAGEMENT_CHOICE',
+        request,
+      })
+      setChoiceError(undefined)
+    } catch (error) {
+      setChoiceError(
+        error instanceof Error
+          ? error.message
+          : '管理选择提交失败。',
+      )
+    }
   }
 
   function openComparison(
@@ -410,6 +476,7 @@ export function App({ buildMetadata }: AppProps) {
         if (recorderRef.current) {
           recordSimulationAdvance(recorderRef.current, current, result, speed)
         }
+        simulationRef.current = result.state
         return result.state
       })
     }, 250)
@@ -431,9 +498,19 @@ export function App({ buildMetadata }: AppProps) {
   function startSession(sampleId: string) {
     const state = initialState()
     const recorder = createSessionRecorder(sampleId, state, buildMetadata)
+    const sessionState = bindManagementChoiceAuthority(
+      state,
+      {
+        diagnosisId: recorder.meta.diagnosisId,
+        sessionId: recorder.meta.sessionId,
+        candidateBuildAuthorityHash:
+          recorder.meta.candidateBuildAuthorityHash,
+      },
+    )
     recorderRef.current = recorder
+    simulationRef.current = sessionState
     nextActionSequence.current = 1
-    setSimulation(state)
+    setSimulation(sessionState)
     setSpeed(3)
     setFocusedIssue(null)
     setLastExportedAtTick(undefined)
@@ -442,6 +519,7 @@ export function App({ buildMetadata }: AppProps) {
     setSavedCaptureKind(undefined)
     setBlockedReason('')
     setBlockedCaptureFrozen(false)
+    setChoiceError(undefined)
     pendingCaptureRef.current = null
     setActiveSession(recorder.meta)
     setWasSessionCleared(false)
@@ -575,7 +653,9 @@ export function App({ buildMetadata }: AppProps) {
     pendingCaptureRef.current = null
     setWasSessionCleared(true)
     setActiveSession(null)
-    setSimulation(initialState())
+    const resetState = initialState()
+    simulationRef.current = resetState
+    setSimulation(resetState)
     setSpeed(3)
     setFocusedIssue(null)
     setLastExportedAtTick(undefined)
@@ -584,9 +664,17 @@ export function App({ buildMetadata }: AppProps) {
     setSavedCaptureKind(undefined)
     setBlockedReason('')
     setBlockedCaptureFrozen(false)
+    setChoiceError(undefined)
   }
 
-  const canEditPumpPlan = simulation.currentTick < scenario.pumpEventTick
+  const canEditPumpPlan = isManagementChoiceActive(
+    simulation,
+    PREVENTIVE_CAPACITY_CHOICE_SET_ID,
+  )
+  const canAllocateRecovery = isManagementChoiceActive(
+    simulation,
+    RECOVERY_ALLOCATION_CHOICE_SET_ID,
+  )
 
   if (!activeSession) {
     return (
@@ -693,20 +781,26 @@ export function App({ buildMetadata }: AppProps) {
                 title={`粮食预计${foodForecast.status}`}
               />
               <IssueSummaryCard
-                actionLabel={pumpPlanReady ? '查看检修结果' : '定位日程方案'}
-                description={pumpPlanReady
-                  ? '两个预防性维修活动块已经形成，已知停机下探已从预测区间移除。'
-                  : '还缺一个预防性维修活动块；逾期会同时压低粮食与维修保障。'}
+                actionLabel={
+                  preventiveCapacityCommitted
+                    ? '查看容量结果'
+                    : '比较容量取舍'
+                }
+                description={
+                  preventiveCapacityTerminal ===
+                  'schedule-preventive-maintenance'
+                    ? '一个休息格已原子分配给第二次预防检修，设备暴露降为 low。'
+                    : preventiveCapacityTerminal ===
+                        'retain-rest-capacity'
+                      ? '休息容量已保留，人员准备度 +1；设备暴露保持 high。'
+                      : '同一个休息格只能用于第二次预防检修或人员恢复，也可以跳过。'
+                }
                 icon="!"
-                meta={pumpPlanReady
-                  ? '已安排 · 后果：粮食与维修保障'
-                  : '责任方向：调整成员日程'}
+                meta="同一资源：林禾第2日 B2 · 无默认或推荐"
                 onOpen={() => setFocusedIssue('pump')}
-                resolved={pumpPlanReady}
+                resolved={preventiveCapacityCommitted}
                 selected={focusedIssue === 'pump'}
-                title={pumpPlanReady
-                  ? '水泵预防检修已经成形'
-                  : '水泵预防检修仍有缺口'}
+                title="预防容量分配"
               />
               <IssueSummaryCard
                 actionLabel={repairResponsibilityResolved ? '查看责任结果' : '比较责任方向'}
@@ -723,6 +817,28 @@ export function App({ buildMetadata }: AppProps) {
             </>
           ) : (
             <>
+              <IssueSummaryCard
+                actionLabel={
+                  recoveryAllocationCommitted
+                    ? '查看分配结果'
+                    : '比较应急班次'
+                }
+                description={
+                  recoveryAllocationTerminal ===
+                  'allocate-repair-buffer'
+                    ? '第11日 B3 已分配给维修备件，预计期末维修保障 +1。'
+                    : recoveryAllocationTerminal ===
+                        'allocate-food-production'
+                      ? '第11日 B3 已分配给粮食生产，预计期末粮食 +1。'
+                      : '同一个三小时应急班次只能投向维修备件或粮食生产，也可以跳过。'
+                }
+                icon="配"
+                meta={`设备恢复负荷 ${simulation.managementChoices.equipmentRecoveryLoad} · 同一 18-tick 班次`}
+                onOpen={() => setFocusedIssue('recovery')}
+                resolved={recoveryAllocationCommitted}
+                selected={focusedIssue === 'recovery'}
+                title="恢复资源分配"
+              />
               <IssueSummaryCard
                 actionLabel={simulation.linHeRequestDecision === 'pending'
                   ? '比较回应方案'
@@ -773,6 +889,216 @@ export function App({ buildMetadata }: AppProps) {
           )}
         </div>
       </section>
+
+      {currentWeek === 1 && focusedIssue === 'pump' && (
+        <section
+          aria-labelledby="preventive-capacity-title"
+          aria-modal="false"
+          className="choice-comparison"
+          onKeyDown={(event) => {
+            if (
+              event.target === event.currentTarget &&
+              (event.key === 'Enter' || event.key === ' ')
+            ) {
+              event.preventDefault()
+            }
+          }}
+          role="dialog"
+        >
+          <div className="comparison-heading">
+            <div>
+              <p className="eyebrow">预防容量分配</p>
+              <h2 id="preventive-capacity-title">
+                一个休息格，两种持久后果
+              </h2>
+            </div>
+            <button
+              className="comparison-close"
+              onClick={() => setFocusedIssue(null)}
+              type="button"
+            >
+              关闭比较
+            </button>
+          </div>
+          <p className="comparison-intro">
+            两项同时可见；打开、关闭或定位不会提交。明确选择后立即原子兑现，不能改选。
+          </p>
+          <div
+            className="comparison-options two-options"
+            role="list"
+            aria-label="预防容量候选"
+          >
+            <article className="comparison-option" role="listitem">
+              <strong>安排第二次预防检修</strong>
+              <span>
+                成本：消耗林禾第2日 B2 的休息；收益：设备暴露 high → low。
+              </span>
+              <small>
+                放弃人员恢复；W2 设备恢复负荷为 1。
+              </small>
+              <button
+                aria-pressed={
+                  preventiveCapacityTerminal ===
+                  'schedule-preventive-maintenance'
+                }
+                className="comparison-option-action"
+                disabled={
+                  preventiveCapacityTerminal !== 'open' ||
+                  !canEditPumpPlan
+                }
+                onClick={() =>
+                  submitManagementChoice(
+                    'schedule-preventive-maintenance',
+                  )
+                }
+                type="button"
+              >
+                安排第二次预防检修
+              </button>
+            </article>
+            <article className="comparison-option" role="listitem">
+              <strong>保留休息容量</strong>
+              <span>
+                成本：设备暴露保持 high；收益：林禾恢复 1，终局人员准备度 +1。
+              </span>
+              <small>
+                放弃第二次检修；W2 设备恢复负荷为 2。
+              </small>
+              <button
+                aria-pressed={
+                  preventiveCapacityTerminal ===
+                  'retain-rest-capacity'
+                }
+                className="comparison-option-action"
+                disabled={
+                  preventiveCapacityTerminal !== 'open' ||
+                  !canEditPumpPlan
+                }
+                onClick={() =>
+                  submitManagementChoice(
+                    'retain-rest-capacity',
+                  )
+                }
+                type="button"
+              >
+                保留休息容量
+              </button>
+            </article>
+          </div>
+          {choiceError && (
+            <small role="alert">{choiceError}</small>
+          )}
+        </section>
+      )}
+
+      {currentWeek === 2 &&
+        focusedIssue === 'recovery' && (
+          <section
+            aria-labelledby="recovery-allocation-title"
+            aria-modal="false"
+            className="choice-comparison"
+            onKeyDown={(event) => {
+              if (
+                event.target === event.currentTarget &&
+                (event.key === 'Enter' ||
+                  event.key === ' ')
+              ) {
+                event.preventDefault()
+              }
+            }}
+            role="dialog"
+          >
+            <div className="comparison-heading">
+              <div>
+                <p className="eyebrow">恢复资源分配</p>
+                <h2 id="recovery-allocation-title">
+                  同一个应急班次投向哪里
+                </h2>
+              </div>
+              <button
+                className="comparison-close"
+                onClick={() => setFocusedIssue(null)}
+                type="button"
+              >
+                关闭比较
+              </button>
+            </div>
+            <p className="comparison-intro">
+              陈渡第11日 B3（16–19）是唯一资源；两项都消耗同一个 18-tick 班次。
+            </p>
+            <div
+              className="comparison-options two-options"
+              role="list"
+              aria-label="恢复资源候选"
+            >
+              <article
+                className="comparison-option"
+                role="listitem"
+              >
+                <strong>分配给维修备件</strong>
+                <span>
+                  收益：预计期末维修保障 +1；粮食不变。
+                </span>
+                <small>
+                  放弃粮食 +1；设备恢复负荷保持 {simulation.managementChoices.equipmentRecoveryLoad}。
+                </small>
+                <button
+                  aria-pressed={
+                    recoveryAllocationTerminal ===
+                    'allocate-repair-buffer'
+                  }
+                  className="comparison-option-action"
+                  disabled={
+                    recoveryAllocationTerminal !== 'open' ||
+                    !canAllocateRecovery
+                  }
+                  onClick={() =>
+                    submitManagementChoice(
+                      'allocate-repair-buffer',
+                    )
+                  }
+                  type="button"
+                >
+                  分配给维修备件
+                </button>
+              </article>
+              <article
+                className="comparison-option"
+                role="listitem"
+              >
+                <strong>分配给粮食生产</strong>
+                <span>
+                  收益：预计期末粮食 +1；维修保障不变。
+                </span>
+                <small>
+                  放弃维修 +1；设备恢复负荷保持 {simulation.managementChoices.equipmentRecoveryLoad}。
+                </small>
+                <button
+                  aria-pressed={
+                    recoveryAllocationTerminal ===
+                    'allocate-food-production'
+                  }
+                  className="comparison-option-action"
+                  disabled={
+                    recoveryAllocationTerminal !== 'open' ||
+                    !canAllocateRecovery
+                  }
+                  onClick={() =>
+                    submitManagementChoice(
+                      'allocate-food-production',
+                    )
+                  }
+                  type="button"
+                >
+                  分配给粮食生产
+                </button>
+              </article>
+            </div>
+            {choiceError && (
+              <small role="alert">{choiceError}</small>
+            )}
+          </section>
+        )}
 
       {currentWeek === 1 && focusedIssue === 'repair' && (
         <section
@@ -1016,49 +1342,12 @@ export function App({ buildMetadata }: AppProps) {
             </p>
           ) : (
             <div className="activity-editor">
-              <p>乔磐已有 1 块。为林禾选择第二块：</p>
-              <div className="activity-options" role="group" aria-label="活动选择">
-                <button
-                  aria-pressed={
-                    resolveScheduleBlock(simulation, PUMP_MAINTENANCE_BLOCK_ID).activity ===
-                    'rest'
-                  }
-                  disabled={
-                    !canEditPumpPlan ||
-                    pumpActivityMaskedByImmediate ||
-                    pumpBlock.activity === 'rest'
-                  }
-                  onClick={() => submit({ type: 'CHANGE_ACTIVITY', activity: 'rest' })}
-                  type="button"
-                >
-                  <span aria-hidden="true">☕</span>
-                  保留休息
-                </button>
-                <button
-                  aria-pressed={
-                    resolveScheduleBlock(simulation, PUMP_MAINTENANCE_BLOCK_ID).activity ===
-                    'repair'
-                  }
-                  disabled={
-                    !canEditPumpPlan ||
-                    pumpActivityMaskedByImmediate ||
-                    pumpBlock.activity === 'repair'
-                  }
-                  onClick={() => submit({ type: 'CHANGE_ACTIVITY', activity: 'repair' })}
-                  type="button"
-                >
-                  <span aria-hidden="true">◆</span>
-                  补足第 2 个检修块
-                </button>
-              </div>
+              <p>
+                乔磐已有 1 块；当前该格为 {ACTIVITY_LABELS[pumpBlock.activity]}。
+              </p>
               <small>
-                人物与设施联动：林禾的维修效率低于乔磐，且这块会进入共享劳动力总额。
+                上方两项是唯一可计数的显式 choice set。完整周计划里的底层编辑仍会改变真实日程，但不会事后推断为本项承诺。
               </small>
-              {pumpActivityMaskedByImmediate && (
-                <small className="responsibility-noop-warning" role="alert">
-                  该格存在即时调整，快捷按钮无法覆盖；请在完整周计划中撤销或修改即时层。
-                </small>
-              )}
               {!canEditPumpPlan && <small>水泵事件已发生，过去的预防性安排不能追溯修改。</small>}
             </div>
           )}

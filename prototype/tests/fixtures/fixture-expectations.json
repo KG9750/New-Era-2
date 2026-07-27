@@ -1065,6 +1065,44 @@
         "accepted": false,
         "errorCode": "V2_COMMITMENT_NOT_QUALIFIED"
       }
+    },
+    {
+      "file": "playtest-v03/ledger-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "protocolVersion": "weekly-management-slice-playtest-v0.3",
+        "terminalCommitmentCount": 1,
+        "ownedEffectCount": 2
+      }
+    },
+    {
+      "file": "playtest-v03/no-op-consequence-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V03_NOOP_CONSEQUENCE"
+      }
+    },
+    {
+      "file": "playtest-v03/effect-double-owner-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V03_EFFECT_DOUBLE_OWNER"
+      }
+    },
+    {
+      "file": "playtest-v03/cross-session-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V03_AUTHORITY_MISMATCH"
+      }
+    },
+    {
+      "file": "playtest-v03/resource-lot-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V03_RESOURCE_LOT_MISMATCH"
+      }
     }
   ]
 }

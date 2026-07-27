@@ -15,7 +15,7 @@ const TEST_BUILD_METADATA = {
   artifactHash: '2'.repeat(64),
   artifactHashAlgorithm: 'sha256-canonical-file-manifest-v1' as const,
   artifactManifestPath: 'artifact-manifest.json' as const,
-  initialStateHash: 'fnv1a32-b33f1b1d',
+  initialStateHash: 'fnv1a32-6b11fd08',
   initialStateHashAlgorithm: 'fnv1a32-stable-json-v1' as const,
 }
 
@@ -35,12 +35,15 @@ describe('minimal weekly flow UI', () => {
     renderStartedApp()
 
     expect(screen.getByRole('heading', { name: '本周三项取舍' })).toBeInTheDocument()
-    const scheduleEntry = screen.getByRole('button', { name: '定位日程方案' })
-    expect(scheduleEntry).toBeInTheDocument()
-    expect(scheduleEntry.closest('article')).toHaveTextContent('水泵预防检修仍有缺口')
-    expect(scheduleEntry.closest('article')).not.toHaveTextContent(/乔磐|林禾|周二|B2/)
+    const comparisonEntry = screen.getByRole('button', { name: '比较容量取舍' })
+    expect(comparisonEntry).toBeInTheDocument()
+    expect(comparisonEntry.closest('article')).toHaveTextContent('预防容量分配')
+    expect(comparisonEntry.closest('article')).toHaveTextContent('无默认或推荐')
+    expect(comparisonEntry.closest('article')).not.toHaveTextContent(
+      /安排第二次预防检修|保留休息容量/,
+    )
     expect(screen.getByText(/从周初摘要定位预防检修日程/)).toBeInTheDocument()
-    expect(screen.queryByText('112')).not.toBeInTheDocument()
+    expect(screen.queryByRole('grid', { name: '第 1 周完整计划' })).not.toBeInTheDocument()
   })
 
   it('opens an unbiased repair comparison without mutating authority', async () => {
@@ -196,7 +199,7 @@ describe('minimal weekly flow UI', () => {
     ).toBeDisabled()
   })
 
-  it('blocks pump shortcuts when an immediate layer masks their weekly edit', () => {
+  it('does not infer a management commitment from a low-level schedule edit', () => {
     renderStartedApp()
     fireEvent.click(screen.getByRole('button', { name: '展开完整周计划' }))
     const grid = screen.getByRole('grid', { name: '第 1 周完整计划' })
@@ -213,51 +216,81 @@ describe('minimal weekly flow UI', () => {
     })
     fireEvent.click(screen.getByRole('button', { name: '修改所选格' }))
 
-    fireEvent.click(screen.getByRole('button', { name: '查看检修结果' }))
-
-    expect(screen.getByRole('button', { name: '保留休息' })).toBeDisabled()
-    expect(screen.getByRole('button', { name: '补足第 2 个检修块' })).toBeDisabled()
-    expect(screen.getByRole('alert')).toHaveTextContent(
-      '快捷按钮无法覆盖；请在完整周计划中撤销或修改即时层',
+    fireEvent.click(screen.getByRole('button', { name: '比较容量取舍' }))
+    fireEvent.click(
+      screen.getByRole('button', { name: '安排第二次预防检修' }),
     )
+
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      'ORIGINAL_ACTIVITY_MISMATCH',
+    )
+    expect(
+      screen.getByRole('button', { name: '安排第二次预防检修' }),
+    ).toHaveAttribute('aria-pressed', 'false')
+    expect(
+      screen.getByRole('button', { name: '比较容量取舍' }),
+    ).toBeInTheDocument()
   })
 
-  it('locates the activity block and immediately updates forecast and reason', () => {
+  it('commits only after a concrete capacity candidate is keyboard-activated', () => {
     renderStartedApp()
 
     const forecastPanel = screen.getByRole('heading', { name: '粮食' }).closest('section')
     expect(forecastPanel).not.toBeNull()
     expect(within(forecastPanel!).getByText('3–11')).toBeInTheDocument()
-    fireEvent.click(screen.getByRole('button', { name: '定位日程方案' }))
-    expect(screen.getByRole('button', { name: '保留休息' })).toBeDisabled()
-    fireEvent.click(screen.getByRole('button', { name: /补足第 2 个检修块/ }))
+    fireEvent.click(screen.getByRole('button', { name: '比较容量取舍' }))
+    const dialog = screen.getByRole('dialog', {
+      name: '一个休息格，两种持久后果',
+    })
+    fireEvent.keyDown(dialog, { key: 'Enter' })
+    fireEvent.keyDown(dialog, { key: ' ' })
+    expect(within(forecastPanel!).getByText('3–11')).toBeInTheDocument()
 
-    expect(screen.getByRole('button', { name: /补足第 2 个检修块/ })).toHaveAttribute(
-      'aria-pressed',
-      'true',
-    )
-    expect(screen.getByRole('button', { name: /补足第 2 个检修块/ })).toBeDisabled()
+    const maintenance = within(dialog).getByRole('button', {
+      name: '安排第二次预防检修',
+    })
+    maintenance.focus()
+    fireEvent.click(maintenance, { detail: 0 })
+
+    expect(maintenance).toHaveAttribute('aria-pressed', 'true')
+    expect(maintenance).toBeDisabled()
+    expect(
+      within(dialog).getByRole('button', { name: '保留休息容量' }),
+    ).toBeDisabled()
     expect(within(forecastPanel!).getByText('9')).toBeInTheDocument()
-    expect(screen.getByText('水泵预防检修已经成形')).toBeInTheDocument()
-    expect(screen.getByRole('button', { name: '查看检修结果' })).toBeInTheDocument()
-    expect(screen.getByText(/已安排 2 个水泵维修块/)).toBeInTheDocument()
-    expect(screen.getByText(/粮食 3–11 → 9；维修保障/)).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: '查看容量结果' }).closest('article'),
+    ).toHaveTextContent('设备暴露降为 low')
   })
 
-  it('keeps the pump summary and located block label in sync with the chosen plan', () => {
+  it('keeps the retained-rest result and its committed schedule slot locked', () => {
     renderStartedApp()
 
-    fireEvent.click(screen.getByRole('button', { name: '定位日程方案' }))
+    fireEvent.click(screen.getByRole('button', { name: '比较容量取舍' }))
+    fireEvent.click(screen.getByRole('button', { name: '保留休息容量' }))
+
     const schedulePanel = screen.getByRole('heading', {
       name: '林禾 · 周二 B2',
     }).closest('section')
     expect(schedulePanel).not.toBeNull()
     expect(within(schedulePanel!).getByText('休息 · 基础计划')).toBeInTheDocument()
+    expect(
+      screen.getByRole('button', { name: '查看容量结果' }).closest('article'),
+    ).toHaveTextContent('人员准备度 +1')
+    expect(
+      screen.getByRole('button', { name: '保留休息容量' }),
+    ).toHaveAttribute('aria-pressed', 'true')
+    expect(
+      screen.getByRole('button', { name: '安排第二次预防检修' }),
+    ).toBeDisabled()
 
-    fireEvent.click(screen.getByRole('button', { name: /补足第 2 个检修块/ }))
-
-    expect(within(schedulePanel!).getByText('维修 · 本周例外')).toBeInTheDocument()
-    expect(screen.getByText('水泵预防检修已经成形')).toBeInTheDocument()
+    fireEvent.click(screen.getByRole('button', { name: '展开完整周计划' }))
+    const committedCell = within(
+      screen.getByRole('grid', { name: '第 1 周完整计划' }),
+    ).getByRole('gridcell', {
+      name: /林禾 第2日 B2 13–16 休息.*管理选择锁定/,
+    })
+    expect(committedCell).toBeDisabled()
   })
 
   it('keeps the 112-cell week grid behind disclosure and supports one batch action', () => {

@@ -93,6 +93,19 @@ const V2_BLOCKED_EXPORT_KEYS = [
   'blockedAtTick',
   'blockedReason',
 ]
+const V03_EXPORT_KEYS = [
+  ...V2_EXPORT_KEYS,
+  'effectOwnershipV03',
+  'managementChoiceCommitmentsV03',
+  'managementChoiceOpportunitiesV03',
+  'protocolVersion',
+  'scenarioVersion',
+]
+const V03_BLOCKED_EXPORT_KEYS = [
+  ...V03_EXPORT_KEYS,
+  'blockedAtTick',
+  'blockedReason',
+]
 const META_KEYS = [
   'artifactHash',
   'buildId',
@@ -111,6 +124,20 @@ const FINAL_STATE_KEYS = [
   'isComplete',
   'processedScriptEventIds',
   'recapCount',
+]
+const V03_META_KEYS = [
+  ...META_KEYS,
+  'candidateBuildAuthorityHash',
+  'diagnosisId',
+  'protocolVersion',
+]
+const V03_FINAL_STATE_KEYS = [
+  ...FINAL_STATE_KEYS,
+  'equipmentExposure',
+  'equipmentRecoveryLoad',
+  'linHeRecoveryUnits',
+  'personnelReadiness',
+  'preventiveCapacityAllocation',
 ]
 const RECAP_KEYS = [
   'actual',
@@ -2333,11 +2360,429 @@ function validV2Export(value, buildMetadata) {
   )
 }
 
+function sameStringArray(left, right) {
+  return (
+    Array.isArray(left) &&
+    Array.isArray(right) &&
+    left.length === right.length &&
+    left.every(
+      (entry, index) =>
+        typeof entry === 'string' && entry === right[index],
+    )
+  )
+}
+
+function validV03Ledger(value) {
+  const { meta } = value
+  if (
+    !Array.isArray(value.managementChoiceOpportunitiesV03) ||
+    !Array.isArray(value.managementChoiceCommitmentsV03) ||
+    !isRecord(value.effectOwnershipV03) ||
+    value.managementChoiceOpportunitiesV03.length < 1 ||
+    value.managementChoiceOpportunitiesV03.length > 2
+  ) {
+    return false
+  }
+  const opportunities = new Map()
+  for (const opportunity of value.managementChoiceOpportunitiesV03) {
+    if (
+      !isRecord(opportunity) ||
+      typeof opportunity.opportunityId !== 'string' ||
+      opportunities.has(opportunity.opportunityId) ||
+      opportunity.candidateId !== null ||
+      opportunity.diagnosisId !== meta.diagnosisId ||
+      opportunity.sessionId !== meta.sessionId ||
+      opportunity.candidateBuildAuthorityHash !==
+        meta.candidateBuildAuthorityHash ||
+      ![0, 1].includes(opportunity.week) ||
+      !Number.isInteger(opportunity.stateRevision) ||
+      !ARTIFACT_HASH_PATTERN.test(
+        opportunity.projectionBaseHash ?? '',
+      ) ||
+      opportunity.commitCause !== 'opportunity-created' ||
+      !Array.isArray(opportunity.requiredConsequenceIds) ||
+      !Array.isArray(opportunity.effectFingerprints) ||
+      ![
+        'open',
+        'omitted',
+        'unqualified-direct-edit',
+        'schedule-preventive-maintenance',
+        'retain-rest-capacity',
+        'allocate-repair-buffer',
+        'allocate-food-production',
+      ].includes(opportunity.terminalState)
+    ) {
+      return false
+    }
+    const w1 =
+      opportunity.choiceSetId ===
+      'choice:w0:preventive-capacity'
+    const w2 =
+      opportunity.choiceSetId ===
+      'choice:w1:recovery-allocation'
+    if (
+      (!w1 && !w2) ||
+      (w1 &&
+        (opportunity.week !== 0 ||
+          opportunity.decisionIntentId !==
+            'w0:preventive-capacity:pump' ||
+          opportunity.resourceClaimRef !==
+            'schedule-slot:lin-he:d1:b1')) ||
+      (w2 &&
+        (opportunity.week !== 1 ||
+          opportunity.decisionIntentId !==
+            'w1:recovery-allocation:pump-vs-food' ||
+          opportunity.resourceClaimRef !==
+            'schedule-slot:chen-du:d10:b2'))
+    ) {
+      return false
+    }
+    opportunities.set(opportunity.opportunityId, opportunity)
+  }
+
+  const commitmentKeys = new Set()
+  const ownedFingerprints = new Map()
+  for (const commitment of value.managementChoiceCommitmentsV03) {
+    const opportunity = opportunities.get(
+      commitment?.opportunityId,
+    )
+    const action = value.actions.find(
+      (entry) =>
+        entry.type === 'COMMIT_MANAGEMENT_CHOICE' &&
+        entry.opportunityId === commitment?.opportunityId,
+    )
+    const key = `${commitment?.diagnosisId}:${commitment?.week}:${commitment?.decisionIntentId}`
+    if (
+      !isRecord(commitment) ||
+      opportunity === undefined ||
+      commitmentKeys.has(key) ||
+      commitment.commitCause !==
+        'explicit-candidate-action' ||
+      commitment.terminalState !== commitment.candidateId ||
+      opportunity.terminalState !== commitment.candidateId ||
+      commitment.choiceSetId !== opportunity.choiceSetId ||
+      commitment.decisionIntentId !==
+        opportunity.decisionIntentId ||
+      commitment.diagnosisId !== opportunity.diagnosisId ||
+      commitment.sessionId !== opportunity.sessionId ||
+      commitment.candidateBuildAuthorityHash !==
+        opportunity.candidateBuildAuthorityHash ||
+      commitment.resourceClaimRef !==
+        opportunity.resourceClaimRef ||
+      !Number.isInteger(commitment.stateRevision) ||
+      commitment.stateRevision + 1 !==
+        opportunity.stateRevision ||
+      !ARTIFACT_HASH_PATTERN.test(
+        commitment.projectionBaseHash ?? '',
+      ) ||
+      !ARTIFACT_HASH_PATTERN.test(
+        commitment.candidateProjectionHash ?? '',
+      ) ||
+      typeof commitment.idempotencyKey !== 'string' ||
+      commitment.idempotencyKey.length === 0 ||
+      !Number.isInteger(commitment.committedAtSequence) ||
+      !Array.isArray(commitment.consequences) ||
+      commitment.consequences.length === 0 ||
+      action === undefined ||
+      action.choiceSetId !== commitment.choiceSetId ||
+      action.candidateId !== commitment.candidateId ||
+      action.stateRevision !== commitment.stateRevision ||
+      action.projectionBaseHash !==
+        commitment.projectionBaseHash ||
+      action.candidateProjectionHash !==
+        commitment.candidateProjectionHash ||
+      action.idempotencyKey !== commitment.idempotencyKey ||
+      action.commitCause !== 'explicit-candidate-action'
+    ) {
+      return false
+    }
+    const consequenceIds = commitment.consequences.map(
+      (entry) => entry?.consequenceId,
+    )
+    const fingerprints = commitment.consequences.map(
+      (entry) => entry?.effectFingerprint,
+    )
+    if (
+      !sameStringArray(
+        commitment.requiredConsequenceIds,
+        consequenceIds,
+      ) ||
+      !sameStringArray(
+        commitment.effectFingerprints,
+        fingerprints,
+      ) ||
+      !sameStringArray(
+        opportunity.effectFingerprints,
+        fingerprints,
+      )
+    ) {
+      return false
+    }
+    for (const consequence of commitment.consequences) {
+      if (
+        !isRecord(consequence) ||
+        consequence.opportunityId !==
+          commitment.opportunityId ||
+        consequence.decisionIntentId !==
+          commitment.decisionIntentId ||
+        consequence.choiceSetId !== commitment.choiceSetId ||
+        consequence.candidateId !== commitment.candidateId ||
+        consequence.diagnosisId !== commitment.diagnosisId ||
+        consequence.sessionId !== commitment.sessionId ||
+        consequence.candidateBuildAuthorityHash !==
+          commitment.candidateBuildAuthorityHash ||
+        consequence.commitCause !==
+          'explicit-candidate-action' ||
+        consequence.resourceClaimRef !==
+          commitment.resourceClaimRef ||
+        consequence.terminalState !== commitment.candidateId ||
+        consequence.stateRevision !== commitment.stateRevision ||
+        consequence.committedAtSequence !==
+          commitment.committedAtSequence ||
+        consequence.beforeValue === consequence.afterValue ||
+        typeof consequence.effectFingerprint !== 'string' ||
+        !/^effect:[a-f0-9]{64}$/.test(
+          consequence.effectFingerprint,
+        ) ||
+        ownedFingerprints.has(consequence.effectFingerprint)
+      ) {
+        return false
+      }
+      ownedFingerprints.set(
+        consequence.effectFingerprint,
+        commitment.decisionIntentId,
+      )
+    }
+    if (
+      commitment.choiceSetId ===
+      'choice:w1:recovery-allocation'
+    ) {
+      const economic = commitment.consequences.filter(
+        (entry) =>
+          entry.objectRef === 'forecast:ending-repair' ||
+          entry.objectRef === 'forecast:ending-food',
+      )
+      const schedule = commitment.consequences.filter(
+        (entry) =>
+          entry.objectRef === 'chen-du:d10:b2' &&
+          entry.beforeValue === 'rest',
+      )
+      if (
+        economic.length !== 1 ||
+        schedule.length !== 1 ||
+        economic[0].afterValue - economic[0].beforeValue !== 1 ||
+        (commitment.candidateId ===
+          'allocate-repair-buffer'
+          ? economic[0].objectRef !==
+              'forecast:ending-repair' ||
+            schedule[0].afterValue !== 'repair'
+          : economic[0].objectRef !==
+              'forecast:ending-food' ||
+            schedule[0].afterValue !== 'food')
+      ) {
+        return false
+      }
+    }
+    if (
+      commitment.candidateId === 'retain-rest-capacity' &&
+      (
+        commitment.consequences.length !== 3 ||
+        commitment.consequences.some(
+          (entry) =>
+            ![
+              'water-pump:preventive-capacity-allocation',
+              'lin-he:recovery-units',
+              'settlement:personnel-readiness',
+            ].includes(entry.objectRef),
+        )
+      )
+    ) {
+      return false
+    }
+    commitmentKeys.add(key)
+  }
+  if (
+    Object.keys(value.effectOwnershipV03).length !==
+    ownedFingerprints.size
+  ) {
+    return false
+  }
+  for (const [fingerprint, owner] of ownedFingerprints) {
+    if (value.effectOwnershipV03[fingerprint] !== owner) {
+      return false
+    }
+  }
+  return true
+}
+
+function legacyV2Projection(value) {
+  const legacy = structuredClone(value)
+  delete legacy.protocolVersion
+  delete legacy.scenarioVersion
+  delete legacy.managementChoiceOpportunitiesV03
+  delete legacy.managementChoiceCommitmentsV03
+  delete legacy.effectOwnershipV03
+  delete legacy.meta.diagnosisId
+  delete legacy.meta.candidateBuildAuthorityHash
+  delete legacy.meta.protocolVersion
+  legacy.meta.scenarioVersion = '0.5.0'
+  delete legacy.finalState.equipmentExposure
+  delete legacy.finalState.equipmentRecoveryLoad
+  delete legacy.finalState.preventiveCapacityAllocation
+  delete legacy.finalState.linHeRecoveryUnits
+  delete legacy.finalState.personnelReadiness
+  const managementActionIds = new Set(
+    legacy.actions
+      .filter(
+        (entry) =>
+          entry.type === 'COMMIT_MANAGEMENT_CHOICE',
+      )
+      .map((entry) => entry.id),
+  )
+  legacy.actions = legacy.actions.filter(
+    (entry) =>
+      entry.type !== 'COMMIT_MANAGEMENT_CHOICE',
+  )
+  const managementEventIds = new Set(
+    legacy.domainEvents
+      .filter(
+        (entry) =>
+          entry.type === 'management-choice-committed',
+      )
+      .map((entry) => entry.eventId),
+  )
+  legacy.domainEvents = legacy.domainEvents
+    .filter((entry) => !managementEventIds.has(entry.eventId))
+    .map((entry, index) => ({ ...entry, sequence: index + 1 }))
+  legacy.telemetry = legacy.telemetry
+    .filter(
+      (entry) =>
+        !(
+          entry.type === 'player-action-applied' &&
+          managementActionIds.has(entry.actionId)
+        ),
+    )
+    .map((entry, index) => ({
+      ...entry,
+      sequence: index + 1,
+      ...(Array.isArray(entry.domainEventIds)
+        ? {
+            domainEventIds: entry.domainEventIds.filter(
+              (eventId) =>
+                !managementEventIds.has(eventId),
+            ),
+          }
+        : {}),
+    }))
+  legacy.choiceSets = legacy.choiceSets.filter(
+    (entry) =>
+      ![
+        'choice:w0:preventive-capacity',
+        'choice:w1:recovery-allocation',
+      ].includes(entry.choiceSetId),
+  )
+  legacy.candidateManagementCommitmentGroups =
+    legacy.candidateManagementCommitmentGroups.filter(
+      (entry) =>
+        ![
+          'w0:preventive-capacity:pump',
+          'w1:recovery-allocation:pump-vs-food',
+        ].includes(entry.decisionIntentId),
+    )
+  legacy.summary = {
+    week1CandidateEditCount:
+      legacy.candidateEditGroups.filter((group) =>
+        group.groupId.startsWith('legacy:w0:'),
+      ).length,
+    week2CandidateEditCount:
+      legacy.candidateEditGroups.filter((group) =>
+        group.groupId.startsWith('legacy:w1:'),
+      ).length,
+    week1CandidateManagementCount:
+      legacy.candidateManagementCommitmentGroups.filter(
+        (group) => group.weekIndex === 0,
+      ).length,
+    week2CandidateManagementCount:
+      legacy.candidateManagementCommitmentGroups.filter(
+        (group) => group.weekIndex === 1,
+      ).length,
+  }
+  return legacy
+}
+
+function validV03Export(value, buildMetadata) {
+  const isBlocked = value?.captureKind === 'blocked'
+  if (
+    !isRecord(value) ||
+    value.schemaVersion !== 'gate1-playtest-v2' ||
+    value.protocolVersion !==
+      'weekly-management-slice-playtest-v0.3' ||
+    value.scenarioVersion !== '0.5.1' ||
+    !hasExactKeys(
+      value,
+      isBlocked ? V03_BLOCKED_EXPORT_KEYS : V03_EXPORT_KEYS,
+    ) ||
+    !isRecord(value.meta) ||
+    !hasExactKeys(value.meta, V03_META_KEYS) ||
+    value.meta.protocolVersion !== value.protocolVersion ||
+    value.meta.scenarioVersion !== value.scenarioVersion ||
+    value.meta.diagnosisId !== value.meta.sampleId ||
+    value.meta.candidateBuildAuthorityHash !==
+      value.meta.artifactHash ||
+    !ARTIFACT_HASH_PATTERN.test(
+      value.meta.candidateBuildAuthorityHash ?? '',
+    ) ||
+    !isRecord(value.finalState) ||
+    !hasExactKeys(value.finalState, V03_FINAL_STATE_KEYS) ||
+    !['high', 'low'].includes(
+      value.finalState.equipmentExposure,
+    ) ||
+    ![0, 1, 2].includes(
+      value.finalState.equipmentRecoveryLoad,
+    ) ||
+    !['unallocated', 'maintenance', 'rest'].includes(
+      value.finalState.preventiveCapacityAllocation,
+    ) ||
+    ![0, 1].includes(value.finalState.linHeRecoveryUnits) ||
+    !Number.isInteger(value.finalState.personnelReadiness) ||
+    !validV03Ledger(value)
+  ) {
+    return false
+  }
+  const c03 = value.managementChoiceCommitmentsV03
+  const expectedC03Summary = {
+    week1C03TerminalCommitmentCount: c03.filter(
+      (entry) => entry.week === 0,
+    ).length,
+    week2C03TerminalCommitmentCount: c03.filter(
+      (entry) => entry.week === 1,
+    ).length,
+  }
+  if (
+    value.summary.week1C03TerminalCommitmentCount !==
+      expectedC03Summary.week1C03TerminalCommitmentCount ||
+    value.summary.week2C03TerminalCommitmentCount !==
+      expectedC03Summary.week2C03TerminalCommitmentCount
+  ) {
+    return false
+  }
+  return validV2Export(
+    legacyV2Projection(value),
+    buildMetadata,
+  )
+}
+
 export function validateCapturedExport(value, buildMetadata) {
   if (value?.schemaVersion === 'gate1-playtest-v1') {
     return validV1Export(value, buildMetadata)
   }
   if (value?.schemaVersion === 'gate1-playtest-v2') {
+    if (
+      value.protocolVersion ===
+      'weekly-management-slice-playtest-v0.3'
+    ) {
+      return validV03Export(value, buildMetadata)
+    }
     return validV2Export(value, buildMetadata)
   }
   return false

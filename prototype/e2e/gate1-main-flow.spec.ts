@@ -103,7 +103,7 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   await expect(meta).toContainText(buildMetadata.gitSha)
   await expect(meta).toContainText(buildMetadata.artifactHash)
   await expect(meta).toContainText(buildMetadata.initialStateHash)
-  await expect(meta).toContainText('0.5.0')
+  await expect(meta).toContainText('0.5.1')
   await expect(meta).toContainText('104729')
   const firstSessionId = (await meta.locator('div').last().locator('strong').textContent())!
   await expect(
@@ -121,14 +121,49 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   await page.getByRole('button', { name: '撤销上次日程修改' }).click()
   await page.getByRole('button', { name: '收起' }).click()
 
-  await page.getByRole('button', { name: '定位日程方案' }).click()
+  await page.getByRole('button', { name: '比较容量取舍' }).click()
+  const preventiveDialog = page.getByRole('dialog', {
+    name: '一个休息格，两种持久后果',
+  })
+  await expect(preventiveDialog).toBeVisible()
+  const preventiveCandidates = preventiveDialog
+    .getByRole('list', { name: '预防容量候选' })
+    .getByRole('button')
+  await expect(preventiveCandidates).toHaveCount(2)
+  await expect(preventiveCandidates.nth(0)).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  )
+  await expect(preventiveCandidates.nth(1)).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  )
+  await expect(preventiveDialog).not.toContainText('推荐')
+  await page.keyboard.press('Enter')
+  await expect(preventiveCandidates.nth(0)).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  )
+  await expect(preventiveCandidates.nth(1)).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  )
+  await page
+    .getByRole('button', { name: '安排第二次预防检修' })
+    .focus()
+  await page.keyboard.press('Enter')
   await expect(
     page.getByRole('heading', { name: '林禾 · 周二 B2' }),
   ).toBeVisible()
-  await page.getByRole('button', { name: /补足第 2 个检修块/ }).click()
   await expect(
-    page.getByRole('button', { name: '查看检修结果' }),
+    page.getByRole('button', { name: '查看容量结果' }),
   ).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: '安排第二次预防检修' }),
+  ).toBeDisabled()
+  await expect(
+    page.getByRole('button', { name: '保留休息容量' }),
+  ).toBeDisabled()
   await page
     .getByRole('button', { name: '开启短通路 · 维修保障 −1' })
     .click()
@@ -148,6 +183,44 @@ test('new session to two-week export and memory clear', async ({ page }) => {
 
   await page.getByRole('button', { name: '确认复盘并进入第二周' }).click()
   await expect(page.getByText('基础计划已继承')).toBeVisible()
+  await page.getByRole('button', { name: '比较应急班次' }).click()
+  const recoveryDialog = page.getByRole('dialog', {
+    name: '同一个应急班次投向哪里',
+  })
+  const recoveryCandidates = recoveryDialog
+    .getByRole('list', { name: '恢复资源候选' })
+    .getByRole('button')
+  await expect(recoveryCandidates).toHaveCount(2)
+  await expect(recoveryCandidates.nth(0)).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  )
+  await expect(recoveryCandidates.nth(1)).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  )
+  await page.keyboard.press('Space')
+  await expect(recoveryCandidates.nth(0)).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  )
+  await expect(recoveryCandidates.nth(1)).toHaveAttribute(
+    'aria-pressed',
+    'false',
+  )
+  await page
+    .getByRole('button', { name: '分配给粮食生产' })
+    .focus()
+  await page.keyboard.press('Space')
+  await expect(
+    page.getByRole('button', { name: '查看分配结果' }),
+  ).toBeVisible()
+  await expect(
+    page.getByRole('button', { name: '分配给维修备件' }),
+  ).toBeDisabled()
+  await expect(
+    page.getByRole('button', { name: '分配给粮食生产' }),
+  ).toBeDisabled()
   await page.getByRole('button', { name: '比较回应方案' }).click()
   await expect(
     page.getByRole('dialog', { name: '林禾的学习请求' }),
@@ -163,8 +236,8 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   const recap = page.getByRole('heading', {
     name: /周末偏差复盘/,
   }).locator('..')
-  await expect(recap).toContainText('6–7')
-  await expect(recap).toContainText('实际期末6')
+  await expect(recap).toContainText('7–8')
+  await expect(recap).toContainText('实际期末7')
   const clearSessionButton = page.getByRole('button', {
     name: '结束并清空会话',
   })
@@ -206,15 +279,23 @@ test('new session to two-week export and memory clear', async ({ page }) => {
 
   expect(exported).toMatchObject({
     schemaVersion: 'gate1-playtest-v2',
+    protocolVersion:
+      'weekly-management-slice-playtest-v0.3',
+    scenarioVersion: '0.5.1',
     captureKind: 'complete',
     meta: {
       sampleId: 'A38',
+      diagnosisId: 'A38',
       sessionId: firstSessionId,
       buildId: buildMetadata.buildId,
       gitSha: buildMetadata.gitSha,
       artifactHash: buildMetadata.artifactHash,
+      candidateBuildAuthorityHash:
+        buildMetadata.artifactHash,
       initialStateHash: buildMetadata.initialStateHash,
-      scenarioVersion: '0.5.0',
+      protocolVersion:
+        'weekly-management-slice-playtest-v0.3',
+      scenarioVersion: '0.5.1',
       fixedSeed: 104729,
     },
     finalTick: 2010,
@@ -223,7 +304,44 @@ test('new session to two-week export and memory clear', async ({ page }) => {
       completedWeekCount: 2,
       recapCount: 2,
     },
+    summary: {
+      week1C03TerminalCommitmentCount: 1,
+      week2C03TerminalCommitmentCount: 1,
+    },
   })
+  expect(exported.managementChoiceOpportunitiesV03).toHaveLength(2)
+  expect(
+    exported.managementChoiceOpportunitiesV03.map(
+      (opportunity: {
+        choiceSetId: string
+        terminalState: string
+      }) => [
+        opportunity.choiceSetId,
+        opportunity.terminalState,
+      ],
+    ),
+  ).toEqual([
+    [
+      'choice:w0:preventive-capacity',
+      'schedule-preventive-maintenance',
+    ],
+    [
+      'choice:w1:recovery-allocation',
+      'allocate-food-production',
+    ],
+  ])
+  expect(exported.managementChoiceCommitmentsV03).toHaveLength(2)
+  const c03Fingerprints =
+    exported.managementChoiceCommitmentsV03.flatMap(
+      (commitment: { effectFingerprints: string[] }) =>
+        commitment.effectFingerprints,
+    )
+  expect(new Set(c03Fingerprints).size).toBe(
+    c03Fingerprints.length,
+  )
+  expect(Object.keys(exported.effectOwnershipV03).sort()).toEqual(
+    [...c03Fingerprints].sort(),
+  )
   expect(exported.recap).toHaveLength(2)
   expect(exported.machineTiming.week1RawDurationMs).toBeGreaterThan(0)
   expect(exported.machineTiming.week2RawDurationMs).toBeGreaterThan(0)
@@ -332,6 +450,9 @@ test('new session to two-week export and memory clear', async ({ page }) => {
     isComplete: false,
   })
   expect(blockedCapture.exported).toMatchObject({
+    protocolVersion:
+      'weekly-management-slice-playtest-v0.3',
+    scenarioVersion: '0.5.1',
     captureKind: 'blocked',
     blockedAtTick: 342,
     blockedReason: '水泵事件后操作无法继续，保留当前状态供复现',
