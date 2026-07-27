@@ -4,6 +4,7 @@ Execution-plan entrypoint for `Project-004-New Era 2`.
 
 ## Current Active Plan
 
+- `docs/exec-plans/active/2026-07-27-gate1a-rc9-remediation-plan.md` — RC8 `AGENT_PROXY_FAIL` 后的 RC9 责任承诺模型受控转向与复测计划；修复周结转、化肥生命周期、tick 1002 换周状态和 request 遥测分类，使用新协议/schema/scenario、两阶段封存与 A38–A44 全新七样本 cohort。
 - `docs/exec-plans/active/2026-07-26-v0.4-prototype-validation-plan.md` — V0.4 分阶段原型验证总控计划；Gate 0 已通过，下一步是 Gate 1 两周经营原型，不直接开发完整三个月。
 - `docs/exec-plans/active/2026-07-26-react-web-gate-1-2-development-plan.md` — Gate 1 React Web 灰盒的 D0 开工门与 15–18 个净开发工作日垂直切片计划；先执行 Gate 1A agent 代理验证，Gate 1H 真人验证暂缓。
 - `docs/exec-plans/active/2026-07-26-gate1-agent-test-operations.md` — Gate 1 双轨测试运营合同；RC8 的 A30 因同 host 并发违反串行隔离而保持技术无效，A37 已完成替补；A31–A37 七个有效样本的有效编辑数组为 W1 `3,1,1,2,3,2,2`、W2 `2,1,1,2,2,1,1`，中位数 `2 / 1` 同时未达 `3–5`，最终仍为 `AGENT_PROXY_FAIL`。

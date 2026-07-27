@@ -6,6 +6,7 @@ Each plan should include goal, success criteria, steps, verification, and risks.
 
 ## Current
 
+- `2026-07-27-gate1a-rc9-remediation-plan.md`: RC8 `AGENT_PROXY_FAIL` 后的责任承诺模型转向、五场诊断、两阶段封存与全新 Gate 1A cohort 计划。
 - `2026-07-26-v0.4-prototype-validation-plan.md`: V0.4 分阶段原型验证总控计划。
 - `2026-07-26-react-web-gate-1-2-development-plan.md`: Gate 1 React Web D0 开工门、15–18 个净开发工作日垂直切片计划与 Gate 2 复用边界。
 - `2026-07-26-gate1-agent-test-operations.md`: Gate 1A/1H 双轨测试运营合同与七个独立 agent 样本的隔离、替补和结论规则。
