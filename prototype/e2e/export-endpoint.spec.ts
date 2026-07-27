@@ -289,17 +289,54 @@ test('playtest host preserves an incomplete blocked record at the terminal tick'
       },
     ],
   }
+  const rawBytes = Buffer.from(JSON.stringify(payload))
+  const expectedSha256 = createHash('sha256')
+    .update(rawBytes)
+    .digest('hex')
 
   const capture = await request.post('/__gate1/capture', {
-    data: JSON.stringify(payload),
+    data: rawBytes,
     headers: { 'Content-Type': 'application/json' },
   })
 
   expect(capture.status()).toBe(201)
-  await expect(capture.json()).resolves.toMatchObject({
+  const receipt = await capture.json()
+  expect(receipt).toMatchObject({
     captureKind: 'blocked',
     blockedAtTick: 2010,
     isComplete: false,
+    bytes: rawBytes.byteLength,
+    sha256: expectedSha256,
+  })
+  const rawPath = join(
+    process.cwd(),
+    'test-results',
+    'captures',
+    receipt.filename,
+  )
+  expect(readFileSync(rawPath).equals(rawBytes)).toBe(true)
+  expect(readFileSync(`${rawPath}.sha256`, 'utf8')).toBe(
+    `${expectedSha256}  ${receipt.filename}\n`,
+  )
+  const { downloadUrl: _downloadUrl, ...storedReceipt } = receipt
+  expect(
+    JSON.parse(readFileSync(`${rawPath}.receipt.json`, 'utf8')),
+  ).toEqual(storedReceipt)
+
+  const download = await request.get(receipt.downloadUrl)
+  expect(download.status()).toBe(200)
+  expect((await download.body()).equals(rawBytes)).toBe(true)
+
+  const retry = await request.post('/__gate1/capture', {
+    data: rawBytes,
+    headers: { 'Content-Type': 'application/json' },
+  })
+  expect(retry.status()).toBe(200)
+  await expect(retry.json()).resolves.toMatchObject({
+    filename: receipt.filename,
+    bytes: receipt.bytes,
+    sha256: receipt.sha256,
+    capturedAtUtc: receipt.capturedAtUtc,
   })
 })
 

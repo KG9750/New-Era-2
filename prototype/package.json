@@ -12,6 +12,10 @@
     "build": "tsc -b && vite build",
     "rc:build": "node scripts/rc-build.mjs",
     "rc:verify": "node scripts/verify-rc-build.mjs",
+    "rc:archive": "node scripts/create-deterministic-archive.mjs",
+    "rc:verify-archive": "node scripts/verify-deterministic-archive.mjs",
+    "manifest:verify": "node scripts/verify-playtest-manifest.mjs",
+    "rc:repro": "node scripts/verify-reproducible-rc.mjs",
     "rc:serve": "node dist/playtest-host.mjs --host 127.0.0.1",
     "e2e": "npm run rc:build -- --build-id g1-e2e-20260726.1 --git-sha 1111111111111111111111111111111111111111 && npm run e2e:rc",
     "e2e:rc": "npm run rc:verify && playwright test"

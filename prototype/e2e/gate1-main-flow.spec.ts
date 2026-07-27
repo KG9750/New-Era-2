@@ -1,4 +1,6 @@
 import { createHash } from 'node:crypto'
+import { readFileSync } from 'node:fs'
+import { join } from 'node:path'
 import { expect, test, type Download, type Page } from '@playwright/test'
 
 async function readDownload(download: Download) {
@@ -38,6 +40,20 @@ async function downloadSession(
     receipt.sha256,
   )
   expect(downloadedBytes.equals(requestBytes!)).toBe(true)
+  const rawPath = join(
+    process.cwd(),
+    'test-results',
+    'captures',
+    receipt.filename,
+  )
+  expect(readFileSync(rawPath).equals(requestBytes!)).toBe(true)
+  expect(readFileSync(`${rawPath}.sha256`, 'utf8')).toBe(
+    `${receipt.sha256}  ${receipt.filename}\n`,
+  )
+  const { downloadUrl: _downloadUrl, ...storedReceipt } = receipt
+  expect(
+    JSON.parse(readFileSync(`${rawPath}.receipt.json`, 'utf8')),
+  ).toEqual(storedReceipt)
   return {
     exported: JSON.parse(downloadedBytes.toString('utf8')),
     receipt,
@@ -67,7 +83,7 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   await expect(page.getByTitle(buildMetadata.artifactHash)).toBeVisible()
   await expect(page.getByText(buildMetadata.initialStateHash)).toBeVisible()
   const sampleInput = page.getByLabel('匿名编号')
-  await sampleInput.fill('M-C')
+  await sampleInput.fill('A38')
   await sampleInput.focus()
   await page.keyboard.press('Tab')
   const createSessionButton = page.getByRole('button', {
@@ -82,17 +98,21 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   await page.keyboard.press('Enter')
 
   const meta = page.getByRole('region', { name: '当前测试会话元数据' })
-  await expect(meta).toContainText('M-C')
+  await expect(meta).toContainText('A38')
   await expect(meta).toContainText(buildMetadata.buildId)
   await expect(meta).toContainText(buildMetadata.gitSha)
   await expect(meta).toContainText(buildMetadata.artifactHash)
   await expect(meta).toContainText(buildMetadata.initialStateHash)
-  await expect(meta).toContainText('0.4.0')
+  await expect(meta).toContainText('0.5.0')
   await expect(meta).toContainText('104729')
   const firstSessionId = (await meta.locator('div').last().locator('strong').textContent())!
+  await expect(
+    page.getByRole('heading', { name: '本周三项取舍' }),
+  ).toBeVisible()
 
   await page.getByRole('button', { name: '展开完整周计划' }).click()
   const firstWeekGrid = page.getByRole('grid', { name: '第 1 周完整计划' })
+  await expect(firstWeekGrid).toBeVisible()
   await firstWeekGrid
     .getByRole('gridcell', { name: /陈渡 第1日 B3 16–19/ })
     .click()
@@ -101,16 +121,14 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   await page.getByRole('button', { name: '撤销上次日程修改' }).click()
   await page.getByRole('button', { name: '收起' }).click()
 
-  await page
-    .getByRole('button', { name: /水泵需要 2 个预防性维修块/ })
-    .click()
+  await page.getByRole('button', { name: '定位日程方案' }).click()
   await expect(
-    page.getByRole('button', { name: /水泵需要 2 个预防性维修块/ }),
-  ).toContainText('已定位 · 待处理')
+    page.getByRole('heading', { name: '林禾 · 周二 B2' }),
+  ).toBeVisible()
   await page.getByRole('button', { name: /补足第 2 个检修块/ }).click()
   await expect(
-    page.getByRole('button', { name: /水泵检修已安排 2 个维修块/ }),
-  ).toContainText('已安排 · 等待事件')
+    page.getByRole('button', { name: '查看检修结果' }),
+  ).toBeVisible()
   await page
     .getByRole('button', { name: '开启短通路 · 维修保障 −1' })
     .click()
@@ -119,9 +137,6 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   await page.getByRole('button', { name: '开始运行' }).click()
   await page.clock.runFor(10_000)
   await expect(page.getByRole('heading', { name: /水泵异常，检修奏效/ })).toBeVisible()
-  await expect(
-    page.getByRole('button', { name: /水泵检修已安排 2 个维修块/ }),
-  ).toContainText('已兑现 · 检修奏效')
   await page.getByRole('button', { name: '确认后继续' }).click()
   await expect(page.getByText(/事件触发时，时钟自动暂停/)).toBeVisible()
   await expect(page.getByText(/时钟已自动暂停/)).toHaveCount(0)
@@ -133,9 +148,10 @@ test('new session to two-week export and memory clear', async ({ page }) => {
 
   await page.getByRole('button', { name: '确认复盘并进入第二周' }).click()
   await expect(page.getByText('基础计划已继承')).toBeVisible()
-  await page
-    .getByRole('button', { name: /林禾请求周二 B1 学习/ })
-    .click()
+  await page.getByRole('button', { name: '比较回应方案' }).click()
+  await expect(
+    page.getByRole('dialog', { name: '林禾的学习请求' }),
+  ).toBeVisible()
   await page.getByRole('button', { name: '接受学习请求' }).click()
   await page.getByRole('button', { name: '开始运行' }).click()
   await page.clock.runFor(33_000)
@@ -147,8 +163,8 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   const recap = page.getByRole('heading', {
     name: /周末偏差复盘/,
   }).locator('..')
-  await expect(recap).toContainText('12–13')
-  await expect(recap).toContainText('12')
+  await expect(recap).toContainText('6–7')
+  await expect(recap).toContainText('实际期末6')
   const clearSessionButton = page.getByRole('button', {
     name: '结束并清空会话',
   })
@@ -177,7 +193,7 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   expect(receipt).toMatchObject({
     schemaVersion: 'gate1-capture-receipt-v1',
     captureVersion: 'gate1-capture-host-v1',
-    sampleId: 'M-C',
+    sampleId: 'A38',
     sessionId: firstSessionId,
     buildId: buildMetadata.buildId,
     gitSha: buildMetadata.gitSha,
@@ -189,15 +205,16 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   await expect(clearSessionButton).toBeEnabled()
 
   expect(exported).toMatchObject({
-    schemaVersion: 'gate1-playtest-v1',
+    schemaVersion: 'gate1-playtest-v2',
+    captureKind: 'complete',
     meta: {
-      sampleId: 'M-C',
+      sampleId: 'A38',
       sessionId: firstSessionId,
       buildId: buildMetadata.buildId,
       gitSha: buildMetadata.gitSha,
       artifactHash: buildMetadata.artifactHash,
       initialStateHash: buildMetadata.initialStateHash,
-      scenarioVersion: '0.4.0',
+      scenarioVersion: '0.5.0',
       fixedSeed: 104729,
     },
     finalTick: 2010,
@@ -221,9 +238,8 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   ).toHaveLength(1)
   expect(
     exported.actions.find(
-      (action: { action: { type: string } }) =>
-        action.action.type === 'UNDO_SCHEDULE',
-    ).undoOfActionId,
+      (action: { type: string }) => action.type === 'UNDO',
+    ).revertsActionId,
   ).toBe('action-0001')
   expect(exported.summary).not.toHaveProperty('week1EffectiveEditCount')
 
@@ -278,7 +294,37 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   await page
     .getByLabel('阻断原因')
     .fill('水泵事件后操作无法继续，保留当前状态供复现')
+  let failedBlockedRequestBytes: Buffer | undefined
+  await page.route('**/__gate1/capture', async (route) => {
+    failedBlockedRequestBytes =
+      route.request().postDataBuffer() ?? undefined
+    await route.fulfill({
+      status: 500,
+      contentType: 'application/json; charset=utf-8',
+      body: JSON.stringify({
+        error: '技术验证注入：阻断证据目录暂不可写',
+      }),
+    })
+  })
+  await page.getByRole('button', { name: '保存阻断记录' }).click()
+  await expect(
+    page
+      .getByRole('region', { name: '导出或结束当前会话' })
+      .getByRole('alert'),
+  ).toHaveText('技术验证注入：阻断证据目录暂不可写')
+  await expect(
+    page.getByText(
+      '阻断记录已冻结；保存失败时请重试，成功前不能清空。',
+    ),
+  ).toBeVisible()
+  expect(failedBlockedRequestBytes).toBeDefined()
+  await expect(clearSessionButton).toBeDisabled()
+
+  await page.unroute('**/__gate1/capture')
   const blockedCapture = await downloadSession(page, '保存阻断记录')
+  expect(
+    blockedCapture.requestBytes.equals(failedBlockedRequestBytes!),
+  ).toBe(true)
 
   expect(blockedCapture.receipt).toMatchObject({
     captureKind: 'blocked',
@@ -312,6 +358,9 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   ).toBeVisible()
   await expect(page.getByText(/两周流程已完成/)).toHaveCount(0)
   await expect(clearSessionButton).toBeEnabled()
+  expect(consoleErrors).toHaveLength(2)
+  expect(consoleErrors.every((message) => message.includes('500'))).toBe(true)
+  expect(pageErrors).toEqual([])
 
   await clearSessionButton.click()
   await expect(

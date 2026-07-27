@@ -304,12 +304,30 @@ describe('Gate 1 capture host contracts', () => {
   it('accepts strict v2 complete and blocked production exports', () => {
     const complete = v2CompleteExport()
     const blocked = v2BlockedExport()
+    const terminalBlocked = {
+      ...complete.payload,
+      captureKind: 'blocked',
+      blockedAtTick: scenario.simulationEndTick,
+      blockedReason: '两周复盘已生成，但完成状态未生效',
+      finalState: {
+        ...complete.payload.finalState,
+        isComplete: false,
+      },
+      telemetry: complete.payload.telemetry.map((entry, index, entries) =>
+        index === entries.length - 1
+          ? { ...entry, type: 'blocked-capture-created' }
+          : entry,
+      ),
+    }
 
     expect(
       validateCapturedExport(complete.payload, complete.metadata),
     ).toBe(true)
     expect(
       validateCapturedExport(blocked.payload, blocked.metadata),
+    ).toBe(true)
+    expect(
+      validateCapturedExport(terminalBlocked, complete.metadata),
     ).toBe(true)
     const committed = v2FoodCommitmentBlockedExport()
     expect(
