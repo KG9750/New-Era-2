@@ -1,0 +1,115 @@
+{
+  "schemaVersion": "gate1a-rc9-candidate-rejection-record-v1",
+  "candidateAttempt": "C02",
+  "status": "REJECTED_DIAGNOSTIC_THRESHOLD",
+  "rejectedAtUtc": "2026-07-27T15:32:21Z",
+  "issue": 56,
+  "sourceSha": "6837c7230806f2c5c218336668f9e201e3e6cca1",
+  "sourceTree": "e63f1a2938a4568d4f0bc9b4557f3d8da4f6c6e1",
+  "dependencyIntegrationSha": "c9c207d7fb1cafc24301ef04c8d89afed3d87527",
+  "buildId": "g1-rc-20260727.rc9-c02",
+  "artifactHash": "64e8ddc85d15502c3b2776f89b13d71fbb621d9f350682d6c71ec5c998998552",
+  "archiveHash": "9b2fbbffd7168f3bbd66eaf5c2c3b9d2872cf79da9d413771dd897014dc27c3d",
+  "candidateBuildManifestHash": "a1756949810c87cc339c8d4184237ab776eca2bc98417b95e1feeda34b55b860",
+  "diagnosticsManifestPath": "diagnostics/manifest.json",
+  "diagnosticsManifestHash": "d6286e3e74f9182ad68bf27bfae417e409509d5fd8afb7cdb7fd85d73fe60e26",
+  "trigger": {
+    "reasonCode": "V2_MEDIANS_BELOW_FROZEN_RANGE",
+    "description": "D06-D10 were five fresh, isolated, complete and technically valid blind diagnostics. Every sample was manually adjudicated at Week 1=2 and Week 2=2 effectiveManagementCommitmentsV2, so both medians are 2. The frozen acceptance range is 3-5, and conditional is prohibited when either median is outside that range."
+  },
+  "diagnosticState": {
+    "validFreshCompleteSamples": [
+      "TECH-RC9-D06",
+      "TECH-RC9-D07",
+      "TECH-RC9-D08",
+      "TECH-RC9-D09",
+      "TECH-RC9-D10"
+    ],
+    "invalidTechnicalSamples": [],
+    "notStartedSamples": [],
+    "week1V2Values": [
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "week2V2Values": [
+      2,
+      2,
+      2,
+      2,
+      2
+    ],
+    "week1V2Median": 2,
+    "week2V2Median": 2,
+    "requiredV2MedianMinimum": 3,
+    "requiredV2MedianMaximum": 5,
+    "week1LegacyMedian": 1,
+    "week2LegacyMedian": 1,
+    "P0Observed": false,
+    "P1Observed": false,
+    "P2Observed": 5,
+    "antiPassRegressionObserved": false,
+    "ctaInflationObserved": false,
+    "sameIntentDuplicateInflationObserved": false,
+    "mustClickAllCardsObserved": false
+  },
+  "observedNonQualifyingActions": {
+    "preventiveMaintenanceScheduleEdits": "All five agents added the second preventive-maintenance block, but the action has no independent qualifying choice set and was not backfilled.",
+    "extraWeek2RepairScheduleEdits": "D09 and D10 added an extra week-two repair block, but the action has no exported candidate group or independent qualifying choice set and was not backfilled.",
+    "week2FoodShortfallAcceptance": "D08 explicitly accepted a week-two food shortfall, but the export contained no corresponding candidate group or qualifying choice set and the action was not backfilled."
+  },
+  "rootCauseClusters": [
+    {
+      "clusterKey": "FOOD_TRADEOFF_CTA_NO_DISCERNIBLE_PANEL_CHANGE",
+      "severity": "P2",
+      "sampleCount": 2
+    },
+    {
+      "clusterKey": "POST_COMMIT_COMPARISON_REMAINS_VISIBLE",
+      "severity": "P2",
+      "sampleCount": 1
+    },
+    {
+      "clusterKey": "SCHEDULE_LABEL_BLOCK_ID_MISMATCH",
+      "severity": "P2",
+      "sampleCount": 1
+    },
+    {
+      "clusterKey": "RESOLVED_REQUEST_SUMMARY_TITLE_STALE",
+      "severity": "P2",
+      "sampleCount": 1
+    }
+  ],
+  "immutability": {
+    "candidateCoreChangedAfterSeal": false,
+    "candidateCoreMayBeOverwritten": false,
+    "existingDiagnosticsMayBeOverwritten": false,
+    "candidateAttemptReusable": false,
+    "allocatedSampleIdsReusable": false
+  },
+  "nextAttempt": {
+    "candidateAttempt": "C03",
+    "buildIdMustChange": true,
+    "candidateCoreMustBeNew": true,
+    "antiPassIds": [
+      "TECH-RC9-P05",
+      "TECH-RC9-P06"
+    ],
+    "diagnosticIds": [
+      "TECH-RC9-D11",
+      "TECH-RC9-D12",
+      "TECH-RC9-D13",
+      "TECH-RC9-D14",
+      "TECH-RC9-D15"
+    ],
+    "sourceChangeRequiredByThisRejection": true,
+    "requiredRestart": "Remediate from RC9-08, create and seal a new C03 candidate core, rerun deterministic archive verification, anti-pass P05/P06 and five fresh isolated diagnostics D11-D15. Do not reuse or overwrite any C02, P03/P04 or D06-D10 evidence."
+  },
+  "trackLocks": {
+    "gate1A": "DIAGNOSTIC_ATTEMPT_REJECTED",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED"
+  }
+}
