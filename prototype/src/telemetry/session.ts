@@ -61,6 +61,12 @@ export interface SpeedTrajectoryEntry {
   speed: 1 | 3 | 8
 }
 
+export interface RecordedPlayerTransition {
+  envelope: PlayerActionEnvelope
+  before: SimulationState
+  after: SimulationState
+}
+
 export interface SessionRecorder {
   meta: PlaytestSessionMeta
   machineStartedAtEpochMs: number
@@ -71,6 +77,7 @@ export interface SessionRecorder {
   domainEvents: DomainEventEnvelope[]
   telemetry: TelemetryEvent[]
   speedTrajectory: SpeedTrajectoryEntry[]
+  playerTransitions: RecordedPlayerTransition[]
 }
 
 let fallbackSessionSequence = 0
@@ -196,6 +203,7 @@ export function createSessionRecorder(
     domainEvents: [],
     telemetry: [],
     speedTrajectory: [],
+    playerTransitions: [],
   }
   pushTelemetry(recorder, {
     type: 'session-started',
@@ -242,6 +250,11 @@ export function recordPlayerTransition(
   monotonicNow = performance.now(),
 ) {
   recorder.actions.push(envelope)
+  recorder.playerTransitions.push({
+    envelope,
+    before,
+    after: result.state,
+  })
   recordDomainEvents(recorder, result.events)
   const offset = machineOffset(recorder, monotonicNow)
   pushTelemetry(recorder, {

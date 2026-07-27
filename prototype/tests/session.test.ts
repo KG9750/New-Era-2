@@ -6,6 +6,7 @@ import {
   createPlayerAction,
 } from '../src/sim/engine'
 import type { SimulationState } from '../src/sim/model'
+import { isRc9SampleId } from '../src/app/SessionGate'
 import { createPlaytestExport } from '../src/telemetry/export'
 import {
   createSessionRecorder,
@@ -25,6 +26,33 @@ const TEST_BUILD_METADATA = {
 }
 
 describe('Gate 1 playtest evidence contract', () => {
+  it('accepts only canonical RC9 agent and technical sample ids', () => {
+    for (const sampleId of [
+      'A38',
+      'A39',
+      'A100',
+      'TECH-RC9-D01',
+      'TECH-RC9-D99',
+      'TECH-RC9-P01',
+      'TECH-RC9-P100',
+    ]) {
+      expect(isRc9SampleId(sampleId)).toBe(true)
+    }
+    for (const sampleId of [
+      'A37',
+      'A038',
+      'P01',
+      'M-C',
+      'TECH-RC9-D00',
+      'TECH-RC9-D001',
+      'TECH-RC9-P1',
+      'TECH-RC8-D01',
+      `TECH-RC9-D${'1'.repeat(21)}`,
+    ]) {
+      expect(isRc9SampleId(sampleId)).toBe(false)
+    }
+  })
+
   it('records structured undo, domain events, tick transitions, speed, and raw week duration', () => {
     let state: SimulationState = scenario.createInitialState()
     const recorder = createSessionRecorder(
@@ -85,15 +113,27 @@ describe('Gate 1 playtest evidence contract', () => {
     state = result.state
 
     const exported = createPlaytestExport(recorder, state, 1_250, 350)
-    expect(exported.actions[1]).toMatchObject({
+    expect(exported.actions[0]).toEqual({
+      id: 'action-0001',
+      type: 'EDIT_SCHEDULE',
+      memberId: 'lin-he',
+      dayIndex: 1,
+      blockId: 'lin-he:d1:b1',
+      fromActivity: 'rest',
+      toActivity: 'repair',
+    })
+    expect(exported.actions[1]).toEqual({
       id: 'action-0002',
-      undoOfActionId: 'action-0001',
+      type: 'UNDO',
+      revertsActionId: 'action-0001',
     })
-    expect(exported.candidateEditGroups[0]).toMatchObject({
-      actionId: 'action-0001',
-      affectedCellIds: ['lin-he:d1:b1'],
-      undoActionIds: ['action-0002'],
-    })
+    expect(exported.actions.some((action) =>
+      ['CHANGE_ACTIVITY', 'COPY_DAY', 'UNDO_SCHEDULE'].includes(
+        action.type,
+      ),
+    )).toBe(false)
+    expect(exported.candidateEditGroups).toEqual([])
+    expect(exported.candidateManagementCommitmentGroups).toEqual([])
     expect(exported.domainEvents.map((event) => event.type)).toContain(
       'pump-incident',
     )
@@ -107,8 +147,10 @@ describe('Gate 1 playtest evidence contract', () => {
     expect(exported.speedTrajectory.at(-1)?.speed).toBe(8)
     expect(exported.machineTiming.week1RawDurationMs).toBe(200)
     expect(exported.summary).toEqual({
-      week1CandidateEditCount: 1,
+      week1CandidateEditCount: 0,
       week2CandidateEditCount: 0,
+      week1CandidateManagementCount: 0,
+      week2CandidateManagementCount: 0,
     })
     expect(exported.summary).not.toHaveProperty('week1EffectiveEditCount')
   })
@@ -135,6 +177,9 @@ describe('Gate 1 playtest evidence contract', () => {
     expect(Object.keys(exported).sort()).toEqual([
       'actions',
       'candidateEditGroups',
+      'candidateManagementCommitmentGroups',
+      'captureKind',
+      'choiceSets',
       'domainEvents',
       'finalState',
       'finalStateHash',
@@ -146,6 +191,7 @@ describe('Gate 1 playtest evidence contract', () => {
       'speedTrajectory',
       'summary',
       'telemetry',
+      'weekRecaps',
     ])
     expect(Object.keys(exported.meta).sort()).toEqual([
       'artifactHash',

@@ -8,16 +8,21 @@ interface SessionGateProps {
   onStart(sampleId: string): void
 }
 
-const SAMPLE_ID_PATTERN = /^(?:A\d{2,}|P\d{2,}|M-[ABC])$/
+const SAMPLE_ID_PATTERN =
+  /^(?:A(?:3[89]|[4-9]\d|[1-9]\d{2,})|TECH-RC9-[DP](?:0[1-9]|[1-9]\d+))$/
+
+export function isRc9SampleId(sampleId: string): boolean {
+  return sampleId.length <= 20 && SAMPLE_ID_PATTERN.test(sampleId)
+}
 
 export function SessionGate({
   buildMetadata,
   wasCleared,
   onStart,
 }: SessionGateProps) {
-  const [sampleId, setSampleId] = useState('M-C')
+  const [sampleId, setSampleId] = useState('A38')
   const normalizedSampleId = sampleId.trim().toUpperCase()
-  const valid = SAMPLE_ID_PATTERN.test(normalizedSampleId)
+  const valid = isRc9SampleId(normalizedSampleId)
 
   return (
     <main className="session-gate">
@@ -45,14 +50,15 @@ export function SessionGate({
           <input
             aria-describedby="sample-id-help"
             autoComplete="off"
-            maxLength={8}
+            maxLength={20}
             onChange={(event) => setSampleId(event.target.value)}
             spellCheck={false}
             value={sampleId}
           />
         </label>
         <small id="sample-id-help">
-          允许 A01、P01 或里程碑 M-A / M-B / M-C；当前场开始后不可修改。
+          允许正式样本 A38 起，或诊断编号 TECH-RC9-D01 /
+          TECH-RC9-P01 起；当前场开始后不可修改。
         </small>
         {!valid && sampleId.length > 0 && (
           <p className="field-error" role="alert">请输入有效的匿名编号。</p>
