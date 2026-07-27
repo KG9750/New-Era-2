@@ -1,0 +1,26 @@
+{
+  "schemaVersion": "gate1-rc9-anti-pass-operations-v1",
+  "candidateAttempt": "C02",
+  "sampleOrder": [
+    "TECH-RC9-P03",
+    "TECH-RC9-P04"
+  ],
+  "technicalInterruptions": [],
+  "sampleResults": [
+    {
+      "sampleId": "TECH-RC9-P03",
+      "pathKind": "summary-cta-only",
+      "status": "PASS"
+    },
+    {
+      "sampleId": "TECH-RC9-P04",
+      "pathKind": "minimum-required",
+      "status": "PASS"
+    }
+  ],
+  "trackLocks": {
+    "gate1A": "PRE_DIAGNOSTIC",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED"
+  }
+}

@@ -1,0 +1,106 @@
+{
+  "schemaVersion": "gate1-rc9-anti-pass-result-v1",
+  "candidateAttempt": "C02",
+  "sampleId": "TECH-RC9-P03",
+  "pathKind": "summary-cta-only",
+  "status": "PASS",
+  "buildId": "g1-rc-20260727.rc9-c02",
+  "sourceSha": "6837c7230806f2c5c218336668f9e201e3e6cca1",
+  "artifactHash": "64e8ddc85d15502c3b2776f89b13d71fbb621d9f350682d6c71ec5c998998552",
+  "sessionId": "8072cd6c-f666-4342-874e-42b4176861a6",
+  "viewport": "1440x900",
+  "inputMode": "browser-pointer-keyboard",
+  "clickedSummaryCtas": [
+    "查看粮食取舍",
+    "定位日程方案",
+    "比较责任方向",
+    "比较回应方案",
+    "定位资源取舍",
+    "查看路线方案"
+  ],
+  "comparisons": [
+    {
+      "dialog": "先比较后果，再把人员责任落到日程",
+      "observations": [
+        {
+          "key": "Enter",
+          "optionCount": 3,
+          "recommendedCount": 0,
+          "preselectedCount": 0,
+          "optionHasFocus": false,
+          "focusedText": "关闭比较",
+          "submitted": false
+        },
+        {
+          "key": "Space",
+          "optionCount": 3,
+          "recommendedCount": 0,
+          "preselectedCount": 0,
+          "optionHasFocus": false,
+          "focusedText": "关闭比较",
+          "submitted": false
+        }
+      ]
+    },
+    {
+      "dialog": "林禾的学习请求",
+      "observations": [
+        {
+          "key": "Enter",
+          "optionCount": 2,
+          "recommendedCount": 0,
+          "preselectedCount": 0,
+          "optionHasFocus": false,
+          "focusedText": "关闭比较",
+          "submitted": false
+        },
+        {
+          "key": "Space",
+          "optionCount": 2,
+          "recommendedCount": 0,
+          "preselectedCount": 0,
+          "optionHasFocus": false,
+          "focusedText": "关闭比较",
+          "submitted": false
+        }
+      ]
+    }
+  ],
+  "assertions": {
+    "summaryCtaAuthorityMutationCount": 0,
+    "summaryCtaCommittedCandidateCount": 0,
+    "comparisonRecommendedCount": 0,
+    "comparisonPreselectedCount": 0,
+    "comparisonSubmissionFocusCount": 0,
+    "enterSpaceSubmittedCount": 0,
+    "firstRecordedActionType": "SET_PAUSED",
+    "authorityMutationCount": 0,
+    "candidateEditCount": 0,
+    "committedCandidateCount": 0,
+    "mechanicallyReachedThreeCommitments": false,
+    "finalTick": 2010,
+    "twoWeeksCompleted": true,
+    "recapCount": 2
+  },
+  "machineEvidence": {
+    "serverRawPath": "captures/g1-rc-20260727.rc9-c02-TECH-RC9-P03-8072cd6c-f666-4342-874e-42b4176861a6.json",
+    "serverRawSha256": "17e1bd0479c6f70729af0beac3bf5606559dde9508e8e87094876108282f761a",
+    "serverRawBytes": 59102,
+    "sha256SidecarPath": "captures/g1-rc-20260727.rc9-c02-TECH-RC9-P03-8072cd6c-f666-4342-874e-42b4176861a6.json.sha256",
+    "sha256SidecarSha256": "1d06d933162811e4d2e66784193e0c8b02f3f1d05f784aeeefb849a3599e5b29",
+    "receiptPath": "captures/g1-rc-20260727.rc9-c02-TECH-RC9-P03-8072cd6c-f666-4342-874e-42b4176861a6.json.receipt.json",
+    "receiptSha256": "c43534d70608425e88e8b6be5cc9025081cf12e8c3327434d1ed97c1a1bfb3ad",
+    "browserDownloadPath": "browser-download.json",
+    "browserDownloadSha256": "17e1bd0479c6f70729af0beac3bf5606559dde9508e8e87094876108282f761a",
+    "browserDownloadBytes": 59102,
+    "allClaimsMatchServerRaw": true
+  },
+  "hostOutput": [
+    "Gate 1 RC listening on http://127.0.0.1:4193/; capture=/tmp/new-era-g1a-postseal.tvZFdL/repo/data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C02/anti-pass/TECH-RC9-P03/captures"
+  ],
+  "trackLocks": {
+    "gate1A": "PRE_DIAGNOSTIC",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED"
+  }
+}
