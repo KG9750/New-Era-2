@@ -1,3 +1,4 @@
+import { gate1WeekOneScenario as scenario } from '../scenario/gate1-week-one'
 import type {
   CharacterId,
   FoodForecast,
@@ -17,6 +18,7 @@ import {
   selectTransportRepairCost,
   selectTransportRoute,
 } from './transport'
+import { weekIndexForTick } from './week-phase'
 
 const FOOD_KNOWN_CONSUMPTION = 42
 const FOOD_TARGET = { low: 12, high: 20 }
@@ -64,8 +66,7 @@ interface LaborAllocation {
 }
 
 function currentWeekIndex(state: SimulationState): 0 | 1 {
-  if (state.completedWeekIndexes.includes(0) && state.recap === null) return 1
-  return Math.floor(state.currentTick / (144 * 7)) >= 1 ? 1 : 0
+  return weekIndexForTick(state.currentTick, scenario)
 }
 
 function calculateLaborAllocation(state: SimulationState): LaborAllocation {
@@ -179,7 +180,7 @@ function logisticsAdjustment(allocation: LaborAllocation): number {
 
 export function calculateFoodForecast(state: SimulationState): FoodForecast {
   const allocation = calculateLaborAllocation(state)
-  const currentWeekIndex = state.completedWeekIndexes.includes(0) ? 1 : 0
+  const currentWeekIndex = weekIndexForTick(state.currentTick, scenario)
   const fertilizerBonus =
     state.fertilizer.appliedWeekIndex === currentWeekIndex ? 6 : 0
   const logisticsBonus = logisticsAdjustment(allocation)

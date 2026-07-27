@@ -7,6 +7,10 @@ export const PUMP_EVENT_TICK = TICKS_PER_DAY * 2 + 54
 export const WEEK_END_TICK = TICKS_PER_DAY * 6 + 138
 export const SIMULATION_END_TICK = TICKS_PER_DAY * 13 + 138
 export const LIN_HE_REQUEST_DEADLINE_TICK = TICKS_PER_DAY * 8 + 54
+export const WEEK_START_TICKS = [
+  START_TICK,
+  TICKS_PER_DAY * 7 + START_TICK,
+] as const
 export const WEEKLY_TRANSPORT_START_TICKS = [
   78,
   TICKS_PER_DAY * 7 + 78,
@@ -17,6 +21,7 @@ export const gate1WeekOneScenario: ScenarioDefinition = {
   version: '0.5.0',
   fixedSeed: 104729,
   startTick: START_TICK,
+  weekStartTicks: WEEK_START_TICKS,
   weekEndTick: WEEK_END_TICK,
   weekEndTicks: [WEEK_END_TICK, SIMULATION_END_TICK],
   simulationEndTick: SIMULATION_END_TICK,

@@ -21,6 +21,7 @@ import {
   resolveScheduleBlock,
 } from '../sim/schedule'
 import { selectTransportRoute } from '../sim/transport'
+import { weekIndexForTick } from '../sim/week-phase'
 import {
   createBlockedPlaytestExport,
   createPlaytestExport,
@@ -195,8 +196,7 @@ export function CharacterDecisionPanel({
   simulation,
 }: CharacterDecisionPanelProps) {
   const showLinHeRequest =
-    (simulation.completedWeekIndexes.includes(0) && simulation.recap === null) ||
-    simulation.currentTick >= 144 * 7
+    weekIndexForTick(simulation.currentTick, scenario) === 1
   const requestPending = simulation.linHeRequestDecision === 'pending'
 
   return (
@@ -273,30 +273,12 @@ export function App({ buildMetadata }: AppProps) {
   const foodForecast = useMemo(() => calculateFoodForecast(simulation), [simulation])
   const repairForecast = useMemo(() => calculateRepairForecast(simulation), [simulation])
   const progress = selectProgress(simulation, scenario)
-  const currentWeek =
-    (simulation.completedWeekIndexes.includes(0) && simulation.recap === null) ||
-    simulation.currentTick >= 144 * 7
-      ? 2
-      : 1
-  const fertilizerActionIndex = simulation.actionLog.findIndex(
-    (entry) => entry.action.type === 'USE_FERTILIZER',
-  )
-  const fertilizerUsedAtTick =
-    fertilizerActionIndex >= 0
-      ? simulation.actionLog[fertilizerActionIndex].atTick
-      : undefined
-  const secondWeekStartedAtActionIndex = simulation.actionLog.findIndex(
-    (entry) => entry.action.type === 'CONTINUE_TO_NEXT_WEEK',
-  )
+  const currentWeekIndex = weekIndexForTick(simulation.currentTick, scenario)
+  const currentWeek = currentWeekIndex + 1
   const fertilizerUsedWeek =
-    fertilizerUsedAtTick === undefined
+    simulation.fertilizer.appliedWeekIndex === null
       ? null
-      : fertilizerUsedAtTick < scenario.weekEndTicks[0] ||
-          (fertilizerUsedAtTick === scenario.weekEndTicks[0] &&
-            (secondWeekStartedAtActionIndex < 0 ||
-              fertilizerActionIndex < secondWeekStartedAtActionIndex))
-        ? 1
-        : 2
+      : simulation.fertilizer.appliedWeekIndex + 1
   const pumpBlock = resolveScheduleBlock(
     simulation,
     PUMP_MAINTENANCE_BLOCK_ID,
@@ -932,7 +914,7 @@ export function App({ buildMetadata }: AppProps) {
       <CharacterDecisionPanel simulation={simulation} />
 
       <ScheduleBoard
-        currentWeekIndex={currentWeek === 1 ? 0 : 1}
+        currentWeekIndex={currentWeekIndex}
         key={`schedule-week-${currentWeek}`}
         simulation={simulation}
         submit={submit}

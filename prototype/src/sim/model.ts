@@ -209,6 +209,7 @@ export interface ScenarioDefinition {
   version: string
   fixedSeed: number
   startTick: number
+  weekStartTicks: readonly number[]
   weekEndTick: number
   weekEndTicks: readonly number[]
   simulationEndTick: number

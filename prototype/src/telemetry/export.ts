@@ -4,6 +4,7 @@ import type {
   PlayerActionEnvelope,
   SimulationState,
 } from '../sim/model'
+import { weekIndexForTick } from '../sim/week-phase'
 import type { SessionRecorder } from './session'
 import { stableStateHash } from './session'
 
@@ -82,10 +83,6 @@ function isCandidateEdit(envelope: PlayerActionEnvelope): boolean {
   )
 }
 
-function weekIndexForTick(tick: number): 0 | 1 {
-  return tick <= scenario.weekEndTicks[0] ? 0 : 1
-}
-
 function createExport(
   recorder: SessionRecorder,
   state: SimulationState,
@@ -109,7 +106,7 @@ function createExport(
     .filter(isCandidateEdit)
     .map((envelope) => ({
       actionId: envelope.id,
-      weekIndex: weekIndexForTick(envelope.atTick),
+      weekIndex: weekIndexForTick(envelope.atTick, scenario),
       actionType: envelope.action.type,
       affectedCellIds: [...envelope.affectedBlockIds],
       undoActionIds: undoActionsByTarget.get(envelope.id) ?? [],

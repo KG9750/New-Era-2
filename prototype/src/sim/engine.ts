@@ -32,6 +32,7 @@ import {
   selectTransportRepairCost,
   selectTransportRoute,
 } from './transport'
+import { weekIndexForTick } from './week-phase'
 
 export function createPlayerAction(
   sequence: number,
@@ -100,6 +101,7 @@ export function applyPlayerAction(
   if (envelope.atTick !== state.currentTick) {
     throw new Error('Player action tick must match the current simulation tick')
   }
+  const actionWeekIndex = weekIndexForTick(envelope.atTick, _scenario)
 
   const before = rangeOf(state)
   let next: SimulationState
@@ -220,7 +222,7 @@ export function applyPlayerAction(
     if (state.fertilizer.remainingUnits === 0) {
       throw new Error('化肥已经使用，库存中没有第二份')
     }
-    const appliedWeekIndex = state.completedWeekIndexes.includes(0) ? 1 : 0
+    const appliedWeekIndex = actionWeekIndex
     const draft: SimulationState = {
       ...state,
       fertilizer: {
@@ -314,7 +316,7 @@ export function applyPlayerAction(
       after,
     }
   } else if (envelope.action.type === 'RESOLVE_LIN_HE_REQUEST') {
-    if (!state.completedWeekIndexes.includes(0) || state.recap !== null) {
+    if (actionWeekIndex !== 1 || state.recap !== null) {
       throw new Error('林禾的请求会在第二周开始后出现')
     }
     if (state.linHeRequestDecision !== 'pending') {
@@ -383,6 +385,7 @@ export function applyPlayerAction(
     }
     next = {
       ...state,
+      currentTick: _scenario.weekStartTicks[1],
       inventory: {
         food: state.recap.supplies.food.actual,
         repair: state.recap.supplies.repair.actual,
@@ -414,7 +417,7 @@ export function applyPlayerAction(
       ...state,
     }
     const weekTwoRequestReady =
-      !state.completedWeekIndexes.includes(0) ||
+      actionWeekIndex === 0 ||
       state.linHeRequestDecision !== 'pending'
     const planSnapshot =
       !envelope.action.paused &&
@@ -441,7 +444,7 @@ export function applyPlayerAction(
         title: envelope.action.paused ? '暂停时间' : '继续时间',
         detail: envelope.action.paused
           ? '聚落时钟已暂停。'
-          : state.completedWeekIndexes.includes(0)
+          : actionWeekIndex === 1
             ? state.linHeRequestDecision === 'pending'
               ? '第二周开始推进；林禾请求尚未答复，截止时将默认保留农务。'
               : '第二周从继承的基础计划和已处理的新例外开始推进。'
@@ -596,8 +599,13 @@ export function advanceSimulation(
   targetTick: number,
   scenario: ScenarioDefinition,
 ): TransitionResult {
+  weekIndexForTick(state.currentTick, scenario)
   if (targetTick < state.currentTick) {
     throw new Error('Simulation cannot advance backwards')
+  }
+  if (state.recap !== null && targetTick > state.currentTick) {
+    weekIndexForTick(targetTick, scenario)
+    throw new Error('请先完成周末复盘并进入下一周')
   }
 
   const nextEvent = [...scenario.scriptedEvents]
@@ -751,6 +759,7 @@ export function advanceSimulation(
     }
   }
 
+  weekIndexForTick(targetTick, scenario)
   const base: SimulationState = {
     ...expireScheduleLayers(state, targetTick),
     currentTick: targetTick,

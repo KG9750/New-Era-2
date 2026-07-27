@@ -2,6 +2,7 @@ import { gate1WeekOneScenario as scenario } from '../scenario/gate1-week-one'
 import type { PlayerAction, SimulationState } from '../sim/model'
 import {
   canOpenTransportShortcut,
+  selectCurrentWeekIndex,
   selectMapCharacterPositions,
   selectTransportRepairCost,
   selectTransportRoute,
@@ -17,11 +18,10 @@ export function MapPanel({ simulation, focused = false, submit }: MapPanelProps)
   const route = selectTransportRoute(simulation)
   const characters = selectMapCharacterPositions(simulation)
   const canOpenShortcut = canOpenTransportShortcut(simulation, scenario)
+  const currentWeekIndex = selectCurrentWeekIndex(simulation, scenario)
   const transportStarted =
     simulation.currentTick >=
-    scenario.weeklyTransportStartTicks[
-      simulation.completedWeekIndexes.includes(0) && simulation.recap === null ? 1 : 0
-    ]
+    scenario.weeklyTransportStartTicks[currentWeekIndex]
 
   return (
     <section

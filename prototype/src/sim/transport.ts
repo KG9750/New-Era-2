@@ -1,3 +1,4 @@
+import { gate1WeekOneScenario } from '../scenario/gate1-week-one'
 import type {
   Activity,
   CharacterId,
@@ -6,6 +7,7 @@ import type {
   TransportRouteId,
 } from './model'
 import { CHARACTERS, createBlockId, resolveScheduleBlock } from './schedule'
+import { weekIndexForTick } from './week-phase'
 
 export interface TransportRouteDefinition {
   id: TransportRouteId
@@ -49,12 +51,11 @@ const ROUTES: Readonly<Record<TransportRouteId, TransportRouteDefinition>> = {
   },
 }
 
-export function selectCurrentWeekIndex(state: SimulationState): 0 | 1 {
-  return state.completedWeekIndexes.includes(0) && state.recap === null
-    ? 1
-    : state.currentTick >= 144 * 7
-      ? 1
-      : 0
+export function selectCurrentWeekIndex(
+  state: SimulationState,
+  scenario: ScenarioDefinition = gate1WeekOneScenario,
+): 0 | 1 {
+  return weekIndexForTick(state.currentTick, scenario)
 }
 
 export function selectTransportRoute(
@@ -63,15 +64,18 @@ export function selectTransportRoute(
   return ROUTES[state.transportRouteId]
 }
 
-export function selectTransportRepairCost(state: SimulationState): number {
+export function selectTransportRepairCost(
+  state: SimulationState,
+  scenario: ScenarioDefinition = gate1WeekOneScenario,
+): number {
   if (
     state.transportRouteId !== 'south-shortcut' ||
     state.transportRouteOpenedAtTick === null
   ) {
     return 0
   }
-  const openedWeek = state.transportRouteOpenedAtTick >= 144 * 7 ? 1 : 0
-  return openedWeek === selectCurrentWeekIndex(state)
+  const openedWeek = weekIndexForTick(state.transportRouteOpenedAtTick, scenario)
+  return openedWeek === selectCurrentWeekIndex(state, scenario)
     ? ROUTES['south-shortcut'].repairCost
     : 0
 }
@@ -81,7 +85,7 @@ export function canOpenTransportShortcut(
   scenario: ScenarioDefinition,
 ): boolean {
   if (state.transportRouteId === 'south-shortcut' || state.recap !== null) return false
-  const weekIndex = selectCurrentWeekIndex(state)
+  const weekIndex = selectCurrentWeekIndex(state, scenario)
   return state.currentTick < scenario.weeklyTransportStartTicks[weekIndex]
 }
 

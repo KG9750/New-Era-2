@@ -1,9 +1,12 @@
+import { gate1WeekOneScenario as scenario } from '../scenario/gate1-week-one'
 import type { ScenarioDefinition, SimulationState } from './model'
+import { weekIndexForTick } from './week-phase'
 
 const DAY_NAMES = ['周一', '周二', '周三', '周四', '周五', '周六', '周日']
 
 export function selectClockLabel(state: SimulationState): string {
-  const day = Math.floor(state.currentTick / 144)
+  const weekIndex = weekIndexForTick(state.currentTick, scenario)
+  const day = Math.floor(state.currentTick / 144) - weekIndex * 7
   const minutes = (state.currentTick % 144) * 10
   const hours = Math.floor(minutes / 60)
   const minute = minutes % 60

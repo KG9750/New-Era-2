@@ -15,7 +15,7 @@ const TEST_BUILD_METADATA = {
   artifactHash: '2'.repeat(64),
   artifactHashAlgorithm: 'sha256-canonical-file-manifest-v1' as const,
   artifactManifestPath: 'artifact-manifest.json' as const,
-  initialStateHash: 'fnv1a32-33a16fbf',
+  initialStateHash: 'fnv1a32-bbad047d',
   initialStateHashAlgorithm: 'fnv1a32-stable-json-v1' as const,
 }
 
@@ -160,6 +160,7 @@ describe('minimal weekly flow UI', () => {
   it('shows both Lin He request consequences during week two', () => {
     const weekTwoState = {
       ...scenario.createInitialState(),
+      currentTick: 1062,
       recap: null,
       completedWeekIndexes: [0],
     }
@@ -167,6 +168,21 @@ describe('minimal weekly flow UI', () => {
 
     expect(screen.getByText(/接受：粮食产出 −2/)).toBeInTheDocument()
     expect(screen.getByText(/拒绝：粮食不变/)).toBeInTheDocument()
+  })
+
+  it('does not reveal the week-two request while the clock is still at tick 1002', () => {
+    render(
+      <CharacterDecisionPanel
+        simulation={{
+          ...scenario.createInitialState(),
+          currentTick: 1002,
+          recap: null,
+          completedWeekIndexes: [0],
+        }}
+      />,
+    )
+
+    expect(screen.queryByText(/接受：粮食产出 −2/)).not.toBeInTheDocument()
   })
 
   it('renders the authoritative map route and updates loss and food after opening the shortcut', () => {
@@ -213,6 +229,7 @@ describe('minimal weekly flow UI', () => {
     fireEvent.click(screen.getByRole('button', { name: '确认复盘并进入第二周' }))
 
     expect(screen.getByRole('heading', { name: '第二周新增例外' })).toBeInTheDocument()
+    expect(screen.getByLabelText('聚落时钟')).toHaveTextContent('周一 09:00')
     expect(screen.getByText('基础计划已继承')).toBeInTheDocument()
     expect(screen.getAllByText(/第一周一次性例外已结算失效/).length).toBeGreaterThan(0)
     expect(screen.getByRole('button', { name: /林禾请求周二 B1 学习/ })).toBeInTheDocument()
@@ -298,6 +315,9 @@ describe('minimal weekly flow UI', () => {
       screen.getByRole('button', { name: '确认复盘并进入第二周' }),
     )
     fireEvent.click(
+      screen.getByRole('button', { name: '开启短通路 · 维修保障 −1' }),
+    )
+    fireEvent.click(
       screen.getByRole('button', { name: /林禾请求周二 B1 学习/ }),
     )
     fireEvent.click(screen.getByRole('button', { name: '接受学习请求' }))
@@ -334,6 +354,33 @@ describe('minimal weekly flow UI', () => {
     expect(fetchMock).toHaveBeenCalledTimes(2)
     expect(requestBodies[1]).toBe(requestBodies[0])
     const payload = JSON.parse(requestBodies[1])
+    expect(
+      payload.actions.find(
+        (entry: { action: { type: string } }) =>
+          entry.action.type === 'CONTINUE_TO_NEXT_WEEK',
+      )?.atTick,
+    ).toBe(1002)
+    expect(
+      payload.candidateEditGroups,
+    ).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          actionType: 'OPEN_TRANSPORT_SHORTCUT',
+          weekIndex: 1,
+        }),
+      ]),
+    )
+    expect(
+      payload.telemetry,
+    ).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          type: 'week-started',
+          atTick: 1062,
+          weekIndex: 1,
+        }),
+      ]),
+    )
     expect(
       payload.telemetry.filter(
         (entry: { type: string }) => entry.type === 'export-created',

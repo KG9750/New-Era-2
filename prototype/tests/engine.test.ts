@@ -154,6 +154,11 @@ describe('Gate 1 minimal simulation contract', () => {
       food: state.recap.supplies.food.actual,
       repair: state.recap.supplies.repair.actual,
     }
+    expect(state.currentTick).toBe(1002)
+    expect(() => advanceSimulation(state, 1003, scenario)).toThrow('不可达')
+    expect(() => advanceSimulation(state, 1062, scenario)).toThrow(
+      '先完成周末复盘',
+    )
     state = applyPlayerAction(
       state,
       createPlayerAction(3, state.currentTick, {
@@ -162,6 +167,8 @@ describe('Gate 1 minimal simulation contract', () => {
       scenario,
     ).state
 
+    expect(state.actionLog.at(-1)?.atTick).toBe(1002)
+    expect(state.currentTick).toBe(1062)
     expect(state.inventory).toEqual(weekOneActual)
     expect(calculateFoodForecast(state).currentStock).toBe(weekOneActual.food)
     expect(calculateRepairForecast(state).currentStock).toBe(weekOneActual.repair)
@@ -209,6 +216,18 @@ describe('Gate 1 minimal simulation contract', () => {
     )
     state = advanceSimulation(state, scenario.pumpEventTick, scenario).state
     state = advanceSimulation(state, scenario.weekEndTick, scenario).state
+    const recapWithoutFertilizer = {
+      ...state,
+      fertilizer: {
+        initialUnits: 1 as const,
+        appliedWeekIndex: null,
+        remainingUnits: 1 as const,
+      },
+      fertilizerUsed: false,
+    }
+    expect(calculateFoodForecast(state).production.high).toBe(
+      calculateFoodForecast(recapWithoutFertilizer).production.high + 6,
+    )
     expect(state.recap?.fertilizer).toEqual({
       appliedWeekIndex: 0,
       remainingUnits: 0,
