@@ -1,0 +1,261 @@
+{
+  "schemaVersion": "gate1-rc9-candidate-core-v1",
+  "candidateAttempt": "C03",
+  "status": "PENDING_ANTI_PASS",
+  "sourceSha": "cd2fc9716d98c160fe530c593347992f18bf96e4",
+  "sourceTree": "2533f76438dc6d3b584ba44629a28756ba675c66",
+  "sourcePrototypeTree": "5dea3df621fa7ddf782d235f30f08fd6ca2a4954",
+  "dependencyIntegrationSha": "2bfe859824093001be2f2452bec0d6706edad6e2",
+  "dependencyIntegrationTree": "acc750706bfce3406c84aebd598e11baae67bb0e",
+  "dependencyIntegrationPrototypeTree": "5dea3df621fa7ddf782d235f30f08fd6ca2a4954",
+  "buildId": "g1-rc-20260727.rc9-c03",
+  "scenarioId": "gate1-two-week-management",
+  "scenarioVersion": "0.5.1",
+  "protocolVersion": "weekly-management-slice-playtest-v0.3",
+  "playtestSchemaVersion": "gate1-playtest-v2",
+  "fixedSeed": 104729,
+  "sourceDateEpoch": 946684800,
+  "sourceIntegrationProof": {
+    "status": "PASS",
+    "prototypeTreeEqual": true,
+    "files": [
+      {
+        "role": "protocol",
+        "path": "docs/product-specs/weekly-management-slice-playtest-v0.3.md",
+        "sourceBlob": "88f842b0594bc5a76669f6b33507a2fdaea7d3b6",
+        "dependencyIntegrationBlob": "88f842b0594bc5a76669f6b33507a2fdaea7d3b6",
+        "equal": true
+      },
+      {
+        "role": "c03-management-authority",
+        "path": "docs/design-docs/gate1-c03-management-choice-authority.md",
+        "sourceBlob": "9459cf45e59c8d5f744e718f67603d420594f941",
+        "dependencyIntegrationBlob": "9459cf45e59c8d5f744e718f67603d420594f941",
+        "equal": true
+      },
+      {
+        "role": "c03-branch-matrix",
+        "path": "docs/design-docs/gate1-rc9-branch-matrix.md",
+        "sourceBlob": "63ba7a000a032682e626e0b4e2cdbf366e3de7ba",
+        "dependencyIntegrationBlob": "63ba7a000a032682e626e0b4e2cdbf366e3de7ba",
+        "equal": true
+      }
+    ],
+    "integrationOnlyRecoveryPlan": {
+      "path": "docs/exec-plans/active/2026-07-27-gate1a-rc9-c03-recovery-plan.md",
+      "dependencyIntegrationBlob": "dec574357bec37c2b8747d8eaff960a62d1cef57"
+    }
+  },
+  "artifact": {
+    "artifactHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+    "artifactHashAlgorithm": "sha256-canonical-file-manifest-v1",
+    "artifactManifestPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C03/rc-dist/artifact-manifest.json",
+    "artifactManifestHash": "c336706bf7193c07a7f552dfbfe77cf02ec36259c72cc08b8f0c6ee8fc84cc37",
+    "artifactFileCount": 5,
+    "initialStateHash": "fnv1a32-1f72f2d0",
+    "initialStateHashAlgorithm": "fnv1a32-stable-json-v1",
+    "rcBuildMetadataPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C03/rc-dist/rc-build.json",
+    "rcBuildMetadataHash": "924431e2efe68dc2da638e39189d71ce56eb040d8c62639bbb7704a2c2a9c7c0"
+  },
+  "archive": {
+    "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C03/rc-dist.tar",
+    "format": "ustar",
+    "sha256": "68e1e68d94bbc2ea48ffb5fd048a19998955aed124f95d6053b2af25e394c886",
+    "bytes": 471552,
+    "entryCount": 8
+  },
+  "authorityHashes": [
+    {
+      "role": "protocol",
+      "path": "docs/product-specs/weekly-management-slice-playtest-v0.3.md",
+      "sha256": "867a2329dd09f68b6b50153ee38bc54696075ce3468a66170c47ad0d8d1da641"
+    },
+    {
+      "role": "c03-management-authority",
+      "path": "docs/design-docs/gate1-c03-management-choice-authority.md",
+      "sha256": "52a5924571865dcf88dbbd710461f7660d2b1f7e972a0086e68e9e672402c400"
+    },
+    {
+      "role": "c03-branch-matrix",
+      "path": "docs/design-docs/gate1-rc9-branch-matrix.md",
+      "sha256": "3115d2e5d5daff747fe5e53997fcdc5974c68407a2dacfa33956b546795ddf28"
+    },
+    {
+      "role": "c03-recovery-plan",
+      "path": "docs/exec-plans/active/2026-07-27-gate1a-rc9-c03-recovery-plan.md",
+      "sha256": "5a678fc6f10a65b4a6b380b040e53f0f7899b26801d4cf82ff3339a7cce84c72"
+    },
+    {
+      "role": "player-packet",
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/player-packet-v0.2.md",
+      "sha256": "ca01f407c0d2e7f0db9dc07699251190bcc55ef5c946b9a86bac17d8f24dd2ad"
+    },
+    {
+      "role": "interview",
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/post-session-interview-v0.2.md",
+      "sha256": "f10c6294edf5776dc426f90228e3030f328a80d823c23a65280d60721467c12c"
+    },
+    {
+      "role": "fixture-oracle",
+      "path": "prototype/tests/fixtures/fixture-expectations.json",
+      "sha256": "b9b881b951612a4e4419ce6693a96001a51d666a7e6e457019b22e407ac9057e"
+    },
+    {
+      "role": "capture-host",
+      "path": "prototype/scripts/playtest-host.mjs",
+      "sha256": "94c40cee50eee231d8332d2c2f4d3ef5fe8326a238db7932ff878f2a436bf66c"
+    }
+  ],
+  "captureHostDistHash": "94c40cee50eee231d8332d2c2f4d3ef5fe8326a238db7932ff878f2a436bf66c",
+  "rcDistInventory": {
+    "hashAlgorithm": "sha256-json-array-of-path-bytes-sha256-v1",
+    "files": [
+      {
+        "path": "artifact-manifest.json",
+        "bytes": 849,
+        "sha256": "c336706bf7193c07a7f552dfbfe77cf02ec36259c72cc08b8f0c6ee8fc84cc37"
+      },
+      {
+        "path": "assets/index-CvF-YVLG.js",
+        "bytes": 327445,
+        "sha256": "f263b56909c96edd511084075b07111280f8c3cc6495b368943bd66679163948"
+      },
+      {
+        "path": "assets/index-DVP48KUI.css",
+        "bytes": 19221,
+        "sha256": "065b2c6131647af44f830d6725ab546cab7541d13a103f29497d82537c70c2e6"
+      },
+      {
+        "path": "index.html",
+        "bytes": 468,
+        "sha256": "cb18e29fcef729faa6d68b3dae5a099726bb636ec5a2372de16d8106005248c9"
+      },
+      {
+        "path": "management-ledger-contract.mjs",
+        "bytes": 28476,
+        "sha256": "f8d5f512b6d75b05f3fbc7bd40a34c4ea59d9f5f940551532e9728403b6c47e0"
+      },
+      {
+        "path": "playtest-host.mjs",
+        "bytes": 88315,
+        "sha256": "94c40cee50eee231d8332d2c2f4d3ef5fe8326a238db7932ff878f2a436bf66c"
+      },
+      {
+        "path": "rc-build.json",
+        "bytes": 399,
+        "sha256": "924431e2efe68dc2da638e39189d71ce56eb040d8c62639bbb7704a2c2a9c7c0"
+      }
+    ],
+    "inventorySha256": "dbb7bfe948b154ff11c7c9e0e1ff1a27587d5915aa7e2694f7186c7baedfed83"
+  },
+  "reproducibility": {
+    "status": "PASS",
+    "cloneCount": 2,
+    "artifactManifestHash": "c336706bf7193c07a7f552dfbfe77cf02ec36259c72cc08b8f0c6ee8fc84cc37",
+    "rcBuildMetadataHash": "924431e2efe68dc2da638e39189d71ce56eb040d8c62639bbb7704a2c2a9c7c0",
+    "archiveHash": "68e1e68d94bbc2ea48ffb5fd048a19998955aed124f95d6053b2af25e394c886"
+  },
+  "treeGuards": {
+    "rc8": {
+      "status": "PASS",
+      "baselineSha": "c0f4269bc3fef56962199629bad8db041aafc5f0",
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc8-01",
+      "treeId": "c5714f7ca7adb5e8fe052d4d00f27c545b988347",
+      "fileCount": 67,
+      "inventorySha256": "e6990ddc8acd6ff4dbacfec975c06e4d0b9bbc7f6a2fc1324f5023caec1b96ee"
+    },
+    "c01": {
+      "status": "PASS",
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C01",
+      "referenceSha": "bbd8f8569b353b75516fcfae52c3c9ad62c8d64a",
+      "referenceTreeId": "55f661518c7ed8a2cc99f0fc0f25fabecd24c286",
+      "treeId": "55f661518c7ed8a2cc99f0fc0f25fabecd24c286",
+      "workingTreeDiffCount": 0,
+      "untrackedFileCount": 0
+    },
+    "c02": {
+      "status": "PASS",
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C02",
+      "referenceSha": "bbd8f8569b353b75516fcfae52c3c9ad62c8d64a",
+      "referenceTreeId": "9b7dbae2c0c5d1bba45399e77dac65766911d3b3",
+      "treeId": "9b7dbae2c0c5d1bba45399e77dac65766911d3b3",
+      "workingTreeDiffCount": 0,
+      "untrackedFileCount": 0
+    }
+  },
+  "validationSummary": [
+    {
+      "id": "lint",
+      "status": "PASS",
+      "command": "npm run lint"
+    },
+    {
+      "id": "unit-integration",
+      "status": "PASS",
+      "command": "npm run test:run",
+      "testFiles": 22,
+      "tests": 192
+    },
+    {
+      "id": "schema-fixtures",
+      "status": "PASS",
+      "command": "npm run schema:fixtures",
+      "cases": 120,
+      "contract": "gate1-playtest-fixtures-v2"
+    },
+    {
+      "id": "production-build",
+      "status": "PASS",
+      "command": "npm run build"
+    },
+    {
+      "id": "rc-build",
+      "status": "PASS",
+      "command": "npm run rc:build -- --build-id g1-rc-20260727.rc9-c03 --git-sha cd2fc9716d98c160fe530c593347992f18bf96e4"
+    },
+    {
+      "id": "rc-verify",
+      "status": "PASS",
+      "command": "npm run rc:verify",
+      "artifactFileCount": 5
+    },
+    {
+      "id": "e2e",
+      "status": "PASS",
+      "command": "npm run e2e:rc",
+      "projects": 2,
+      "tests": 26
+    },
+    {
+      "id": "archive-verify",
+      "status": "PASS",
+      "command": "npm run rc:verify-archive",
+      "entryCount": 8
+    },
+    {
+      "id": "reproducible-rc",
+      "status": "PASS",
+      "command": "npm run rc:repro",
+      "cleanClones": 2
+    },
+    {
+      "id": "rc8-tree-guard",
+      "status": "PASS",
+      "command": "npm run guard:rc8"
+    },
+    {
+      "id": "c01-c02-tree-guard",
+      "status": "PASS",
+      "command": "git diff --exit-code HEAD -- <C01> <C02>"
+    }
+  ],
+  "scope": {
+    "antiPassRun": false,
+    "diagnosticsRun": false,
+    "longRunningHostStarted": false,
+    "issueOrGateChanged": false,
+    "candidateBuildManifestCreated": false,
+    "sealCreated": false,
+    "pushPerformed": false
+  }
+}

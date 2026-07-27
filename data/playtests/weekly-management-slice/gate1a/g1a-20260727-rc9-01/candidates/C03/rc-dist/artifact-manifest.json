@@ -1,0 +1,30 @@
+{
+  "schemaVersion": "gate1-artifact-manifest-v1",
+  "files": [
+    {
+      "path": "assets/index-CvF-YVLG.js",
+      "size": 327445,
+      "sha256": "f263b56909c96edd511084075b07111280f8c3cc6495b368943bd66679163948"
+    },
+    {
+      "path": "assets/index-DVP48KUI.css",
+      "size": 19221,
+      "sha256": "065b2c6131647af44f830d6725ab546cab7541d13a103f29497d82537c70c2e6"
+    },
+    {
+      "path": "index.html",
+      "size": 468,
+      "sha256": "cb18e29fcef729faa6d68b3dae5a099726bb636ec5a2372de16d8106005248c9"
+    },
+    {
+      "path": "management-ledger-contract.mjs",
+      "size": 28476,
+      "sha256": "f8d5f512b6d75b05f3fbc7bd40a34c4ea59d9f5f940551532e9728403b6c47e0"
+    },
+    {
+      "path": "playtest-host.mjs",
+      "size": 88315,
+      "sha256": "94c40cee50eee231d8332d2c2f4d3ef5fe8326a238db7932ff878f2a436bf66c"
+    }
+  ]
+}
