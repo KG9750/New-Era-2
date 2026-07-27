@@ -1,0 +1,186 @@
+{
+  "schemaVersion": "gate1a-rc9-diagnostics-manifest-v1",
+  "cohortId": "g1a-20260727-rc9-01",
+  "candidateAttempt": "C01",
+  "issue": 49,
+  "status": "REJECTED_DIAGNOSTIC_INTEGRITY",
+  "sourceSha": "6837c7230806f2c5c218336668f9e201e3e6cca1",
+  "sourceTree": "e63f1a2938a4568d4f0bc9b4557f3d8da4f6c6e1",
+  "buildId": "g1-rc-20260727.rc9-c01",
+  "artifactHash": "64e8ddc85d15502c3b2776f89b13d71fbb621d9f350682d6c71ec5c998998552",
+  "archiveHash": "443fd0515e64fb528fb36b9dbedc08d0c299d33fa836a2aa1aa12bbfe5924d78",
+  "candidateBuildManifestHash": "127e3b9813281fc4a6ad31ccdfd1f2b54a482f4de8663ab0f08f6b1f109348fc",
+  "allocatedSampleIds": [
+    "TECH-RC9-D01",
+    "TECH-RC9-D02",
+    "TECH-RC9-D03",
+    "TECH-RC9-D04",
+    "TECH-RC9-D05"
+  ],
+  "strictSerialExecution": true,
+  "samples": [
+    {
+      "sampleId": "TECH-RC9-D01",
+      "agentTask": "/root/rc9_d01_player",
+      "status": "VALID_DIAGNOSTIC",
+      "captureKind": "complete",
+      "sessionId": "7f4886dc-b6bb-4d2a-9cb7-d7a5b7d6d768",
+      "rawSha256": "9a4bf63e493e1117539f556023412b7abc8c683ca3c1e45b9309f6574835e34c",
+      "rawBytes": 68660,
+      "browserDownloadMatchesRaw": true,
+      "legacyEffectiveEdits": {
+        "week1": 1,
+        "week2": 1
+      },
+      "effectiveManagementCommitmentsV2": {
+        "week1": 2,
+        "week2": 2
+      },
+      "P0": 0,
+      "includedInDiagnosticMedian": true
+    },
+    {
+      "sampleId": "TECH-RC9-D02",
+      "agentTask": "/root/rc9_d02_player",
+      "status": "INVALID_TECHNICAL",
+      "reasonCode": "UNRECOVERABLE_FIRST_SESSION_EVIDENCE_LOSS_AND_RESTART_CONTAMINATION",
+      "captureKind": "complete",
+      "sessionId": "aae210ab-5170-4552-9bec-4713a5b88e3a",
+      "rawSha256": "a4eddcf7028ea617595c643e0712556dcf5876b49c029745dd831394ade99965",
+      "rawBytes": 69305,
+      "browserDownloadMatchesRaw": true,
+      "legacyEffectiveEdits": {
+        "week1": 1,
+        "week2": 1
+      },
+      "effectiveManagementCommitmentsV2": {
+        "week1": 3,
+        "week2": 1
+      },
+      "P0": 0,
+      "includedInDiagnosticMedian": false
+    },
+    {
+      "sampleId": "TECH-RC9-D03",
+      "status": "NOT_STARTED_ATTEMPT_REJECTED"
+    },
+    {
+      "sampleId": "TECH-RC9-D04",
+      "status": "NOT_STARTED_ATTEMPT_REJECTED"
+    },
+    {
+      "sampleId": "TECH-RC9-D05",
+      "status": "NOT_STARTED_ATTEMPT_REJECTED"
+    }
+  ],
+  "diagnosticAggregation": {
+    "requiredFreshCompleteSamples": 5,
+    "validFreshCompleteSamples": 1,
+    "invalidTechnicalSamples": 1,
+    "notStartedSamples": 3,
+    "week1V2Median": null,
+    "week2V2Median": null,
+    "medianReason": "insufficient_valid_fresh_samples",
+    "antiPassRegressionObserved": false,
+    "P0Observed": false,
+    "mustClickAllCardsObserved": false,
+    "sameIntentDuplicateInflationObserved": false,
+    "candidateAcceptedForManifest": false
+  },
+  "rejection": {
+    "reasonCode": "DIAGNOSTIC_SAMPLE_FRESHNESS_AND_EVIDENCE_INTEGRITY_FAILED",
+    "triggerSampleId": "TECH-RC9-D02",
+    "triggerSampleRecordHash": "08d55998af6027ac2b8b417bfea34ab8cd63c9b5e6e7d457d3e79034a2d761c0",
+    "detail": "D02 restarted the same deterministic candidate after its first application session reached week 2 and became unrecoverable. The first-session evidence was lost and the exported second session was exposed to prior same-candidate knowledge.",
+    "stopPolicy": "The attempt was stopped immediately after D02 adjudication; D03-D05 were not started.",
+    "nextAttempt": "C02",
+    "nextAntiPassIds": [
+      "TECH-RC9-P03",
+      "TECH-RC9-P04"
+    ],
+    "nextDiagnosticIds": [
+      "TECH-RC9-D06",
+      "TECH-RC9-D07",
+      "TECH-RC9-D08",
+      "TECH-RC9-D09",
+      "TECH-RC9-D10"
+    ]
+  },
+  "evidenceInventory": [
+    {
+      "path": "TECH-RC9-D01/agent-verbatim-output.md",
+      "bytes": 10066,
+      "sha256": "c56a361b27b09670811f6449444375a06cbbb8c0dfe32fa0ba985d446efd2788"
+    },
+    {
+      "path": "TECH-RC9-D01/browser-download.json",
+      "bytes": 68660,
+      "sha256": "9a4bf63e493e1117539f556023412b7abc8c683ca3c1e45b9309f6574835e34c"
+    },
+    {
+      "path": "TECH-RC9-D01/captures/g1-rc-20260727.rc9-c01-TECH-RC9-D01-7f4886dc-b6bb-4d2a-9cb7-d7a5b7d6d768.json",
+      "bytes": 68660,
+      "sha256": "9a4bf63e493e1117539f556023412b7abc8c683ca3c1e45b9309f6574835e34c"
+    },
+    {
+      "path": "TECH-RC9-D01/captures/g1-rc-20260727.rc9-c01-TECH-RC9-D01-7f4886dc-b6bb-4d2a-9cb7-d7a5b7d6d768.json.receipt.json",
+      "bytes": 601,
+      "sha256": "7a20a236d78da51f928e850f7c0d2baa7590061cffe7a1de50083a639588ba85"
+    },
+    {
+      "path": "TECH-RC9-D01/captures/g1-rc-20260727.rc9-c01-TECH-RC9-D01-7f4886dc-b6bb-4d2a-9cb7-d7a5b7d6d768.json.sha256",
+      "bytes": 144,
+      "sha256": "e967b166b467fc6059795c4ae39911682443591159b11937e7370f510e610825"
+    },
+    {
+      "path": "TECH-RC9-D01/sample-record.json",
+      "bytes": 9545,
+      "sha256": "9fcef5ad3edebe97c34eea926f7265d7bfe3df14b8561ed6558a6a3db3ee3fa4"
+    },
+    {
+      "path": "TECH-RC9-D01/validity-decision.md",
+      "bytes": 2896,
+      "sha256": "017f2af02c4efd88d0dc71f898c72b28f58c11affd324c9919a72d650e5189d6"
+    },
+    {
+      "path": "TECH-RC9-D02/agent-verbatim-output.md",
+      "bytes": 10201,
+      "sha256": "032c01098bd1f4163f9f5c39ce60309d1a1d97cd3ac3ab3de9e6be00ebcdac9d"
+    },
+    {
+      "path": "TECH-RC9-D02/browser-download.json",
+      "bytes": 69305,
+      "sha256": "a4eddcf7028ea617595c643e0712556dcf5876b49c029745dd831394ade99965"
+    },
+    {
+      "path": "TECH-RC9-D02/captures/g1-rc-20260727.rc9-c01-TECH-RC9-D02-aae210ab-5170-4552-9bec-4713a5b88e3a.json",
+      "bytes": 69305,
+      "sha256": "a4eddcf7028ea617595c643e0712556dcf5876b49c029745dd831394ade99965"
+    },
+    {
+      "path": "TECH-RC9-D02/captures/g1-rc-20260727.rc9-c01-TECH-RC9-D02-aae210ab-5170-4552-9bec-4713a5b88e3a.json.receipt.json",
+      "bytes": 601,
+      "sha256": "21f946a97afa815eeee731997efcaf0cadf2f169d829c24f96c11f0fd243bdfb"
+    },
+    {
+      "path": "TECH-RC9-D02/captures/g1-rc-20260727.rc9-c01-TECH-RC9-D02-aae210ab-5170-4552-9bec-4713a5b88e3a.json.sha256",
+      "bytes": 144,
+      "sha256": "3f1408191d6dac5d20b5d77f0a0bbeb0e4d4c71827bbe2016140ebbdf32e1b32"
+    },
+    {
+      "path": "TECH-RC9-D02/sample-record.json",
+      "bytes": 8663,
+      "sha256": "08d55998af6027ac2b8b417bfea34ab8cd63c9b5e6e7d457d3e79034a2d761c0"
+    },
+    {
+      "path": "TECH-RC9-D02/validity-decision.md",
+      "bytes": 2541,
+      "sha256": "b7dab8c3245d981ed62754095d6844eb7322fe2d73353ab642c638f47b6bd1e6"
+    }
+  ],
+  "trackLocks": {
+    "gate1A": "DIAGNOSTIC_ATTEMPT_REJECTED",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED"
+  }
+}

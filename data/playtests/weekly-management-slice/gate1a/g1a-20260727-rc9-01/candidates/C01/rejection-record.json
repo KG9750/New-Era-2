@@ -1,0 +1,72 @@
+{
+  "schemaVersion": "gate1a-rc9-candidate-rejection-record-v1",
+  "candidateAttempt": "C01",
+  "status": "REJECTED_DIAGNOSTIC_INTEGRITY",
+  "rejectedAtUtc": "2026-07-27T13:42:10Z",
+  "issue": 49,
+  "sourceSha": "6837c7230806f2c5c218336668f9e201e3e6cca1",
+  "sourceTree": "e63f1a2938a4568d4f0bc9b4557f3d8da4f6c6e1",
+  "buildId": "g1-rc-20260727.rc9-c01",
+  "artifactHash": "64e8ddc85d15502c3b2776f89b13d71fbb621d9f350682d6c71ec5c998998552",
+  "archiveHash": "443fd0515e64fb528fb36b9dbedc08d0c299d33fa836a2aa1aa12bbfe5924d78",
+  "candidateBuildManifestHash": "127e3b9813281fc4a6ad31ccdfd1f2b54a482f4de8663ab0f08f6b1f109348fc",
+  "diagnosticsManifestPath": "diagnostics/manifest.json",
+  "diagnosticsManifestHash": "57d14501bd5f281de4d7055928b90c625cf636bfb31132433a2a588a0ce8b61b",
+  "trigger": {
+    "sampleId": "TECH-RC9-D02",
+    "sampleRecordPath": "diagnostics/TECH-RC9-D02/sample-record.json",
+    "sampleRecordHash": "08d55998af6027ac2b8b417bfea34ab8cd63c9b5e6e7d457d3e79034a2d761c0",
+    "reasonCode": "UNRECOVERABLE_FIRST_SESSION_EVIDENCE_LOSS_AND_RESTART_CONTAMINATION",
+    "description": "The D02 agent progressed into week 2 in a first application session before a node REPL reset lost the browser handle and all first-session evidence. The agent then restarted the same deterministic candidate under the same sample ID and exported a second session. The exported session is byte-consistent but no longer a jointly fresh agent/application-session sample."
+  },
+  "diagnosticState": {
+    "validFreshCompleteSamples": [
+      "TECH-RC9-D01"
+    ],
+    "invalidTechnicalSamples": [
+      "TECH-RC9-D02"
+    ],
+    "notStartedSamples": [
+      "TECH-RC9-D03",
+      "TECH-RC9-D04",
+      "TECH-RC9-D05"
+    ],
+    "week1V2Median": null,
+    "week2V2Median": null,
+    "medianReason": "insufficient_valid_fresh_samples",
+    "P0Observed": false,
+    "ctaInflationObserved": false,
+    "sameIntentDuplicateInflationObserved": false,
+    "mustClickAllCardsObserved": false
+  },
+  "immutability": {
+    "candidateCoreChangedAfterSeal": false,
+    "candidateCoreMayBeOverwritten": false,
+    "existingDiagnosticsMayBeOverwritten": false,
+    "candidateAttemptReusable": false,
+    "allocatedSampleIdsReusable": false
+  },
+  "nextAttempt": {
+    "candidateAttempt": "C02",
+    "buildIdMustChange": true,
+    "candidateCoreMustBeNew": true,
+    "antiPassIds": [
+      "TECH-RC9-P03",
+      "TECH-RC9-P04"
+    ],
+    "diagnosticIds": [
+      "TECH-RC9-D06",
+      "TECH-RC9-D07",
+      "TECH-RC9-D08",
+      "TECH-RC9-D09",
+      "TECH-RC9-D10"
+    ],
+    "sourceChangeRequiredByThisRejection": false,
+    "requiredRestart": "Create and seal C02 from the accepted RC9-08 source, rerun deterministic archive verification, anti-pass P03/P04, and five fresh isolated diagnostics D06-D10. Do not reuse any C01, P01/P02 or D01-D05 evidence."
+  },
+  "trackLocks": {
+    "gate1A": "DIAGNOSTIC_ATTEMPT_REJECTED",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED"
+  }
+}
