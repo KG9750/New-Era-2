@@ -1,5 +1,5 @@
 {
-  "fixtureId": "playtest-v03-cross-session-rejected",
+  "fixtureId": "playtest-v03-fingerprint-replaced-rejected",
   "kind": "management-ledger-v03",
   "input": {
     "schemaVersion": "gate1-playtest-v2",
@@ -58,7 +58,7 @@
           "consequence:w0:preventive-capacity:personnel-readiness"
         ],
         "effectFingerprints": [
-          "effect:4d0be177d2444eca74cd9799e912ec177496f44e6334bd5b6350268209b35436",
+          "effect:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
           "effect:418e3be34b6748be2c9421edf227781f897d01db9c01656c003437a80abaa691",
           "effect:0525a0777f73fe1116a2d1129cf0a5ce7b429ee2cbed27f42f1bede3abcb9dc2"
         ],
@@ -89,7 +89,7 @@
         "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
         "week": 1,
         "diagnosisId": "TECH-RC9-D80",
-        "sessionId": "22222222-2222-4222-8222-222222222222",
+        "sessionId": "11111111-1111-4111-8111-111111111111",
         "candidateBuildAuthorityHash": "2222222222222222222222222222222222222222222222222222222222222222",
         "sessionAuthorityToken": "3333333333333333333333333333333333333333333333333333333333333333",
         "stateRevision": 2,
@@ -246,7 +246,7 @@
           "consequence:w0:preventive-capacity:personnel-readiness"
         ],
         "effectFingerprints": [
-          "effect:4d0be177d2444eca74cd9799e912ec177496f44e6334bd5b6350268209b35436",
+          "effect:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
           "effect:418e3be34b6748be2c9421edf227781f897d01db9c01656c003437a80abaa691",
           "effect:0525a0777f73fe1116a2d1129cf0a5ce7b429ee2cbed27f42f1bede3abcb9dc2"
         ],
@@ -308,7 +308,7 @@
           "consequence:w0:preventive-capacity:personnel-readiness"
         ],
         "effectFingerprints": [
-          "effect:4d0be177d2444eca74cd9799e912ec177496f44e6334bd5b6350268209b35436",
+          "effect:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
           "effect:418e3be34b6748be2c9421edf227781f897d01db9c01656c003437a80abaa691",
           "effect:0525a0777f73fe1116a2d1129cf0a5ce7b429ee2cbed27f42f1bede3abcb9dc2"
         ],
@@ -339,11 +339,11 @@
               "consequence:w0:preventive-capacity:personnel-readiness"
             ],
             "effectFingerprints": [
-              "effect:4d0be177d2444eca74cd9799e912ec177496f44e6334bd5b6350268209b35436"
+              "effect:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff"
             ],
             "terminalState": "retain-rest-capacity",
             "committedAtSequence": 1,
-            "effectFingerprint": "effect:4d0be177d2444eca74cd9799e912ec177496f44e6334bd5b6350268209b35436",
+            "effectFingerprint": "effect:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
             "beforeValue": "unallocated",
             "afterValue": "rest"
           },
@@ -421,7 +421,7 @@
         "objectRef": "pump-recovery",
         "week": 1,
         "diagnosisId": "TECH-RC9-D80",
-        "sessionId": "22222222-2222-4222-8222-222222222222",
+        "sessionId": "11111111-1111-4111-8111-111111111111",
         "candidateBuildAuthorityHash": "2222222222222222222222222222222222222222222222222222222222222222",
         "sessionAuthorityToken": "3333333333333333333333333333333333333333333333333333333333333333",
         "stateRevision": 2,
@@ -450,7 +450,7 @@
             "objectRef": "chen-du:d10:b2",
             "week": 1,
             "diagnosisId": "TECH-RC9-D80",
-            "sessionId": "22222222-2222-4222-8222-222222222222",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
             "candidateBuildAuthorityHash": "2222222222222222222222222222222222222222222222222222222222222222",
             "sessionAuthorityToken": "3333333333333333333333333333333333333333333333333333333333333333",
             "stateRevision": 2,
@@ -481,7 +481,7 @@
             "objectRef": "forecast:ending-food",
             "week": 1,
             "diagnosisId": "TECH-RC9-D80",
-            "sessionId": "22222222-2222-4222-8222-222222222222",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
             "candidateBuildAuthorityHash": "2222222222222222222222222222222222222222222222222222222222222222",
             "sessionAuthorityToken": "3333333333333333333333333333333333333333333333333333333333333333",
             "stateRevision": 2,
@@ -507,7 +507,7 @@
       }
     ],
     "effectOwnershipV03": {
-      "effect:4d0be177d2444eca74cd9799e912ec177496f44e6334bd5b6350268209b35436": "w0:preventive-capacity:pump",
+      "effect:ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff": "w0:preventive-capacity:pump",
       "effect:418e3be34b6748be2c9421edf227781f897d01db9c01656c003437a80abaa691": "w0:preventive-capacity:pump",
       "effect:0525a0777f73fe1116a2d1129cf0a5ce7b429ee2cbed27f42f1bede3abcb9dc2": "w0:preventive-capacity:pump",
       "effect:d357d8a70040364b880b2906e61756718a117473b7635feacadec58d8ea9a60b": "w1:recovery-allocation:pump-vs-food",

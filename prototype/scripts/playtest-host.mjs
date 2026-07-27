@@ -1,4 +1,4 @@
-import { createHash, randomUUID } from 'node:crypto'
+import { createHash, randomBytes, randomUUID } from 'node:crypto'
 import {
   createReadStream,
   existsSync,
@@ -11,8 +11,13 @@ import {
 } from 'node:fs'
 import { createServer } from 'node:http'
 import { extname, join, resolve, sep } from 'node:path'
+import {
+  SESSION_AUTHORITY_TOKEN_PATTERN,
+  validateCanonicalManagementLedger,
+} from './management-ledger-contract.mjs'
 
 const CAPTURE_PATH = '/__gate1/capture'
+const SESSION_AUTHORITY_PATH = '/__gate1/session-authority'
 const CAPTURE_VERSION = 'gate1-capture-host-v1'
 const MAX_EXPORT_BYTES = 2 * 1024 * 1024
 const MAX_BLOCKED_REASON_LENGTH = 240
@@ -130,14 +135,20 @@ const V03_META_KEYS = [
   'candidateBuildAuthorityHash',
   'diagnosisId',
   'protocolVersion',
+  'sessionAuthorityToken',
 ]
 const V03_FINAL_STATE_KEYS = [
   ...FINAL_STATE_KEYS,
+  'endingFood',
+  'endingRepair',
   'equipmentExposure',
   'equipmentRecoveryLoad',
+  'infrastructurePressure',
   'linHeRecoveryUnits',
   'personnelReadiness',
+  'preventiveCapacityActivity',
   'preventiveCapacityAllocation',
+  'recoveryAllocationActivity',
 ]
 const RECAP_KEYS = [
   'actual',
@@ -207,6 +218,76 @@ function sendJson(response, status, payload) {
     'X-Content-Type-Options': 'nosniff',
   })
   response.end(bytes)
+}
+
+export function createSessionAuthorityRegistry(buildMetadata) {
+  const records = new Map()
+  return {
+    issue(sampleId) {
+      if (
+        typeof sampleId !== 'string' ||
+        sampleId.length > 20 ||
+        !SAMPLE_ID_V2_PATTERN.test(sampleId)
+      ) {
+        return null
+      }
+      const authority = {
+        diagnosisId: sampleId,
+        sessionId: randomUUID(),
+        candidateBuildAuthorityHash:
+          buildMetadata.artifactHash,
+        sessionAuthorityToken:
+          randomBytes(32).toString('hex'),
+      }
+      records.set(authority.sessionAuthorityToken, {
+        ...authority,
+        buildId: buildMetadata.buildId,
+        gitSha: buildMetadata.gitSha,
+        artifactHash: buildMetadata.artifactHash,
+        consumedSha256: null,
+      })
+      return authority
+    },
+    authorize(payload, sha256) {
+      const meta = payload?.meta
+      const token = meta?.sessionAuthorityToken
+      const record = records.get(token)
+      if (
+        record === undefined ||
+        !SESSION_AUTHORITY_TOKEN_PATTERN.test(token ?? '') ||
+        meta.diagnosisId !== record.diagnosisId ||
+        meta.sampleId !== record.diagnosisId ||
+        meta.sessionId !== record.sessionId ||
+        meta.candidateBuildAuthorityHash !==
+          record.candidateBuildAuthorityHash ||
+        meta.artifactHash !== record.artifactHash ||
+        meta.buildId !== record.buildId ||
+        meta.gitSha !== record.gitSha
+      ) {
+        return { ok: false, replay: false }
+      }
+      if (record.consumedSha256 === null) {
+        return { ok: true, replay: false }
+      }
+      return {
+        ok: record.consumedSha256 === sha256,
+        replay: record.consumedSha256 === sha256,
+      }
+    },
+    consume(payload, sha256) {
+      const token = payload.meta.sessionAuthorityToken
+      const record = records.get(token)
+      if (
+        record === undefined ||
+        (record.consumedSha256 !== null &&
+          record.consumedSha256 !== sha256)
+      ) {
+        return false
+      }
+      record.consumedSha256 = sha256
+      return true
+    },
+  }
 }
 
 function hasExactKeys(value, keys) {
@@ -2625,10 +2706,16 @@ function legacyV2Projection(value) {
   delete legacy.meta.diagnosisId
   delete legacy.meta.candidateBuildAuthorityHash
   delete legacy.meta.protocolVersion
+  delete legacy.meta.sessionAuthorityToken
   legacy.meta.scenarioVersion = '0.5.0'
+  delete legacy.finalState.endingFood
+  delete legacy.finalState.endingRepair
   delete legacy.finalState.equipmentExposure
   delete legacy.finalState.equipmentRecoveryLoad
+  delete legacy.finalState.infrastructurePressure
   delete legacy.finalState.preventiveCapacityAllocation
+  delete legacy.finalState.preventiveCapacityActivity
+  delete legacy.finalState.recoveryAllocationActivity
   delete legacy.finalState.linHeRecoveryUnits
   delete legacy.finalState.personnelReadiness
   const managementActionIds = new Set(
@@ -2745,7 +2832,7 @@ function validV03Export(value, buildMetadata) {
     ) ||
     ![0, 1].includes(value.finalState.linHeRecoveryUnits) ||
     !Number.isInteger(value.finalState.personnelReadiness) ||
-    !validV03Ledger(value)
+    !validateCanonicalManagementLedger(value).ok
   ) {
     return false
   }
@@ -2972,11 +3059,56 @@ function writeCapture(captureRoot, filename, bytes, metadata, capture) {
   return { receipt, status: installed ? 201 : 200, rawPath }
 }
 
-function createHandler(distRoot, captureRoot, buildMetadata) {
+function createHandler(
+  distRoot,
+  captureRoot,
+  buildMetadata,
+  authorityRegistry,
+) {
   const downloads = new Map()
 
   return (request, response) => {
     const url = new URL(request.url ?? '/', 'http://127.0.0.1')
+    if (
+      request.method === 'POST' &&
+      url.pathname === SESSION_AUTHORITY_PATH
+    ) {
+      if (!request.headers['content-type']?.startsWith('application/json')) {
+        sendJson(response, 415, {
+          error: '会话 authority 请求必须使用 JSON',
+        })
+        return
+      }
+      readBody(request, response, (bytes) => {
+        let body
+        try {
+          body = JSON.parse(bytes.toString('utf8'))
+        } catch {
+          sendJson(response, 400, {
+            error: '会话 authority 请求不是有效 JSON',
+          })
+          return
+        }
+        if (
+          !isRecord(body) ||
+          !hasExactKeys(body, ['sampleId'])
+        ) {
+          sendJson(response, 400, {
+            error: '会话 authority 请求合同无效',
+          })
+          return
+        }
+        const authority = authorityRegistry.issue(body.sampleId)
+        if (authority === null) {
+          sendJson(response, 400, {
+            error: '匿名编号无效',
+          })
+          return
+        }
+        sendJson(response, 201, authority)
+      })
+      return
+    }
     if (request.method === 'POST' && url.pathname === CAPTURE_PATH) {
       if (!request.headers['content-type']?.startsWith('application/json')) {
         sendJson(response, 415, { error: '匿名导出必须使用 JSON' })
@@ -2999,6 +3131,24 @@ function createHandler(distRoot, captureRoot, buildMetadata) {
           sendJson(response, 400, { error: '匿名导出合同无效' })
           return
         }
+        const rawSha256 = createHash('sha256')
+          .update(bytes)
+          .digest('hex')
+        if (
+          payload.protocolVersion ===
+          'weekly-management-slice-playtest-v0.3'
+        ) {
+          const authorization = authorityRegistry.authorize(
+            payload,
+            rawSha256,
+          )
+          if (!authorization.ok) {
+            sendJson(response, 409, {
+              error: '会话 authority 未登记、已消费或绑定不一致',
+            })
+            return
+          }
+        }
 
         const { meta } = payload
         const capture =
@@ -3018,6 +3168,16 @@ function createHandler(distRoot, captureRoot, buildMetadata) {
         }
         if (result.conflict) {
           sendJson(response, 409, { error: '同一会话证据链缺失或不一致' })
+          return
+        }
+        if (
+          payload.protocolVersion ===
+            'weekly-management-slice-playtest-v0.3' &&
+          !authorityRegistry.consume(payload, rawSha256)
+        ) {
+          sendJson(response, 409, {
+            error: '会话 authority 消费冲突',
+          })
           return
         }
 
@@ -3116,11 +3276,19 @@ export function createPlaytestHost({
   const buildMetadata = JSON.parse(
     readFileSync(join(resolvedDistRoot, 'rc-build.json'), 'utf8'),
   )
+  const authorityRegistry =
+    createSessionAuthorityRegistry(buildMetadata)
   mkdirSync(resolvedCaptureRoot, { recursive: true })
   const server = createServer(
-    createHandler(resolvedDistRoot, resolvedCaptureRoot, buildMetadata),
+    createHandler(
+      resolvedDistRoot,
+      resolvedCaptureRoot,
+      buildMetadata,
+      authorityRegistry,
+    ),
   )
   return {
+    authorityRegistry,
     captureRoot: resolvedCaptureRoot,
     host,
     port,

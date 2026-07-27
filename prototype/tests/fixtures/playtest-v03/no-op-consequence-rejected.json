@@ -5,93 +5,793 @@
     "schemaVersion": "gate1-playtest-v2",
     "protocolVersion": "weekly-management-slice-playtest-v0.3",
     "scenarioVersion": "0.5.1",
+    "captureKind": "blocked",
+    "blockedAtTick": 1062,
+    "blockedReason": "canonical v0.3 fixture",
     "meta": {
-      "diagnosisId": "TECH-RC9-D81",
+      "sampleId": "TECH-RC9-D80",
+      "diagnosisId": "TECH-RC9-D80",
       "sessionId": "11111111-1111-4111-8111-111111111111",
-      "candidateBuildAuthorityHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      "candidateBuildAuthorityHash": "2222222222222222222222222222222222222222222222222222222222222222",
+      "sessionAuthorityToken": "3333333333333333333333333333333333333333333333333333333333333333",
+      "buildId": "g1-c03-fixture.1",
+      "gitSha": "1111111111111111111111111111111111111111",
+      "artifactHash": "2222222222222222222222222222222222222222222222222222222222222222",
+      "scenarioId": "gate1-two-week-management",
+      "scenarioVersion": "0.5.1",
+      "protocolVersion": "weekly-management-slice-playtest-v0.3",
+      "fixedSeed": 104729,
+      "initialStateHash": "fnv1a32-6b11fd08",
+      "viewport": "unknown",
+      "inputDevice": "browser-pointer-keyboard"
+    },
+    "machineTiming": {
+      "machineStartedAtEpochMs": 1000,
+      "machineEndedAtEpochMs": 1100,
+      "machineElapsedMs": 80,
+      "week1RawDurationMs": 50,
+      "week2RawDurationMs": null
     },
     "actions": [
       {
+        "id": "action-0001",
+        "sequence": 1,
         "type": "COMMIT_MANAGEMENT_CHOICE",
-        "opportunityId": "opportunity:w1:recovery-allocation",
-        "choiceSetId": "choice:w1:recovery-allocation",
-        "candidateId": "allocate-food-production"
-      }
-    ],
-    "managementChoiceOpportunitiesV03": [
-      {
-        "opportunityId": "opportunity:w1:recovery-allocation",
-        "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
-        "choiceSetId": "choice:w1:recovery-allocation",
-        "week": 1,
-        "diagnosisId": "TECH-RC9-D81",
+        "opportunityId": "opportunity:11111111-1111-4111-8111-111111111111:w0:preventive-capacity",
+        "choiceSetId": "choice:w0:preventive-capacity",
+        "candidateId": "retain-rest-capacity",
+        "decisionIntentId": "w0:preventive-capacity:pump",
+        "week": 0,
+        "diagnosisId": "TECH-RC9-D80",
         "sessionId": "11111111-1111-4111-8111-111111111111",
-        "candidateBuildAuthorityHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        "resourceClaimRef": "schedule-slot:chen-du:d10:b2",
-        "effectFingerprints": [
-          "effect:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-          "effect:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+        "candidateBuildAuthorityHash": "2222222222222222222222222222222222222222222222222222222222222222",
+        "sessionAuthorityToken": "3333333333333333333333333333333333333333333333333333333333333333",
+        "stateRevision": 0,
+        "projectionBaseHash": "10a0e110ed4a598028173c05e2b96824911627d904ddc6369e23a9b6f6c492d1",
+        "candidateProjectionHash": "f26a88621a3b74cca1ac79303ff112910209a58bfe78a3901ed743b735d1db03",
+        "idempotencyKey": "fixture-retain-rest-capacity",
+        "commitCause": "explicit-candidate-action",
+        "resourceClaimRef": "schedule-slot:lin-he:d1:b1",
+        "requiredConsequenceIds": [
+          "consequence:w0:preventive-capacity:allocation",
+          "consequence:w0:preventive-capacity:rest-recovery",
+          "consequence:w0:preventive-capacity:personnel-readiness"
         ],
-        "terminalState": "allocate-food-production"
-      }
-    ],
-    "managementChoiceCommitmentsV03": [
+        "effectFingerprints": [
+          "effect:4d0be177d2444eca74cd9799e912ec177496f44e6334bd5b6350268209b35436",
+          "effect:418e3be34b6748be2c9421edf227781f897d01db9c01656c003437a80abaa691",
+          "effect:0525a0777f73fe1116a2d1129cf0a5ce7b429ee2cbed27f42f1bede3abcb9dc2"
+        ],
+        "terminalState": "retain-rest-capacity",
+        "committedAtSequence": 1
+      },
       {
-        "opportunityId": "opportunity:w1:recovery-allocation",
-        "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
+        "id": "action-0002",
+        "type": "SET_PAUSED",
+        "paused": false
+      },
+      {
+        "id": "action-0003",
+        "type": "SET_PAUSED",
+        "paused": false
+      },
+      {
+        "id": "action-0004",
+        "type": "CONTINUE_TO_NEXT_WEEK"
+      },
+      {
+        "id": "action-0005",
+        "sequence": 5,
+        "type": "COMMIT_MANAGEMENT_CHOICE",
+        "opportunityId": "opportunity:11111111-1111-4111-8111-111111111111:w1:recovery-allocation",
         "choiceSetId": "choice:w1:recovery-allocation",
         "candidateId": "allocate-food-production",
+        "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
         "week": 1,
-        "diagnosisId": "TECH-RC9-D81",
+        "diagnosisId": "TECH-RC9-D80",
         "sessionId": "11111111-1111-4111-8111-111111111111",
-        "candidateBuildAuthorityHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "candidateBuildAuthorityHash": "2222222222222222222222222222222222222222222222222222222222222222",
+        "sessionAuthorityToken": "3333333333333333333333333333333333333333333333333333333333333333",
+        "stateRevision": 2,
+        "projectionBaseHash": "3a43ed87bbe79ad6bb99d4bf5f3114abc3cb2d2c145b78a7445d939b2d377885",
+        "candidateProjectionHash": "217d2379c080bcf1429c4a578c4a0f4033605e86fc9bc372f4ec213359f27017",
+        "idempotencyKey": "fixture-allocate-food-production",
+        "commitCause": "explicit-candidate-action",
         "resourceClaimRef": "schedule-slot:chen-du:d10:b2",
         "requiredConsequenceIds": [
           "consequence:w1:recovery-allocation:schedule",
           "consequence:w1:recovery-allocation:ending-food"
         ],
         "effectFingerprints": [
-          "effect:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-          "effect:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc"
+          "effect:d357d8a70040364b880b2906e61756718a117473b7635feacadec58d8ea9a60b",
+          "effect:834d08606509c4e288b78cb197ef59a6c128ad603511927e0b3d6fc70508505c"
         ],
         "terminalState": "allocate-food-production",
+        "committedAtSequence": 5
+      }
+    ],
+    "candidateEditGroups": [],
+    "choiceSets": [
+      {
+        "choiceSetId": "choice:w0:preventive-capacity",
+        "decisionIntentId": "w0:preventive-capacity:pump",
+        "options": [
+          {
+            "optionId": "schedule-preventive-maintenance",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "schedule:lin-he:d1:b1",
+              "risk:equipment-exposure",
+              "state:equipment-recovery-load"
+            ],
+            "dominanceStatus": "non-dominated"
+          },
+          {
+            "optionId": "retain-rest-capacity",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "schedule:lin-he:d1:b1",
+              "state:lin-he-recovery-units",
+              "state:personnel-readiness"
+            ],
+            "dominanceStatus": "non-dominated"
+          }
+        ],
+        "selectedOptionId": "retain-rest-capacity"
+      },
+      {
+        "choiceSetId": "choice:w1:recovery-allocation",
+        "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
+        "options": [
+          {
+            "optionId": "allocate-repair-buffer",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "schedule:chen-du:d10:b2",
+              "forecast:w1:repair",
+              "state:equipment-recovery-load"
+            ],
+            "dominanceStatus": "non-dominated"
+          },
+          {
+            "optionId": "allocate-food-production",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "schedule:chen-du:d10:b2",
+              "forecast:w1:food",
+              "state:equipment-recovery-load"
+            ],
+            "dominanceStatus": "non-dominated"
+          }
+        ],
+        "selectedOptionId": "allocate-food-production"
+      }
+    ],
+    "candidateManagementCommitmentGroups": [
+      {
+        "decisionIntentId": "w0:preventive-capacity:pump",
+        "choiceSetId": "choice:w0:preventive-capacity",
+        "weekIndex": 0,
+        "problemCategory": "preventive-capacity",
+        "actionIds": [
+          "action-0001"
+        ],
+        "consequenceRefs": [
+          {
+            "kind": "risk",
+            "id": "water-pump:preventive-capacity-allocation"
+          },
+          {
+            "kind": "risk",
+            "id": "lin-he:recovery-units"
+          },
+          {
+            "kind": "risk",
+            "id": "settlement:personnel-readiness"
+          }
+        ],
+        "beforeDecisionStateHash": "10a0e110ed4a598028173c05e2b96824911627d904ddc6369e23a9b6f6c492d1",
+        "finalDecisionStateHash": "f26a88621a3b74cca1ac79303ff112910209a58bfe78a3901ed743b735d1db03",
+        "finalOutcomeCode": "committed:retain-rest-capacity",
+        "finalDisposition": "committed"
+      },
+      {
+        "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
+        "choiceSetId": "choice:w1:recovery-allocation",
+        "weekIndex": 1,
+        "problemCategory": "recovery-allocation",
+        "actionIds": [
+          "action-0005"
+        ],
+        "consequenceRefs": [
+          {
+            "kind": "schedule",
+            "id": "chen-du:d10:b2"
+          },
+          {
+            "kind": "forecast",
+            "id": "forecast:ending-food"
+          }
+        ],
+        "beforeDecisionStateHash": "3a43ed87bbe79ad6bb99d4bf5f3114abc3cb2d2c145b78a7445d939b2d377885",
+        "finalDecisionStateHash": "217d2379c080bcf1429c4a578c4a0f4033605e86fc9bc372f4ec213359f27017",
+        "finalOutcomeCode": "committed:allocate-food-production",
+        "finalDisposition": "committed"
+      }
+    ],
+    "managementChoiceOpportunitiesV03": [
+      {
+        "opportunityId": "opportunity:11111111-1111-4111-8111-111111111111:w0:preventive-capacity",
+        "decisionIntentId": "w0:preventive-capacity:pump",
+        "choiceSetId": "choice:w0:preventive-capacity",
+        "candidateId": null,
+        "objectRef": "water-pump",
+        "week": 0,
+        "diagnosisId": "TECH-RC9-D80",
+        "sessionId": "11111111-1111-4111-8111-111111111111",
+        "candidateBuildAuthorityHash": "2222222222222222222222222222222222222222222222222222222222222222",
+        "sessionAuthorityToken": "3333333333333333333333333333333333333333333333333333333333333333",
+        "stateRevision": 1,
+        "projectionBaseHash": "10a0e110ed4a598028173c05e2b96824911627d904ddc6369e23a9b6f6c492d1",
+        "candidateProjectionHash": "f26a88621a3b74cca1ac79303ff112910209a58bfe78a3901ed743b735d1db03",
+        "idempotencyKey": "fixture-retain-rest-capacity",
+        "commitCause": "opportunity-created",
+        "resourceClaimRef": "schedule-slot:lin-he:d1:b1",
+        "requiredConsequenceIds": [
+          "consequence:w0:preventive-capacity:schedule",
+          "consequence:w0:preventive-capacity:equipment-exposure",
+          "consequence:w0:preventive-capacity:recovery-load",
+          "consequence:w0:preventive-capacity:allocation",
+          "consequence:w0:preventive-capacity:rest-recovery",
+          "consequence:w0:preventive-capacity:personnel-readiness"
+        ],
+        "effectFingerprints": [
+          "effect:4d0be177d2444eca74cd9799e912ec177496f44e6334bd5b6350268209b35436",
+          "effect:418e3be34b6748be2c9421edf227781f897d01db9c01656c003437a80abaa691",
+          "effect:0525a0777f73fe1116a2d1129cf0a5ce7b429ee2cbed27f42f1bede3abcb9dc2"
+        ],
+        "terminalState": "retain-rest-capacity",
+        "committedAtSequence": 1
+      },
+      {
+        "opportunityId": "opportunity:11111111-1111-4111-8111-111111111111:w1:recovery-allocation",
+        "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
+        "choiceSetId": "choice:w1:recovery-allocation",
+        "candidateId": null,
+        "objectRef": "pump-recovery",
+        "week": 1,
+        "diagnosisId": "TECH-RC9-D80",
+        "sessionId": "11111111-1111-4111-8111-111111111111",
+        "candidateBuildAuthorityHash": "2222222222222222222222222222222222222222222222222222222222222222",
+        "sessionAuthorityToken": "3333333333333333333333333333333333333333333333333333333333333333",
+        "stateRevision": 3,
+        "projectionBaseHash": "3a43ed87bbe79ad6bb99d4bf5f3114abc3cb2d2c145b78a7445d939b2d377885",
+        "candidateProjectionHash": "217d2379c080bcf1429c4a578c4a0f4033605e86fc9bc372f4ec213359f27017",
+        "idempotencyKey": "fixture-allocate-food-production",
+        "commitCause": "opportunity-created",
+        "resourceClaimRef": "schedule-slot:chen-du:d10:b2",
+        "requiredConsequenceIds": [
+          "consequence:w1:recovery-allocation:schedule",
+          "consequence:w1:recovery-allocation:ending-repair",
+          "consequence:w1:recovery-allocation:schedule",
+          "consequence:w1:recovery-allocation:ending-food"
+        ],
+        "effectFingerprints": [
+          "effect:d357d8a70040364b880b2906e61756718a117473b7635feacadec58d8ea9a60b",
+          "effect:834d08606509c4e288b78cb197ef59a6c128ad603511927e0b3d6fc70508505c"
+        ],
+        "terminalState": "allocate-food-production",
+        "committedAtSequence": 5
+      }
+    ],
+    "managementChoiceCommitmentsV03": [
+      {
+        "opportunityId": "opportunity:11111111-1111-4111-8111-111111111111:w0:preventive-capacity",
+        "decisionIntentId": "w0:preventive-capacity:pump",
+        "choiceSetId": "choice:w0:preventive-capacity",
+        "candidateId": "retain-rest-capacity",
+        "objectRef": "water-pump",
+        "week": 0,
+        "diagnosisId": "TECH-RC9-D80",
+        "sessionId": "11111111-1111-4111-8111-111111111111",
+        "candidateBuildAuthorityHash": "2222222222222222222222222222222222222222222222222222222222222222",
+        "sessionAuthorityToken": "3333333333333333333333333333333333333333333333333333333333333333",
+        "stateRevision": 0,
+        "projectionBaseHash": "10a0e110ed4a598028173c05e2b96824911627d904ddc6369e23a9b6f6c492d1",
+        "candidateProjectionHash": "f26a88621a3b74cca1ac79303ff112910209a58bfe78a3901ed743b735d1db03",
+        "idempotencyKey": "fixture-retain-rest-capacity",
+        "commitCause": "explicit-candidate-action",
+        "resourceClaimRef": "schedule-slot:lin-he:d1:b1",
+        "requiredConsequenceIds": [
+          "consequence:w0:preventive-capacity:allocation",
+          "consequence:w0:preventive-capacity:rest-recovery",
+          "consequence:w0:preventive-capacity:personnel-readiness"
+        ],
+        "effectFingerprints": [
+          "effect:4d0be177d2444eca74cd9799e912ec177496f44e6334bd5b6350268209b35436",
+          "effect:418e3be34b6748be2c9421edf227781f897d01db9c01656c003437a80abaa691",
+          "effect:0525a0777f73fe1116a2d1129cf0a5ce7b429ee2cbed27f42f1bede3abcb9dc2"
+        ],
+        "terminalState": "retain-rest-capacity",
+        "committedAtSequence": 1,
+        "consequences": [
+          {
+            "consequenceId": "consequence:w0:preventive-capacity:allocation",
+            "opportunityId": "opportunity:11111111-1111-4111-8111-111111111111:w0:preventive-capacity",
+            "decisionIntentId": "w0:preventive-capacity:pump",
+            "choiceSetId": "choice:w0:preventive-capacity",
+            "candidateId": "retain-rest-capacity",
+            "objectRef": "water-pump:preventive-capacity-allocation",
+            "week": 0,
+            "diagnosisId": "TECH-RC9-D80",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "candidateBuildAuthorityHash": "2222222222222222222222222222222222222222222222222222222222222222",
+            "sessionAuthorityToken": "3333333333333333333333333333333333333333333333333333333333333333",
+            "stateRevision": 0,
+            "projectionBaseHash": "10a0e110ed4a598028173c05e2b96824911627d904ddc6369e23a9b6f6c492d1",
+            "candidateProjectionHash": "f26a88621a3b74cca1ac79303ff112910209a58bfe78a3901ed743b735d1db03",
+            "idempotencyKey": "fixture-retain-rest-capacity",
+            "commitCause": "explicit-candidate-action",
+            "resourceClaimRef": "schedule-slot:lin-he:d1:b1",
+            "requiredConsequenceIds": [
+              "consequence:w0:preventive-capacity:allocation",
+              "consequence:w0:preventive-capacity:rest-recovery",
+              "consequence:w0:preventive-capacity:personnel-readiness"
+            ],
+            "effectFingerprints": [
+              "effect:4d0be177d2444eca74cd9799e912ec177496f44e6334bd5b6350268209b35436"
+            ],
+            "terminalState": "retain-rest-capacity",
+            "committedAtSequence": 1,
+            "effectFingerprint": "effect:4d0be177d2444eca74cd9799e912ec177496f44e6334bd5b6350268209b35436",
+            "beforeValue": "unallocated",
+            "afterValue": "unallocated"
+          },
+          {
+            "consequenceId": "consequence:w0:preventive-capacity:rest-recovery",
+            "opportunityId": "opportunity:11111111-1111-4111-8111-111111111111:w0:preventive-capacity",
+            "decisionIntentId": "w0:preventive-capacity:pump",
+            "choiceSetId": "choice:w0:preventive-capacity",
+            "candidateId": "retain-rest-capacity",
+            "objectRef": "lin-he:recovery-units",
+            "week": 0,
+            "diagnosisId": "TECH-RC9-D80",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "candidateBuildAuthorityHash": "2222222222222222222222222222222222222222222222222222222222222222",
+            "sessionAuthorityToken": "3333333333333333333333333333333333333333333333333333333333333333",
+            "stateRevision": 0,
+            "projectionBaseHash": "10a0e110ed4a598028173c05e2b96824911627d904ddc6369e23a9b6f6c492d1",
+            "candidateProjectionHash": "f26a88621a3b74cca1ac79303ff112910209a58bfe78a3901ed743b735d1db03",
+            "idempotencyKey": "fixture-retain-rest-capacity",
+            "commitCause": "explicit-candidate-action",
+            "resourceClaimRef": "schedule-slot:lin-he:d1:b1",
+            "requiredConsequenceIds": [
+              "consequence:w0:preventive-capacity:allocation",
+              "consequence:w0:preventive-capacity:rest-recovery",
+              "consequence:w0:preventive-capacity:personnel-readiness"
+            ],
+            "effectFingerprints": [
+              "effect:418e3be34b6748be2c9421edf227781f897d01db9c01656c003437a80abaa691"
+            ],
+            "terminalState": "retain-rest-capacity",
+            "committedAtSequence": 1,
+            "effectFingerprint": "effect:418e3be34b6748be2c9421edf227781f897d01db9c01656c003437a80abaa691",
+            "beforeValue": 0,
+            "afterValue": 1
+          },
+          {
+            "consequenceId": "consequence:w0:preventive-capacity:personnel-readiness",
+            "opportunityId": "opportunity:11111111-1111-4111-8111-111111111111:w0:preventive-capacity",
+            "decisionIntentId": "w0:preventive-capacity:pump",
+            "choiceSetId": "choice:w0:preventive-capacity",
+            "candidateId": "retain-rest-capacity",
+            "objectRef": "settlement:personnel-readiness",
+            "week": 0,
+            "diagnosisId": "TECH-RC9-D80",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "candidateBuildAuthorityHash": "2222222222222222222222222222222222222222222222222222222222222222",
+            "sessionAuthorityToken": "3333333333333333333333333333333333333333333333333333333333333333",
+            "stateRevision": 0,
+            "projectionBaseHash": "10a0e110ed4a598028173c05e2b96824911627d904ddc6369e23a9b6f6c492d1",
+            "candidateProjectionHash": "f26a88621a3b74cca1ac79303ff112910209a58bfe78a3901ed743b735d1db03",
+            "idempotencyKey": "fixture-retain-rest-capacity",
+            "commitCause": "explicit-candidate-action",
+            "resourceClaimRef": "schedule-slot:lin-he:d1:b1",
+            "requiredConsequenceIds": [
+              "consequence:w0:preventive-capacity:allocation",
+              "consequence:w0:preventive-capacity:rest-recovery",
+              "consequence:w0:preventive-capacity:personnel-readiness"
+            ],
+            "effectFingerprints": [
+              "effect:0525a0777f73fe1116a2d1129cf0a5ce7b429ee2cbed27f42f1bede3abcb9dc2"
+            ],
+            "terminalState": "retain-rest-capacity",
+            "committedAtSequence": 1,
+            "effectFingerprint": "effect:0525a0777f73fe1116a2d1129cf0a5ce7b429ee2cbed27f42f1bede3abcb9dc2",
+            "beforeValue": 0,
+            "afterValue": 1
+          }
+        ]
+      },
+      {
+        "opportunityId": "opportunity:11111111-1111-4111-8111-111111111111:w1:recovery-allocation",
+        "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
+        "choiceSetId": "choice:w1:recovery-allocation",
+        "candidateId": "allocate-food-production",
+        "objectRef": "pump-recovery",
+        "week": 1,
+        "diagnosisId": "TECH-RC9-D80",
+        "sessionId": "11111111-1111-4111-8111-111111111111",
+        "candidateBuildAuthorityHash": "2222222222222222222222222222222222222222222222222222222222222222",
+        "sessionAuthorityToken": "3333333333333333333333333333333333333333333333333333333333333333",
+        "stateRevision": 2,
+        "projectionBaseHash": "3a43ed87bbe79ad6bb99d4bf5f3114abc3cb2d2c145b78a7445d939b2d377885",
+        "candidateProjectionHash": "217d2379c080bcf1429c4a578c4a0f4033605e86fc9bc372f4ec213359f27017",
+        "idempotencyKey": "fixture-allocate-food-production",
+        "commitCause": "explicit-candidate-action",
+        "resourceClaimRef": "schedule-slot:chen-du:d10:b2",
+        "requiredConsequenceIds": [
+          "consequence:w1:recovery-allocation:schedule",
+          "consequence:w1:recovery-allocation:ending-food"
+        ],
+        "effectFingerprints": [
+          "effect:d357d8a70040364b880b2906e61756718a117473b7635feacadec58d8ea9a60b",
+          "effect:834d08606509c4e288b78cb197ef59a6c128ad603511927e0b3d6fc70508505c"
+        ],
+        "terminalState": "allocate-food-production",
+        "committedAtSequence": 5,
         "consequences": [
           {
             "consequenceId": "consequence:w1:recovery-allocation:schedule",
-            "opportunityId": "opportunity:w1:recovery-allocation",
+            "opportunityId": "opportunity:11111111-1111-4111-8111-111111111111:w1:recovery-allocation",
             "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
             "choiceSetId": "choice:w1:recovery-allocation",
             "candidateId": "allocate-food-production",
-            "diagnosisId": "TECH-RC9-D81",
-            "sessionId": "11111111-1111-4111-8111-111111111111",
-            "candidateBuildAuthorityHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-            "resourceClaimRef": "schedule-slot:chen-du:d10:b2",
             "objectRef": "chen-du:d10:b2",
-            "effectFingerprint": "effect:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+            "week": 1,
+            "diagnosisId": "TECH-RC9-D80",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "candidateBuildAuthorityHash": "2222222222222222222222222222222222222222222222222222222222222222",
+            "sessionAuthorityToken": "3333333333333333333333333333333333333333333333333333333333333333",
+            "stateRevision": 2,
+            "projectionBaseHash": "3a43ed87bbe79ad6bb99d4bf5f3114abc3cb2d2c145b78a7445d939b2d377885",
+            "candidateProjectionHash": "217d2379c080bcf1429c4a578c4a0f4033605e86fc9bc372f4ec213359f27017",
+            "idempotencyKey": "fixture-allocate-food-production",
+            "commitCause": "explicit-candidate-action",
+            "resourceClaimRef": "schedule-slot:chen-du:d10:b2",
+            "requiredConsequenceIds": [
+              "consequence:w1:recovery-allocation:schedule",
+              "consequence:w1:recovery-allocation:ending-food"
+            ],
+            "effectFingerprints": [
+              "effect:d357d8a70040364b880b2906e61756718a117473b7635feacadec58d8ea9a60b"
+            ],
+            "terminalState": "allocate-food-production",
+            "committedAtSequence": 5,
+            "effectFingerprint": "effect:d357d8a70040364b880b2906e61756718a117473b7635feacadec58d8ea9a60b",
             "beforeValue": "rest",
-            "afterValue": "rest"
+            "afterValue": "food"
           },
           {
             "consequenceId": "consequence:w1:recovery-allocation:ending-food",
-            "opportunityId": "opportunity:w1:recovery-allocation",
+            "opportunityId": "opportunity:11111111-1111-4111-8111-111111111111:w1:recovery-allocation",
             "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
             "choiceSetId": "choice:w1:recovery-allocation",
             "candidateId": "allocate-food-production",
-            "diagnosisId": "TECH-RC9-D81",
-            "sessionId": "11111111-1111-4111-8111-111111111111",
-            "candidateBuildAuthorityHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-            "resourceClaimRef": "schedule-slot:chen-du:d10:b2",
             "objectRef": "forecast:ending-food",
-            "effectFingerprint": "effect:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
-            "beforeValue": 8,
-            "afterValue": 9
+            "week": 1,
+            "diagnosisId": "TECH-RC9-D80",
+            "sessionId": "11111111-1111-4111-8111-111111111111",
+            "candidateBuildAuthorityHash": "2222222222222222222222222222222222222222222222222222222222222222",
+            "sessionAuthorityToken": "3333333333333333333333333333333333333333333333333333333333333333",
+            "stateRevision": 2,
+            "projectionBaseHash": "3a43ed87bbe79ad6bb99d4bf5f3114abc3cb2d2c145b78a7445d939b2d377885",
+            "candidateProjectionHash": "217d2379c080bcf1429c4a578c4a0f4033605e86fc9bc372f4ec213359f27017",
+            "idempotencyKey": "fixture-allocate-food-production",
+            "commitCause": "explicit-candidate-action",
+            "resourceClaimRef": "schedule-slot:chen-du:d10:b2",
+            "requiredConsequenceIds": [
+              "consequence:w1:recovery-allocation:schedule",
+              "consequence:w1:recovery-allocation:ending-food"
+            ],
+            "effectFingerprints": [
+              "effect:834d08606509c4e288b78cb197ef59a6c128ad603511927e0b3d6fc70508505c"
+            ],
+            "terminalState": "allocate-food-production",
+            "committedAtSequence": 5,
+            "effectFingerprint": "effect:834d08606509c4e288b78cb197ef59a6c128ad603511927e0b3d6fc70508505c",
+            "beforeValue": -12,
+            "afterValue": -11
           }
         ]
       }
     ],
     "effectOwnershipV03": {
-      "effect:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb": "w1:recovery-allocation:pump-vs-food",
-      "effect:cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc": "w1:recovery-allocation:pump-vs-food"
+      "effect:4d0be177d2444eca74cd9799e912ec177496f44e6334bd5b6350268209b35436": "w0:preventive-capacity:pump",
+      "effect:418e3be34b6748be2c9421edf227781f897d01db9c01656c003437a80abaa691": "w0:preventive-capacity:pump",
+      "effect:0525a0777f73fe1116a2d1129cf0a5ce7b429ee2cbed27f42f1bede3abcb9dc2": "w0:preventive-capacity:pump",
+      "effect:d357d8a70040364b880b2906e61756718a117473b7635feacadec58d8ea9a60b": "w1:recovery-allocation:pump-vs-food",
+      "effect:834d08606509c4e288b78cb197ef59a6c128ad603511927e0b3d6fc70508505c": "w1:recovery-allocation:pump-vs-food"
+    },
+    "domainEvents": [
+      {
+        "sequence": 1,
+        "eventId": "action-0001",
+        "type": "management-choice-committed",
+        "atTick": 54,
+        "before": {
+          "low": 3,
+          "high": 11
+        },
+        "after": {
+          "low": 3,
+          "high": 11
+        }
+      },
+      {
+        "sequence": 2,
+        "eventId": "action-0002",
+        "type": "clock-changed",
+        "atTick": 54
+      },
+      {
+        "sequence": 3,
+        "eventId": "pump-incident-day-3",
+        "type": "pump-incident",
+        "atTick": 342,
+        "before": {
+          "low": 3,
+          "high": 11
+        },
+        "after": {
+          "low": 3,
+          "high": 3
+        }
+      },
+      {
+        "sequence": 4,
+        "eventId": "action-0003",
+        "type": "clock-changed",
+        "atTick": 342
+      },
+      {
+        "sequence": 5,
+        "eventId": "week-1-ended",
+        "type": "week-ended",
+        "atTick": 1002
+      },
+      {
+        "sequence": 6,
+        "eventId": "action-0004",
+        "type": "clock-changed",
+        "atTick": 1002
+      },
+      {
+        "sequence": 7,
+        "eventId": "action-0005",
+        "type": "management-choice-committed",
+        "atTick": 1062,
+        "before": {
+          "low": -12,
+          "high": -12
+        },
+        "after": {
+          "low": -11,
+          "high": -11
+        }
+      }
+    ],
+    "telemetry": [
+      {
+        "type": "session-started",
+        "atTick": 54,
+        "machineOffsetMs": 0,
+        "weekIndex": 0,
+        "sequence": 1
+      },
+      {
+        "type": "week-started",
+        "atTick": 54,
+        "machineOffsetMs": 0,
+        "weekIndex": 0,
+        "sequence": 2
+      },
+      {
+        "type": "speed-changed",
+        "atTick": 54,
+        "machineOffsetMs": 0,
+        "speed": 3,
+        "sequence": 3
+      },
+      {
+        "type": "player-action-applied",
+        "atTick": 54,
+        "machineOffsetMs": 10,
+        "fromTick": 54,
+        "toTick": 54,
+        "actionId": "action-0001",
+        "domainEventIds": [
+          "action-0001"
+        ],
+        "sequence": 4
+      },
+      {
+        "type": "player-action-applied",
+        "atTick": 54,
+        "machineOffsetMs": 20,
+        "fromTick": 54,
+        "toTick": 54,
+        "actionId": "action-0002",
+        "domainEventIds": [
+          "action-0002"
+        ],
+        "sequence": 5
+      },
+      {
+        "type": "simulation-advanced",
+        "atTick": 342,
+        "machineOffsetMs": 30,
+        "speed": 3,
+        "fromTick": 54,
+        "toTick": 342,
+        "domainEventIds": [
+          "pump-incident-day-3"
+        ],
+        "sequence": 6
+      },
+      {
+        "type": "auto-pause-triggered",
+        "atTick": 342,
+        "machineOffsetMs": 30,
+        "speed": 3,
+        "domainEventIds": [
+          "pump-incident-day-3"
+        ],
+        "sequence": 7
+      },
+      {
+        "type": "player-action-applied",
+        "atTick": 342,
+        "machineOffsetMs": 40,
+        "fromTick": 342,
+        "toTick": 342,
+        "actionId": "action-0003",
+        "domainEventIds": [
+          "action-0003"
+        ],
+        "sequence": 8
+      },
+      {
+        "type": "simulation-advanced",
+        "atTick": 1002,
+        "machineOffsetMs": 50,
+        "speed": 3,
+        "fromTick": 342,
+        "toTick": 1002,
+        "domainEventIds": [
+          "week-1-ended"
+        ],
+        "sequence": 9
+      },
+      {
+        "type": "auto-pause-triggered",
+        "atTick": 1002,
+        "machineOffsetMs": 50,
+        "speed": 3,
+        "domainEventIds": [
+          "week-1-ended"
+        ],
+        "sequence": 10
+      },
+      {
+        "type": "week-completed",
+        "atTick": 1002,
+        "machineOffsetMs": 50,
+        "weekIndex": 0,
+        "sequence": 11
+      },
+      {
+        "type": "player-action-applied",
+        "atTick": 1062,
+        "machineOffsetMs": 60,
+        "fromTick": 1002,
+        "toTick": 1062,
+        "actionId": "action-0004",
+        "domainEventIds": [
+          "action-0004"
+        ],
+        "sequence": 12
+      },
+      {
+        "type": "week-started",
+        "atTick": 1062,
+        "machineOffsetMs": 60,
+        "weekIndex": 1,
+        "sequence": 13
+      },
+      {
+        "type": "player-action-applied",
+        "atTick": 1062,
+        "machineOffsetMs": 70,
+        "fromTick": 1062,
+        "toTick": 1062,
+        "actionId": "action-0005",
+        "domainEventIds": [
+          "action-0005"
+        ],
+        "sequence": 14
+      }
+    ],
+    "speedTrajectory": [
+      {
+        "sequence": 1,
+        "atTick": 54,
+        "machineOffsetMs": 0,
+        "speed": 3
+      }
+    ],
+    "finalTick": 1062,
+    "finalStateHash": "fnv1a32-b81ed3ba",
+    "finalState": {
+      "isComplete": false,
+      "completedWeekCount": 1,
+      "recapCount": 1,
+      "processedScriptEventIds": [
+        "pump-incident-day-3"
+      ],
+      "equipmentExposure": "high",
+      "equipmentRecoveryLoad": 2,
+      "endingFood": {
+        "low": -11,
+        "high": -11
+      },
+      "endingRepair": {
+        "low": -7,
+        "high": -7
+      },
+      "infrastructurePressure": 14,
+      "preventiveCapacityAllocation": "rest",
+      "preventiveCapacityActivity": "rest",
+      "recoveryAllocationActivity": "food",
+      "linHeRecoveryUnits": 1,
+      "personnelReadiness": 1
+    },
+    "recap": [
+      {
+        "weekIndex": 0,
+        "planned": {
+          "low": 3,
+          "high": 11
+        },
+        "actual": 3,
+        "itemIds": [
+          "week-1-food-result",
+          "week-1-pump-risk",
+          "week-1-pump-incident",
+          "week-1-management-choice",
+          "week-1-transport-result"
+        ],
+        "sourceIds": [
+          "food-forecast",
+          "pump-preventive-maintenance",
+          "pump-incident-day-3",
+          "choice:w0:preventive-capacity",
+          "north-loop"
+        ]
+      }
+    ],
+    "weekRecaps": [
+      {
+        "weekIndex": 0
+      }
+    ],
+    "summary": {
+      "week1CandidateEditCount": 0,
+      "week2CandidateEditCount": 0,
+      "week1CandidateManagementCount": 1,
+      "week2CandidateManagementCount": 1,
+      "week1C03TerminalCommitmentCount": 1,
+      "week2C03TerminalCommitmentCount": 1
     }
   }
 }

@@ -129,4 +129,19 @@ describe('C03 recovery-allocation branch matrix', () => {
       'allocate-food-production',
     )
   })
+
+  it('freezes the complete recovery-allocation matrix by digest', async () => {
+    const matrix = buildRecoveryAllocationBranchMatrix()
+    const bytes = await globalThis.crypto.subtle.digest(
+      'SHA-256',
+      new TextEncoder().encode(JSON.stringify(matrix)),
+    )
+    const digest = [...new Uint8Array(bytes)]
+      .map((byte) => byte.toString(16).padStart(2, '0'))
+      .join('')
+
+    expect(digest).toBe(
+      'e297553a5f1dd66ebd112603e543aac8952edef7839f762cb69f4cbb8f1a590e',
+    )
+  })
 })

@@ -20,6 +20,13 @@ import {
   resolveScheduleBlock,
 } from '../sim/schedule'
 import { sha256Canonical } from '../sim/canonical-hash'
+import {
+  infrastructurePressure,
+} from '../sim/management-choices'
+import {
+  calculateFoodForecast,
+  calculateRepairForecast,
+} from '../sim/forecast'
 
 const MAX_BLOCKED_REASON_LENGTH = 240
 const LIN_HE_INTENT_ID = 'w1:character-request:lin-he-study'
@@ -85,15 +92,27 @@ type ExportedV2Action =
   | { id: string; type: 'CONTINUE_TO_NEXT_WEEK' }
   | {
       id: string
+      sequence: number
       type: 'COMMIT_MANAGEMENT_CHOICE'
       opportunityId: string
       choiceSetId: string
       candidateId: string
+      decisionIntentId: string
+      week: 0 | 1
+      diagnosisId: string
+      sessionId: string
+      candidateBuildAuthorityHash: string
+      sessionAuthorityToken: string
       stateRevision: number
       projectionBaseHash: string
       candidateProjectionHash: string
       idempotencyKey: string
       commitCause: 'explicit-candidate-action'
+      resourceClaimRef: string
+      requiredConsequenceIds: readonly string[]
+      effectFingerprints: readonly string[]
+      terminalState: string
+      committedAtSequence: number
     }
 
 function decisionHash(decisionIntentId: string, projection: unknown) {
@@ -293,13 +312,31 @@ function createV2Export(
         'COMMIT_MANAGEMENT_CHOICE'
       ) {
         const { request } = envelope.action
+        const commitment =
+          after.managementChoices.commitments.find(
+            (entry) =>
+              entry.opportunityId === request.opportunityId,
+          )
+        if (commitment === undefined) {
+          throw new Error('管理选择 action 缺少已提交 ledger')
+        }
         return [
           {
             id: envelope.id,
+            sequence: envelope.sequence,
             type: 'COMMIT_MANAGEMENT_CHOICE' as const,
             opportunityId: request.opportunityId,
             choiceSetId: request.choiceSetId,
             candidateId: request.candidateId,
+            decisionIntentId:
+              commitment.decisionIntentId,
+            week: commitment.week,
+            diagnosisId: commitment.diagnosisId,
+            sessionId: commitment.sessionId,
+            candidateBuildAuthorityHash:
+              commitment.candidateBuildAuthorityHash,
+            sessionAuthorityToken:
+              commitment.sessionAuthorityToken,
             stateRevision: request.stateRevision,
             projectionBaseHash:
               request.projectionBaseHash,
@@ -307,6 +344,17 @@ function createV2Export(
               request.candidateProjectionHash,
             idempotencyKey: request.idempotencyKey,
             commitCause: request.commitCause,
+            resourceClaimRef:
+              commitment.resourceClaimRef,
+            requiredConsequenceIds: [
+              ...commitment.requiredConsequenceIds,
+            ],
+            effectFingerprints: [
+              ...commitment.effectFingerprints,
+            ],
+            terminalState: commitment.terminalState,
+            committedAtSequence:
+              commitment.committedAtSequence,
           },
         ]
       }
@@ -1122,6 +1170,8 @@ function createV2Export(
           ),
         ],
   )
+  const finalFoodForecast = calculateFoodForecast(state)
+  const finalRepairForecast = calculateRepairForecast(state)
   return {
     schemaVersion: 'gate1-playtest-v2' as const,
     ...(isV03
@@ -1218,9 +1268,31 @@ function createV2Export(
             equipmentRecoveryLoad:
               state.managementChoices
                 .equipmentRecoveryLoad,
+            endingFood: {
+              ...finalFoodForecast.endingStock,
+            },
+            endingRepair: {
+              ...finalRepairForecast.endingStock,
+            },
+            infrastructurePressure:
+              infrastructurePressure(
+                finalRepairForecast.endingStock.high,
+                state.managementChoices
+                  .equipmentRecoveryLoad,
+              ),
             preventiveCapacityAllocation:
               state.managementChoices
                 .preventiveCapacityAllocation,
+            preventiveCapacityActivity:
+              resolveScheduleBlock(
+                state,
+                PUMP_MAINTENANCE_BLOCK_ID,
+              ).activity,
+            recoveryAllocationActivity:
+              resolveScheduleBlock(
+                state,
+                RECOVERY_ALLOCATION_BLOCK_ID,
+              ).activity,
             linHeRecoveryUnits:
               state.managementChoices.linHeRecoveryUnits,
             personnelReadiness:
@@ -1254,12 +1326,12 @@ function createV2Export(
       ...(isV03
         ? {
             week1C03TerminalCommitmentCount:
-              managementCommitmentGroupsV03.filter(
-                ({ weekIndex }) => weekIndex === 0,
+              state.managementChoices.commitments.filter(
+                ({ week }) => week === 0,
               ).length,
             week2C03TerminalCommitmentCount:
-              managementCommitmentGroupsV03.filter(
-                ({ weekIndex }) => weekIndex === 1,
+              state.managementChoices.commitments.filter(
+                ({ week }) => week === 1,
               ).length,
           }
         : {}),

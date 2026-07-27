@@ -157,11 +157,24 @@ function allRequiredConsequenceIds(
 function opportunityProjection(
   state: SimulationState,
   choiceSetId: ManagementChoiceSetId,
+  issuedAuthority = state.managementChoices.authority,
 ) {
+  if (issuedAuthority === null) {
+    throw new Error('Management choice authority is unavailable')
+  }
+  const authorityTuple = {
+    diagnosisId: issuedAuthority.diagnosisId,
+    sessionId: issuedAuthority.sessionId,
+    candidateBuildAuthorityHash:
+      issuedAuthority.candidateBuildAuthorityHash,
+    sessionAuthorityToken:
+      issuedAuthority.sessionAuthorityToken,
+  }
   if (choiceSetId === PREVENTIVE_CAPACITY_CHOICE_SET_ID) {
     return {
       protocolVersion: GATE1_PROTOCOL_VERSION,
       scenarioVersion: scenario.version,
+      authorityTuple,
       choiceSetId,
       decisionIntentId: PREVENTIVE_CAPACITY_INTENT_ID,
       pumpObjectId: 'water-pump',
@@ -205,6 +218,7 @@ function opportunityProjection(
   return {
     protocolVersion: GATE1_PROTOCOL_VERSION,
     scenarioVersion: scenario.version,
+    authorityTuple,
     choiceSetId,
     decisionIntentId: RECOVERY_ALLOCATION_INTENT_ID,
     w1TerminalState:
@@ -322,9 +336,11 @@ function createOpportunity(
     sessionId: authority.sessionId,
     candidateBuildAuthorityHash:
       authority.candidateBuildAuthorityHash,
+    sessionAuthorityToken:
+      authority.sessionAuthorityToken,
     stateRevision,
     projectionBaseHash: hash(
-      opportunityProjection(state, choiceSetId),
+      opportunityProjection(state, choiceSetId, authority),
     ),
     candidateProjectionHash: null,
     idempotencyKey: null,
@@ -350,7 +366,9 @@ export function bindManagementChoiceAuthority(
       existing.diagnosisId !== authority.diagnosisId ||
       existing.sessionId !== authority.sessionId ||
       existing.candidateBuildAuthorityHash !==
-        authority.candidateBuildAuthorityHash
+        authority.candidateBuildAuthorityHash ||
+      existing.sessionAuthorityToken !==
+        authority.sessionAuthorityToken
     ) {
       throw new Error(
         'Management choice authority cannot be rebound across sessions',
@@ -400,6 +418,8 @@ export function createManagementChoiceCommitRequest(
     sessionId: authority.sessionId,
     candidateBuildAuthorityHash:
       authority.candidateBuildAuthorityHash,
+    sessionAuthorityToken:
+      authority.sessionAuthorityToken,
     stateRevision: state.stateRevision,
     projectionBaseHash: hash(
       opportunityProjection(state, choiceSetId),
@@ -438,6 +458,11 @@ export function isManagementChoiceActive(
 }
 
 function createEffectFingerprint(input: {
+  authorityTuple: ManagementChoiceAuthority
+  decisionIntentId: ManagementDecisionIntentId
+  choiceSetId: ManagementChoiceSetId
+  candidateId: ManagementCandidateId
+  consequenceId: string
   objectRef: string
   resourceLotId: string
   stateRevisionBefore: number
@@ -463,6 +488,18 @@ function consequence(
     request.candidateId,
   )
   const effectFingerprint = createEffectFingerprint({
+    authorityTuple: {
+      diagnosisId: opportunity.diagnosisId,
+      sessionId: opportunity.sessionId,
+      candidateBuildAuthorityHash:
+        opportunity.candidateBuildAuthorityHash,
+      sessionAuthorityToken:
+        opportunity.sessionAuthorityToken,
+    },
+    decisionIntentId: opportunity.decisionIntentId,
+    choiceSetId: opportunity.choiceSetId,
+    candidateId: request.candidateId,
+    consequenceId,
     objectRef,
     resourceLotId: opportunity.resourceClaimRef,
     stateRevisionBefore: request.stateRevision,
@@ -483,6 +520,8 @@ function consequence(
     sessionId: opportunity.sessionId,
     candidateBuildAuthorityHash:
       opportunity.candidateBuildAuthorityHash,
+    sessionAuthorityToken:
+      opportunity.sessionAuthorityToken,
     stateRevision: request.stateRevision,
     projectionBaseHash: request.projectionBaseHash,
     candidateProjectionHash:
@@ -660,10 +699,14 @@ export function commitManagementChoice(
     authority.sessionId !== request.sessionId ||
     authority.candidateBuildAuthorityHash !==
       request.candidateBuildAuthorityHash ||
+    authority.sessionAuthorityToken !==
+      request.sessionAuthorityToken ||
     opportunity.diagnosisId !== request.diagnosisId ||
     opportunity.sessionId !== request.sessionId ||
     opportunity.candidateBuildAuthorityHash !==
-      request.candidateBuildAuthorityHash
+      request.candidateBuildAuthorityHash ||
+    opportunity.sessionAuthorityToken !==
+      request.sessionAuthorityToken
   ) {
     return failure(state, 'AUTHORITY_MISMATCH')
   }
@@ -793,6 +836,8 @@ export function commitManagementChoice(
     sessionId: opportunity.sessionId,
     candidateBuildAuthorityHash:
       opportunity.candidateBuildAuthorityHash,
+    sessionAuthorityToken:
+      opportunity.sessionAuthorityToken,
     stateRevision: request.stateRevision,
     projectionBaseHash: request.projectionBaseHash,
     candidateProjectionHash:
@@ -977,20 +1022,50 @@ export function freezeRecoveryAllocationOpportunity(
 export function synchronizeManagementScheduleState(
   state: SimulationState,
 ): SimulationState {
+  let synchronized = state
   const preventive =
-    state.managementChoices.opportunities.preventiveCapacity
+    synchronized.managementChoices.opportunities.preventiveCapacity
   if (
-    preventive?.terminalState ===
-      'schedule-preventive-maintenance' ||
-    preventive?.terminalState === 'retain-rest-capacity'
+    preventive?.terminalState === 'open' &&
+    wasDirectlyEdited(
+      synchronized,
+      PUMP_MAINTENANCE_BLOCK_ID,
+    )
   ) {
-    return state
+    synchronized = freezeOpportunity(
+      synchronized,
+      PREVENTIVE_CAPACITY_CHOICE_SET_ID,
+    )
   }
-  const protectedPump = hasPreventiveMaintenance(state)
+  const recovery =
+    synchronized.managementChoices.opportunities.recoveryAllocation
+  if (
+    recovery?.terminalState === 'open' &&
+    wasDirectlyEdited(
+      synchronized,
+      RECOVERY_ALLOCATION_BLOCK_ID,
+    )
+  ) {
+    synchronized = freezeOpportunity(
+      synchronized,
+      RECOVERY_ALLOCATION_CHOICE_SET_ID,
+    )
+  }
+  const terminalPreventive =
+    synchronized.managementChoices.opportunities.preventiveCapacity
+  if (
+    terminalPreventive?.terminalState ===
+      'schedule-preventive-maintenance' ||
+    terminalPreventive?.terminalState ===
+      'retain-rest-capacity'
+  ) {
+    return synchronized
+  }
+  const protectedPump = hasPreventiveMaintenance(synchronized)
   return {
-    ...state,
+    ...synchronized,
     managementChoices: {
-      ...state.managementChoices,
+      ...synchronized.managementChoices,
       equipmentExposure: protectedPump ? 'low' : 'high',
       equipmentRecoveryLoad: protectedPump ? 1 : 2,
     },

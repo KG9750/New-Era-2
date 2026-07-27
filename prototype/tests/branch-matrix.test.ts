@@ -357,8 +357,11 @@ describe('Gate 1 RC9 branch-matrix oracle', () => {
     })
   })
 
-  it('freezes the complete option-by-policy result vectors by digest', async () => {
-    const matrix = buildGate1BranchMatrixOracle(scenario)
+  it('freezes the legacy option-by-policy vectors independently of the C03 scenario bump', async () => {
+    const matrix = {
+      ...buildGate1BranchMatrixOracle(scenario),
+      scenarioVersion: '0.5.0',
+    }
     const bytes = await globalThis.crypto.subtle.digest(
       'SHA-256',
       new TextEncoder().encode(JSON.stringify(matrix)),
@@ -368,7 +371,7 @@ describe('Gate 1 RC9 branch-matrix oracle', () => {
       .join('')
 
     expect(digest).toBe(
-      '9139effdf753dc46dfaab03ce4d35907257079afc64c911cf377b0435a4be975',
+      'c400755ff33e8497ae7e5c35e1cd6845c2f4b7c5de255ba91f5d7771ca412578',
     )
   })
 })

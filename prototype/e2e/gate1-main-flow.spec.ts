@@ -1,7 +1,13 @@
 import { createHash } from 'node:crypto'
 import { readFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { expect, test, type Download, type Page } from '@playwright/test'
+import {
+  chromium,
+  expect,
+  test,
+  type Download,
+  type Page,
+} from '@playwright/test'
 
 async function readDownload(download: Download) {
   const stream = await download.createReadStream()
@@ -95,7 +101,24 @@ test('new session to two-week export and memory clear', async ({ page }) => {
       (element) => getComputedStyle(element).outlineStyle,
     ),
   ).not.toBe('none')
+  const authorityPending = page.waitForResponse(
+    (response) =>
+      new URL(response.url()).pathname ===
+        '/__gate1/session-authority' &&
+      response.request().method() === 'POST',
+  )
   await page.keyboard.press('Enter')
+  const authorityResponse = await authorityPending
+  expect(authorityResponse.status()).toBe(201)
+  const issuedAuthority = await authorityResponse.json()
+  expect(issuedAuthority).toMatchObject({
+    diagnosisId: 'A38',
+    candidateBuildAuthorityHash:
+      buildMetadata.artifactHash,
+  })
+  expect(issuedAuthority.sessionAuthorityToken).toMatch(
+    /^[a-f0-9]{64}$/,
+  )
 
   const meta = page.getByRole('region', { name: '当前测试会话元数据' })
   await expect(meta).toContainText('A38')
@@ -162,7 +185,7 @@ test('new session to two-week export and memory clear', async ({ page }) => {
     page.getByRole('button', { name: '安排第二次预防检修' }),
   ).toBeDisabled()
   await expect(
-    page.getByRole('button', { name: '保留休息容量' }),
+    page.getByRole('button', { name: '指定保护性恢复' }),
   ).toBeDisabled()
   await page
     .getByRole('button', { name: '开启短通路 · 维修保障 −1' })
@@ -190,6 +213,49 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   const recoveryCandidates = recoveryDialog
     .getByRole('list', { name: '恢复资源候选' })
     .getByRole('button')
+  const sharedRecoveryState = recoveryDialog.getByLabel(
+    '恢复资源共享状态',
+  )
+  await expect(sharedRecoveryState).toContainText(
+    '当前粮食',
+  )
+  await expect(sharedRecoveryState).toContainText('目标 ≥12')
+  await expect(sharedRecoveryState).toContainText(
+    '当前维修',
+  )
+  await expect(sharedRecoveryState).toContainText('目标 ≥5')
+  await expect(sharedRecoveryState).toContainText(
+    /设备负荷(?:稳定|脆弱)/,
+  )
+  await expect(sharedRecoveryState).toContainText(
+    '基础设施压力',
+  )
+  const recoveryCandidateCards =
+    recoveryDialog.getByRole('listitem')
+  await expect(recoveryCandidateCards).toHaveCount(2)
+  for (const card of await recoveryCandidateCards.all()) {
+    await expect(card).toContainText('选择后粮食')
+    await expect(card).toContainText('选择后维修')
+    await expect(card).toContainText('负荷')
+    await expect(card).toContainText('准备度')
+    await expect(card).toContainText('压力')
+  }
+  const candidateWidths =
+    await recoveryCandidateCards.evaluateAll((cards) =>
+      cards.map(
+        (card) => card.getBoundingClientRect().width,
+      ),
+    )
+  expect(
+    Math.abs(candidateWidths[0] - candidateWidths[1]),
+  ).toBeLessThanOrEqual(1)
+  expect(
+    await page.evaluate(
+      () =>
+        document.documentElement.scrollWidth <=
+        document.documentElement.clientWidth,
+    ),
+  ).toBe(true)
   await expect(recoveryCandidates).toHaveCount(2)
   await expect(recoveryCandidates.nth(0)).toHaveAttribute(
     'aria-pressed',
@@ -331,6 +397,31 @@ test('new session to two-week export and memory clear', async ({ page }) => {
     ],
   ])
   expect(exported.managementChoiceCommitmentsV03).toHaveLength(2)
+  const c03Actions = exported.actions.filter(
+    (action: { type: string }) =>
+      action.type === 'COMMIT_MANAGEMENT_CHOICE',
+  )
+  expect(c03Actions).toHaveLength(2)
+  for (const action of c03Actions) {
+    expect(action).toMatchObject({
+      diagnosisId: exported.meta.diagnosisId,
+      sessionId: exported.meta.sessionId,
+      candidateBuildAuthorityHash:
+        exported.meta.candidateBuildAuthorityHash,
+      sessionAuthorityToken:
+        exported.meta.sessionAuthorityToken,
+      projectionBaseHash: expect.stringMatching(
+        /^[a-f0-9]{64}$/,
+      ),
+      candidateProjectionHash: expect.stringMatching(
+        /^[a-f0-9]{64}$/,
+      ),
+      requiredConsequenceIds: expect.any(Array),
+      effectFingerprints: expect.any(Array),
+      terminalState: expect.any(String),
+    })
+  }
+  expect(exported.meta).toMatchObject(issuedAuthority)
   const c03Fingerprints =
     exported.managementChoiceCommitmentsV03.flatMap(
       (commitment: { effectFingerprints: string[] }) =>
@@ -487,4 +578,117 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   await expect(
     page.getByRole('heading', { name: '开始匿名新会话' }),
   ).toBeVisible()
+})
+
+test('skipping both C03 choices reaches two honest recaps and a zero-commitment export', async ({}, testInfo) => {
+  const browser = await chromium.launch(
+    testInfo.project.use.launchOptions,
+  )
+  const page = await browser.newPage({
+    baseURL: testInfo.project.use.baseURL,
+    viewport: testInfo.project.use.viewport,
+  })
+  try {
+    await page.clock.install({
+      time: new Date('2026-07-26T06:00:00Z'),
+    })
+    await page.goto('/')
+    await page.getByLabel('匿名编号').fill('A39')
+    const authorityPending = page.waitForResponse(
+      (response) =>
+        new URL(response.url()).pathname ===
+        '/__gate1/session-authority' &&
+        response.request().method() === 'POST',
+    )
+    await page
+      .getByRole('button', { name: '创建固定初态会话' })
+      .click()
+    expect((await authorityPending).status()).toBe(201)
+
+    await page.getByRole('button', { name: '8×' }).click()
+    await page
+      .getByRole('button', { name: '开始运行' })
+      .click()
+    await page.clock.runFor(10_000)
+    await expect(
+      page.getByRole('heading', { name: /水泵故障并停机/ }),
+    ).toBeVisible()
+    await page
+      .getByRole('button', { name: '确认后继续' })
+      .click()
+    await page.clock.runFor(22_000)
+
+    const weekOneRecap = page.getByRole('heading', {
+      name: /周末偏差复盘/,
+    }).locator('..')
+    await expect(weekOneRecap).toContainText(
+      '管理者没有指定专项方案；林禾按普通休息执行，未获得专项恢复或人员准备度提升。',
+    )
+    await expect(weekOneRecap).not.toContainText(
+      /terminalState=|omitted|unqualified-direct-edit/,
+    )
+    await page
+      .getByRole('button', {
+        name: '确认复盘并进入第二周',
+      })
+      .click()
+
+    await page
+      .getByRole('button', { name: '开始运行' })
+      .click()
+    await page.clock.runFor(6_000)
+    await expect(
+      page.getByRole('heading', {
+        name: '林禾请求逾期，默认保留农务',
+      }),
+    ).toBeVisible()
+    await page
+      .getByRole('button', { name: '确认后继续' })
+      .click()
+    await page.clock.runFor(27_000)
+
+    await expect(page.getByText('第 2 周结束')).toBeVisible()
+    const weekTwoRecap = page.getByRole('heading', {
+      name: /周末偏差复盘/,
+    }).locator('..')
+    await expect(weekTwoRecap).toContainText(
+      '管理者没有指定应急班次用途，本周未获得额外粮食或维修保障。',
+    )
+    await expect(weekTwoRecap).not.toContainText(
+      /terminalState=|omitted|unqualified-direct-edit/,
+    )
+
+    const { exported } = await downloadSession(page)
+    expect(exported).toMatchObject({
+      captureKind: 'complete',
+      finalTick: 2010,
+      finalState: {
+        isComplete: true,
+        completedWeekCount: 2,
+        recapCount: 2,
+      },
+      summary: {
+        week1C03TerminalCommitmentCount: 0,
+        week2C03TerminalCommitmentCount: 0,
+      },
+    })
+    expect(exported.recap).toHaveLength(2)
+    expect(
+      exported.actions.filter(
+        ({ type }: { type: string }) =>
+          type === 'COMMIT_MANAGEMENT_CHOICE',
+      ),
+    ).toEqual([])
+    expect(
+      exported.managementChoiceOpportunitiesV03.map(
+        ({
+          terminalState,
+        }: {
+          terminalState: string
+        }) => terminalState,
+      ),
+    ).toEqual(['omitted', 'omitted'])
+  } finally {
+    await browser.close()
+  }
 })

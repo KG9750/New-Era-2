@@ -7,9 +7,11 @@ import {
   createPlayerAction,
 } from '../src/sim/engine'
 import {
+  PREVENTIVE_CAPACITY_DEADLINE_TICK,
   PREVENTIVE_CAPACITY_CHOICE_SET_ID,
   RECOVERY_ALLOCATION_BLOCK_ID,
   RECOVERY_ALLOCATION_CHOICE_SET_ID,
+  RECOVERY_ALLOCATION_DEADLINE_TICK,
   bindManagementChoiceAuthority,
   createManagementChoiceCommitRequest,
   managementCommitmentCount,
@@ -25,6 +27,7 @@ const AUTHORITY = {
   diagnosisId: 'TECH-RC9-D11',
   sessionId: '11111111-1111-4111-8111-111111111111',
   candidateBuildAuthorityHash: 'a'.repeat(64),
+  sessionAuthorityToken: 'b'.repeat(64),
 }
 
 function initial() {
@@ -86,6 +89,17 @@ function enterWeekTwo(
   return act(state, 4, { type: 'CONTINUE_TO_NEXT_WEEK' })
 }
 
+function openWeekTwoBeforeRecoveryDeadline() {
+  return act(
+    enterWeekTwo('schedule-preventive-maintenance'),
+    5,
+    {
+      type: 'RESOLVE_LIN_HE_REQUEST',
+      decision: 'declined',
+    },
+  )
+}
+
 describe('C03 management choice domain', () => {
   it('binds W1 opportunity to diagnosis, session, and build authority', () => {
     const opportunity =
@@ -97,6 +111,8 @@ describe('C03 management choice domain', () => {
       sessionId: AUTHORITY.sessionId,
       candidateBuildAuthorityHash:
         AUTHORITY.candidateBuildAuthorityHash,
+      sessionAuthorityToken:
+        AUTHORITY.sessionAuthorityToken,
       terminalState: 'open',
       stateRevision: 0,
     })
@@ -244,6 +260,39 @@ describe('C03 management choice domain', () => {
     expect(managementCommitmentCount(state, 0)).toBe(0)
   })
 
+  it('rejects a canonical consequence fingerprint already owned by a competing intent', () => {
+    const base = initial()
+    const reference = choose(
+      base,
+      1,
+      'retain-rest-capacity',
+    )
+    const poisoned: SimulationState = {
+      ...base,
+      managementChoices: {
+        ...base.managementChoices,
+        effectOwnership: Object.fromEntries(
+          reference.managementChoices.commitments[0]
+            .effectFingerprints.map((fingerprint) => [
+              fingerprint,
+              'w1:recovery-allocation:pump-vs-food',
+            ]),
+        ),
+      },
+    }
+
+    expect(() =>
+      choose(poisoned, 1, 'retain-rest-capacity'),
+    ).toThrowError(
+      expect.objectContaining<
+        Partial<ManagementChoiceCommitError>
+      >({
+        code: 'EFFECT_ALREADY_OWNED',
+      }),
+    )
+    expect(managementCommitmentCount(poisoned, 0)).toBe(0)
+  })
+
   it.each([
     ['allocate-repair-buffer', 'repair', 1, 0],
     ['allocate-food-production', 'food', 0, 1],
@@ -317,4 +366,88 @@ describe('C03 management choice domain', () => {
     })
     expect(managementCommitmentCount(state, 0)).toBe(0)
   })
+
+  it.each([
+    ['W1', 0, PREVENTIVE_CAPACITY_DEADLINE_TICK],
+    ['W2', 1, RECOVERY_ALLOCATION_DEADLINE_TICK],
+  ] as const)(
+    'keeps the %s management opportunity open one tick before its deadline',
+    (_label, weekIndex, deadlineTick) => {
+      const state =
+        weekIndex === 0
+          ? initial()
+          : openWeekTwoBeforeRecoveryDeadline()
+      const advanced = advanceSimulation(
+        state,
+        deadlineTick - 1,
+        scenario,
+      ).state
+      const opportunity =
+        weekIndex === 0
+          ? advanced.managementChoices.opportunities
+              .preventiveCapacity
+          : advanced.managementChoices.opportunities
+              .recoveryAllocation
+
+      expect(advanced.currentTick).toBe(deadlineTick - 1)
+      expect(opportunity?.terminalState).toBe('open')
+      expect(managementCommitmentCount(advanced, weekIndex)).toBe(0)
+    },
+  )
+
+  it.each([
+    ['W1', 0, PREVENTIVE_CAPACITY_DEADLINE_TICK],
+    ['W2', 1, RECOVERY_ALLOCATION_DEADLINE_TICK],
+  ] as const)(
+    'freezes the %s management opportunity exactly at its deadline',
+    (_label, weekIndex, deadlineTick) => {
+      const state =
+        weekIndex === 0
+          ? initial()
+          : openWeekTwoBeforeRecoveryDeadline()
+      const advanced = advanceSimulation(
+        state,
+        deadlineTick,
+        scenario,
+      ).state
+      const opportunity =
+        weekIndex === 0
+          ? advanced.managementChoices.opportunities
+              .preventiveCapacity
+          : advanced.managementChoices.opportunities
+              .recoveryAllocation
+
+      expect(advanced.currentTick).toBe(deadlineTick)
+      expect(opportunity?.terminalState).toBe('omitted')
+      expect(managementCommitmentCount(advanced, weekIndex)).toBe(0)
+    },
+  )
+
+  it.each([
+    ['W1', 0, PREVENTIVE_CAPACITY_DEADLINE_TICK],
+    ['W2', 1, RECOVERY_ALLOCATION_DEADLINE_TICK],
+  ] as const)(
+    'freezes the %s management opportunity before continuing past its deadline',
+    (_label, weekIndex, deadlineTick) => {
+      const state =
+        weekIndex === 0
+          ? initial()
+          : openWeekTwoBeforeRecoveryDeadline()
+      const advanced = advanceSimulation(
+        state,
+        deadlineTick + 1,
+        scenario,
+      ).state
+      const opportunity =
+        weekIndex === 0
+          ? advanced.managementChoices.opportunities
+              .preventiveCapacity
+          : advanced.managementChoices.opportunities
+              .recoveryAllocation
+
+      expect(advanced.currentTick).toBe(deadlineTick + 1)
+      expect(opportunity?.terminalState).toBe('omitted')
+      expect(managementCommitmentCount(advanced, weekIndex)).toBe(0)
+    },
+  )
 })

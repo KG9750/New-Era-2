@@ -1072,36 +1072,78 @@
         "accepted": true,
         "errorCode": null,
         "protocolVersion": "weekly-management-slice-playtest-v0.3",
-        "terminalCommitmentCount": 1,
-        "ownedEffectCount": 2
+        "terminalCommitmentCount": 2,
+        "ownedEffectCount": 5
+      }
+    },
+    {
+      "file": "playtest-v03/fingerprint-replaced-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V03_EFFECT_FINGERPRINT"
+      }
+    },
+    {
+      "file": "playtest-v03/w1-required-consequences-missing-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V03_CANONICAL_CONTRACT"
+      }
+    },
+    {
+      "file": "playtest-v03/week-summary-tamper-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V03_CANONICAL_CONTRACT"
+      }
+    },
+    {
+      "file": "playtest-v03/final-readiness-tamper-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V03_FINAL_STATE_MISMATCH"
       }
     },
     {
       "file": "playtest-v03/no-op-consequence-rejected.json",
       "assertions": {
         "accepted": false,
-        "errorCode": "V03_NOOP_CONSEQUENCE"
-      }
-    },
-    {
-      "file": "playtest-v03/effect-double-owner-rejected.json",
-      "assertions": {
-        "accepted": false,
-        "errorCode": "V03_EFFECT_DOUBLE_OWNER"
+        "errorCode": "V03_EFFECT_FINGERPRINT"
       }
     },
     {
       "file": "playtest-v03/cross-session-rejected.json",
       "assertions": {
         "accepted": false,
-        "errorCode": "V03_AUTHORITY_MISMATCH"
+        "errorCode": "V03_CANONICAL_CONTRACT"
       }
     },
     {
       "file": "playtest-v03/resource-lot-rejected.json",
       "assertions": {
         "accepted": false,
-        "errorCode": "V03_RESOURCE_LOT_MISMATCH"
+        "errorCode": "V03_CANONICAL_CONTRACT"
+      }
+    },
+    {
+      "file": "playtest-v03/effect-double-owner-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V03_EFFECT_OWNER_MISMATCH"
+      }
+    },
+    {
+      "file": "playtest-v03/complete-missing-opportunity-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V03_COMPLETE_TERMINALS"
+      }
+    },
+    {
+      "file": "playtest-v03/complete-open-opportunity-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V03_COMPLETE_TERMINALS"
       }
     }
   ]

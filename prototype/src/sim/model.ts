@@ -42,6 +42,7 @@ export interface ManagementChoiceAuthority {
   diagnosisId: string
   sessionId: string
   candidateBuildAuthorityHash: string
+  sessionAuthorityToken: string
 }
 
 export interface ManagementChoiceOpportunity {
@@ -54,6 +55,7 @@ export interface ManagementChoiceOpportunity {
   diagnosisId: string
   sessionId: string
   candidateBuildAuthorityHash: string
+  sessionAuthorityToken: string
   stateRevision: number
   projectionBaseHash: string
   candidateProjectionHash: string | null
@@ -77,6 +79,7 @@ export interface ManagementChoiceConsequence {
   diagnosisId: string
   sessionId: string
   candidateBuildAuthorityHash: string
+  sessionAuthorityToken: string
   stateRevision: number
   projectionBaseHash: string
   candidateProjectionHash: string
@@ -102,6 +105,7 @@ export interface ManagementChoiceCommitment {
   diagnosisId: string
   sessionId: string
   candidateBuildAuthorityHash: string
+  sessionAuthorityToken: string
   stateRevision: number
   projectionBaseHash: string
   candidateProjectionHash: string
@@ -122,6 +126,7 @@ export interface ManagementChoiceCommitRequest {
   diagnosisId: string
   sessionId: string
   candidateBuildAuthorityHash: string
+  sessionAuthorityToken: string
   stateRevision: number
   projectionBaseHash: string
   candidateProjectionHash: string
