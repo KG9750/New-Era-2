@@ -45,7 +45,9 @@ ${rosterRows.join('\n')}
 - Library ID：\`${library.library_id}\`
 - World seed：\`${library.world_seed_hex}\`
 - 人数：${library.characters.length}
-- 已实现机器合同：\`${library.validation.implemented_machine_contracts_passed ? 'PASS' : 'BLOCKED'}\`
+- 已实现机器合同汇总：\`${library.validation.implemented_machine_contracts_status.toUpperCase()}\`
+- 已实现机器合同无警告通过：\`${library.validation.implemented_machine_contracts_passed ? 'YES' : 'NO'}\`
+- 警告 ID：\`${library.validation.warned_ids.join(', ') || 'none'}\`
 - 机器合同作用域：\`${library.validation.scope}\`
 - 未运行 ID：\`${library.validation.not_run_ids.join(', ') || 'none'}\`
 - 完整 M12：\`${library.validation.findings.find((finding) => finding.validation_id === 'M12')?.result.toUpperCase()}\`
@@ -63,8 +65,11 @@ process.stdout.write(
     rosterPath,
     libraryId: library.library_id,
     characters: library.characters.length,
+    implementedMachineContractsStatus:
+      library.validation.implemented_machine_contracts_status,
     implementedMachineContractsPassed:
       library.validation.implemented_machine_contracts_passed,
+    warnedIds: library.validation.warned_ids,
     notRunIds: library.validation.not_run_ids,
     mbtiCounts,
     manualReviews: library.validation.manual_reviews,

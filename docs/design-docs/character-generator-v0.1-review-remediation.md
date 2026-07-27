@@ -3,7 +3,7 @@
 **审查基线：** `0aa2608dc8b90f36dacdf74fdea26fba82c5d242`
 **首次整改提交：** `a7c3f09132915587b502c0598d1e21b7b7190ed3`
 **首次整改复审：** `P0=0 / P1=2 / P2=1 / REVIEW_FAIL`
-**当前整改状态：** `R2_CODE_FIXED_PENDING_REREVIEW / HUMAN_GATES_OPEN`
+**当前整改状态：** `R3_CODE_FIXED_PENDING_REREVIEW / HUMAN_GATES_OPEN`
 
 ## P1-1：机器门禁 false negative
 
@@ -98,17 +98,55 @@
 - 增加不调用 fingerprint helper 的固定已知答案测试；
 - 增加两人复制完整 M10 语义投影并伪造不同保存值的阻断测试。
 
+## 再次独立复审 P1：内容模板 provenance 可协调伪造
+
+状态：`R3_CODE_FIXED_PENDING_REREVIEW`
+
+- 五类履历节点的 `template_id` 必须属于当前版本化内容包；
+- validator 从模板重建 evidence、属性修正、技能经历、资格、性格、关系、价值、
+  红线和当前动机结构，不再只比较人物 JSON 内可同步改写的两份数据；
+- 顶层资格 ID/evidence 由 `EDUCATION_TEMPLATES` 和 rank 规则重建；
+- 新增协调改写资格 evidence、未登记模板、合法成长模板 ID 搭配伪造输出等反例。
+
+## 再次独立复审 P1：人物证据未绑定 library envelope
+
+状态：`R3_CODE_FIXED_PENDING_REREVIEW`
+
+- 新增公开 `validateCharacterLibrary(unknown)`，畸形 JSON 安全返回 blocked；
+- 每名人物的 world seed、index、生成器/内容/文化版本必须与 library 根一致；
+- library ID 从根 seed、人物数和版本重新计算；
+- 人物自报另一套 seed/index 并协调重算人物 ID、person seed 时仍被根绑定阻断。
+
+## 再次独立复审 P2：保存的聚合门禁缺少 full-library validator
+
+状态：`R3_CODE_FIXED_PENDING_REREVIEW`
+
+- 固定 scope、`not_run_ids=["M12"]`、唯一 `M12=not_run` 和 E01–E06 `not_run`；
+- 保存的 M03–M07、M09、M10 finding 与独立复算结果逐项对齐；
+- 协调伪造 scope、M12、人工审核或 finding evidence 会返回
+  `LIBRARY-ENVELOPE=blocked`。
+
+## 再次独立复审 P3：warned 被计为完整通过
+
+状态：`R3_CODE_FIXED_PENDING_REREVIEW`
+
+- 新增 `implemented_machine_contracts_status` 三态：
+  `passed / passed_with_warnings / blocked`；
+- `implemented_machine_contracts_passed` 只在无 warning、无 blocked 时为 true；
+- 新增 `warned_ids`；单人库的 `DIST-ADDRESS=warned` 回归用例固定返回
+  `passed_with_warnings` 和 `implemented_machine_contracts_passed=false`。
+
 ## 版本与验证
 
-- character schema：`character-v0.1.2-candidate`
-- library schema：`character-library-v0.1.2-candidate`
-- generator schema：`char-gen-v0.1.2-candidate`
-- Library ID：`character-library-e16a1cc8dfd1e2b4`
+- character schema：`character-v0.1.3-candidate`
+- library schema：`character-library-v0.1.3-candidate`
+- generator schema：`char-gen-v0.1.3-candidate`
+- Library ID：`character-library-6e7f25d12d440a06`
 - JSON SHA256：
-  `489c380cad0cb7689b7af0b927dcfa5f553bba02c7efa30fc76dbeaa8dcf3d99`
+  `d549834a076ec6d7ebc8d066f56e17220aa417c88c39d784f5ef02b0ac3a2caa`
 - roster SHA256：
-  `94ab002c76f47be4ee6b7e989be3f252c494e000c7d9c2fde673dba83b5bba62`
-- Vitest：9 files / 77 tests
+  `853daa462185c50ce402506852fa631dfbf1f9cf329d626d1e9b6228d0882e03`
+- Vitest：9 files / 87 tests
 - TypeScript：通过
 - Vite production build：通过
 - Node 20.20.2 / 22.23.1 / 24.18.0 与 `LANG=C` / `zh_CN.UTF-8`：

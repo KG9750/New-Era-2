@@ -45,7 +45,11 @@ import {
 } from './validator'
 import { deriveSeedV1 } from './seed'
 
-export { validateCharacter, validateCharacterLibraryContent } from './validator'
+export {
+  validateCharacter,
+  validateCharacterLibrary,
+  validateCharacterLibraryContent,
+} from './validator'
 export { deriveSeedV1 } from './seed'
 
 const MASK_64 = (1n << 64n) - 1n
@@ -871,9 +875,19 @@ export function generateCharacterLibrary(
     mbtiContentFinding,
     addressFinding,
   ]
-  const implementedMachineContractsPassed = findings.every(
-    (item) => item.result !== 'blocked',
+  const hasBlockedFinding = findings.some(
+    (item) => item.result === 'blocked',
   )
+  const warnedIds = findings
+    .filter((item) => item.result === 'warned')
+    .map((item) => item.validation_id)
+  const implementedMachineContractsStatus = hasBlockedFinding
+    ? ('blocked' as const)
+    : warnedIds.length > 0
+      ? ('passed_with_warnings' as const)
+      : ('passed' as const)
+  const implementedMachineContractsPassed =
+    implementedMachineContractsStatus === 'passed'
   const notRunIds = findings
     .filter((item) => item.result === 'not_run')
     .map((item) => item.validation_id)
@@ -881,9 +895,10 @@ export function generateCharacterLibrary(
     ...character,
     review_status: {
       ...character.review_status,
-      implemented_character_contracts: implementedMachineContractsPassed
-        ? ('passed' as const)
-        : ('blocked' as const),
+      implemented_character_contracts:
+        implementedMachineContractsStatus === 'blocked'
+          ? ('blocked' as const)
+          : ('passed' as const),
     },
   }))
 
@@ -906,8 +921,11 @@ export function generateCharacterLibrary(
     characters,
     validation: {
       scope: 'TECHNICAL_CHARACTER_LIBRARY_IMPLEMENTED_CONTRACTS_ONLY',
+      implemented_machine_contracts_status:
+        implementedMachineContractsStatus,
       implemented_machine_contracts_passed:
         implementedMachineContractsPassed,
+      warned_ids: warnedIds,
       not_run_ids: notRunIds,
       findings,
       manual_reviews: {

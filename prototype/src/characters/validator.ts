@@ -2,13 +2,20 @@ import {
   lifeHistoryChassisKey,
   recomputeDistinctionFingerprint,
 } from './fingerprint'
-import { GROWTH_TEMPLATES } from './content'
+import {
+  EDUCATION_TEMPLATES,
+  GROWTH_TEMPLATES,
+  MOTIVATION_TEMPLATES,
+  TURNING_TEMPLATES,
+  WORK_TEMPLATES,
+} from './content'
 import {
   ATTRIBUTE_KEYS,
   CHARACTER_SCHEMA_VERSION,
   CONTENT_PACK_VERSIONS,
   CULTURE_PACK_VERSION,
   GENERATOR_SCHEMA_VERSION,
+  LIBRARY_SCHEMA_VERSION,
   MBTI_TYPES,
   SKILL_KEYS,
   type AttributeKey,
@@ -268,6 +275,58 @@ function recomputePrimarySkills(skills: SkillValues): readonly SkillKey[] {
     .slice(0, 2)
 }
 
+function pickAvailableAttribute(
+  startIndex: number,
+  excluded: ReadonlySet<AttributeKey>,
+): AttributeKey {
+  for (let offset = 0; offset < ATTRIBUTE_KEYS.length; offset += 1) {
+    const candidate =
+      ATTRIBUTE_KEYS[(startIndex + offset) % ATTRIBUTE_KEYS.length]
+    if (!excluded.has(candidate)) {
+      return candidate
+    }
+  }
+  throw new Error('no attribute remains after exclusions')
+}
+
+function expectedModifiers(
+  nodeId: string,
+  entries: readonly (readonly [AttributeKey, -1 | 1])[],
+): readonly {
+  attribute: AttributeKey
+  value: -1 | 1
+  modifier_source_id: string
+}[] {
+  return entries.map(([attribute, value]) => ({
+    attribute,
+    value,
+    modifier_source_id: nodeId,
+  }))
+}
+
+function sameData(left: unknown, right: unknown): boolean {
+  if (Object.is(left, right)) {
+    return true
+  }
+  if (Array.isArray(left) || Array.isArray(right)) {
+    return (
+      Array.isArray(left) &&
+      Array.isArray(right) &&
+      left.length === right.length &&
+      left.every((item, index) => sameData(item, right[index]))
+    )
+  }
+  if (!isRecord(left) || !isRecord(right)) {
+    return false
+  }
+  const leftKeys = Object.keys(left).sort()
+  const rightKeys = Object.keys(right).sort()
+  return (
+    sameData(leftKeys, rightKeys) &&
+    leftKeys.every((key) => sameData(left[key], right[key]))
+  )
+}
+
 export function machineFinding(
   validationId: string,
   phase: ValidationFinding['phase'],
@@ -400,12 +459,371 @@ export function validateCharacter(
   const growthTemplate = GROWTH_TEMPLATES.find(
     (template) => template.id === growthNode?.template_id,
   )
+  const educationNode = character.biography_nodes.find(
+    (node) => node.stage === 'education',
+  )
+  const educationTemplate = EDUCATION_TEMPLATES.find(
+    (template) => template.id === educationNode?.template_id,
+  )
+  const workNode = character.biography_nodes.find(
+    (node) => node.stage === 'work',
+  )
+  const workTemplate = WORK_TEMPLATES.find(
+    (template) => template.id === workNode?.template_id,
+  )
+  const turningNode = character.biography_nodes.find(
+    (node) => node.stage === 'turning_point',
+  )
+  const turningTemplate = TURNING_TEMPLATES.find(
+    (template) => template.id === turningNode?.template_id,
+  )
+  const motivationNode = character.biography_nodes.find(
+    (node) => node.stage === 'current_motivation',
+  )
+  const motivationTemplate = MOTIVATION_TEMPLATES.find(
+    (template) => template.id === motivationNode?.template_id,
+  )
+  const versionedTemplateIds = {
+    growth: new Set(GROWTH_TEMPLATES.map((template) => template.id)),
+    education: new Set(EDUCATION_TEMPLATES.map((template) => template.id)),
+    work: new Set(WORK_TEMPLATES.map((template) => template.id)),
+    turning_point: new Set(
+      TURNING_TEMPLATES.map((template) => template.id),
+    ),
+    current_motivation: new Set(
+      MOTIVATION_TEMPLATES.map((template) => template.id),
+    ),
+  }
+  const biographyTemplateIdsVersioned = character.biography_nodes.every(
+    (node) => versionedTemplateIds[node.stage].has(node.template_id),
+  )
+  const biographyTemplateEvidenceValid = character.biography_nodes.every(
+    (node) => {
+      if (node.stage === 'growth') {
+        return (
+          GROWTH_TEMPLATES.find(
+            (template) => template.id === node.template_id,
+          )?.evidence === node.evidence_text
+        )
+      }
+      if (node.stage === 'education') {
+        return (
+          EDUCATION_TEMPLATES.find(
+            (template) => template.id === node.template_id,
+          )?.evidence === node.evidence_text
+        )
+      }
+      if (node.stage === 'work') {
+        return (
+          WORK_TEMPLATES.find(
+            (template) => template.id === node.template_id,
+          )?.evidence === node.evidence_text
+        )
+      }
+      if (node.stage === 'turning_point') {
+        return (
+          TURNING_TEMPLATES.find(
+            (template) => template.id === node.template_id,
+          )?.evidence === node.evidence_text
+        )
+      }
+      const motivation = MOTIVATION_TEMPLATES.find(
+        (template) => template.id === node.template_id,
+      )
+      return (
+        motivation !== undefined &&
+        node.evidence_text ===
+          `${motivation.motivation}；希望${motivation.goal}。`
+      )
+    },
+  )
+  const biographySummaryValid =
+    character.biography_summary ===
+    character.biography_nodes.map((node) => node.evidence_text).join(' ')
   const originProvenanceValid =
     growthNode !== undefined &&
     growthTemplate !== undefined &&
     character.origin === growthTemplate.context &&
     growthNode.context_tags[0] === growthTemplate.context &&
     growthNode.context_tags.includes('growth')
+  const growthTemplateOutputsValid =
+    growthNode !== undefined &&
+    growthTemplate !== undefined &&
+    sameData(growthNode.context_tags, [growthTemplate.context, 'growth']) &&
+    sameData(growthNode.attribute_modifiers, [
+        {
+          attribute: growthTemplate.positive,
+          value: 1,
+          modifier_source_id: growthNode.node_id,
+        },
+        {
+          attribute: growthTemplate.negative,
+          value: -1,
+          modifier_source_id: growthNode.node_id,
+        },
+      ]) &&
+    sameData(growthNode.skill_experience, [
+        {
+          skill: growthTemplate.skill,
+          points: 2,
+          intensity: 'repeated',
+        },
+      ]) &&
+    growthNode.qualifications.length === 0 &&
+    sameData(growthNode.personality_candidates, [growthTemplate.trait]) &&
+    growthNode.value_and_redline_candidates.length === 0 &&
+    sameData(growthNode.relationship_outputs, ['家庭与成长地关系']) &&
+    growthNode.motivation_and_hooks.length === 0 &&
+    growthNode.evidence_text === growthTemplate.evidence &&
+    character.traits[0] === growthTemplate.trait
+  const characterIndex =
+    character.library_generation_evidence.character_index
+  const attributeProfile = characterIndex % 5
+  const educationTemplateOutputsValid = (() => {
+    if (educationNode === undefined || educationTemplate === undefined) {
+      return false
+    }
+    const modifierEntries: [AttributeKey, -1 | 1][] =
+      attributeProfile <= 1 ? [] : [[educationTemplate.attribute, 1]]
+    if (attributeProfile === 4) {
+      modifierEntries.push([
+        pickAvailableAttribute(
+          characterIndex + 1,
+          new Set([educationTemplate.attribute]),
+        ),
+        1,
+      ])
+    }
+    return (
+      sameData(educationNode.context_tags, [
+        'education',
+        educationTemplate.primary,
+      ]) &&
+      sameData(
+        educationNode.attribute_modifiers,
+        expectedModifiers(educationNode.node_id, modifierEntries),
+      ) &&
+      sameData(educationNode.skill_experience, [
+        {
+          skill: educationTemplate.primary,
+          points: 4,
+          intensity: 'regular',
+        },
+        {
+          skill: educationTemplate.secondary,
+          points: 2,
+          intensity: 'repeated',
+        },
+      ]) &&
+      sameData(educationNode.qualifications, [
+        {
+          qualification_id: educationTemplate.qualificationId,
+          rank: 1,
+          source_node_id: educationNode.node_id,
+          evidence: educationTemplate.qualificationEvidence,
+        },
+      ]) &&
+      sameData(educationNode.personality_candidates, [
+        '愿意按训练流程复核基础动作',
+      ]) &&
+      educationNode.value_and_redline_candidates.length === 0 &&
+      sameData(educationNode.relationship_outputs, ['师徒或同学关系']) &&
+      educationNode.motivation_and_hooks.length === 0
+    )
+  })()
+  const workTemplateOutputsValid = (() => {
+    if (workNode === undefined || workTemplate === undefined) {
+      return false
+    }
+    const modifierEntries: [AttributeKey, -1 | 1][] = [
+      [workTemplate.positive, 1],
+      [workTemplate.negative, -1],
+    ]
+    if (attributeProfile >= 3) {
+      modifierEntries.push([
+        pickAvailableAttribute(
+          characterIndex + 3,
+          new Set([workTemplate.positive, workTemplate.negative]),
+        ),
+        1,
+      ])
+    }
+    const expectedWorkQualifications =
+      characterIndex % 4 === 0 && educationTemplate !== undefined
+        ? [
+            {
+              qualification_id: educationTemplate.qualificationId,
+              rank: 2,
+              source_node_id: workNode.node_id,
+              evidence: `${educationTemplate.qualificationEvidence}，并在长期主要职责中独立使用`,
+            },
+          ]
+        : []
+    return (
+      sameData(workNode.context_tags, [
+        'work',
+        workTemplate.primary,
+        workTemplate.secondary,
+      ]) &&
+      sameData(
+        workNode.attribute_modifiers,
+        expectedModifiers(workNode.node_id, modifierEntries),
+      ) &&
+      sameData(workNode.skill_experience, [
+        {
+          skill: workTemplate.primary,
+          points: 6,
+          intensity: 'major_duty',
+        },
+        {
+          skill: workTemplate.secondary,
+          points: 4,
+          intensity: 'regular',
+        },
+      ]) &&
+      sameData(workNode.qualifications, expectedWorkQualifications) &&
+      sameData(workNode.personality_candidates, [workTemplate.trait]) &&
+      workNode.value_and_redline_candidates.length === 0 &&
+      sameData(workNode.relationship_outputs, [workTemplate.relationship]) &&
+      sameData(workNode.motivation_and_hooks, [
+        `曾任${workTemplate.experienceTitle}`,
+      ])
+    )
+  })()
+  const turningTemplateOutputsValid = (() => {
+    if (
+      turningNode === undefined ||
+      turningTemplate === undefined ||
+      growthTemplate === undefined ||
+      workTemplate === undefined
+    ) {
+      return false
+    }
+    const modifierEntries: [AttributeKey, -1 | 1][] = [
+      [turningTemplate.positive, 1],
+      [turningTemplate.negative, -1],
+    ]
+    if (attributeProfile === 0) {
+      modifierEntries.push([
+        pickAvailableAttribute(
+          characterIndex + 5,
+          new Set([
+            turningTemplate.positive,
+            turningTemplate.negative,
+            growthTemplate.negative,
+            workTemplate.negative,
+          ]),
+        ),
+        -1,
+      ])
+    }
+    return (
+      sameData(turningNode.context_tags, [
+        'turning_point',
+        turningTemplate.redline.scope,
+      ]) &&
+      sameData(
+        turningNode.attribute_modifiers,
+        expectedModifiers(turningNode.node_id, modifierEntries),
+      ) &&
+      turningNode.skill_experience.length === 0 &&
+      turningNode.qualifications.length === 0 &&
+      sameData(turningNode.personality_candidates, [
+        '遇到相似情境时会提前说明边界',
+      ]) &&
+      sameData(turningNode.value_and_redline_candidates, [
+        ...turningTemplate.values,
+        turningTemplate.redline.summary,
+      ]) &&
+      sameData(turningNode.relationship_outputs, [turningTemplate.hook]) &&
+      sameData(turningNode.motivation_and_hooks, [turningTemplate.hook])
+    )
+  })()
+  const motivationTemplateOutputsValid =
+    motivationNode !== undefined &&
+    motivationTemplate !== undefined &&
+    sameData(motivationNode.context_tags, ['current_motivation']) &&
+    motivationNode.attribute_modifiers.length === 0 &&
+    motivationNode.skill_experience.length === 0 &&
+    motivationNode.qualifications.length === 0 &&
+    motivationNode.personality_candidates.length === 0 &&
+    motivationNode.value_and_redline_candidates.length === 0 &&
+    sameData(motivationNode.relationship_outputs, [
+      motivationTemplate.hook,
+    ]) &&
+    sameData(motivationNode.motivation_and_hooks, [
+      motivationTemplate.motivation,
+      motivationTemplate.goal,
+      motivationTemplate.hook,
+    ])
+  const topLevelTemplateOutputsValid = (() => {
+    if (
+      growthTemplate === undefined ||
+      educationNode === undefined ||
+      educationTemplate === undefined ||
+      workNode === undefined ||
+      workTemplate === undefined ||
+      turningNode === undefined ||
+      turningTemplate === undefined ||
+      motivationTemplate === undefined
+    ) {
+      return false
+    }
+    const expectedQualification =
+      characterIndex % 4 === 0
+        ? {
+            qualification_id: educationTemplate.qualificationId,
+            rank: 2,
+            source_node_id: workNode.node_id,
+            evidence: `${educationTemplate.qualificationEvidence}，并在长期主要职责中独立使用`,
+          }
+        : {
+            qualification_id: educationTemplate.qualificationId,
+            rank: 1,
+            source_node_id: educationNode.node_id,
+            evidence: educationTemplate.qualificationEvidence,
+          }
+    const expectedCoreValues = turningTemplate.values.map(
+      (summary, index) => ({
+        value_id: `${character.character_id}:value:${index}`,
+        summary,
+        source_ids: [turningNode.node_id],
+      }),
+    )
+    return (
+      sameData(character.traits, [growthTemplate.trait, workTemplate.trait]) &&
+      sameData(character.qualifications, [expectedQualification]) &&
+      sameData(character.core_values, expectedCoreValues) &&
+      sameData(character.redlines, [
+        {
+          redline_id: `${character.character_id}:redline:${turningTemplate.id}`,
+          summary: turningTemplate.redline.summary,
+          trigger_action_tags: turningTemplate.redline.trigger,
+          forbidden_action_tags: turningTemplate.redline.forbidden,
+          allowed_alternative_tags: turningTemplate.redline.alternatives,
+          threshold: turningTemplate.redline.threshold,
+          scope: turningTemplate.redline.scope,
+          source_ids: [
+            turningNode.node_id,
+            expectedCoreValues[0].value_id,
+            expectedCoreValues[1].value_id,
+          ],
+          disclosed_at: 'character_join_preview',
+        },
+      ]) &&
+      character.current_motivation === motivationTemplate.motivation &&
+      sameData(character.relationship_hooks, [workTemplate.relationship]) &&
+      character.long_term_goal === motivationTemplate.goal &&
+      character.request_seed === motivationTemplate.hook
+    )
+  })()
+  const biographyTemplateOutputsValid =
+    growthTemplateOutputsValid &&
+    educationTemplateOutputsValid &&
+    workTemplateOutputsValid &&
+    turningTemplateOutputsValid &&
+    motivationTemplateOutputsValid &&
+    topLevelTemplateOutputsValid
 
   const recomputedAttributes = emptyAttributes()
   const modifierSourcesValid = character.biography_nodes.every((node) =>
@@ -527,27 +945,39 @@ export function validateCharacter(
       (skill, index) => skill === recomputedPrimarySkills[index],
     )
 
-  const qualificationsValid = character.qualifications.every(
-    (qualification) =>
-      qualification.rank >= 1 &&
-      qualification.rank <= 3 &&
-      nodeIds.has(qualification.source_node_id) &&
-      character.biography_nodes.some(
-        (node) =>
-          (node.stage === 'education' || node.stage === 'work') &&
-          node.node_id === qualification.source_node_id &&
-          node.qualifications.some(
-            (nodeQualification) =>
-              nodeQualification.qualification_id ===
-                qualification.qualification_id &&
-              nodeQualification.rank === qualification.rank &&
-              nodeQualification.source_node_id ===
-                qualification.source_node_id &&
-              qualification.evidence.length > 0 &&
-              nodeQualification.evidence === qualification.evidence,
-          ),
-      ),
-  )
+  const qualificationsValid =
+    educationTemplate !== undefined &&
+    character.qualifications.every((qualification) => {
+      const expectedEvidence =
+        qualification.rank === 1
+          ? educationTemplate.qualificationEvidence
+          : qualification.rank === 2
+            ? `${educationTemplate.qualificationEvidence}，并在长期主要职责中独立使用`
+            : undefined
+      const expectedSourceStage =
+        qualification.rank === 1 ? 'education' : 'work'
+      return (
+        expectedEvidence !== undefined &&
+        qualification.qualification_id ===
+          educationTemplate.qualificationId &&
+        qualification.evidence === expectedEvidence &&
+        nodeIds.has(qualification.source_node_id) &&
+        character.biography_nodes.some(
+          (node) =>
+            node.stage === expectedSourceStage &&
+            node.node_id === qualification.source_node_id &&
+            node.qualifications.some(
+              (nodeQualification) =>
+                nodeQualification.qualification_id ===
+                  qualification.qualification_id &&
+                nodeQualification.rank === qualification.rank &&
+                nodeQualification.source_node_id ===
+                  qualification.source_node_id &&
+                nodeQualification.evidence === qualification.evidence,
+            ),
+        )
+      )
+    })
 
   const mbtiHasNoNumericEffects =
     !('attribute_modifiers' in character.mbti) &&
@@ -575,14 +1005,20 @@ export function validateCharacter(
       'M04',
       'character_generation',
       character.character_id,
-      '履历年龄区间与前置节点合法；当前内容包的出身与受版本控制的成长模板一致',
+      '履历年龄区间与前置节点合法；所有履历模板属于当前内容包，且出身与成长模板一致',
       `${character.biography_nodes
         .map(
           (node) =>
             `${node.node_id}:${node.age_start}-${node.age_end},prerequisites=${node.prerequisites.join(',') || 'none'}`,
         )
-        .join(';')}; prerequisites_valid=${prerequisitesValid}; origin_provenance_valid=${originProvenanceValid}`,
-      chronologyValid && prerequisitesValid && originProvenanceValid,
+        .join(';')}; prerequisites_valid=${prerequisitesValid}; template_ids_versioned=${biographyTemplateIdsVersioned}; template_evidence_valid=${biographyTemplateEvidenceValid}; biography_summary_valid=${biographySummaryValid}; origin_provenance_valid=${originProvenanceValid}; template_outputs_valid=${biographyTemplateOutputsValid}`,
+      chronologyValid &&
+        prerequisitesValid &&
+        biographyTemplateIdsVersioned &&
+        biographyTemplateEvidenceValid &&
+        biographySummaryValid &&
+        originProvenanceValid &&
+        biographyTemplateOutputsValid,
     ),
     machineFinding(
       'M05',
@@ -686,6 +1122,202 @@ export function validateCharacterLibraryContent(
       '50人候选库的成长、工作与当前动机组合不重复，且同一工作连接多种成长背景和长期目标',
       `count=${subjects.length}; unique_life_history_chassis=${uniqueChassis.size}; work_bindings_diverse=${workBindingsDiverse}`,
       lifeHistoryDiversityPassed,
+    ),
+  ]
+}
+
+export function validateCharacterLibrary(
+  subject: unknown,
+): readonly ValidationFinding[] {
+  if (!isRecord(subject) || !Array.isArray(subject.characters)) {
+    return [
+      machineFinding(
+        'LIBRARY-SCHEMA',
+        'library_build',
+        'character-library',
+        '候选人物库必须是包含 characters 数组的对象',
+        'library_object_or_characters_array_missing=true',
+        false,
+      ),
+    ]
+  }
+
+  const contentPackVersions = isRecord(subject.content_pack_versions)
+    ? subject.content_pack_versions
+    : undefined
+  const worldSeedHex =
+    typeof subject.world_seed_hex === 'string' ? subject.world_seed_hex : ''
+  const libraryShapeValid =
+    subject.schema_version === LIBRARY_SCHEMA_VERSION &&
+    typeof subject.library_id === 'string' &&
+    subject.status === 'CANDIDATE_NOT_FROZEN' &&
+    subject.development_stage === 'TECHNICAL_SPIKE_BEFORE_A1' &&
+    /^[0-9a-f]{64}$/.test(worldSeedHex) &&
+    subject.generator_schema_version === GENERATOR_SCHEMA_VERSION &&
+    subject.seed_derivation_version === 'seed_derivation_v1' &&
+    contentPackVersions?.biography === CONTENT_PACK_VERSIONS.biography &&
+    contentPackVersions?.traits === CONTENT_PACK_VERSIONS.traits &&
+    contentPackVersions?.values_and_redlines ===
+      CONTENT_PACK_VERSIONS.values_and_redlines &&
+    subject.culture_pack_version === CULTURE_PACK_VERSION &&
+    subject.characters.length >= 1 &&
+    subject.characters.length <= 500
+
+  const characters = subject.characters.filter(isGeneratedCharacterShape)
+  const allCharactersValid = characters.length === subject.characters.length
+  const characterRootBindingsValid =
+    allCharactersValid &&
+    characters.every((character, index) => {
+      const evidence = character.library_generation_evidence
+      return (
+        evidence.world_seed_hex === worldSeedHex &&
+        evidence.character_index === index &&
+        evidence.generator_schema_version === subject.generator_schema_version &&
+        sameData(
+          evidence.content_pack_versions,
+          subject.content_pack_versions,
+        ) &&
+        evidence.culture_pack_version === subject.culture_pack_version
+      )
+    })
+  const expectedLibraryId = libraryShapeValid
+    ? `character-library-${deriveSeedV1('library-id', [
+        worldSeedHex,
+        subject.characters.length,
+        GENERATOR_SCHEMA_VERSION,
+        CONTENT_PACK_VERSIONS,
+        CULTURE_PACK_VERSION,
+      ]).slice(0, 16)}`
+    : ''
+  const libraryIdValid =
+    libraryShapeValid && subject.library_id === expectedLibraryId
+  const rootBindingValid =
+    libraryShapeValid &&
+    characterRootBindingsValid &&
+    libraryIdValid &&
+    characters.every(
+      (character) =>
+        !validateCharacter(character).some(
+          (finding) => finding.result === 'blocked',
+        ),
+    )
+  const validation = isRecord(subject.validation)
+    ? subject.validation
+    : undefined
+  const storedFindings =
+    validation && Array.isArray(validation.findings)
+      ? validation.findings.filter(isRecord)
+      : []
+  const allStoredFindingsValid =
+    validation !== undefined &&
+    Array.isArray(validation.findings) &&
+    storedFindings.length === validation.findings.length &&
+    storedFindings.every(
+      (finding) =>
+        typeof finding.validation_id === 'string' &&
+        ['passed', 'blocked', 'warned', 'not_run'].includes(
+          finding.result as string,
+        ),
+    )
+  const storedNotRunIds = storedFindings
+    .filter((finding) => finding.result === 'not_run')
+    .map((finding) => finding.validation_id)
+  const m12Findings = storedFindings.filter(
+    (finding) => finding.validation_id === 'M12',
+  )
+  const manualReviews =
+    validation && isRecord(validation.manual_reviews)
+      ? validation.manual_reviews
+      : undefined
+  const manualReviewIds = ['E01', 'E02', 'E03', 'E04', 'E05', 'E06']
+  const manualReviewsValid =
+    manualReviews !== undefined &&
+    Object.keys(manualReviews).length === manualReviewIds.length &&
+    manualReviewIds.every((reviewId) => manualReviews[reviewId] === 'not_run')
+  const notRunIdsValid =
+    validation !== undefined &&
+    Array.isArray(validation.not_run_ids) &&
+    validation.not_run_ids.length === 1 &&
+    validation.not_run_ids[0] === 'M12' &&
+    storedNotRunIds.length === 1 &&
+    storedNotRunIds[0] === 'M12'
+  const storedWarnedIds = storedFindings
+    .filter((finding) => finding.result === 'warned')
+    .map((finding) => finding.validation_id)
+  const warnedIdsValid =
+    validation !== undefined &&
+    Array.isArray(validation.warned_ids) &&
+    sameData(validation.warned_ids, storedWarnedIds)
+  const expectedImplementedMachineContractsStatus =
+    !allStoredFindingsValid ||
+    storedFindings.some((finding) => finding.result === 'blocked')
+      ? 'blocked'
+      : storedWarnedIds.length > 0
+        ? 'passed_with_warnings'
+        : 'passed'
+  const implementedMachineContractsPassed =
+    expectedImplementedMachineContractsStatus === 'passed'
+  const independentlyRecomputedIds = new Set([
+    'M03',
+    'M04',
+    'M05',
+    'M06',
+    'M07',
+    'M09',
+    'M10',
+  ])
+  const independentlyRecomputedFindings = allCharactersValid
+    ? [
+        ...characters.flatMap(validateCharacter),
+        ...validateCharacterLibraryContent(characters),
+      ].filter((finding) =>
+        independentlyRecomputedIds.has(finding.validation_id),
+      )
+    : []
+  const storedRecomputedFindings = storedFindings.filter((finding) =>
+    independentlyRecomputedIds.has(finding.validation_id as string),
+  )
+  const storedFindingsMatchRecomputation =
+    sameData(storedRecomputedFindings, independentlyRecomputedFindings)
+  const envelopeValid =
+    validation !== undefined &&
+    validation.scope ===
+      'TECHNICAL_CHARACTER_LIBRARY_IMPLEMENTED_CONTRACTS_ONLY' &&
+    validation.implemented_machine_contracts_status ===
+      expectedImplementedMachineContractsStatus &&
+    validation.implemented_machine_contracts_passed ===
+      implementedMachineContractsPassed &&
+    warnedIdsValid &&
+    notRunIdsValid &&
+    m12Findings.length === 1 &&
+    m12Findings[0].result === 'not_run' &&
+    manualReviewsValid &&
+    storedFindingsMatchRecomputation
+
+  return [
+    machineFinding(
+      'LIBRARY-SCHEMA',
+      'library_build',
+      'character-library',
+      '候选人物库根字段、版本和characters数组满足固定schema',
+      `schema=${String(subject.schema_version)}; characters=${subject.characters.length}`,
+      libraryShapeValid,
+    ),
+    machineFinding(
+      'LIBRARY-ROOT-BINDING',
+      'library_build',
+      'character-library',
+      '每名人物的候选库生成证据绑定根seed、版本、数组位置与library ID',
+      `character_root_bindings=${characterRootBindingsValid}; library_id=${String(subject.library_id)}; expected_library_id=${expectedLibraryId || 'unavailable'}`,
+      rootBindingValid,
+    ),
+    machineFinding(
+      'LIBRARY-ENVELOPE',
+      'library_build',
+      'character-library',
+      '保存的聚合门禁仅覆盖已实现机器合同，完整M12与E01-E06保持未运行',
+      `stored_findings_valid=${allStoredFindingsValid}; recomputed_findings_match=${storedFindingsMatchRecomputation}; aggregate_status=${expectedImplementedMachineContractsStatus}; warned_ids_valid=${warnedIdsValid}; not_run_ids_valid=${notRunIdsValid}; m12_count=${m12Findings.length}; manual_reviews_valid=${manualReviewsValid}`,
+      envelopeValid,
     ),
   ]
 }

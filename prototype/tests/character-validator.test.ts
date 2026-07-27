@@ -1,9 +1,12 @@
 import { describe, expect, it } from 'vitest'
 
 import persistedLibrary from '../../data/characters/generated-50-v0.1-candidate.json'
+import { GROWTH_TEMPLATES } from '../src/characters/content'
 import { ATTRIBUTE_KEYS } from '../src/characters/model'
+import { deriveSeedV1 } from '../src/characters/seed'
 import {
   validateCharacter,
+  validateCharacterLibrary,
   validateCharacterLibraryContent,
 } from '../src/characters/validator'
 
@@ -23,9 +26,126 @@ function result(subject: unknown, validationId: string): string | undefined {
 }
 
 describe('independent character contract validator', () => {
+  it('returns a blocked library finding for malformed unknown JSON', () => {
+    for (const subject of [null, {}, 'not-a-library']) {
+      expect(() => validateCharacterLibrary(subject)).not.toThrow()
+      expect(
+        validateCharacterLibrary(subject).find(
+          (finding) => finding.validation_id === 'LIBRARY-SCHEMA',
+        )?.result,
+      ).toBe('blocked')
+    }
+  })
+
+  it('blocks coordinated character evidence that conflicts with the library root', () => {
+    const forgedLibrary = structuredClone(persistedLibrary) as unknown as {
+      characters: {
+        character_id: string
+        person_seed: string
+        seeded_variation: {
+          person_seed: string
+          variation_source_id: string
+        }
+        library_generation_evidence: {
+          world_seed_hex: string
+          character_index: number
+          generator_schema_version: string
+          content_pack_versions: {
+            biography: string
+            traits: string
+            values_and_redlines: string
+          }
+          culture_pack_version: string
+        }
+      }[]
+    }
+    const character = forgedLibrary.characters[0]
+    const evidence = character.library_generation_evidence
+    evidence.world_seed_hex = 'a'.repeat(64)
+    evidence.character_index = 777
+    character.person_seed = deriveSeedV1('library-character', [
+      evidence.world_seed_hex,
+      evidence.character_index,
+      evidence.generator_schema_version,
+      evidence.content_pack_versions,
+      evidence.culture_pack_version,
+    ])
+    character.character_id = `char_${deriveSeedV1('character-id', [
+      evidence.world_seed_hex,
+      evidence.character_index,
+    ]).slice(0, 16)}`
+    character.seeded_variation.person_seed = character.person_seed
+    character.seeded_variation.variation_source_id =
+      `seed_variation:${character.character_id}:seeded-variation-v1`
+
+    expect(
+      validateCharacterLibrary(forgedLibrary).find(
+        (finding) => finding.validation_id === 'LIBRARY-ROOT-BINDING',
+      )?.result,
+    ).toBe('blocked')
+  })
+
+  it('blocks coordinated forgery of persisted aggregate gate fields', () => {
+    const forgedLibrary = structuredClone(persistedLibrary) as unknown as {
+      validation: {
+        scope: string
+        implemented_machine_contracts_passed: boolean
+        not_run_ids: string[]
+        findings: { validation_id: string; result: string }[]
+        manual_reviews: Record<string, string>
+      }
+    }
+    forgedLibrary.validation.scope = 'ALL_RELEASE_GATES_PASSED'
+    forgedLibrary.validation.implemented_machine_contracts_passed = true
+    forgedLibrary.validation.not_run_ids = []
+    const m12Finding = forgedLibrary.validation.findings.find(
+      (finding) => finding.validation_id === 'M12',
+    )
+    expect(m12Finding).toBeDefined()
+    m12Finding!.result = 'passed'
+    for (const reviewId of Object.keys(
+      forgedLibrary.validation.manual_reviews,
+    )) {
+      forgedLibrary.validation.manual_reviews[reviewId] = 'passed'
+    }
+
+    expect(
+      validateCharacterLibrary(forgedLibrary).find(
+        (finding) => finding.validation_id === 'LIBRARY-ENVELOPE',
+      )?.result,
+    ).toBe('blocked')
+  })
+
+  it('blocks forged stored findings that disagree with independent recomputation', () => {
+    const forgedLibrary = structuredClone(persistedLibrary) as unknown as {
+      validation: {
+        findings: {
+          validation_id: string
+          result: string
+          evidence: string
+        }[]
+      }
+    }
+    const storedM03 = forgedLibrary.validation.findings.find(
+      (finding) => finding.validation_id === 'M03',
+    )
+    expect(storedM03).toBeDefined()
+    storedM03!.evidence = 'forged_stored_evidence=true'
+
+    expect(
+      validateCharacterLibrary(forgedLibrary).find(
+        (finding) => finding.validation_id === 'LIBRARY-ENVELOPE',
+      )?.result,
+    ).toBe('blocked')
+  })
+
   it('scopes aggregate validation to implemented contracts and exposes not-run IDs', () => {
     expect(library.validation).not.toHaveProperty('machine_passed')
+    expect(library.validation.implemented_machine_contracts_status).toBe(
+      'passed',
+    )
     expect(library.validation.implemented_machine_contracts_passed).toBe(true)
+    expect(library.validation.warned_ids).toEqual([])
     expect(library.validation.not_run_ids).toEqual(['M12'])
     expect(library.validation.scope).toBe(
       'TECHNICAL_CHARACTER_LIBRARY_IMPLEMENTED_CONTRACTS_ONLY',
@@ -33,6 +153,11 @@ describe('independent character contract validator', () => {
   })
 
   it('accepts the persisted candidate library without calling the generator', () => {
+    expect(
+      validateCharacterLibrary(persistedLibrary).some(
+        (finding) => finding.result === 'blocked',
+      ),
+    ).toBe(false)
     expect(
       library.characters.flatMap(validateCharacter).some(
         (finding) => finding.result === 'blocked',
@@ -189,6 +314,126 @@ describe('independent character contract validator', () => {
     }
   })
 
+  it('blocks coordinated qualification evidence forgery in both stored copies', () => {
+    const character = persistedCharacter()
+    const qualifications =
+      character.qualifications as Record<string, unknown>[]
+    const qualification = qualifications[0]
+    const biographyNodes =
+      character.biography_nodes as Record<string, unknown>[]
+    const sourceNode = biographyNodes.find(
+      (node) => node.node_id === qualification.source_node_id,
+    )
+    expect(sourceNode).toBeDefined()
+    const sourceQualifications =
+      sourceNode!.qualifications as Record<string, unknown>[]
+    const sourceQualification = sourceQualifications.find(
+      (candidate) =>
+        candidate.qualification_id === qualification.qualification_id,
+    )
+    expect(sourceQualification).toBeDefined()
+    qualification.evidence = '协调伪造但非空的资格说明'
+    sourceQualification!.evidence = qualification.evidence
+
+    expect(result(character, 'M07')).toBe('blocked')
+  })
+
+  it('blocks an unversioned template ID in every biography stage', () => {
+    for (let index = 0; index < 5; index += 1) {
+      const character = persistedCharacter()
+      const biographyNodes =
+        character.biography_nodes as Record<string, unknown>[]
+      biographyNodes[index].template_id = `forged-unversioned-${index}`
+
+      expect(
+        validateCharacter(character).some(
+          (finding) => finding.result === 'blocked',
+        ),
+        `stage index ${index}`,
+      ).toBe(true)
+    }
+  })
+
+  it('blocks forged outputs attached to a registered growth template', () => {
+    const character = persistedCharacter()
+    const biographyNodes =
+      character.biography_nodes as Record<string, unknown>[]
+    const growth = biographyNodes[0]
+    const replacementTemplate = GROWTH_TEMPLATES.find(
+      (template) => template.id !== growth.template_id,
+    )
+    expect(replacementTemplate).toBeDefined()
+    growth.template_id = replacementTemplate!.id
+    growth.context_tags = [replacementTemplate!.context, 'growth']
+    growth.attribute_modifiers = [
+      {
+        attribute: '健康',
+        value: 1,
+        modifier_source_id: growth.node_id,
+      },
+      {
+        attribute: '意志',
+        value: -1,
+        modifier_source_id: growth.node_id,
+      },
+    ]
+    growth.skill_experience = [
+      { skill: '医疗', points: 2, intensity: 'repeated' },
+    ]
+    growth.personality_candidates = ['协调伪造的成长人格输出']
+    growth.evidence_text = '协调伪造的成长模板结构输出'
+    character.origin = replacementTemplate!.context
+    const traits = character.traits as string[]
+    traits[0] = '协调伪造的成长人格输出'
+
+    expect(result(character, 'M04')).toBe('blocked')
+  })
+
+  it('blocks forged evidence text attached to any registered biography template', () => {
+    for (let index = 0; index < 5; index += 1) {
+      const character = persistedCharacter()
+      const biographyNodes =
+        character.biography_nodes as Record<string, unknown>[]
+      biographyNodes[index].evidence_text =
+        `forged evidence for registered template ${index}`
+      character.biography_summary = biographyNodes
+        .map((node) => node.evidence_text)
+        .join(' ')
+
+      expect(result(character, 'M04'), `stage index ${index}`).toBe('blocked')
+    }
+  })
+
+  it('blocks forged structured outputs attached to registered biography templates', () => {
+    const mutations: ((nodes: Record<string, unknown>[]) => void)[] = [
+      (nodes) => {
+        nodes[1].skill_experience = [
+          { skill: '防卫', points: 4, intensity: 'regular' },
+        ]
+      },
+      (nodes) => {
+        nodes[2].personality_candidates = ['协调伪造的工作性格输出']
+      },
+      (nodes) => {
+        nodes[3].value_and_redline_candidates = ['协调伪造的转折价值输出']
+      },
+      (nodes) => {
+        nodes[4].motivation_and_hooks = ['协调伪造的当前动机输出']
+      },
+    ]
+
+    for (const [index, mutate] of mutations.entries()) {
+      const character = persistedCharacter()
+      const biographyNodes =
+        character.biography_nodes as Record<string, unknown>[]
+      mutate(biographyNodes)
+
+      expect(result(character, 'M04'), `mutation index ${index}`).toBe(
+        'blocked',
+      )
+    }
+  })
+
   it('blocks a forged stored distinction fingerprint', () => {
     const characters = structuredClone(library.characters)
     characters[0].distinction_fingerprint = 'forged-but-unique'
@@ -202,7 +447,7 @@ describe('independent character contract validator', () => {
 
   it('matches a fixed distinction fingerprint known-answer value', () => {
     expect(library.characters[0].distinction_fingerprint).toBe(
-      'distinction-v2:[["growth-watch-quarter","education-community-teaching","work-council-facilitator","turn-ledger-falsification","motivation-water-restoration"],["交涉"],"ESFP",["moderate","light","light","light"],["公共账目必须可核验","短缺不能通过删除记录消失"],["拒绝删除或伪造公共资源的权威记录"],"相信附近一套废弃供水设施仍有恢复价值"]',
+      'distinction-v2:[["growth-watch-quarter","education-community-teaching","work-council-facilitator","turn-ledger-falsification","motivation-water-restoration"],["交涉"],"ESFP",["moderate","light","light","strong"],["公共账目必须可核验","短缺不能通过删除记录消失"],["拒绝删除或伪造公共资源的权威记录"],"相信附近一套废弃供水设施仍有恢复价值"]',
     )
   })
 

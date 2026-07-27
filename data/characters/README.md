@@ -18,9 +18,9 @@ PATH=/opt/homebrew/opt/node@24/bin:$PATH npm run characters:generate
 - 人数：50；
 - world seed：
   `9f4d6b571b07f0036b63f7d56d1b2e8c90f561f52f35db779b03e6c0a83cb9b1`；
-- character schema：`character-v0.1.2-candidate`；
-- library schema：`character-library-v0.1.2-candidate`；
-- generator schema：`char-gen-v0.1.2-candidate`；
+- character schema：`character-v0.1.3-candidate`；
+- library schema：`character-library-v0.1.3-candidate`；
+- generator schema：`char-gen-v0.1.3-candidate`；
 - culture pack：`cn-frontier-draft-v0.1`。
 
 相同版本和输入必须逐字节生成相同 JSON。
@@ -37,6 +37,12 @@ PATH=/opt/homebrew/opt/node@24/bin:$PATH npm run characters:generate
 - 独立 validator 执行 M03–M07、M09、M10 和生活骨架重复度校验；
 - 单人人物保存候选库生成证据，validator 可重算人物 seed、ID、属性修正选择、
   MBTI 派生类型和资格 evidence；
+- `validateCharacterLibrary()` 校验 library 根 seed/版本/人物索引绑定，重算
+  library ID，并将保存的 M03–M07、M09、M10 finding 与独立复算结果绑定；
+- 五类履历模板的 ID、证据与结构化输出均从版本化内容包重建，资格 ID/evidence
+  由教育模板决定；
+- 聚合结果使用 `passed / passed_with_warnings / blocked` 三态，并显式保存
+  `warned_ids`；
 - `SEED-KAT` 与 `LIBRARY-REPLAY-PARTIAL`；
 - 玩家聚落 10 人、NPC 聚落 15 人静态人口上限校验。
 
@@ -53,5 +59,7 @@ PATH=/opt/homebrew/opt/node@24/bin:$PATH npm run characters:generate
 
 因此 JSON 状态固定为 `CANDIDATE_NOT_FROZEN`，阶段固定为
 `TECHNICAL_SPIKE_BEFORE_A1`。聚合机器结果仅覆盖
-`TECHNICAL_CHARACTER_LIBRARY_IMPLEMENTED_CONTRACTS_ONLY`，完整 `M12` 通过
-`not_run_ids` 明示未运行，人工审核字段固定为 `not_run`。
+`TECHNICAL_CHARACTER_LIBRARY_IMPLEMENTED_CONTRACTS_ONLY`，完整 `M12` 由
+`not_run_ids` 明示未运行，人工审核字段固定为 `not_run`。当前 50 人批次的
+`implemented_machine_contracts_status=passed`、`warned_ids=[]`；这仍不包含
+完整 M12 或人工审核。

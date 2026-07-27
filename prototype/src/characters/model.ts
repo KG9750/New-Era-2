@@ -38,10 +38,10 @@ export const MBTI_TYPES = [
   'ENTJ',
 ] as const
 
-export const CHARACTER_SCHEMA_VERSION = 'character-v0.1.2-candidate' as const
+export const CHARACTER_SCHEMA_VERSION = 'character-v0.1.3-candidate' as const
 export const LIBRARY_SCHEMA_VERSION =
-  'character-library-v0.1.2-candidate' as const
-export const GENERATOR_SCHEMA_VERSION = 'char-gen-v0.1.2-candidate' as const
+  'character-library-v0.1.3-candidate' as const
+export const GENERATOR_SCHEMA_VERSION = 'char-gen-v0.1.3-candidate' as const
 export const CONTENT_PACK_VERSIONS = {
   biography: 'candidate-0.1.1',
   traits: 'candidate-0.1.0',
@@ -226,7 +226,12 @@ export interface CharacterLibrary {
   characters: readonly GeneratedCharacter[]
   validation: {
     scope: 'TECHNICAL_CHARACTER_LIBRARY_IMPLEMENTED_CONTRACTS_ONLY'
+    implemented_machine_contracts_status:
+      | 'passed'
+      | 'passed_with_warnings'
+      | 'blocked'
     implemented_machine_contracts_passed: boolean
+    warned_ids: readonly string[]
     not_run_ids: readonly string[]
     findings: readonly ValidationFinding[]
     manual_reviews: {

@@ -354,7 +354,7 @@ describe('character generator', () => {
 
     expect(library.status).toBe('CANDIDATE_NOT_FROZEN')
     expect(library.development_stage).toBe('TECHNICAL_SPIKE_BEFORE_A1')
-    expect(library.generator_schema_version).toBe('char-gen-v0.1.2-candidate')
+    expect(library.generator_schema_version).toBe('char-gen-v0.1.3-candidate')
     expect(library.characters).toHaveLength(50)
     expect(new Set(library.characters.map((character) => character.character_id))).toHaveLength(50)
     expect(new Set(library.characters.map((character) => character.formal_name))).toHaveLength(50)
@@ -377,7 +377,11 @@ describe('character generator', () => {
     ).toBe(true)
     expect(Math.max(...Object.values(addressStructureCounts)) / library.characters.length).toBeLessThanOrEqual(0.5)
     expect(advancedQualificationsTraceToWork).toBe(true)
+    expect(library.validation.implemented_machine_contracts_status).toBe(
+      'passed',
+    )
     expect(library.validation.implemented_machine_contracts_passed).toBe(true)
+    expect(library.validation.warned_ids).toEqual([])
     expect(library.validation.not_run_ids).toEqual(['M12'])
     expect(library.validation.scope).toBe(
       'TECHNICAL_CHARACTER_LIBRARY_IMPLEMENTED_CONTRACTS_ONLY',
@@ -421,6 +425,20 @@ describe('character generator', () => {
       E05: 'not_run',
       E06: 'not_run',
     })
+  })
+
+  it('does not report a warning-bearing aggregate as fully passed', () => {
+    const library = generateCharacterLibrary({
+      worldSeedHex:
+        '9f4d6b571b07f0036b63f7d56d1b2e8c90f561f52f35db779b03e6c0a83cb9b1',
+      count: 1,
+    })
+
+    expect(library.validation.implemented_machine_contracts_status).toBe(
+      'passed_with_warnings',
+    )
+    expect(library.validation.implemented_machine_contracts_passed).toBe(false)
+    expect(library.validation.warned_ids).toEqual(['DIST-ADDRESS'])
   })
 
   it('enforces player and NPC permanent-population hard caps', () => {
