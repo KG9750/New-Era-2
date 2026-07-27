@@ -1,0 +1,3383 @@
+{
+  "schemaVersion": "gate1-playtest-v2",
+  "protocolVersion": "weekly-management-slice-playtest-v0.3",
+  "scenarioVersion": "0.5.1",
+  "captureKind": "complete",
+  "meta": {
+    "sampleId": "TECH-RC9-P05",
+    "diagnosisId": "TECH-RC9-P05",
+    "sessionId": "8f5bdeea-cce7-4fe1-b81b-803f52ebee96",
+    "candidateBuildAuthorityHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+    "sessionAuthorityToken": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008",
+    "buildId": "g1-rc-20260727.rc9-c03",
+    "gitSha": "cd2fc9716d98c160fe530c593347992f18bf96e4",
+    "artifactHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+    "scenarioId": "gate1-two-week-management",
+    "scenarioVersion": "0.5.1",
+    "protocolVersion": "weekly-management-slice-playtest-v0.3",
+    "fixedSeed": 104729,
+    "initialStateHash": "fnv1a32-1f72f2d0",
+    "viewport": "1440x900",
+    "inputDevice": "browser-pointer-keyboard"
+  },
+  "machineTiming": {
+    "machineStartedAtEpochMs": 1785180282764,
+    "machineEndedAtEpochMs": 1785180570105,
+    "machineElapsedMs": 287339,
+    "week1RawDurationMs": 152749,
+    "week2RawDurationMs": 110329
+  },
+  "actions": [
+    {
+      "id": "action-0001",
+      "sequence": 1,
+      "type": "COMMIT_MANAGEMENT_CHOICE",
+      "opportunityId": "opportunity:8f5bdeea-cce7-4fe1-b81b-803f52ebee96:w0:preventive-capacity",
+      "choiceSetId": "choice:w0:preventive-capacity",
+      "candidateId": "retain-rest-capacity",
+      "decisionIntentId": "w0:preventive-capacity:pump",
+      "week": 0,
+      "diagnosisId": "TECH-RC9-P05",
+      "sessionId": "8f5bdeea-cce7-4fe1-b81b-803f52ebee96",
+      "candidateBuildAuthorityHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+      "sessionAuthorityToken": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008",
+      "stateRevision": 0,
+      "projectionBaseHash": "6b51e9e0e90e070bd7734b06e29ef16f163b1012208c767052cdf997c8023dce",
+      "candidateProjectionHash": "777eae7969b097af9ef0cbf4516439b7c1605e3f85990643eadb06e1e27ced99",
+      "idempotencyKey": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008:choice:w0:preventive-capacity:0:retain-rest-capacity",
+      "commitCause": "explicit-candidate-action",
+      "resourceClaimRef": "schedule-slot:lin-he:d1:b1",
+      "requiredConsequenceIds": [
+        "consequence:w0:preventive-capacity:allocation",
+        "consequence:w0:preventive-capacity:rest-recovery",
+        "consequence:w0:preventive-capacity:personnel-readiness"
+      ],
+      "effectFingerprints": [
+        "effect:615ff4b7234cd31900f52bdbe6f1c765b2c1ad0ccde014952d7c2a0bb8096488",
+        "effect:1549adeae5993f63bd0d370191439f81008ae6bdb0a7f100d0c00f35d99d3d48",
+        "effect:48c115f1ca692b476fb0e40e504122744bb1662d36e31aef054d7f558c08cee6"
+      ],
+      "terminalState": "retain-rest-capacity",
+      "committedAtSequence": 1
+    },
+    {
+      "id": "action-0002",
+      "type": "SET_PAUSED",
+      "paused": false
+    },
+    {
+      "id": "action-0003",
+      "type": "SET_PAUSED",
+      "paused": false
+    },
+    {
+      "id": "action-0004",
+      "type": "CONTINUE_TO_NEXT_WEEK"
+    },
+    {
+      "id": "action-0005",
+      "sequence": 5,
+      "type": "COMMIT_MANAGEMENT_CHOICE",
+      "opportunityId": "opportunity:8f5bdeea-cce7-4fe1-b81b-803f52ebee96:w1:recovery-allocation",
+      "choiceSetId": "choice:w1:recovery-allocation",
+      "candidateId": "allocate-repair-buffer",
+      "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
+      "week": 1,
+      "diagnosisId": "TECH-RC9-P05",
+      "sessionId": "8f5bdeea-cce7-4fe1-b81b-803f52ebee96",
+      "candidateBuildAuthorityHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+      "sessionAuthorityToken": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008",
+      "stateRevision": 2,
+      "projectionBaseHash": "1a765c7ac5d8377ea650754623c1b10660e1f86be8e139fd5048610c195cff28",
+      "candidateProjectionHash": "aa33a004211af58097d38579acd615d9e8c6f4aa80a5f2b0bff9f74bb689b0a2",
+      "idempotencyKey": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008:choice:w1:recovery-allocation:2:allocate-repair-buffer",
+      "commitCause": "explicit-candidate-action",
+      "resourceClaimRef": "schedule-slot:chen-du:d10:b2",
+      "requiredConsequenceIds": [
+        "consequence:w1:recovery-allocation:schedule",
+        "consequence:w1:recovery-allocation:ending-repair"
+      ],
+      "effectFingerprints": [
+        "effect:344d30d49dc5c51dc21ac4f1712f9e11287d9786de84828c772216c843047c25",
+        "effect:77a210981ed7f3628d23ef79094b91728cec3287c1551f504833b1e815eb41da"
+      ],
+      "terminalState": "allocate-repair-buffer",
+      "committedAtSequence": 5
+    },
+    {
+      "id": "action-0006",
+      "type": "SET_PAUSED",
+      "paused": false
+    },
+    {
+      "id": "action-0007",
+      "type": "SET_PAUSED",
+      "paused": false
+    }
+  ],
+  "candidateEditGroups": [],
+  "choiceSets": [
+    {
+      "choiceSetId": "choice:w0:preventive-capacity",
+      "decisionIntentId": "w0:preventive-capacity:pump",
+      "options": [
+        {
+          "optionId": "schedule-preventive-maintenance",
+          "reachable": true,
+          "visibleConsequenceRefs": [
+            "schedule:lin-he:d1:b1",
+            "risk:equipment-exposure",
+            "state:equipment-recovery-load"
+          ],
+          "dominanceStatus": "non-dominated"
+        },
+        {
+          "optionId": "retain-rest-capacity",
+          "reachable": true,
+          "visibleConsequenceRefs": [
+            "schedule:lin-he:d1:b1",
+            "state:lin-he-recovery-units",
+            "state:personnel-readiness"
+          ],
+          "dominanceStatus": "non-dominated"
+        }
+      ],
+      "selectedOptionId": "retain-rest-capacity"
+    },
+    {
+      "choiceSetId": "choice:w1:recovery-allocation",
+      "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
+      "options": [
+        {
+          "optionId": "allocate-repair-buffer",
+          "reachable": true,
+          "visibleConsequenceRefs": [
+            "schedule:chen-du:d10:b2",
+            "forecast:w1:repair",
+            "state:equipment-recovery-load"
+          ],
+          "dominanceStatus": "non-dominated"
+        },
+        {
+          "optionId": "allocate-food-production",
+          "reachable": true,
+          "visibleConsequenceRefs": [
+            "schedule:chen-du:d10:b2",
+            "forecast:w1:food",
+            "state:equipment-recovery-load"
+          ],
+          "dominanceStatus": "non-dominated"
+        }
+      ],
+      "selectedOptionId": "allocate-repair-buffer"
+    }
+  ],
+  "candidateManagementCommitmentGroups": [
+    {
+      "decisionIntentId": "w0:preventive-capacity:pump",
+      "choiceSetId": "choice:w0:preventive-capacity",
+      "weekIndex": 0,
+      "problemCategory": "preventive-capacity",
+      "actionIds": [
+        "action-0001"
+      ],
+      "consequenceRefs": [
+        {
+          "kind": "risk",
+          "id": "water-pump:preventive-capacity-allocation"
+        },
+        {
+          "kind": "risk",
+          "id": "lin-he:recovery-units"
+        },
+        {
+          "kind": "risk",
+          "id": "settlement:personnel-readiness"
+        }
+      ],
+      "beforeDecisionStateHash": "6b51e9e0e90e070bd7734b06e29ef16f163b1012208c767052cdf997c8023dce",
+      "finalDecisionStateHash": "777eae7969b097af9ef0cbf4516439b7c1605e3f85990643eadb06e1e27ced99",
+      "finalOutcomeCode": "committed:retain-rest-capacity",
+      "finalDisposition": "committed"
+    },
+    {
+      "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
+      "choiceSetId": "choice:w1:recovery-allocation",
+      "weekIndex": 1,
+      "problemCategory": "recovery-allocation",
+      "actionIds": [
+        "action-0005"
+      ],
+      "consequenceRefs": [
+        {
+          "kind": "schedule",
+          "id": "chen-du:d10:b2"
+        },
+        {
+          "kind": "forecast",
+          "id": "forecast:ending-repair"
+        }
+      ],
+      "beforeDecisionStateHash": "1a765c7ac5d8377ea650754623c1b10660e1f86be8e139fd5048610c195cff28",
+      "finalDecisionStateHash": "aa33a004211af58097d38579acd615d9e8c6f4aa80a5f2b0bff9f74bb689b0a2",
+      "finalOutcomeCode": "committed:allocate-repair-buffer",
+      "finalDisposition": "committed"
+    }
+  ],
+  "managementChoiceOpportunitiesV03": [
+    {
+      "opportunityId": "opportunity:8f5bdeea-cce7-4fe1-b81b-803f52ebee96:w0:preventive-capacity",
+      "decisionIntentId": "w0:preventive-capacity:pump",
+      "choiceSetId": "choice:w0:preventive-capacity",
+      "candidateId": null,
+      "objectRef": "water-pump",
+      "week": 0,
+      "diagnosisId": "TECH-RC9-P05",
+      "sessionId": "8f5bdeea-cce7-4fe1-b81b-803f52ebee96",
+      "candidateBuildAuthorityHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+      "sessionAuthorityToken": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008",
+      "stateRevision": 1,
+      "projectionBaseHash": "6b51e9e0e90e070bd7734b06e29ef16f163b1012208c767052cdf997c8023dce",
+      "candidateProjectionHash": "777eae7969b097af9ef0cbf4516439b7c1605e3f85990643eadb06e1e27ced99",
+      "idempotencyKey": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008:choice:w0:preventive-capacity:0:retain-rest-capacity",
+      "commitCause": "opportunity-created",
+      "resourceClaimRef": "schedule-slot:lin-he:d1:b1",
+      "requiredConsequenceIds": [
+        "consequence:w0:preventive-capacity:schedule",
+        "consequence:w0:preventive-capacity:equipment-exposure",
+        "consequence:w0:preventive-capacity:recovery-load",
+        "consequence:w0:preventive-capacity:allocation",
+        "consequence:w0:preventive-capacity:rest-recovery",
+        "consequence:w0:preventive-capacity:personnel-readiness"
+      ],
+      "effectFingerprints": [
+        "effect:615ff4b7234cd31900f52bdbe6f1c765b2c1ad0ccde014952d7c2a0bb8096488",
+        "effect:1549adeae5993f63bd0d370191439f81008ae6bdb0a7f100d0c00f35d99d3d48",
+        "effect:48c115f1ca692b476fb0e40e504122744bb1662d36e31aef054d7f558c08cee6"
+      ],
+      "terminalState": "retain-rest-capacity",
+      "committedAtSequence": 1
+    },
+    {
+      "opportunityId": "opportunity:8f5bdeea-cce7-4fe1-b81b-803f52ebee96:w1:recovery-allocation",
+      "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
+      "choiceSetId": "choice:w1:recovery-allocation",
+      "candidateId": null,
+      "objectRef": "pump-recovery",
+      "week": 1,
+      "diagnosisId": "TECH-RC9-P05",
+      "sessionId": "8f5bdeea-cce7-4fe1-b81b-803f52ebee96",
+      "candidateBuildAuthorityHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+      "sessionAuthorityToken": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008",
+      "stateRevision": 3,
+      "projectionBaseHash": "1a765c7ac5d8377ea650754623c1b10660e1f86be8e139fd5048610c195cff28",
+      "candidateProjectionHash": "aa33a004211af58097d38579acd615d9e8c6f4aa80a5f2b0bff9f74bb689b0a2",
+      "idempotencyKey": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008:choice:w1:recovery-allocation:2:allocate-repair-buffer",
+      "commitCause": "opportunity-created",
+      "resourceClaimRef": "schedule-slot:chen-du:d10:b2",
+      "requiredConsequenceIds": [
+        "consequence:w1:recovery-allocation:schedule",
+        "consequence:w1:recovery-allocation:ending-repair",
+        "consequence:w1:recovery-allocation:schedule",
+        "consequence:w1:recovery-allocation:ending-food"
+      ],
+      "effectFingerprints": [
+        "effect:344d30d49dc5c51dc21ac4f1712f9e11287d9786de84828c772216c843047c25",
+        "effect:77a210981ed7f3628d23ef79094b91728cec3287c1551f504833b1e815eb41da"
+      ],
+      "terminalState": "allocate-repair-buffer",
+      "committedAtSequence": 5
+    }
+  ],
+  "managementChoiceCommitmentsV03": [
+    {
+      "actionId": "action-0001",
+      "opportunityId": "opportunity:8f5bdeea-cce7-4fe1-b81b-803f52ebee96:w0:preventive-capacity",
+      "decisionIntentId": "w0:preventive-capacity:pump",
+      "choiceSetId": "choice:w0:preventive-capacity",
+      "candidateId": "retain-rest-capacity",
+      "objectRef": "water-pump",
+      "week": 0,
+      "diagnosisId": "TECH-RC9-P05",
+      "sessionId": "8f5bdeea-cce7-4fe1-b81b-803f52ebee96",
+      "candidateBuildAuthorityHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+      "sessionAuthorityToken": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008",
+      "stateRevision": 0,
+      "projectionBaseHash": "6b51e9e0e90e070bd7734b06e29ef16f163b1012208c767052cdf997c8023dce",
+      "candidateProjectionHash": "777eae7969b097af9ef0cbf4516439b7c1605e3f85990643eadb06e1e27ced99",
+      "idempotencyKey": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008:choice:w0:preventive-capacity:0:retain-rest-capacity",
+      "commitCause": "explicit-candidate-action",
+      "resourceClaimRef": "schedule-slot:lin-he:d1:b1",
+      "requiredConsequenceIds": [
+        "consequence:w0:preventive-capacity:allocation",
+        "consequence:w0:preventive-capacity:rest-recovery",
+        "consequence:w0:preventive-capacity:personnel-readiness"
+      ],
+      "effectFingerprints": [
+        "effect:615ff4b7234cd31900f52bdbe6f1c765b2c1ad0ccde014952d7c2a0bb8096488",
+        "effect:1549adeae5993f63bd0d370191439f81008ae6bdb0a7f100d0c00f35d99d3d48",
+        "effect:48c115f1ca692b476fb0e40e504122744bb1662d36e31aef054d7f558c08cee6"
+      ],
+      "terminalState": "retain-rest-capacity",
+      "committedAtSequence": 1,
+      "consequences": [
+        {
+          "consequenceId": "consequence:w0:preventive-capacity:allocation",
+          "opportunityId": "opportunity:8f5bdeea-cce7-4fe1-b81b-803f52ebee96:w0:preventive-capacity",
+          "decisionIntentId": "w0:preventive-capacity:pump",
+          "choiceSetId": "choice:w0:preventive-capacity",
+          "candidateId": "retain-rest-capacity",
+          "objectRef": "water-pump:preventive-capacity-allocation",
+          "week": 0,
+          "diagnosisId": "TECH-RC9-P05",
+          "sessionId": "8f5bdeea-cce7-4fe1-b81b-803f52ebee96",
+          "candidateBuildAuthorityHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+          "sessionAuthorityToken": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008",
+          "stateRevision": 0,
+          "projectionBaseHash": "6b51e9e0e90e070bd7734b06e29ef16f163b1012208c767052cdf997c8023dce",
+          "candidateProjectionHash": "777eae7969b097af9ef0cbf4516439b7c1605e3f85990643eadb06e1e27ced99",
+          "idempotencyKey": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008:choice:w0:preventive-capacity:0:retain-rest-capacity",
+          "commitCause": "explicit-candidate-action",
+          "resourceClaimRef": "schedule-slot:lin-he:d1:b1",
+          "requiredConsequenceIds": [
+            "consequence:w0:preventive-capacity:allocation",
+            "consequence:w0:preventive-capacity:rest-recovery",
+            "consequence:w0:preventive-capacity:personnel-readiness"
+          ],
+          "effectFingerprints": [
+            "effect:615ff4b7234cd31900f52bdbe6f1c765b2c1ad0ccde014952d7c2a0bb8096488"
+          ],
+          "terminalState": "retain-rest-capacity",
+          "committedAtSequence": 1,
+          "effectFingerprint": "effect:615ff4b7234cd31900f52bdbe6f1c765b2c1ad0ccde014952d7c2a0bb8096488",
+          "beforeValue": "unallocated",
+          "afterValue": "rest"
+        },
+        {
+          "consequenceId": "consequence:w0:preventive-capacity:rest-recovery",
+          "opportunityId": "opportunity:8f5bdeea-cce7-4fe1-b81b-803f52ebee96:w0:preventive-capacity",
+          "decisionIntentId": "w0:preventive-capacity:pump",
+          "choiceSetId": "choice:w0:preventive-capacity",
+          "candidateId": "retain-rest-capacity",
+          "objectRef": "lin-he:recovery-units",
+          "week": 0,
+          "diagnosisId": "TECH-RC9-P05",
+          "sessionId": "8f5bdeea-cce7-4fe1-b81b-803f52ebee96",
+          "candidateBuildAuthorityHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+          "sessionAuthorityToken": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008",
+          "stateRevision": 0,
+          "projectionBaseHash": "6b51e9e0e90e070bd7734b06e29ef16f163b1012208c767052cdf997c8023dce",
+          "candidateProjectionHash": "777eae7969b097af9ef0cbf4516439b7c1605e3f85990643eadb06e1e27ced99",
+          "idempotencyKey": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008:choice:w0:preventive-capacity:0:retain-rest-capacity",
+          "commitCause": "explicit-candidate-action",
+          "resourceClaimRef": "schedule-slot:lin-he:d1:b1",
+          "requiredConsequenceIds": [
+            "consequence:w0:preventive-capacity:allocation",
+            "consequence:w0:preventive-capacity:rest-recovery",
+            "consequence:w0:preventive-capacity:personnel-readiness"
+          ],
+          "effectFingerprints": [
+            "effect:1549adeae5993f63bd0d370191439f81008ae6bdb0a7f100d0c00f35d99d3d48"
+          ],
+          "terminalState": "retain-rest-capacity",
+          "committedAtSequence": 1,
+          "effectFingerprint": "effect:1549adeae5993f63bd0d370191439f81008ae6bdb0a7f100d0c00f35d99d3d48",
+          "beforeValue": 0,
+          "afterValue": 1
+        },
+        {
+          "consequenceId": "consequence:w0:preventive-capacity:personnel-readiness",
+          "opportunityId": "opportunity:8f5bdeea-cce7-4fe1-b81b-803f52ebee96:w0:preventive-capacity",
+          "decisionIntentId": "w0:preventive-capacity:pump",
+          "choiceSetId": "choice:w0:preventive-capacity",
+          "candidateId": "retain-rest-capacity",
+          "objectRef": "settlement:personnel-readiness",
+          "week": 0,
+          "diagnosisId": "TECH-RC9-P05",
+          "sessionId": "8f5bdeea-cce7-4fe1-b81b-803f52ebee96",
+          "candidateBuildAuthorityHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+          "sessionAuthorityToken": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008",
+          "stateRevision": 0,
+          "projectionBaseHash": "6b51e9e0e90e070bd7734b06e29ef16f163b1012208c767052cdf997c8023dce",
+          "candidateProjectionHash": "777eae7969b097af9ef0cbf4516439b7c1605e3f85990643eadb06e1e27ced99",
+          "idempotencyKey": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008:choice:w0:preventive-capacity:0:retain-rest-capacity",
+          "commitCause": "explicit-candidate-action",
+          "resourceClaimRef": "schedule-slot:lin-he:d1:b1",
+          "requiredConsequenceIds": [
+            "consequence:w0:preventive-capacity:allocation",
+            "consequence:w0:preventive-capacity:rest-recovery",
+            "consequence:w0:preventive-capacity:personnel-readiness"
+          ],
+          "effectFingerprints": [
+            "effect:48c115f1ca692b476fb0e40e504122744bb1662d36e31aef054d7f558c08cee6"
+          ],
+          "terminalState": "retain-rest-capacity",
+          "committedAtSequence": 1,
+          "effectFingerprint": "effect:48c115f1ca692b476fb0e40e504122744bb1662d36e31aef054d7f558c08cee6",
+          "beforeValue": 0,
+          "afterValue": 1
+        }
+      ]
+    },
+    {
+      "actionId": "action-0005",
+      "opportunityId": "opportunity:8f5bdeea-cce7-4fe1-b81b-803f52ebee96:w1:recovery-allocation",
+      "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
+      "choiceSetId": "choice:w1:recovery-allocation",
+      "candidateId": "allocate-repair-buffer",
+      "objectRef": "pump-recovery",
+      "week": 1,
+      "diagnosisId": "TECH-RC9-P05",
+      "sessionId": "8f5bdeea-cce7-4fe1-b81b-803f52ebee96",
+      "candidateBuildAuthorityHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+      "sessionAuthorityToken": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008",
+      "stateRevision": 2,
+      "projectionBaseHash": "1a765c7ac5d8377ea650754623c1b10660e1f86be8e139fd5048610c195cff28",
+      "candidateProjectionHash": "aa33a004211af58097d38579acd615d9e8c6f4aa80a5f2b0bff9f74bb689b0a2",
+      "idempotencyKey": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008:choice:w1:recovery-allocation:2:allocate-repair-buffer",
+      "commitCause": "explicit-candidate-action",
+      "resourceClaimRef": "schedule-slot:chen-du:d10:b2",
+      "requiredConsequenceIds": [
+        "consequence:w1:recovery-allocation:schedule",
+        "consequence:w1:recovery-allocation:ending-repair"
+      ],
+      "effectFingerprints": [
+        "effect:344d30d49dc5c51dc21ac4f1712f9e11287d9786de84828c772216c843047c25",
+        "effect:77a210981ed7f3628d23ef79094b91728cec3287c1551f504833b1e815eb41da"
+      ],
+      "terminalState": "allocate-repair-buffer",
+      "committedAtSequence": 5,
+      "consequences": [
+        {
+          "consequenceId": "consequence:w1:recovery-allocation:schedule",
+          "opportunityId": "opportunity:8f5bdeea-cce7-4fe1-b81b-803f52ebee96:w1:recovery-allocation",
+          "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
+          "choiceSetId": "choice:w1:recovery-allocation",
+          "candidateId": "allocate-repair-buffer",
+          "objectRef": "chen-du:d10:b2",
+          "week": 1,
+          "diagnosisId": "TECH-RC9-P05",
+          "sessionId": "8f5bdeea-cce7-4fe1-b81b-803f52ebee96",
+          "candidateBuildAuthorityHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+          "sessionAuthorityToken": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008",
+          "stateRevision": 2,
+          "projectionBaseHash": "1a765c7ac5d8377ea650754623c1b10660e1f86be8e139fd5048610c195cff28",
+          "candidateProjectionHash": "aa33a004211af58097d38579acd615d9e8c6f4aa80a5f2b0bff9f74bb689b0a2",
+          "idempotencyKey": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008:choice:w1:recovery-allocation:2:allocate-repair-buffer",
+          "commitCause": "explicit-candidate-action",
+          "resourceClaimRef": "schedule-slot:chen-du:d10:b2",
+          "requiredConsequenceIds": [
+            "consequence:w1:recovery-allocation:schedule",
+            "consequence:w1:recovery-allocation:ending-repair"
+          ],
+          "effectFingerprints": [
+            "effect:344d30d49dc5c51dc21ac4f1712f9e11287d9786de84828c772216c843047c25"
+          ],
+          "terminalState": "allocate-repair-buffer",
+          "committedAtSequence": 5,
+          "effectFingerprint": "effect:344d30d49dc5c51dc21ac4f1712f9e11287d9786de84828c772216c843047c25",
+          "beforeValue": "rest",
+          "afterValue": "repair"
+        },
+        {
+          "consequenceId": "consequence:w1:recovery-allocation:ending-repair",
+          "opportunityId": "opportunity:8f5bdeea-cce7-4fe1-b81b-803f52ebee96:w1:recovery-allocation",
+          "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
+          "choiceSetId": "choice:w1:recovery-allocation",
+          "candidateId": "allocate-repair-buffer",
+          "objectRef": "forecast:ending-repair",
+          "week": 1,
+          "diagnosisId": "TECH-RC9-P05",
+          "sessionId": "8f5bdeea-cce7-4fe1-b81b-803f52ebee96",
+          "candidateBuildAuthorityHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+          "sessionAuthorityToken": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008",
+          "stateRevision": 2,
+          "projectionBaseHash": "1a765c7ac5d8377ea650754623c1b10660e1f86be8e139fd5048610c195cff28",
+          "candidateProjectionHash": "aa33a004211af58097d38579acd615d9e8c6f4aa80a5f2b0bff9f74bb689b0a2",
+          "idempotencyKey": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008:choice:w1:recovery-allocation:2:allocate-repair-buffer",
+          "commitCause": "explicit-candidate-action",
+          "resourceClaimRef": "schedule-slot:chen-du:d10:b2",
+          "requiredConsequenceIds": [
+            "consequence:w1:recovery-allocation:schedule",
+            "consequence:w1:recovery-allocation:ending-repair"
+          ],
+          "effectFingerprints": [
+            "effect:77a210981ed7f3628d23ef79094b91728cec3287c1551f504833b1e815eb41da"
+          ],
+          "terminalState": "allocate-repair-buffer",
+          "committedAtSequence": 5,
+          "effectFingerprint": "effect:77a210981ed7f3628d23ef79094b91728cec3287c1551f504833b1e815eb41da",
+          "beforeValue": -7,
+          "afterValue": -6
+        }
+      ]
+    }
+  ],
+  "effectOwnershipV03": {
+    "effect:615ff4b7234cd31900f52bdbe6f1c765b2c1ad0ccde014952d7c2a0bb8096488": "w0:preventive-capacity:pump",
+    "effect:1549adeae5993f63bd0d370191439f81008ae6bdb0a7f100d0c00f35d99d3d48": "w0:preventive-capacity:pump",
+    "effect:48c115f1ca692b476fb0e40e504122744bb1662d36e31aef054d7f558c08cee6": "w0:preventive-capacity:pump",
+    "effect:344d30d49dc5c51dc21ac4f1712f9e11287d9786de84828c772216c843047c25": "w1:recovery-allocation:pump-vs-food",
+    "effect:77a210981ed7f3628d23ef79094b91728cec3287c1551f504833b1e815eb41da": "w1:recovery-allocation:pump-vs-food"
+  },
+  "settledManagementOutcomesV03": [
+    {
+      "choiceSetId": "choice:w0:preventive-capacity",
+      "decisionIntentId": "w0:preventive-capacity:pump",
+      "candidateId": "retain-rest-capacity",
+      "consequenceId": "consequence:w0:preventive-capacity:personnel-readiness",
+      "effectFingerprint": "effect:48c115f1ca692b476fb0e40e504122744bb1662d36e31aef054d7f558c08cee6",
+      "beforeValue": 0,
+      "afterValue": 1,
+      "delta": 1,
+      "settledWeek": 0,
+      "settledAtTick": 1002,
+      "diagnosisId": "TECH-RC9-P05",
+      "sessionId": "8f5bdeea-cce7-4fe1-b81b-803f52ebee96",
+      "candidateBuildAuthorityHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+      "sessionAuthorityToken": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008",
+      "actionId": "action-0001",
+      "actionSequence": 1
+    },
+    {
+      "choiceSetId": "choice:w1:recovery-allocation",
+      "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
+      "candidateId": "allocate-repair-buffer",
+      "consequenceId": "consequence:w1:recovery-allocation:ending-repair",
+      "effectFingerprint": "effect:77a210981ed7f3628d23ef79094b91728cec3287c1551f504833b1e815eb41da",
+      "beforeValue": -7,
+      "afterValue": -6,
+      "delta": 1,
+      "settledWeek": 1,
+      "settledAtTick": 2010,
+      "diagnosisId": "TECH-RC9-P05",
+      "sessionId": "8f5bdeea-cce7-4fe1-b81b-803f52ebee96",
+      "candidateBuildAuthorityHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+      "sessionAuthorityToken": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008",
+      "actionId": "action-0005",
+      "actionSequence": 5
+    }
+  ],
+  "domainEvents": [
+    {
+      "sequence": 1,
+      "eventId": "action-0001",
+      "type": "management-choice-committed",
+      "atTick": 54,
+      "before": {
+        "low": 3,
+        "high": 11
+      },
+      "after": {
+        "low": 3,
+        "high": 11
+      }
+    },
+    {
+      "sequence": 2,
+      "eventId": "action-0002",
+      "type": "clock-changed",
+      "atTick": 54
+    },
+    {
+      "sequence": 3,
+      "eventId": "pump-incident-day-3",
+      "type": "pump-incident",
+      "atTick": 342,
+      "before": {
+        "low": 3,
+        "high": 11
+      },
+      "after": {
+        "low": 3,
+        "high": 3
+      }
+    },
+    {
+      "sequence": 4,
+      "eventId": "action-0003",
+      "type": "clock-changed",
+      "atTick": 342
+    },
+    {
+      "sequence": 5,
+      "eventId": "week-1-ended",
+      "type": "week-ended",
+      "atTick": 1002
+    },
+    {
+      "sequence": 6,
+      "eventId": "action-0004",
+      "type": "clock-changed",
+      "atTick": 1002
+    },
+    {
+      "sequence": 7,
+      "eventId": "action-0005",
+      "type": "management-choice-committed",
+      "atTick": 1062,
+      "before": {
+        "low": -12,
+        "high": -12
+      },
+      "after": {
+        "low": -12,
+        "high": -12
+      }
+    },
+    {
+      "sequence": 8,
+      "eventId": "action-0006",
+      "type": "clock-changed",
+      "atTick": 1062
+    },
+    {
+      "sequence": 9,
+      "eventId": "lin-he-request-deadline",
+      "type": "lin-he-request-expired",
+      "atTick": 1206,
+      "before": {
+        "low": -12,
+        "high": -12
+      },
+      "after": {
+        "low": -12,
+        "high": -12
+      }
+    },
+    {
+      "sequence": 10,
+      "eventId": "action-0007",
+      "type": "clock-changed",
+      "atTick": 1206
+    },
+    {
+      "sequence": 11,
+      "eventId": "week-2-ended",
+      "type": "week-ended",
+      "atTick": 2010
+    }
+  ],
+  "telemetry": [
+    {
+      "type": "session-started",
+      "atTick": 54,
+      "machineOffsetMs": 0,
+      "weekIndex": 0,
+      "sequence": 1
+    },
+    {
+      "type": "week-started",
+      "atTick": 54,
+      "machineOffsetMs": 0,
+      "weekIndex": 0,
+      "sequence": 2
+    },
+    {
+      "type": "speed-changed",
+      "atTick": 54,
+      "machineOffsetMs": 0,
+      "speed": 3,
+      "sequence": 3
+    },
+    {
+      "type": "player-action-applied",
+      "atTick": 54,
+      "machineOffsetMs": 52564,
+      "fromTick": 54,
+      "toTick": 54,
+      "actionId": "action-0001",
+      "domainEventIds": [
+        "action-0001"
+      ],
+      "sequence": 4
+    },
+    {
+      "type": "speed-changed",
+      "atTick": 54,
+      "machineOffsetMs": 104457,
+      "speed": 8,
+      "sequence": 5
+    },
+    {
+      "type": "player-action-applied",
+      "atTick": 54,
+      "machineOffsetMs": 104744,
+      "fromTick": 54,
+      "toTick": 54,
+      "actionId": "action-0002",
+      "domainEventIds": [
+        "action-0002"
+      ],
+      "sequence": 6
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 62,
+      "machineOffsetMs": 105001,
+      "speed": 8,
+      "fromTick": 54,
+      "toTick": 62,
+      "domainEventIds": [],
+      "sequence": 7
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 70,
+      "machineOffsetMs": 105250,
+      "speed": 8,
+      "fromTick": 62,
+      "toTick": 70,
+      "domainEventIds": [],
+      "sequence": 8
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 78,
+      "machineOffsetMs": 105501,
+      "speed": 8,
+      "fromTick": 70,
+      "toTick": 78,
+      "domainEventIds": [],
+      "sequence": 9
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 86,
+      "machineOffsetMs": 105751,
+      "speed": 8,
+      "fromTick": 78,
+      "toTick": 86,
+      "domainEventIds": [],
+      "sequence": 10
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 94,
+      "machineOffsetMs": 106001,
+      "speed": 8,
+      "fromTick": 86,
+      "toTick": 94,
+      "domainEventIds": [],
+      "sequence": 11
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 102,
+      "machineOffsetMs": 106251,
+      "speed": 8,
+      "fromTick": 94,
+      "toTick": 102,
+      "domainEventIds": [],
+      "sequence": 12
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 110,
+      "machineOffsetMs": 106501,
+      "speed": 8,
+      "fromTick": 102,
+      "toTick": 110,
+      "domainEventIds": [],
+      "sequence": 13
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 118,
+      "machineOffsetMs": 106751,
+      "speed": 8,
+      "fromTick": 110,
+      "toTick": 118,
+      "domainEventIds": [],
+      "sequence": 14
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 126,
+      "machineOffsetMs": 107000,
+      "speed": 8,
+      "fromTick": 118,
+      "toTick": 126,
+      "domainEventIds": [],
+      "sequence": 15
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 134,
+      "machineOffsetMs": 107251,
+      "speed": 8,
+      "fromTick": 126,
+      "toTick": 134,
+      "domainEventIds": [],
+      "sequence": 16
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 142,
+      "machineOffsetMs": 107500,
+      "speed": 8,
+      "fromTick": 134,
+      "toTick": 142,
+      "domainEventIds": [],
+      "sequence": 17
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 150,
+      "machineOffsetMs": 107750,
+      "speed": 8,
+      "fromTick": 142,
+      "toTick": 150,
+      "domainEventIds": [],
+      "sequence": 18
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 158,
+      "machineOffsetMs": 107999,
+      "speed": 8,
+      "fromTick": 150,
+      "toTick": 158,
+      "domainEventIds": [],
+      "sequence": 19
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 166,
+      "machineOffsetMs": 108251,
+      "speed": 8,
+      "fromTick": 158,
+      "toTick": 166,
+      "domainEventIds": [],
+      "sequence": 20
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 174,
+      "machineOffsetMs": 108501,
+      "speed": 8,
+      "fromTick": 166,
+      "toTick": 174,
+      "domainEventIds": [],
+      "sequence": 21
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 182,
+      "machineOffsetMs": 108751,
+      "speed": 8,
+      "fromTick": 174,
+      "toTick": 182,
+      "domainEventIds": [],
+      "sequence": 22
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 190,
+      "machineOffsetMs": 109001,
+      "speed": 8,
+      "fromTick": 182,
+      "toTick": 190,
+      "domainEventIds": [],
+      "sequence": 23
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 198,
+      "machineOffsetMs": 109251,
+      "speed": 8,
+      "fromTick": 190,
+      "toTick": 198,
+      "domainEventIds": [],
+      "sequence": 24
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 206,
+      "machineOffsetMs": 109501,
+      "speed": 8,
+      "fromTick": 198,
+      "toTick": 206,
+      "domainEventIds": [],
+      "sequence": 25
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 214,
+      "machineOffsetMs": 109749,
+      "speed": 8,
+      "fromTick": 206,
+      "toTick": 214,
+      "domainEventIds": [],
+      "sequence": 26
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 222,
+      "machineOffsetMs": 110001,
+      "speed": 8,
+      "fromTick": 214,
+      "toTick": 222,
+      "domainEventIds": [],
+      "sequence": 27
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 230,
+      "machineOffsetMs": 110251,
+      "speed": 8,
+      "fromTick": 222,
+      "toTick": 230,
+      "domainEventIds": [],
+      "sequence": 28
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 238,
+      "machineOffsetMs": 110501,
+      "speed": 8,
+      "fromTick": 230,
+      "toTick": 238,
+      "domainEventIds": [],
+      "sequence": 29
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 246,
+      "machineOffsetMs": 110751,
+      "speed": 8,
+      "fromTick": 238,
+      "toTick": 246,
+      "domainEventIds": [],
+      "sequence": 30
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 254,
+      "machineOffsetMs": 111000,
+      "speed": 8,
+      "fromTick": 246,
+      "toTick": 254,
+      "domainEventIds": [],
+      "sequence": 31
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 262,
+      "machineOffsetMs": 111250,
+      "speed": 8,
+      "fromTick": 254,
+      "toTick": 262,
+      "domainEventIds": [],
+      "sequence": 32
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 270,
+      "machineOffsetMs": 111500,
+      "speed": 8,
+      "fromTick": 262,
+      "toTick": 270,
+      "domainEventIds": [],
+      "sequence": 33
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 278,
+      "machineOffsetMs": 111749,
+      "speed": 8,
+      "fromTick": 270,
+      "toTick": 278,
+      "domainEventIds": [],
+      "sequence": 34
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 286,
+      "machineOffsetMs": 112001,
+      "speed": 8,
+      "fromTick": 278,
+      "toTick": 286,
+      "domainEventIds": [],
+      "sequence": 35
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 294,
+      "machineOffsetMs": 112251,
+      "speed": 8,
+      "fromTick": 286,
+      "toTick": 294,
+      "domainEventIds": [],
+      "sequence": 36
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 302,
+      "machineOffsetMs": 112501,
+      "speed": 8,
+      "fromTick": 294,
+      "toTick": 302,
+      "domainEventIds": [],
+      "sequence": 37
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 310,
+      "machineOffsetMs": 112751,
+      "speed": 8,
+      "fromTick": 302,
+      "toTick": 310,
+      "domainEventIds": [],
+      "sequence": 38
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 318,
+      "machineOffsetMs": 113001,
+      "speed": 8,
+      "fromTick": 310,
+      "toTick": 318,
+      "domainEventIds": [],
+      "sequence": 39
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 326,
+      "machineOffsetMs": 113251,
+      "speed": 8,
+      "fromTick": 318,
+      "toTick": 326,
+      "domainEventIds": [],
+      "sequence": 40
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 334,
+      "machineOffsetMs": 113501,
+      "speed": 8,
+      "fromTick": 326,
+      "toTick": 334,
+      "domainEventIds": [],
+      "sequence": 41
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 342,
+      "machineOffsetMs": 113752,
+      "speed": 8,
+      "fromTick": 334,
+      "toTick": 342,
+      "domainEventIds": [
+        "pump-incident-day-3"
+      ],
+      "sequence": 42
+    },
+    {
+      "type": "auto-pause-triggered",
+      "atTick": 342,
+      "machineOffsetMs": 113752,
+      "speed": 8,
+      "domainEventIds": [
+        "pump-incident-day-3"
+      ],
+      "sequence": 43
+    },
+    {
+      "type": "player-action-applied",
+      "atTick": 342,
+      "machineOffsetMs": 131991,
+      "fromTick": 342,
+      "toTick": 342,
+      "actionId": "action-0003",
+      "domainEventIds": [
+        "action-0003"
+      ],
+      "sequence": 44
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 350,
+      "machineOffsetMs": 132248,
+      "speed": 8,
+      "fromTick": 342,
+      "toTick": 350,
+      "domainEventIds": [],
+      "sequence": 45
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 358,
+      "machineOffsetMs": 132496,
+      "speed": 8,
+      "fromTick": 350,
+      "toTick": 358,
+      "domainEventIds": [],
+      "sequence": 46
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 366,
+      "machineOffsetMs": 132747,
+      "speed": 8,
+      "fromTick": 358,
+      "toTick": 366,
+      "domainEventIds": [],
+      "sequence": 47
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 374,
+      "machineOffsetMs": 132997,
+      "speed": 8,
+      "fromTick": 366,
+      "toTick": 374,
+      "domainEventIds": [],
+      "sequence": 48
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 382,
+      "machineOffsetMs": 133247,
+      "speed": 8,
+      "fromTick": 374,
+      "toTick": 382,
+      "domainEventIds": [],
+      "sequence": 49
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 390,
+      "machineOffsetMs": 133497,
+      "speed": 8,
+      "fromTick": 382,
+      "toTick": 390,
+      "domainEventIds": [],
+      "sequence": 50
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 398,
+      "machineOffsetMs": 133747,
+      "speed": 8,
+      "fromTick": 390,
+      "toTick": 398,
+      "domainEventIds": [],
+      "sequence": 51
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 406,
+      "machineOffsetMs": 134021,
+      "speed": 8,
+      "fromTick": 398,
+      "toTick": 406,
+      "domainEventIds": [],
+      "sequence": 52
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 414,
+      "machineOffsetMs": 134245,
+      "speed": 8,
+      "fromTick": 406,
+      "toTick": 414,
+      "domainEventIds": [],
+      "sequence": 53
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 422,
+      "machineOffsetMs": 134497,
+      "speed": 8,
+      "fromTick": 414,
+      "toTick": 422,
+      "domainEventIds": [],
+      "sequence": 54
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 430,
+      "machineOffsetMs": 134747,
+      "speed": 8,
+      "fromTick": 422,
+      "toTick": 430,
+      "domainEventIds": [],
+      "sequence": 55
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 438,
+      "machineOffsetMs": 134997,
+      "speed": 8,
+      "fromTick": 430,
+      "toTick": 438,
+      "domainEventIds": [],
+      "sequence": 56
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 446,
+      "machineOffsetMs": 135247,
+      "speed": 8,
+      "fromTick": 438,
+      "toTick": 446,
+      "domainEventIds": [],
+      "sequence": 57
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 454,
+      "machineOffsetMs": 135498,
+      "speed": 8,
+      "fromTick": 446,
+      "toTick": 454,
+      "domainEventIds": [],
+      "sequence": 58
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 462,
+      "machineOffsetMs": 135747,
+      "speed": 8,
+      "fromTick": 454,
+      "toTick": 462,
+      "domainEventIds": [],
+      "sequence": 59
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 470,
+      "machineOffsetMs": 135996,
+      "speed": 8,
+      "fromTick": 462,
+      "toTick": 470,
+      "domainEventIds": [],
+      "sequence": 60
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 478,
+      "machineOffsetMs": 136247,
+      "speed": 8,
+      "fromTick": 470,
+      "toTick": 478,
+      "domainEventIds": [],
+      "sequence": 61
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 486,
+      "machineOffsetMs": 136497,
+      "speed": 8,
+      "fromTick": 478,
+      "toTick": 486,
+      "domainEventIds": [],
+      "sequence": 62
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 494,
+      "machineOffsetMs": 136747,
+      "speed": 8,
+      "fromTick": 486,
+      "toTick": 494,
+      "domainEventIds": [],
+      "sequence": 63
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 502,
+      "machineOffsetMs": 136995,
+      "speed": 8,
+      "fromTick": 494,
+      "toTick": 502,
+      "domainEventIds": [],
+      "sequence": 64
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 510,
+      "machineOffsetMs": 137248,
+      "speed": 8,
+      "fromTick": 502,
+      "toTick": 510,
+      "domainEventIds": [],
+      "sequence": 65
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 518,
+      "machineOffsetMs": 137498,
+      "speed": 8,
+      "fromTick": 510,
+      "toTick": 518,
+      "domainEventIds": [],
+      "sequence": 66
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 526,
+      "machineOffsetMs": 137747,
+      "speed": 8,
+      "fromTick": 518,
+      "toTick": 526,
+      "domainEventIds": [],
+      "sequence": 67
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 534,
+      "machineOffsetMs": 137997,
+      "speed": 8,
+      "fromTick": 526,
+      "toTick": 534,
+      "domainEventIds": [],
+      "sequence": 68
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 542,
+      "machineOffsetMs": 138248,
+      "speed": 8,
+      "fromTick": 534,
+      "toTick": 542,
+      "domainEventIds": [],
+      "sequence": 69
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 550,
+      "machineOffsetMs": 138496,
+      "speed": 8,
+      "fromTick": 542,
+      "toTick": 550,
+      "domainEventIds": [],
+      "sequence": 70
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 558,
+      "machineOffsetMs": 138747,
+      "speed": 8,
+      "fromTick": 550,
+      "toTick": 558,
+      "domainEventIds": [],
+      "sequence": 71
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 566,
+      "machineOffsetMs": 138997,
+      "speed": 8,
+      "fromTick": 558,
+      "toTick": 566,
+      "domainEventIds": [],
+      "sequence": 72
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 574,
+      "machineOffsetMs": 139245,
+      "speed": 8,
+      "fromTick": 566,
+      "toTick": 574,
+      "domainEventIds": [],
+      "sequence": 73
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 582,
+      "machineOffsetMs": 139498,
+      "speed": 8,
+      "fromTick": 574,
+      "toTick": 582,
+      "domainEventIds": [],
+      "sequence": 74
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 590,
+      "machineOffsetMs": 139747,
+      "speed": 8,
+      "fromTick": 582,
+      "toTick": 590,
+      "domainEventIds": [],
+      "sequence": 75
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 598,
+      "machineOffsetMs": 139996,
+      "speed": 8,
+      "fromTick": 590,
+      "toTick": 598,
+      "domainEventIds": [],
+      "sequence": 76
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 606,
+      "machineOffsetMs": 140247,
+      "speed": 8,
+      "fromTick": 598,
+      "toTick": 606,
+      "domainEventIds": [],
+      "sequence": 77
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 614,
+      "machineOffsetMs": 140497,
+      "speed": 8,
+      "fromTick": 606,
+      "toTick": 614,
+      "domainEventIds": [],
+      "sequence": 78
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 622,
+      "machineOffsetMs": 140747,
+      "speed": 8,
+      "fromTick": 614,
+      "toTick": 622,
+      "domainEventIds": [],
+      "sequence": 79
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 630,
+      "machineOffsetMs": 140997,
+      "speed": 8,
+      "fromTick": 622,
+      "toTick": 630,
+      "domainEventIds": [],
+      "sequence": 80
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 638,
+      "machineOffsetMs": 141247,
+      "speed": 8,
+      "fromTick": 630,
+      "toTick": 638,
+      "domainEventIds": [],
+      "sequence": 81
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 646,
+      "machineOffsetMs": 141497,
+      "speed": 8,
+      "fromTick": 638,
+      "toTick": 646,
+      "domainEventIds": [],
+      "sequence": 82
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 654,
+      "machineOffsetMs": 141747,
+      "speed": 8,
+      "fromTick": 646,
+      "toTick": 654,
+      "domainEventIds": [],
+      "sequence": 83
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 662,
+      "machineOffsetMs": 141997,
+      "speed": 8,
+      "fromTick": 654,
+      "toTick": 662,
+      "domainEventIds": [],
+      "sequence": 84
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 670,
+      "machineOffsetMs": 142247,
+      "speed": 8,
+      "fromTick": 662,
+      "toTick": 670,
+      "domainEventIds": [],
+      "sequence": 85
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 678,
+      "machineOffsetMs": 142497,
+      "speed": 8,
+      "fromTick": 670,
+      "toTick": 678,
+      "domainEventIds": [],
+      "sequence": 86
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 686,
+      "machineOffsetMs": 142746,
+      "speed": 8,
+      "fromTick": 678,
+      "toTick": 686,
+      "domainEventIds": [],
+      "sequence": 87
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 694,
+      "machineOffsetMs": 142998,
+      "speed": 8,
+      "fromTick": 686,
+      "toTick": 694,
+      "domainEventIds": [],
+      "sequence": 88
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 702,
+      "machineOffsetMs": 143247,
+      "speed": 8,
+      "fromTick": 694,
+      "toTick": 702,
+      "domainEventIds": [],
+      "sequence": 89
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 710,
+      "machineOffsetMs": 143497,
+      "speed": 8,
+      "fromTick": 702,
+      "toTick": 710,
+      "domainEventIds": [],
+      "sequence": 90
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 718,
+      "machineOffsetMs": 143747,
+      "speed": 8,
+      "fromTick": 710,
+      "toTick": 718,
+      "domainEventIds": [],
+      "sequence": 91
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 726,
+      "machineOffsetMs": 143997,
+      "speed": 8,
+      "fromTick": 718,
+      "toTick": 726,
+      "domainEventIds": [],
+      "sequence": 92
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 734,
+      "machineOffsetMs": 144246,
+      "speed": 8,
+      "fromTick": 726,
+      "toTick": 734,
+      "domainEventIds": [],
+      "sequence": 93
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 742,
+      "machineOffsetMs": 144497,
+      "speed": 8,
+      "fromTick": 734,
+      "toTick": 742,
+      "domainEventIds": [],
+      "sequence": 94
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 750,
+      "machineOffsetMs": 144748,
+      "speed": 8,
+      "fromTick": 742,
+      "toTick": 750,
+      "domainEventIds": [],
+      "sequence": 95
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 758,
+      "machineOffsetMs": 144995,
+      "speed": 8,
+      "fromTick": 750,
+      "toTick": 758,
+      "domainEventIds": [],
+      "sequence": 96
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 766,
+      "machineOffsetMs": 145246,
+      "speed": 8,
+      "fromTick": 758,
+      "toTick": 766,
+      "domainEventIds": [],
+      "sequence": 97
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 774,
+      "machineOffsetMs": 145498,
+      "speed": 8,
+      "fromTick": 766,
+      "toTick": 774,
+      "domainEventIds": [],
+      "sequence": 98
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 782,
+      "machineOffsetMs": 145745,
+      "speed": 8,
+      "fromTick": 774,
+      "toTick": 782,
+      "domainEventIds": [],
+      "sequence": 99
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 790,
+      "machineOffsetMs": 145997,
+      "speed": 8,
+      "fromTick": 782,
+      "toTick": 790,
+      "domainEventIds": [],
+      "sequence": 100
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 798,
+      "machineOffsetMs": 146247,
+      "speed": 8,
+      "fromTick": 790,
+      "toTick": 798,
+      "domainEventIds": [],
+      "sequence": 101
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 806,
+      "machineOffsetMs": 146497,
+      "speed": 8,
+      "fromTick": 798,
+      "toTick": 806,
+      "domainEventIds": [],
+      "sequence": 102
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 814,
+      "machineOffsetMs": 146748,
+      "speed": 8,
+      "fromTick": 806,
+      "toTick": 814,
+      "domainEventIds": [],
+      "sequence": 103
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 822,
+      "machineOffsetMs": 146995,
+      "speed": 8,
+      "fromTick": 814,
+      "toTick": 822,
+      "domainEventIds": [],
+      "sequence": 104
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 830,
+      "machineOffsetMs": 147247,
+      "speed": 8,
+      "fromTick": 822,
+      "toTick": 830,
+      "domainEventIds": [],
+      "sequence": 105
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 838,
+      "machineOffsetMs": 147497,
+      "speed": 8,
+      "fromTick": 830,
+      "toTick": 838,
+      "domainEventIds": [],
+      "sequence": 106
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 846,
+      "machineOffsetMs": 147746,
+      "speed": 8,
+      "fromTick": 838,
+      "toTick": 846,
+      "domainEventIds": [],
+      "sequence": 107
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 854,
+      "machineOffsetMs": 147997,
+      "speed": 8,
+      "fromTick": 846,
+      "toTick": 854,
+      "domainEventIds": [],
+      "sequence": 108
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 862,
+      "machineOffsetMs": 148247,
+      "speed": 8,
+      "fromTick": 854,
+      "toTick": 862,
+      "domainEventIds": [],
+      "sequence": 109
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 870,
+      "machineOffsetMs": 148495,
+      "speed": 8,
+      "fromTick": 862,
+      "toTick": 870,
+      "domainEventIds": [],
+      "sequence": 110
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 878,
+      "machineOffsetMs": 148747,
+      "speed": 8,
+      "fromTick": 870,
+      "toTick": 878,
+      "domainEventIds": [],
+      "sequence": 111
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 886,
+      "machineOffsetMs": 148997,
+      "speed": 8,
+      "fromTick": 878,
+      "toTick": 886,
+      "domainEventIds": [],
+      "sequence": 112
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 894,
+      "machineOffsetMs": 149247,
+      "speed": 8,
+      "fromTick": 886,
+      "toTick": 894,
+      "domainEventIds": [],
+      "sequence": 113
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 902,
+      "machineOffsetMs": 149497,
+      "speed": 8,
+      "fromTick": 894,
+      "toTick": 902,
+      "domainEventIds": [],
+      "sequence": 114
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 910,
+      "machineOffsetMs": 149747,
+      "speed": 8,
+      "fromTick": 902,
+      "toTick": 910,
+      "domainEventIds": [],
+      "sequence": 115
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 918,
+      "machineOffsetMs": 149996,
+      "speed": 8,
+      "fromTick": 910,
+      "toTick": 918,
+      "domainEventIds": [],
+      "sequence": 116
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 926,
+      "machineOffsetMs": 150247,
+      "speed": 8,
+      "fromTick": 918,
+      "toTick": 926,
+      "domainEventIds": [],
+      "sequence": 117
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 934,
+      "machineOffsetMs": 150497,
+      "speed": 8,
+      "fromTick": 926,
+      "toTick": 934,
+      "domainEventIds": [],
+      "sequence": 118
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 942,
+      "machineOffsetMs": 150747,
+      "speed": 8,
+      "fromTick": 934,
+      "toTick": 942,
+      "domainEventIds": [],
+      "sequence": 119
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 950,
+      "machineOffsetMs": 150998,
+      "speed": 8,
+      "fromTick": 942,
+      "toTick": 950,
+      "domainEventIds": [],
+      "sequence": 120
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 958,
+      "machineOffsetMs": 151247,
+      "speed": 8,
+      "fromTick": 950,
+      "toTick": 958,
+      "domainEventIds": [],
+      "sequence": 121
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 966,
+      "machineOffsetMs": 151497,
+      "speed": 8,
+      "fromTick": 958,
+      "toTick": 966,
+      "domainEventIds": [],
+      "sequence": 122
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 974,
+      "machineOffsetMs": 151747,
+      "speed": 8,
+      "fromTick": 966,
+      "toTick": 974,
+      "domainEventIds": [],
+      "sequence": 123
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 982,
+      "machineOffsetMs": 151997,
+      "speed": 8,
+      "fromTick": 974,
+      "toTick": 982,
+      "domainEventIds": [],
+      "sequence": 124
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 990,
+      "machineOffsetMs": 152248,
+      "speed": 8,
+      "fromTick": 982,
+      "toTick": 990,
+      "domainEventIds": [],
+      "sequence": 125
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 998,
+      "machineOffsetMs": 152497,
+      "speed": 8,
+      "fromTick": 990,
+      "toTick": 998,
+      "domainEventIds": [],
+      "sequence": 126
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1002,
+      "machineOffsetMs": 152749,
+      "speed": 8,
+      "fromTick": 998,
+      "toTick": 1002,
+      "domainEventIds": [
+        "week-1-ended"
+      ],
+      "sequence": 127
+    },
+    {
+      "type": "auto-pause-triggered",
+      "atTick": 1002,
+      "machineOffsetMs": 152749,
+      "speed": 8,
+      "domainEventIds": [
+        "week-1-ended"
+      ],
+      "sequence": 128
+    },
+    {
+      "type": "week-completed",
+      "atTick": 1002,
+      "machineOffsetMs": 152749,
+      "weekIndex": 0,
+      "sequence": 129
+    },
+    {
+      "type": "player-action-applied",
+      "atTick": 1062,
+      "machineOffsetMs": 162804,
+      "fromTick": 1002,
+      "toTick": 1062,
+      "actionId": "action-0004",
+      "domainEventIds": [
+        "action-0004"
+      ],
+      "sequence": 130
+    },
+    {
+      "type": "week-started",
+      "atTick": 1062,
+      "machineOffsetMs": 162804,
+      "weekIndex": 1,
+      "sequence": 131
+    },
+    {
+      "type": "player-action-applied",
+      "atTick": 1062,
+      "machineOffsetMs": 201298,
+      "fromTick": 1062,
+      "toTick": 1062,
+      "actionId": "action-0005",
+      "domainEventIds": [
+        "action-0005"
+      ],
+      "sequence": 132
+    },
+    {
+      "type": "player-action-applied",
+      "atTick": 1062,
+      "machineOffsetMs": 234992,
+      "fromTick": 1062,
+      "toTick": 1062,
+      "actionId": "action-0006",
+      "domainEventIds": [
+        "action-0006"
+      ],
+      "sequence": 133
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1070,
+      "machineOffsetMs": 235247,
+      "speed": 8,
+      "fromTick": 1062,
+      "toTick": 1070,
+      "domainEventIds": [],
+      "sequence": 134
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1078,
+      "machineOffsetMs": 235496,
+      "speed": 8,
+      "fromTick": 1070,
+      "toTick": 1078,
+      "domainEventIds": [],
+      "sequence": 135
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1086,
+      "machineOffsetMs": 235748,
+      "speed": 8,
+      "fromTick": 1078,
+      "toTick": 1086,
+      "domainEventIds": [],
+      "sequence": 136
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1094,
+      "machineOffsetMs": 235997,
+      "speed": 8,
+      "fromTick": 1086,
+      "toTick": 1094,
+      "domainEventIds": [],
+      "sequence": 137
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1102,
+      "machineOffsetMs": 236248,
+      "speed": 8,
+      "fromTick": 1094,
+      "toTick": 1102,
+      "domainEventIds": [],
+      "sequence": 138
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1110,
+      "machineOffsetMs": 236497,
+      "speed": 8,
+      "fromTick": 1102,
+      "toTick": 1110,
+      "domainEventIds": [],
+      "sequence": 139
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1118,
+      "machineOffsetMs": 236747,
+      "speed": 8,
+      "fromTick": 1110,
+      "toTick": 1118,
+      "domainEventIds": [],
+      "sequence": 140
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1126,
+      "machineOffsetMs": 236997,
+      "speed": 8,
+      "fromTick": 1118,
+      "toTick": 1126,
+      "domainEventIds": [],
+      "sequence": 141
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1134,
+      "machineOffsetMs": 237247,
+      "speed": 8,
+      "fromTick": 1126,
+      "toTick": 1134,
+      "domainEventIds": [],
+      "sequence": 142
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1142,
+      "machineOffsetMs": 237497,
+      "speed": 8,
+      "fromTick": 1134,
+      "toTick": 1142,
+      "domainEventIds": [],
+      "sequence": 143
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1150,
+      "machineOffsetMs": 237747,
+      "speed": 8,
+      "fromTick": 1142,
+      "toTick": 1150,
+      "domainEventIds": [],
+      "sequence": 144
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1158,
+      "machineOffsetMs": 237998,
+      "speed": 8,
+      "fromTick": 1150,
+      "toTick": 1158,
+      "domainEventIds": [],
+      "sequence": 145
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1166,
+      "machineOffsetMs": 238247,
+      "speed": 8,
+      "fromTick": 1158,
+      "toTick": 1166,
+      "domainEventIds": [],
+      "sequence": 146
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1174,
+      "machineOffsetMs": 238497,
+      "speed": 8,
+      "fromTick": 1166,
+      "toTick": 1174,
+      "domainEventIds": [],
+      "sequence": 147
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1182,
+      "machineOffsetMs": 238746,
+      "speed": 8,
+      "fromTick": 1174,
+      "toTick": 1182,
+      "domainEventIds": [],
+      "sequence": 148
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1190,
+      "machineOffsetMs": 238997,
+      "speed": 8,
+      "fromTick": 1182,
+      "toTick": 1190,
+      "domainEventIds": [],
+      "sequence": 149
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1198,
+      "machineOffsetMs": 239248,
+      "speed": 8,
+      "fromTick": 1190,
+      "toTick": 1198,
+      "domainEventIds": [],
+      "sequence": 150
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1206,
+      "machineOffsetMs": 239497,
+      "speed": 8,
+      "fromTick": 1198,
+      "toTick": 1206,
+      "domainEventIds": [
+        "lin-he-request-deadline"
+      ],
+      "sequence": 151
+    },
+    {
+      "type": "auto-pause-triggered",
+      "atTick": 1206,
+      "machineOffsetMs": 239497,
+      "speed": 8,
+      "domainEventIds": [
+        "lin-he-request-deadline"
+      ],
+      "sequence": 152
+    },
+    {
+      "type": "player-action-applied",
+      "atTick": 1206,
+      "machineOffsetMs": 247877,
+      "fromTick": 1206,
+      "toTick": 1206,
+      "actionId": "action-0007",
+      "domainEventIds": [
+        "action-0007"
+      ],
+      "sequence": 153
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1214,
+      "machineOffsetMs": 248132,
+      "speed": 8,
+      "fromTick": 1206,
+      "toTick": 1214,
+      "domainEventIds": [],
+      "sequence": 154
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1222,
+      "machineOffsetMs": 248381,
+      "speed": 8,
+      "fromTick": 1214,
+      "toTick": 1222,
+      "domainEventIds": [],
+      "sequence": 155
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1230,
+      "machineOffsetMs": 248632,
+      "speed": 8,
+      "fromTick": 1222,
+      "toTick": 1230,
+      "domainEventIds": [],
+      "sequence": 156
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1238,
+      "machineOffsetMs": 248882,
+      "speed": 8,
+      "fromTick": 1230,
+      "toTick": 1238,
+      "domainEventIds": [],
+      "sequence": 157
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1246,
+      "machineOffsetMs": 249132,
+      "speed": 8,
+      "fromTick": 1238,
+      "toTick": 1246,
+      "domainEventIds": [],
+      "sequence": 158
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1254,
+      "machineOffsetMs": 249382,
+      "speed": 8,
+      "fromTick": 1246,
+      "toTick": 1254,
+      "domainEventIds": [],
+      "sequence": 159
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1262,
+      "machineOffsetMs": 249632,
+      "speed": 8,
+      "fromTick": 1254,
+      "toTick": 1262,
+      "domainEventIds": [],
+      "sequence": 160
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1270,
+      "machineOffsetMs": 249882,
+      "speed": 8,
+      "fromTick": 1262,
+      "toTick": 1270,
+      "domainEventIds": [],
+      "sequence": 161
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1278,
+      "machineOffsetMs": 250132,
+      "speed": 8,
+      "fromTick": 1270,
+      "toTick": 1278,
+      "domainEventIds": [],
+      "sequence": 162
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1286,
+      "machineOffsetMs": 250382,
+      "speed": 8,
+      "fromTick": 1278,
+      "toTick": 1286,
+      "domainEventIds": [],
+      "sequence": 163
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1294,
+      "machineOffsetMs": 250632,
+      "speed": 8,
+      "fromTick": 1286,
+      "toTick": 1294,
+      "domainEventIds": [],
+      "sequence": 164
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1302,
+      "machineOffsetMs": 250882,
+      "speed": 8,
+      "fromTick": 1294,
+      "toTick": 1302,
+      "domainEventIds": [],
+      "sequence": 165
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1310,
+      "machineOffsetMs": 251132,
+      "speed": 8,
+      "fromTick": 1302,
+      "toTick": 1310,
+      "domainEventIds": [],
+      "sequence": 166
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1318,
+      "machineOffsetMs": 251382,
+      "speed": 8,
+      "fromTick": 1310,
+      "toTick": 1318,
+      "domainEventIds": [],
+      "sequence": 167
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1326,
+      "machineOffsetMs": 251632,
+      "speed": 8,
+      "fromTick": 1318,
+      "toTick": 1326,
+      "domainEventIds": [],
+      "sequence": 168
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1334,
+      "machineOffsetMs": 251882,
+      "speed": 8,
+      "fromTick": 1326,
+      "toTick": 1334,
+      "domainEventIds": [],
+      "sequence": 169
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1342,
+      "machineOffsetMs": 252132,
+      "speed": 8,
+      "fromTick": 1334,
+      "toTick": 1342,
+      "domainEventIds": [],
+      "sequence": 170
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1350,
+      "machineOffsetMs": 252382,
+      "speed": 8,
+      "fromTick": 1342,
+      "toTick": 1350,
+      "domainEventIds": [],
+      "sequence": 171
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1358,
+      "machineOffsetMs": 252632,
+      "speed": 8,
+      "fromTick": 1350,
+      "toTick": 1358,
+      "domainEventIds": [],
+      "sequence": 172
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1366,
+      "machineOffsetMs": 252882,
+      "speed": 8,
+      "fromTick": 1358,
+      "toTick": 1366,
+      "domainEventIds": [],
+      "sequence": 173
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1374,
+      "machineOffsetMs": 253132,
+      "speed": 8,
+      "fromTick": 1366,
+      "toTick": 1374,
+      "domainEventIds": [],
+      "sequence": 174
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1382,
+      "machineOffsetMs": 253382,
+      "speed": 8,
+      "fromTick": 1374,
+      "toTick": 1382,
+      "domainEventIds": [],
+      "sequence": 175
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1390,
+      "machineOffsetMs": 253631,
+      "speed": 8,
+      "fromTick": 1382,
+      "toTick": 1390,
+      "domainEventIds": [],
+      "sequence": 176
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1398,
+      "machineOffsetMs": 253882,
+      "speed": 8,
+      "fromTick": 1390,
+      "toTick": 1398,
+      "domainEventIds": [],
+      "sequence": 177
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1406,
+      "machineOffsetMs": 254132,
+      "speed": 8,
+      "fromTick": 1398,
+      "toTick": 1406,
+      "domainEventIds": [],
+      "sequence": 178
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1414,
+      "machineOffsetMs": 254380,
+      "speed": 8,
+      "fromTick": 1406,
+      "toTick": 1414,
+      "domainEventIds": [],
+      "sequence": 179
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1422,
+      "machineOffsetMs": 254630,
+      "speed": 8,
+      "fromTick": 1414,
+      "toTick": 1422,
+      "domainEventIds": [],
+      "sequence": 180
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1430,
+      "machineOffsetMs": 254881,
+      "speed": 8,
+      "fromTick": 1422,
+      "toTick": 1430,
+      "domainEventIds": [],
+      "sequence": 181
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1438,
+      "machineOffsetMs": 255131,
+      "speed": 8,
+      "fromTick": 1430,
+      "toTick": 1438,
+      "domainEventIds": [],
+      "sequence": 182
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1446,
+      "machineOffsetMs": 255382,
+      "speed": 8,
+      "fromTick": 1438,
+      "toTick": 1446,
+      "domainEventIds": [],
+      "sequence": 183
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1454,
+      "machineOffsetMs": 255632,
+      "speed": 8,
+      "fromTick": 1446,
+      "toTick": 1454,
+      "domainEventIds": [],
+      "sequence": 184
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1462,
+      "machineOffsetMs": 255882,
+      "speed": 8,
+      "fromTick": 1454,
+      "toTick": 1462,
+      "domainEventIds": [],
+      "sequence": 185
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1470,
+      "machineOffsetMs": 256132,
+      "speed": 8,
+      "fromTick": 1462,
+      "toTick": 1470,
+      "domainEventIds": [],
+      "sequence": 186
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1478,
+      "machineOffsetMs": 256383,
+      "speed": 8,
+      "fromTick": 1470,
+      "toTick": 1478,
+      "domainEventIds": [],
+      "sequence": 187
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1486,
+      "machineOffsetMs": 256630,
+      "speed": 8,
+      "fromTick": 1478,
+      "toTick": 1486,
+      "domainEventIds": [],
+      "sequence": 188
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1494,
+      "machineOffsetMs": 256882,
+      "speed": 8,
+      "fromTick": 1486,
+      "toTick": 1494,
+      "domainEventIds": [],
+      "sequence": 189
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1502,
+      "machineOffsetMs": 257131,
+      "speed": 8,
+      "fromTick": 1494,
+      "toTick": 1502,
+      "domainEventIds": [],
+      "sequence": 190
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1510,
+      "machineOffsetMs": 257383,
+      "speed": 8,
+      "fromTick": 1502,
+      "toTick": 1510,
+      "domainEventIds": [],
+      "sequence": 191
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1518,
+      "machineOffsetMs": 257632,
+      "speed": 8,
+      "fromTick": 1510,
+      "toTick": 1518,
+      "domainEventIds": [],
+      "sequence": 192
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1526,
+      "machineOffsetMs": 257882,
+      "speed": 8,
+      "fromTick": 1518,
+      "toTick": 1526,
+      "domainEventIds": [],
+      "sequence": 193
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1534,
+      "machineOffsetMs": 258132,
+      "speed": 8,
+      "fromTick": 1526,
+      "toTick": 1534,
+      "domainEventIds": [],
+      "sequence": 194
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1542,
+      "machineOffsetMs": 258382,
+      "speed": 8,
+      "fromTick": 1534,
+      "toTick": 1542,
+      "domainEventIds": [],
+      "sequence": 195
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1550,
+      "machineOffsetMs": 258632,
+      "speed": 8,
+      "fromTick": 1542,
+      "toTick": 1550,
+      "domainEventIds": [],
+      "sequence": 196
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1558,
+      "machineOffsetMs": 258880,
+      "speed": 8,
+      "fromTick": 1550,
+      "toTick": 1558,
+      "domainEventIds": [],
+      "sequence": 197
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1566,
+      "machineOffsetMs": 259132,
+      "speed": 8,
+      "fromTick": 1558,
+      "toTick": 1566,
+      "domainEventIds": [],
+      "sequence": 198
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1574,
+      "machineOffsetMs": 259382,
+      "speed": 8,
+      "fromTick": 1566,
+      "toTick": 1574,
+      "domainEventIds": [],
+      "sequence": 199
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1582,
+      "machineOffsetMs": 259632,
+      "speed": 8,
+      "fromTick": 1574,
+      "toTick": 1582,
+      "domainEventIds": [],
+      "sequence": 200
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1590,
+      "machineOffsetMs": 259882,
+      "speed": 8,
+      "fromTick": 1582,
+      "toTick": 1590,
+      "domainEventIds": [],
+      "sequence": 201
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1598,
+      "machineOffsetMs": 260132,
+      "speed": 8,
+      "fromTick": 1590,
+      "toTick": 1598,
+      "domainEventIds": [],
+      "sequence": 202
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1606,
+      "machineOffsetMs": 260382,
+      "speed": 8,
+      "fromTick": 1598,
+      "toTick": 1606,
+      "domainEventIds": [],
+      "sequence": 203
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1614,
+      "machineOffsetMs": 260631,
+      "speed": 8,
+      "fromTick": 1606,
+      "toTick": 1614,
+      "domainEventIds": [],
+      "sequence": 204
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1622,
+      "machineOffsetMs": 260882,
+      "speed": 8,
+      "fromTick": 1614,
+      "toTick": 1622,
+      "domainEventIds": [],
+      "sequence": 205
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1630,
+      "machineOffsetMs": 261132,
+      "speed": 8,
+      "fromTick": 1622,
+      "toTick": 1630,
+      "domainEventIds": [],
+      "sequence": 206
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1638,
+      "machineOffsetMs": 261382,
+      "speed": 8,
+      "fromTick": 1630,
+      "toTick": 1638,
+      "domainEventIds": [],
+      "sequence": 207
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1646,
+      "machineOffsetMs": 261632,
+      "speed": 8,
+      "fromTick": 1638,
+      "toTick": 1646,
+      "domainEventIds": [],
+      "sequence": 208
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1654,
+      "machineOffsetMs": 261882,
+      "speed": 8,
+      "fromTick": 1646,
+      "toTick": 1654,
+      "domainEventIds": [],
+      "sequence": 209
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1662,
+      "machineOffsetMs": 262132,
+      "speed": 8,
+      "fromTick": 1654,
+      "toTick": 1662,
+      "domainEventIds": [],
+      "sequence": 210
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1670,
+      "machineOffsetMs": 262380,
+      "speed": 8,
+      "fromTick": 1662,
+      "toTick": 1670,
+      "domainEventIds": [],
+      "sequence": 211
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1678,
+      "machineOffsetMs": 262630,
+      "speed": 8,
+      "fromTick": 1670,
+      "toTick": 1678,
+      "domainEventIds": [],
+      "sequence": 212
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1686,
+      "machineOffsetMs": 262881,
+      "speed": 8,
+      "fromTick": 1678,
+      "toTick": 1686,
+      "domainEventIds": [],
+      "sequence": 213
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1694,
+      "machineOffsetMs": 263132,
+      "speed": 8,
+      "fromTick": 1686,
+      "toTick": 1694,
+      "domainEventIds": [],
+      "sequence": 214
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1702,
+      "machineOffsetMs": 263382,
+      "speed": 8,
+      "fromTick": 1694,
+      "toTick": 1702,
+      "domainEventIds": [],
+      "sequence": 215
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1710,
+      "machineOffsetMs": 263632,
+      "speed": 8,
+      "fromTick": 1702,
+      "toTick": 1710,
+      "domainEventIds": [],
+      "sequence": 216
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1718,
+      "machineOffsetMs": 263882,
+      "speed": 8,
+      "fromTick": 1710,
+      "toTick": 1718,
+      "domainEventIds": [],
+      "sequence": 217
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1726,
+      "machineOffsetMs": 264131,
+      "speed": 8,
+      "fromTick": 1718,
+      "toTick": 1726,
+      "domainEventIds": [],
+      "sequence": 218
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1734,
+      "machineOffsetMs": 264382,
+      "speed": 8,
+      "fromTick": 1726,
+      "toTick": 1734,
+      "domainEventIds": [],
+      "sequence": 219
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1742,
+      "machineOffsetMs": 264632,
+      "speed": 8,
+      "fromTick": 1734,
+      "toTick": 1742,
+      "domainEventIds": [],
+      "sequence": 220
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1750,
+      "machineOffsetMs": 264882,
+      "speed": 8,
+      "fromTick": 1742,
+      "toTick": 1750,
+      "domainEventIds": [],
+      "sequence": 221
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1758,
+      "machineOffsetMs": 265131,
+      "speed": 8,
+      "fromTick": 1750,
+      "toTick": 1758,
+      "domainEventIds": [],
+      "sequence": 222
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1766,
+      "machineOffsetMs": 265380,
+      "speed": 8,
+      "fromTick": 1758,
+      "toTick": 1766,
+      "domainEventIds": [],
+      "sequence": 223
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1774,
+      "machineOffsetMs": 265632,
+      "speed": 8,
+      "fromTick": 1766,
+      "toTick": 1774,
+      "domainEventIds": [],
+      "sequence": 224
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1782,
+      "machineOffsetMs": 265882,
+      "speed": 8,
+      "fromTick": 1774,
+      "toTick": 1782,
+      "domainEventIds": [],
+      "sequence": 225
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1790,
+      "machineOffsetMs": 266131,
+      "speed": 8,
+      "fromTick": 1782,
+      "toTick": 1790,
+      "domainEventIds": [],
+      "sequence": 226
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1798,
+      "machineOffsetMs": 266382,
+      "speed": 8,
+      "fromTick": 1790,
+      "toTick": 1798,
+      "domainEventIds": [],
+      "sequence": 227
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1806,
+      "machineOffsetMs": 266632,
+      "speed": 8,
+      "fromTick": 1798,
+      "toTick": 1806,
+      "domainEventIds": [],
+      "sequence": 228
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1814,
+      "machineOffsetMs": 266881,
+      "speed": 8,
+      "fromTick": 1806,
+      "toTick": 1814,
+      "domainEventIds": [],
+      "sequence": 229
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1822,
+      "machineOffsetMs": 267130,
+      "speed": 8,
+      "fromTick": 1814,
+      "toTick": 1822,
+      "domainEventIds": [],
+      "sequence": 230
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1830,
+      "machineOffsetMs": 267380,
+      "speed": 8,
+      "fromTick": 1822,
+      "toTick": 1830,
+      "domainEventIds": [],
+      "sequence": 231
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1838,
+      "machineOffsetMs": 267631,
+      "speed": 8,
+      "fromTick": 1830,
+      "toTick": 1838,
+      "domainEventIds": [],
+      "sequence": 232
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1846,
+      "machineOffsetMs": 267881,
+      "speed": 8,
+      "fromTick": 1838,
+      "toTick": 1846,
+      "domainEventIds": [],
+      "sequence": 233
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1854,
+      "machineOffsetMs": 268132,
+      "speed": 8,
+      "fromTick": 1846,
+      "toTick": 1854,
+      "domainEventIds": [],
+      "sequence": 234
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1862,
+      "machineOffsetMs": 268382,
+      "speed": 8,
+      "fromTick": 1854,
+      "toTick": 1862,
+      "domainEventIds": [],
+      "sequence": 235
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1870,
+      "machineOffsetMs": 268632,
+      "speed": 8,
+      "fromTick": 1862,
+      "toTick": 1870,
+      "domainEventIds": [],
+      "sequence": 236
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1878,
+      "machineOffsetMs": 268880,
+      "speed": 8,
+      "fromTick": 1870,
+      "toTick": 1878,
+      "domainEventIds": [],
+      "sequence": 237
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1886,
+      "machineOffsetMs": 269132,
+      "speed": 8,
+      "fromTick": 1878,
+      "toTick": 1886,
+      "domainEventIds": [],
+      "sequence": 238
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1894,
+      "machineOffsetMs": 269380,
+      "speed": 8,
+      "fromTick": 1886,
+      "toTick": 1894,
+      "domainEventIds": [],
+      "sequence": 239
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1902,
+      "machineOffsetMs": 269631,
+      "speed": 8,
+      "fromTick": 1894,
+      "toTick": 1902,
+      "domainEventIds": [],
+      "sequence": 240
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1910,
+      "machineOffsetMs": 269882,
+      "speed": 8,
+      "fromTick": 1902,
+      "toTick": 1910,
+      "domainEventIds": [],
+      "sequence": 241
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1918,
+      "machineOffsetMs": 270132,
+      "speed": 8,
+      "fromTick": 1910,
+      "toTick": 1918,
+      "domainEventIds": [],
+      "sequence": 242
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1926,
+      "machineOffsetMs": 270382,
+      "speed": 8,
+      "fromTick": 1918,
+      "toTick": 1926,
+      "domainEventIds": [],
+      "sequence": 243
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1934,
+      "machineOffsetMs": 270632,
+      "speed": 8,
+      "fromTick": 1926,
+      "toTick": 1934,
+      "domainEventIds": [],
+      "sequence": 244
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1942,
+      "machineOffsetMs": 270881,
+      "speed": 8,
+      "fromTick": 1934,
+      "toTick": 1942,
+      "domainEventIds": [],
+      "sequence": 245
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1950,
+      "machineOffsetMs": 271132,
+      "speed": 8,
+      "fromTick": 1942,
+      "toTick": 1950,
+      "domainEventIds": [],
+      "sequence": 246
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1958,
+      "machineOffsetMs": 271382,
+      "speed": 8,
+      "fromTick": 1950,
+      "toTick": 1958,
+      "domainEventIds": [],
+      "sequence": 247
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1966,
+      "machineOffsetMs": 271632,
+      "speed": 8,
+      "fromTick": 1958,
+      "toTick": 1966,
+      "domainEventIds": [],
+      "sequence": 248
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1974,
+      "machineOffsetMs": 271882,
+      "speed": 8,
+      "fromTick": 1966,
+      "toTick": 1974,
+      "domainEventIds": [],
+      "sequence": 249
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1982,
+      "machineOffsetMs": 272130,
+      "speed": 8,
+      "fromTick": 1974,
+      "toTick": 1982,
+      "domainEventIds": [],
+      "sequence": 250
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1990,
+      "machineOffsetMs": 272380,
+      "speed": 8,
+      "fromTick": 1982,
+      "toTick": 1990,
+      "domainEventIds": [],
+      "sequence": 251
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 1998,
+      "machineOffsetMs": 272632,
+      "speed": 8,
+      "fromTick": 1990,
+      "toTick": 1998,
+      "domainEventIds": [],
+      "sequence": 252
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 2006,
+      "machineOffsetMs": 272882,
+      "speed": 8,
+      "fromTick": 1998,
+      "toTick": 2006,
+      "domainEventIds": [],
+      "sequence": 253
+    },
+    {
+      "type": "simulation-advanced",
+      "atTick": 2010,
+      "machineOffsetMs": 273133,
+      "speed": 8,
+      "fromTick": 2006,
+      "toTick": 2010,
+      "domainEventIds": [
+        "week-2-ended"
+      ],
+      "sequence": 254
+    },
+    {
+      "type": "auto-pause-triggered",
+      "atTick": 2010,
+      "machineOffsetMs": 273133,
+      "speed": 8,
+      "domainEventIds": [
+        "week-2-ended"
+      ],
+      "sequence": 255
+    },
+    {
+      "type": "week-completed",
+      "atTick": 2010,
+      "machineOffsetMs": 273133,
+      "weekIndex": 1,
+      "sequence": 256
+    },
+    {
+      "type": "export-created",
+      "atTick": 2010,
+      "machineOffsetMs": 287339,
+      "sequence": 257
+    }
+  ],
+  "speedTrajectory": [
+    {
+      "sequence": 1,
+      "atTick": 54,
+      "machineOffsetMs": 0,
+      "speed": 3
+    },
+    {
+      "sequence": 2,
+      "atTick": 54,
+      "machineOffsetMs": 104457,
+      "speed": 8
+    }
+  ],
+  "finalTick": 2010,
+  "finalStateHash": "fnv1a32-06c8c3b7",
+  "finalState": {
+    "isComplete": true,
+    "completedWeekCount": 2,
+    "recapCount": 2,
+    "processedScriptEventIds": [
+      "pump-incident-day-3",
+      "lin-he-request-deadline"
+    ],
+    "equipmentExposure": "high",
+    "equipmentRecoveryLoad": 2,
+    "endingFood": {
+      "low": -12,
+      "high": -12
+    },
+    "endingRepair": {
+      "low": -7,
+      "high": -7
+    },
+    "infrastructurePressure": 14,
+    "preventiveCapacityAllocation": "rest",
+    "preventiveCapacityActivity": "rest",
+    "recoveryAllocationActivity": "rest",
+    "linHeRecoveryUnits": 1,
+    "personnelReadiness": 1
+  },
+  "recap": [
+    {
+      "weekIndex": 0,
+      "planned": {
+        "low": 3,
+        "high": 11
+      },
+      "actual": 3,
+      "itemIds": [
+        "week-1-food-result",
+        "week-1-pump-risk",
+        "week-1-pump-incident",
+        "week-1-management-choice",
+        "week-1-transport-result"
+      ],
+      "sourceIds": [
+        "food-forecast",
+        "pump-preventive-maintenance",
+        "pump-incident-day-3",
+        "choice:w0:preventive-capacity",
+        "north-loop"
+      ],
+      "itemValues": [
+        {
+          "plannedLow": 3,
+          "plannedHigh": 11,
+          "actual": 3
+        },
+        {
+          "maintenanceBlocks": 1,
+          "knownWorstFoodLoss": 8
+        },
+        {
+          "actualFoodLoss": 8
+        },
+        {
+          "equipmentRecoveryLoad": 2,
+          "personnelReadiness": 1,
+          "endingFoodDelta": 0,
+          "endingRepairDelta": 0,
+          "settledBeforeValue": 0,
+          "settledAfterValue": 1,
+          "settledDelta": 1
+        },
+        {
+          "distanceMeters": 860,
+          "travelMinutes": 96,
+          "foodLoss": 6
+        }
+      ]
+    },
+    {
+      "weekIndex": 1,
+      "planned": {
+        "low": -12,
+        "high": -12
+      },
+      "actual": -12,
+      "itemIds": [
+        "week-2-food-result",
+        "week-2-lin-he-request",
+        "week-2-management-choice",
+        "week-2-transport-result"
+      ],
+      "sourceIds": [
+        "food-forecast",
+        "lin-he-request-deadline",
+        "choice:w1:recovery-allocation",
+        "north-loop"
+      ],
+      "itemValues": [
+        {
+          "plannedLow": -12,
+          "plannedHigh": -12,
+          "actual": -12
+        },
+        {
+          "shortTermFoodDelta": 0
+        },
+        {
+          "equipmentRecoveryLoad": 2,
+          "personnelReadiness": 1,
+          "endingFoodDelta": 0,
+          "endingRepairDelta": 1,
+          "settledBeforeValue": -7,
+          "settledAfterValue": -6,
+          "settledDelta": 1
+        },
+        {
+          "distanceMeters": 860,
+          "travelMinutes": 96,
+          "foodLoss": 6
+        }
+      ]
+    }
+  ],
+  "weekRecaps": [
+    {
+      "weekIndex": 0
+    },
+    {
+      "weekIndex": 1
+    }
+  ],
+  "summary": {
+    "week1CandidateEditCount": 0,
+    "week2CandidateEditCount": 0,
+    "week1CandidateManagementCount": 1,
+    "week2CandidateManagementCount": 1,
+    "week1C03TerminalCommitmentCount": 1,
+    "week2C03TerminalCommitmentCount": 1
+  }
+}

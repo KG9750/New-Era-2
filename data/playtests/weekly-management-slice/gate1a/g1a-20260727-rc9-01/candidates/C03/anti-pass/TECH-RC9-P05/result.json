@@ -1,0 +1,464 @@
+{
+  "schemaVersion": "gate1-rc9-anti-pass-result-v1",
+  "candidateAttempt": "C03",
+  "sampleId": "TECH-RC9-P05",
+  "pathKind": "prominent-cta-and-repeat-submit",
+  "status": "PASS",
+  "buildId": "g1-rc-20260727.rc9-c03",
+  "sourceSha": "cd2fc9716d98c160fe530c593347992f18bf96e4",
+  "artifactHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+  "candidateCore": {
+    "path": "../../candidate-core.json",
+    "sha256": "640d3f807aa3d52bef7e7ecc4c9975c5bb714672c99a9895adb4b4bc4914ec95",
+    "sourceTree": "2533f76438dc6d3b584ba44629a28756ba675c66",
+    "sourcePrototypeTree": "5dea3df621fa7ddf782d235f30f08fd6ca2a4954",
+    "rcDistInventorySha256": "dbb7bfe948b154ff11c7c9e0e1ff1a27587d5915aa7e2694f7186c7baedfed83"
+  },
+  "sessionAuthority": {
+    "diagnosisId": "TECH-RC9-P05",
+    "sessionId": "8f5bdeea-cce7-4fe1-b81b-803f52ebee96",
+    "candidateBuildAuthorityHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+    "sessionAuthorityToken": "18905981f533b70c12398acdc3c580551b1e2c69e49ccbe38be4fde9d0cd5008",
+    "applicationSessionCount": 1
+  },
+  "viewport": "1440x900",
+  "inputMode": "browser-pointer-keyboard",
+  "uiMechanicalChecks": [
+    {
+      "phase": "w1-summary-pointer-open",
+      "selected": {
+        "schedule-preventive-maintenance": false,
+        "retain-rest-capacity": false
+      },
+      "countDelta": 0
+    },
+    {
+      "phase": "w1-container-enter-space",
+      "selected": {
+        "schedule-preventive-maintenance": false,
+        "retain-rest-capacity": false
+      },
+      "countDelta": 0
+    },
+    {
+      "phase": "w1-close-enter-space",
+      "summaryCtaCount": 1,
+      "resolvedCtaCount": 0,
+      "countDelta": 0
+    },
+    {
+      "phase": "w1-summary-enter-space-open",
+      "selected": {
+        "schedule-preventive-maintenance": false,
+        "retain-rest-capacity": false
+      },
+      "countDelta": 0
+    },
+    {
+      "phase": "w1-explicit-focused-candidate-enter",
+      "selectedCandidate": "retain-rest-capacity",
+      "candidateButtonsDisabledAfter": true,
+      "causalRecordCount": 1,
+      "countDelta": 1
+    },
+    {
+      "phase": "w1-repeat-enter-space",
+      "selectedCandidate": "retain-rest-capacity",
+      "causalRecordCountBefore": 1,
+      "causalRecordCountAfter": 1,
+      "countDelta": 0
+    },
+    {
+      "phase": "w1-locate-and-expand",
+      "selectedCandidate": "retain-rest-capacity",
+      "causalRecordCountBefore": 1,
+      "causalRecordCountAfter": 1,
+      "lockedSlot": "林禾 第2日 B2 13–16 休息 基础计划 管理选择锁定",
+      "lockedSlotDisabled": true,
+      "countDelta": 0
+    },
+    {
+      "phase": "continue-to-week2",
+      "w1CommitCountBefore": 1,
+      "w1CommitCountAfter": 1,
+      "countDelta": 0
+    },
+    {
+      "phase": "w2-summary-pointer-open",
+      "selected": {
+        "allocate-repair-buffer": false,
+        "allocate-food-production": false
+      },
+      "countDelta": 0
+    },
+    {
+      "phase": "w2-container-enter-space",
+      "selected": {
+        "allocate-repair-buffer": false,
+        "allocate-food-production": false
+      },
+      "countDelta": 0
+    },
+    {
+      "phase": "w2-close-enter-space",
+      "summaryCtaCount": 1,
+      "resolvedCtaCount": 0,
+      "countDelta": 0
+    },
+    {
+      "phase": "w2-summary-enter-space-open",
+      "selected": {
+        "allocate-repair-buffer": false,
+        "allocate-food-production": false
+      },
+      "countDelta": 0
+    },
+    {
+      "phase": "w2-explicit-candidate-pointer-dblclick",
+      "selectedCandidate": "allocate-repair-buffer",
+      "candidateButtonsDisabledAfter": true,
+      "causalRecordCount": 1,
+      "countDelta": 1
+    },
+    {
+      "phase": "w2-repeat-enter-space-after-dblclick",
+      "selectedCandidate": "allocate-repair-buffer",
+      "causalRecordCountBefore": 1,
+      "causalRecordCountAfter": 1,
+      "countDelta": 0
+    },
+    {
+      "phase": "w2-locate-and-expand",
+      "selectedCandidate": "allocate-repair-buffer",
+      "causalRecordCountBefore": 1,
+      "causalRecordCountAfter": 1,
+      "lockedSlot": "陈渡 第11日 B3 16–19 维修 本周例外 管理选择锁定",
+      "lockedSlotDisabled": true,
+      "countDelta": 0
+    },
+    {
+      "phase": "clear-and-reload",
+      "sessionGateVisibleAfterClear": true,
+      "activeMetaCountAfterClear": 0,
+      "sessionGateVisibleAfterReload": true,
+      "activeMetaCountAfterReload": 0,
+      "downloadButtonCountAfterReload": 0,
+      "countDelta": 0,
+      "resentActionOrConsequence": false
+    }
+  ],
+  "revisionAndCountTimeline": [
+    {
+      "phase": "w1-cta-open-close-container-locate-expand",
+      "stateRevisionBefore": 0,
+      "stateRevisionAfter": 0,
+      "weekCommitmentCountBefore": 0,
+      "weekCommitmentCountAfter": 0,
+      "totalCommitmentCountBefore": 0,
+      "totalCommitmentCountAfter": 0
+    },
+    {
+      "phase": "w1-explicit-keyboard-commit",
+      "stateRevisionBefore": 0,
+      "stateRevisionAfter": 1,
+      "weekCommitmentCountBefore": 0,
+      "weekCommitmentCountAfter": 1,
+      "totalCommitmentCountBefore": 0,
+      "totalCommitmentCountAfter": 1
+    },
+    {
+      "phase": "w1-repeat-input",
+      "stateRevisionBefore": 1,
+      "stateRevisionAfter": 1,
+      "weekCommitmentCountBefore": 1,
+      "weekCommitmentCountAfter": 1,
+      "totalCommitmentCountBefore": 1,
+      "totalCommitmentCountAfter": 1
+    },
+    {
+      "phase": "continue-to-week2",
+      "stateRevisionBefore": 1,
+      "stateRevisionAfter": 2,
+      "weekCommitmentCountBefore": 1,
+      "weekCommitmentCountAfter": 1,
+      "totalCommitmentCountBefore": 1,
+      "totalCommitmentCountAfter": 1
+    },
+    {
+      "phase": "w2-cta-open-close-container-locate-expand",
+      "stateRevisionBefore": 2,
+      "stateRevisionAfter": 2,
+      "weekCommitmentCountBefore": 0,
+      "weekCommitmentCountAfter": 0,
+      "totalCommitmentCountBefore": 1,
+      "totalCommitmentCountAfter": 1
+    },
+    {
+      "phase": "w2-explicit-pointer-dblclick-commit",
+      "stateRevisionBefore": 2,
+      "stateRevisionAfter": 3,
+      "weekCommitmentCountBefore": 0,
+      "weekCommitmentCountAfter": 1,
+      "totalCommitmentCountBefore": 1,
+      "totalCommitmentCountAfter": 2
+    },
+    {
+      "phase": "w2-repeat-input-and-reload",
+      "stateRevisionBefore": 3,
+      "stateRevisionAfter": 3,
+      "weekCommitmentCountBefore": 1,
+      "weekCommitmentCountAfter": 1,
+      "totalCommitmentCountBefore": 2,
+      "totalCommitmentCountAfter": 2
+    },
+    {
+      "phase": "identical-export-retry",
+      "stateRevisionBefore": 3,
+      "stateRevisionAfter": 3,
+      "weekCommitmentCountBefore": 1,
+      "weekCommitmentCountAfter": 1,
+      "totalCommitmentCountBefore": 2,
+      "totalCommitmentCountAfter": 2
+    }
+  ],
+  "runtimeAntiPass": {
+    "w1ConcurrentSameBase": {
+      "successCount": 1,
+      "secondDirectionCode": "STATE_REVISION_CONFLICT",
+      "countAfterRejectedSecond": 1,
+      "test": "management-choices.test.ts > atomically commits one W1 candidate and rejects the concurrent stale candidate"
+    },
+    "w1SequentialSecondDirection": {
+      "code": "OPPORTUNITY_ALREADY_COMMITTED",
+      "countAfterRejectedSecond": 1,
+      "test": "management-choices.test.ts > rejects a fresh second selection without mutating the terminal state"
+    },
+    "w2ConcurrentSameBase": {
+      "stateRevisionBefore": 2,
+      "successCandidate": "allocate-repair-buffer",
+      "successCount": 1,
+      "stateRevisionAfter": 3,
+      "secondDirectionCode": "STATE_REVISION_CONFLICT",
+      "countAfterRejectedSecond": 1,
+      "test": "temporary read-only vite-node runtime probe against frozen source"
+    },
+    "w2SequentialSecondDirection": {
+      "code": "OPPORTUNITY_ALREADY_COMMITTED",
+      "countAfterRejectedSecond": 1,
+      "test": "temporary read-only vite-node runtime probe against frozen source"
+    },
+    "directScheduleEdits": {
+      "w1Count": 0,
+      "w1Terminal": "unqualified-direct-edit",
+      "w2CommitCode": "OPPORTUNITY_ALREADY_COMMITTED",
+      "w2CountBeforeDeadline": 0,
+      "w2TerminalAtDeadline": "unqualified-direct-edit",
+      "w2CountAtDeadline": 0,
+      "tests": [
+        "management-choices.test.ts > treats a low-level W1 schedule edit as real state but never as an explicit commitment",
+        "App.test.tsx > does not infer a management commitment from a low-level schedule edit",
+        "temporary read-only vite-node runtime probe against frozen source"
+      ]
+    },
+    "crossSessionReplay": {
+      "code": "AUTHORITY_MISMATCH",
+      "countDelta": 0,
+      "test": "management-choices.test.ts > rejects cross-session replay even with the same intent and revision"
+    },
+    "duplicateEffectOwner": {
+      "code": "EFFECT_ALREADY_OWNED",
+      "countDelta": 0,
+      "test": "management-choices.test.ts > rejects a canonical consequence fingerprint already owned by a competing intent"
+    },
+    "successfulW2Consequences": [
+      {
+        "consequenceId": "consequence:w1:recovery-allocation:schedule",
+        "objectRef": "chen-du:d10:b2",
+        "beforeValue": "rest",
+        "afterValue": "repair"
+      },
+      {
+        "consequenceId": "consequence:w1:recovery-allocation:ending-repair",
+        "objectRef": "forecast:ending-repair",
+        "beforeValue": -7,
+        "afterValue": -6
+      }
+    ]
+  },
+  "actualLedgerTamperMatrix": [
+    {
+      "case": "actual-ledger",
+      "accepted": true,
+      "errorCode": null
+    },
+    {
+      "case": "cross-session",
+      "accepted": false,
+      "errorCode": "V03_CANONICAL_CONTRACT"
+    },
+    {
+      "case": "cross-diagnosis",
+      "accepted": false,
+      "errorCode": "V03_CANONICAL_CONTRACT"
+    },
+    {
+      "case": "cross-build-authority",
+      "accepted": false,
+      "errorCode": "V03_CANONICAL_CONTRACT"
+    },
+    {
+      "case": "wrong-resource-lot",
+      "accepted": false,
+      "errorCode": "V03_CANONICAL_CONTRACT"
+    },
+    {
+      "case": "wrong-base-revision",
+      "accepted": false,
+      "errorCode": "V03_CANONICAL_CONTRACT"
+    },
+    {
+      "case": "duplicate-effect-owner",
+      "accepted": false,
+      "errorCode": "V03_EFFECT_OWNER_MISMATCH"
+    },
+    {
+      "case": "duplicate-consequence-id",
+      "accepted": false,
+      "errorCode": "V03_EFFECT_FINGERPRINT"
+    },
+    {
+      "case": "no-op-economic-consequence",
+      "accepted": false,
+      "errorCode": "V03_EFFECT_FINGERPRINT"
+    }
+  ],
+  "assertions": {
+    "summaryCtaCommitmentDelta": 0,
+    "openCloseLocateExpandCommitmentDelta": 0,
+    "containerEnterSpaceCommitmentDelta": 0,
+    "continueCommitmentDelta": 0,
+    "w1ExplicitCommitmentCount": 1,
+    "w2ExplicitCommitmentCount": 1,
+    "w1RepeatCommitmentDelta": 0,
+    "w2RepeatCommitmentDelta": 0,
+    "reloadCommitmentDelta": 0,
+    "identicalExportRetryCommitmentDelta": 0,
+    "canonicalTerminalCommitmentCount": 2,
+    "ownedEffectCount": 5,
+    "candidateEditCount": 0,
+    "finalTick": 2010,
+    "twoWeeksCompleted": true,
+    "recapCount": 2,
+    "exportCreatedTelemetryCount": 1,
+    "onlySuccessfulDirectionsProducedConsequences": true
+  },
+  "settledConsequences": [
+    {
+      "week": 0,
+      "candidateId": "retain-rest-capacity",
+      "consequenceId": "consequence:w0:preventive-capacity:personnel-readiness",
+      "beforeValue": 0,
+      "afterValue": 1,
+      "delta": 1,
+      "settledAtTick": 1002
+    },
+    {
+      "week": 1,
+      "candidateId": "allocate-repair-buffer",
+      "consequenceId": "consequence:w1:recovery-allocation:ending-repair",
+      "beforeValue": -7,
+      "afterValue": -6,
+      "delta": 1,
+      "settledAtTick": 2010
+    }
+  ],
+  "machineEvidence": {
+    "serverRawPath": "captures/g1-rc-20260727.rc9-c03-TECH-RC9-P05-8f5bdeea-cce7-4fe1-b81b-803f52ebee96.json",
+    "serverRawSha256": "944ee1e41965e068f56c9c9fb86e1e6b76de1420f1f698c746748cb51fbaa19e",
+    "serverRawBytes": 87776,
+    "sha256SidecarPath": "captures/g1-rc-20260727.rc9-c03-TECH-RC9-P05-8f5bdeea-cce7-4fe1-b81b-803f52ebee96.json.sha256",
+    "sha256SidecarSha256": "6b54de8c97c1a1c6c8c5633800e7f2514c2d995867152019922afaf52522087f",
+    "receiptPath": "captures/g1-rc-20260727.rc9-c03-TECH-RC9-P05-8f5bdeea-cce7-4fe1-b81b-803f52ebee96.json.receipt.json",
+    "receiptSha256": "b9bec395a877cac5035634ac13dcd0926f13a6874fe51c73f635a30dd712729e",
+    "browserDownloadPath": "browser-download.json",
+    "browserDownloadSha256": "944ee1e41965e068f56c9c9fb86e1e6b76de1420f1f698c746748cb51fbaa19e",
+    "browserDownloadBytes": 87776,
+    "allClaimsMatchServerRaw": true,
+    "identicalRetryHttpStatus": 200,
+    "captureFileCountAfterRetry": 3
+  },
+  "validationCommands": [
+    {
+      "id": "runtime-host-export-ui",
+      "command": "npm run test:run -- --reporter=verbose tests/management-choices.test.ts tests/App.test.tsx tests/export.test.ts tests/playtest-host.test.ts",
+      "status": "PASS",
+      "testFiles": 4,
+      "tests": 91
+    },
+    {
+      "id": "schema-fixtures",
+      "command": "npm run schema:fixtures",
+      "status": "PASS",
+      "cases": 120,
+      "contract": "gate1-playtest-fixtures-v2"
+    },
+    {
+      "id": "frozen-rc-dist-ledger-validator",
+      "command": "validateCanonicalManagementLedger(browser-download.json)",
+      "status": "PASS",
+      "terminalCommitmentCount": 2,
+      "ownedEffectCount": 5
+    },
+    {
+      "id": "actual-ledger-tamper-matrix",
+      "command": "in-memory mutations of browser-download.json through frozen rc-dist/management-ledger-contract.mjs",
+      "status": "PASS",
+      "cases": 8
+    },
+    {
+      "id": "w2-runtime-probe",
+      "command": "temporary vite-node probe against frozen source; removed after execution",
+      "status": "PASS",
+      "cases": 3
+    },
+    {
+      "id": "rc8-tree-guard",
+      "command": "npm run guard:rc8 -- --baseline c0f4269bc3fef56962199629bad8db041aafc5f0 --path ../data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc8-01",
+      "status": "PASS",
+      "tree": "c5714f7ca7adb5e8fe052d4d00f27c545b988347",
+      "files": 67,
+      "inventorySha256": "e6990ddc8acd6ff4dbacfec975c06e4d0b9bbc7f6a2fc1324f5023caec1b96ee"
+    }
+  ],
+  "immutableTreeGuards": {
+    "rc8Tree": "c5714f7ca7adb5e8fe052d4d00f27c545b988347",
+    "c01Tree": "55f661518c7ed8a2cc99f0fc0f25fabecd24c286",
+    "c02Tree": "9b7dbae2c0c5d1bba45399e77dac65766911d3b3",
+    "c03FrozenHeadTreeBeforeP05Namespace": "2a9524cb429500de0cc321fcd8c7853163ab8f19",
+    "candidateCoreAndRcDistWorkingDiffCount": 0,
+    "c01WorkingDiffCount": 0,
+    "c02WorkingDiffCount": 0,
+    "rc8WorkingDiffCount": 0
+  },
+  "hostOutput": [
+    "Gate 1 RC listening on http://127.0.0.1:4195/; capture=/private/tmp/new-era-g1a-postseal.tvZFdL/repo/data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C03/anti-pass/TECH-RC9-P05/captures"
+  ],
+  "hostStopped": true,
+  "sessionCleared": true,
+  "trackLocks": {
+    "gate1A": "PRE_DIAGNOSTIC",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED"
+  },
+  "scope": {
+    "p06Started": false,
+    "diagnosticsRun": false,
+    "issueChanged": false,
+    "gateChanged": false,
+    "operationsAggregateCreated": false,
+    "candidateBuildManifestCreated": false,
+    "candidateCoreModified": false,
+    "rcDistModified": false,
+    "pushPerformed": false
+  }
+}
