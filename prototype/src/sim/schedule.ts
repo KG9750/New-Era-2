@@ -43,6 +43,11 @@ export const PUMP_MAINTENANCE_BLOCK_IDS = [
   PUMP_MAINTENANCE_BLOCK_ID,
 ] as const
 export const LIN_HE_STUDY_BLOCK_ID = createBlockId('lin-he', 8, 0)
+export const RECOVERY_ALLOCATION_BLOCK_ID = createBlockId(
+  'chen-du',
+  10,
+  2,
+)
 export const REPAIR_RESPONSIBILITY_SCHEDULE_OPTIONS = [
   {
     direction: 'qiao-pan',

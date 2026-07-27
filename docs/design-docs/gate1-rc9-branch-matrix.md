@@ -2,11 +2,11 @@
 
 | 字段 | 内容 |
 |---|---|
-| 状态 | RC9-07 实现候选 |
-| 场景 | `gate1-two-week-management@0.5.0` |
+| 状态 | C03 源码树中的 RC9 legacy matrix authority |
+| 场景 | `gate1-two-week-management@0.5.1` |
 | 适用范围 | Gate 1A RC9 两周经营切片 |
 | 机器 oracle | `buildGate1BranchMatrixOracle()` |
-| 完整矩阵 SHA-256 | `c400755ff33e8497ae7e5c35e1cd6845c2f4b7c5de255ba91f5d7771ca412578` |
+| 完整矩阵 SHA-256 | `9139effdf753dc46dfaab03ce4d35907257079afc64c911cf377b0435a4be975` |
 | 边界 | Gate 1H=`PENDING`；Gate 2=`LOCKED` |
 
 ## 1. 目的
@@ -181,6 +181,7 @@ export 不再自行声明 dominance。intent 聚合、projection、hash、host �
 cd prototype
 export PATH="/opt/homebrew/opt/node@24/bin:$PATH"
 npm run test:run -- tests/branch-matrix.test.ts
+npm run test:run -- tests/management-branch-matrix.test.ts
 npm run test:run -- tests/export.test.ts tests/playtest-host.test.ts
 npm run lint
 npm run build
@@ -197,6 +198,13 @@ npm run build
 
 任何产品数值、日程对象、结算、结果轴或可达性变化都会改变断言或矩阵 hash；必须
 回到 RC9-07 重新审查，不得只更新 hash。
+
+C03 新增的 `choice:w0:preventive-capacity` 与
+`choice:w1:recovery-allocation` 已进入 production oracle；其唯一 resource lot、
+四个 W2 context、两条 continuation policy、W1 exposure weighting 与精确
+`+1/0` 经济增量由 `gate1-c03-management-choice-authority.md` 和
+`management-branch-matrix.test.ts` 单独冻结。legacy 288 条轨迹与 132 个 context
+仍保持本文件前述边界，不能用 C03 terminal ledger 反推或改写旧轨迹计数。
 
 ## 10. Gate 边界
 

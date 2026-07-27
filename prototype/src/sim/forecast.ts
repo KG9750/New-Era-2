@@ -10,6 +10,7 @@ import type {
 import {
   CHARACTERS,
   LIN_HE_STUDY_BLOCK_ID,
+  RECOVERY_ALLOCATION_BLOCK_ID,
   createBlockId,
   hasPreventiveMaintenance,
   resolveScheduleBlock,
@@ -86,6 +87,12 @@ function calculateLaborAllocation(state: SimulationState): LaborAllocation {
           blockId === LIN_HE_STUDY_BLOCK_ID
             ? 'study'
             : resolveScheduleBlock(state, blockId).activity
+        if (
+          blockId === RECOVERY_ALLOCATION_BLOCK_ID &&
+          (activity === 'food' || activity === 'repair')
+        ) {
+          continue
+        }
         if (activity === 'food') {
           foodByCharacter[character.id] += FOOD_EFFICIENCY[character.id]
         }
@@ -186,7 +193,15 @@ export function calculateFoodForecast(state: SimulationState): FoodForecast {
   const logisticsBonus = logisticsAdjustment(allocation)
   const transportRoute = selectTransportRoute(state)
   const grossFieldOutput =
-    allocation.food + logisticsBonus + BASELINE_TRANSPORT_LOSS
+    allocation.food +
+    logisticsBonus +
+    BASELINE_TRANSPORT_LOSS +
+    (resolveScheduleBlock(
+      state,
+      RECOVERY_ALLOCATION_BLOCK_ID,
+    ).activity === 'food'
+      ? 1
+      : 0)
   const deliveredOutput = Math.max(0, grossFieldOutput - transportRoute.foodLoss)
   const facilityProduction = foodFacilityRange(
     state,
@@ -265,7 +280,15 @@ export function calculateRepairForecast(state: SimulationState): RepairForecast 
       : 0
   const repairOutput = Math.max(
     0,
-    allocation.repair + logisticsBonus + responsibilityOutput,
+    allocation.repair +
+      logisticsBonus +
+      responsibilityOutput +
+      (resolveScheduleBlock(
+        state,
+        RECOVERY_ALLOCATION_BLOCK_ID,
+      ).activity === 'repair'
+        ? 1
+        : 0),
   )
   const production = { low: repairOutput, high: repairOutput }
   const endingStock = {

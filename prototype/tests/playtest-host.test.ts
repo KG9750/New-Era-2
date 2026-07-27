@@ -10,7 +10,18 @@ import {
   createPlayerAction,
 } from '../src/sim/engine'
 import { calculateFoodForecast } from '../src/sim/forecast'
-import type { SimulationState, WeekendRecap } from '../src/sim/model'
+import {
+  PREVENTIVE_CAPACITY_CHOICE_SET_ID,
+  RECOVERY_ALLOCATION_CHOICE_SET_ID,
+  bindManagementChoiceAuthority,
+  createManagementChoiceCommitRequest,
+} from '../src/sim/management-choices'
+import type {
+  ManagementCandidateId,
+  PlayerAction,
+  SimulationState,
+  WeekendRecap,
+} from '../src/sim/model'
 import {
   createBlockedPlaytestExport,
   createPlaytestExport,
@@ -20,8 +31,10 @@ import {
   recordBlockedCaptureCreated,
   recordExportCreated,
   recordPlayerTransition,
+  recordSimulationAdvance,
   stableStateHash,
 } from '../src/telemetry/session'
+import type { SessionRecorder } from '../src/telemetry/session'
 
 function buildMetadata() {
   return {
@@ -224,6 +237,152 @@ function v2BlockedAfterActions(
   }
 }
 
+function recordV03Action(
+  recorder: SessionRecorder,
+  state: SimulationState,
+  sequence: number,
+  action: PlayerAction,
+  monotonicNow: number,
+) {
+  const envelope = createPlayerAction(
+    sequence,
+    state.currentTick,
+    action,
+  )
+  const result = applyPlayerAction(state, envelope, scenario)
+  recordPlayerTransition(
+    recorder,
+    state,
+    envelope,
+    result,
+    monotonicNow,
+  )
+  return result.state
+}
+
+function commitV03Candidate(
+  recorder: SessionRecorder,
+  state: SimulationState,
+  sequence: number,
+  candidateId: ManagementCandidateId,
+  monotonicNow: number,
+) {
+  const choiceSetId =
+    candidateId === 'schedule-preventive-maintenance' ||
+    candidateId === 'retain-rest-capacity'
+      ? PREVENTIVE_CAPACITY_CHOICE_SET_ID
+      : RECOVERY_ALLOCATION_CHOICE_SET_ID
+  return recordV03Action(
+    recorder,
+    state,
+    sequence,
+    {
+      type: 'COMMIT_MANAGEMENT_CHOICE',
+      request: createManagementChoiceCommitRequest(
+        state,
+        choiceSetId,
+        candidateId,
+        `host-v03-${sequence}`,
+      ),
+    },
+    monotonicNow,
+  )
+}
+
+function v03BlockedExport() {
+  const initial = scenario.createInitialState()
+  const metadata = buildMetadata()
+  const recorder = createSessionRecorder(
+    'TECH-RC9-D80',
+    initial,
+    metadata,
+    1_000,
+    100,
+  )
+  let state = bindManagementChoiceAuthority(initial, {
+    diagnosisId: recorder.meta.diagnosisId,
+    sessionId: recorder.meta.sessionId,
+    candidateBuildAuthorityHash:
+      recorder.meta.candidateBuildAuthorityHash,
+  })
+  state = commitV03Candidate(
+    recorder,
+    state,
+    1,
+    'retain-rest-capacity',
+    110,
+  )
+  state = recordV03Action(
+    recorder,
+    state,
+    2,
+    { type: 'SET_PAUSED', paused: false },
+    120,
+  )
+  let advanced = advanceSimulation(
+    state,
+    scenario.pumpEventTick,
+    scenario,
+  )
+  recordSimulationAdvance(
+    recorder,
+    state,
+    advanced,
+    3,
+    130,
+  )
+  state = advanced.state
+  state = recordV03Action(
+    recorder,
+    state,
+    3,
+    { type: 'SET_PAUSED', paused: false },
+    140,
+  )
+  advanced = advanceSimulation(
+    state,
+    scenario.weekEndTick,
+    scenario,
+  )
+  recordSimulationAdvance(
+    recorder,
+    state,
+    advanced,
+    3,
+    150,
+  )
+  state = advanced.state
+  state = recordV03Action(
+    recorder,
+    state,
+    4,
+    { type: 'CONTINUE_TO_NEXT_WEEK' },
+    160,
+  )
+  state = commitV03Candidate(
+    recorder,
+    state,
+    5,
+    'allocate-food-production',
+    170,
+  )
+  recordBlockedCaptureCreated(
+    recorder,
+    state.currentTick,
+    180,
+  )
+  return {
+    metadata,
+    payload: createBlockedPlaytestExport(
+      recorder,
+      state,
+      'v0.3 ledger round-trip',
+      1_100,
+      190,
+    ),
+  }
+}
+
 function blockedPayloadFromFixture(fileName: string) {
   const fixture = JSON.parse(
     readFileSync(
@@ -301,6 +460,70 @@ function blockedPayloadFromFixture(fileName: string) {
 }
 
 describe('Gate 1 capture host contracts', () => {
+  it('accepts an authority-bound v0.3 ledger with both C03 terminals', () => {
+    const { metadata, payload } = v03BlockedExport()
+
+    expect(validateCapturedExport(payload, metadata)).toBe(true)
+  })
+
+  it('rejects tampered v0.3 authority, ownership, consequences, resource lot, and economic delta', () => {
+    const { metadata, payload } = v03BlockedExport()
+    const clone = () =>
+      JSON.parse(JSON.stringify(payload))
+
+    const crossSession = clone()
+    crossSession.managementChoiceCommitmentsV03[0].sessionId =
+      '22222222-2222-4222-8222-222222222222'
+    expect(
+      validateCapturedExport(crossSession, metadata),
+    ).toBe(false)
+
+    const wrongOwner = clone()
+    const ownedFingerprint =
+      wrongOwner.managementChoiceCommitmentsV03[0]
+        .effectFingerprints[0]
+    wrongOwner.effectOwnershipV03[ownedFingerprint] =
+      'w1:recovery-allocation:pump-vs-food'
+    expect(
+      validateCapturedExport(wrongOwner, metadata),
+    ).toBe(false)
+
+    const missingRequired = clone()
+    missingRequired.managementChoiceCommitmentsV03[0]
+      .requiredConsequenceIds = missingRequired
+        .managementChoiceCommitmentsV03[0]
+        .requiredConsequenceIds.slice(1)
+    expect(
+      validateCapturedExport(missingRequired, metadata),
+    ).toBe(false)
+
+    const wrongResourceLot = clone()
+    wrongResourceLot.managementChoiceCommitmentsV03[1]
+      .resourceClaimRef = 'schedule-slot:lin-he:d1:b1'
+    expect(
+      validateCapturedExport(wrongResourceLot, metadata),
+    ).toBe(false)
+
+    const wrongEconomicDelta = clone()
+    const economic = wrongEconomicDelta
+      .managementChoiceCommitmentsV03[1]
+      .consequences.find(
+        (consequence: { objectRef: string }) =>
+          consequence.objectRef === 'forecast:ending-food',
+      )
+    economic.afterValue = economic.beforeValue + 2
+    expect(
+      validateCapturedExport(wrongEconomicDelta, metadata),
+    ).toBe(false)
+
+    const noOp = clone()
+    noOp.managementChoiceCommitmentsV03[0]
+      .consequences[0].afterValue = noOp
+        .managementChoiceCommitmentsV03[0]
+        .consequences[0].beforeValue
+    expect(validateCapturedExport(noOp, metadata)).toBe(false)
+  })
+
   it('accepts strict v2 complete and blocked production exports', () => {
     const complete = v2CompleteExport()
     const blocked = v2BlockedExport()

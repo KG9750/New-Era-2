@@ -37,6 +37,15 @@ import {
 } from './transport'
 import { weekIndexForTick } from './week-phase'
 import {
+  commitManagementChoice,
+  freezePreventiveCapacityOpportunity,
+  freezeRecoveryAllocationOpportunity,
+  isManagementScheduleBlockLocked,
+  openRecoveryAllocationOpportunity,
+  synchronizeManagementScheduleState,
+  type ManagementChoiceCommitFailureCode,
+} from './management-choices'
+import {
   GATE1_BRANCH_MATRIX_AXES,
   evaluateDominance,
   gate1BranchOutcomeVector,
@@ -65,6 +74,29 @@ export function createPlayerAction(
         : affectedBlockIdsFor(action),
     ...(undoOfActionId ? { undoOfActionId } : {}),
   }
+}
+
+export class ManagementChoiceCommitError extends Error {
+  constructor(
+    public readonly code: ManagementChoiceCommitFailureCode,
+  ) {
+    super(code)
+    this.name = 'ManagementChoiceCommitError'
+  }
+}
+
+function changesManagementProjection(action: PlayerAction) {
+  return [
+    'CHANGE_ACTIVITY',
+    'EDIT_SCHEDULE',
+    'COPY_DAY',
+    'UNDO_SCHEDULE',
+    'USE_FERTILIZER',
+    'ACCEPT_REPAIR_DEBT',
+    'RESOLVE_LIN_HE_REQUEST',
+    'OPEN_TRANSPORT_SHORTCUT',
+    'CONTINUE_TO_NEXT_WEEK',
+  ].includes(action.type)
 }
 
 function rangeOf(state: SimulationState): ForecastRange {
@@ -151,6 +183,16 @@ export function applyPlayerAction(
   let event: DomainEvent
 
   if (envelope.action.type === 'CHANGE_ACTIVITY') {
+    if (
+      isManagementScheduleBlockLocked(
+        state,
+        PUMP_MAINTENANCE_BLOCK_ID,
+      )
+    ) {
+      throw new Error(
+        `已兑现的管理选择锁定该活动块：${PUMP_MAINTENANCE_BLOCK_ID}`,
+      )
+    }
     const activity = envelope.action.activity
     const edited = applyScheduleTransaction(state, envelope.id, {
       type: 'EDIT_SCHEDULE',
@@ -187,6 +229,15 @@ export function applyPlayerAction(
     envelope.action.type === 'EDIT_SCHEDULE' ||
     envelope.action.type === 'COPY_DAY'
   ) {
+    const lockedBlockId = envelope.affectedBlockIds.find(
+      (blockId) =>
+        isManagementScheduleBlockLocked(state, blockId),
+    )
+    if (lockedBlockId) {
+      throw new Error(
+        `已兑现的管理选择锁定该活动块：${lockedBlockId}`,
+      )
+    }
     const requestTarget = envelope.affectedBlockIds.find(isLinHeRequestBlockLocked)
     if (requestTarget) {
       throw new Error('林禾请求占用的活动块必须通过人物请求决定，不能用普通日程编辑覆盖')
@@ -300,6 +351,15 @@ export function applyPlayerAction(
     }
   } else if (envelope.action.type === 'UNDO_SCHEDULE') {
     const transaction = state.scheduleTransactions.at(-1)
+    const lockedBlockId = transaction?.affectedBlockIds.find(
+      (blockId) =>
+        isManagementScheduleBlockLocked(state, blockId),
+    )
+    if (lockedBlockId) {
+      throw new Error(
+        `已兑现的管理选择不能通过撤销回滚：${lockedBlockId}`,
+      )
+    }
     const pastBlockId = transaction?.affectedBlockIds.find(
       (blockId) => blockEndTick(blockId) <= state.currentTick,
     )
@@ -629,11 +689,49 @@ export function applyPlayerAction(
       before,
       after,
     }
+  } else if (
+    envelope.action.type === 'COMMIT_MANAGEMENT_CHOICE'
+  ) {
+    const result = commitManagementChoice(
+      state,
+      envelope.action.request,
+      envelope.sequence,
+      envelope.id,
+    )
+    if (!result.ok) {
+      throw new ManagementChoiceCommitError(result.code)
+    }
+    const draft = result.state
+    const after = rangeOf(draft)
+    next = {
+      ...draft,
+      actionLog: [...state.actionLog, envelope],
+      timeline: appendTimeline(state, {
+        atTick: envelope.atTick,
+        kind: 'player-action',
+        id: envelope.id,
+        title:
+          result.commitment.choiceSetId ===
+          'choice:w0:preventive-capacity'
+            ? '提交预防容量分配'
+            : '提交恢复资源分配',
+        detail: `${result.commitment.candidateId} 已与全部 required consequences 原子提交；${supplyChangeDetail(state, draft)}`,
+        before,
+        after,
+      }),
+    }
+    event = {
+      id: envelope.id,
+      type: 'management-choice-committed',
+      atTick: envelope.atTick,
+      before,
+      after,
+    }
   } else if (envelope.action.type === 'CONTINUE_TO_NEXT_WEEK') {
     if (state.recap === null || state.isComplete) {
       throw new Error('只有未完成的周末复盘可以进入下一周')
     }
-    next = {
+    next = openRecoveryAllocationOpportunity({
       ...state,
       currentTick: _scenario.weekStartTicks[1],
       inventory: {
@@ -653,7 +751,7 @@ export function applyPlayerAction(
         title: '进入第二周',
         detail: '基础计划已经继承；第一周一次性例外已结算失效。第二周保持暂停，只需处理新增例外。',
       }),
-    }
+    })
     event = {
       id: envelope.id,
       type: 'clock-changed',
@@ -708,7 +806,17 @@ export function applyPlayerAction(
     }
   }
 
-  return { state: next, events: [event] }
+  const synchronized =
+    synchronizeManagementScheduleState(next)
+  return {
+    state: changesManagementProjection(envelope.action)
+      ? {
+          ...synchronized,
+          stateRevision: state.stateRevision + 1,
+        }
+      : synchronized,
+    events: [event],
+  }
 }
 
 function createRecap(state: SimulationState, weekIndex: number): WeekendRecap {
@@ -791,6 +899,54 @@ function createRecap(state: SimulationState, weekIndex: number): WeekendRecap {
           : '管理者明确拒绝请求，周二 B1 继续农务，林禾记住了本次取舍。',
       values: {
         shortTermFoodDelta: accepted ? -2 : 0,
+      },
+    })
+  }
+
+  const managementOpportunity =
+    weekIndex === 0
+      ? state.managementChoices.opportunities
+          .preventiveCapacity
+      : state.managementChoices.opportunities
+          .recoveryAllocation
+  if (managementOpportunity !== null) {
+    const terminal = managementOpportunity.terminalState
+    const committed =
+      terminal !== 'open' &&
+      terminal !== 'omitted' &&
+      terminal !== 'unqualified-direct-edit'
+    items.push({
+      id: `week-${weekIndex + 1}-management-choice`,
+      category: committed
+        ? '计划内结果'
+        : '已知风险',
+      sourceId: managementOpportunity.choiceSetId,
+      title:
+        weekIndex === 0
+          ? committed
+            ? terminal ===
+              'schedule-preventive-maintenance'
+              ? '预防容量分配给第二次检修'
+              : '预防容量保留为休息'
+            : '预防容量机会未形成合格承诺'
+          : committed
+            ? terminal === 'allocate-repair-buffer'
+              ? '应急班次分配给维修备件'
+              : '应急班次分配给粮食生产'
+            : '恢复资源机会未形成合格承诺',
+      detail:
+        weekIndex === 0
+          ? `terminalState=${terminal}；设备暴露 ${state.managementChoices.equipmentExposure}；恢复负荷 ${state.managementChoices.equipmentRecoveryLoad}；林禾恢复 ${state.managementChoices.linHeRecoveryUnits}；人员准备度 ${state.managementChoices.personnelReadiness}。`
+          : `terminalState=${terminal}；同一应急班次只兑现所选路线，设备恢复负荷保持 ${state.managementChoices.equipmentRecoveryLoad}。`,
+      values: {
+        equipmentRecoveryLoad:
+          state.managementChoices.equipmentRecoveryLoad,
+        personnelReadiness:
+          state.managementChoices.personnelReadiness,
+        endingFoodDelta:
+          terminal === 'allocate-food-production' ? 1 : 0,
+        endingRepairDelta:
+          terminal === 'allocate-repair-buffer' ? 1 : 0,
       },
     })
   }
@@ -993,9 +1149,14 @@ export function advanceSimulation(
       }
     }
 
-    const pumpStatus = hasPreventiveMaintenance(state) ? 'protected' : 'failed'
+    const frozenState =
+      freezePreventiveCapacityOpportunity(state)
+    const pumpStatus = hasPreventiveMaintenance(frozenState)
+      ? 'protected'
+      : 'failed'
     const eventState: SimulationState = {
       ...expired,
+      managementChoices: frozenState.managementChoices,
       currentTick: nextEvent.atTick,
       isPaused: true,
       pumpStatus,
@@ -1042,10 +1203,18 @@ export function advanceSimulation(
 
   if (endingWeekIndex >= 0) {
     const currentTick = scenario.weekEndTicks[endingWeekIndex]
-    const recap = createRecap({ ...state, currentTick }, endingWeekIndex)
+    const terminalState =
+      endingWeekIndex === 1
+        ? freezeRecoveryAllocationOpportunity(state)
+        : freezePreventiveCapacityOpportunity(state)
+    const recap = createRecap(
+      { ...terminalState, currentTick },
+      endingWeekIndex,
+    )
     const expired = expireScheduleLayers(state, currentTick, endingWeekIndex)
     const base: SimulationState = {
       ...expired,
+      managementChoices: terminalState.managementChoices,
       currentTick,
       isPaused: true,
       acceptedFoodShortfall: false,

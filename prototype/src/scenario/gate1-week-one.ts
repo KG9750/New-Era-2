@@ -15,6 +15,8 @@ export const WEEKLY_TRANSPORT_START_TICKS = [
   78,
   TICKS_PER_DAY * 7 + 78,
 ] as const
+export const GATE1_PROTOCOL_VERSION =
+  'weekly-management-slice-playtest-v0.3' as const
 
 export type DominanceStatus =
   | 'non-dominated'
@@ -84,6 +86,8 @@ export type Gate1ChoiceSetId =
   | 'choice:w0:fertilizer'
   | 'choice:w1:fertilizer'
   | 'choice:w1:lin-he-study'
+  | 'choice:w0:preventive-capacity'
+  | 'choice:w1:recovery-allocation'
 
 export interface Gate1ChoiceSetOracleOption {
   optionId: string
@@ -266,6 +270,55 @@ export const GATE1_CHOICE_SET_ORACLE: Readonly<
       },
     ],
   },
+  'choice:w0:preventive-capacity': {
+    choiceSetId: 'choice:w0:preventive-capacity',
+    decisionIntentId: 'w0:preventive-capacity:pump',
+    options: [
+      {
+        optionId: 'schedule-preventive-maintenance',
+        visibleConsequenceRefs: [
+          'schedule:lin-he:d1:b1',
+          'risk:equipment-exposure',
+          'state:equipment-recovery-load',
+        ],
+        dominanceStatus: 'non-dominated',
+      },
+      {
+        optionId: 'retain-rest-capacity',
+        visibleConsequenceRefs: [
+          'schedule:lin-he:d1:b1',
+          'state:lin-he-recovery-units',
+          'state:personnel-readiness',
+        ],
+        dominanceStatus: 'non-dominated',
+      },
+    ],
+  },
+  'choice:w1:recovery-allocation': {
+    choiceSetId: 'choice:w1:recovery-allocation',
+    decisionIntentId:
+      'w1:recovery-allocation:pump-vs-food',
+    options: [
+      {
+        optionId: 'allocate-repair-buffer',
+        visibleConsequenceRefs: [
+          'schedule:chen-du:d10:b2',
+          'forecast:w1:repair',
+          'state:equipment-recovery-load',
+        ],
+        dominanceStatus: 'non-dominated',
+      },
+      {
+        optionId: 'allocate-food-production',
+        visibleConsequenceRefs: [
+          'schedule:chen-du:d10:b2',
+          'forecast:w1:food',
+          'state:equipment-recovery-load',
+        ],
+        dominanceStatus: 'non-dominated',
+      },
+    ],
+  },
 }
 
 export function getGate1ChoiceSetOracle(
@@ -399,7 +452,7 @@ export function evaluateDominance(
 
 export const gate1WeekOneScenario: ScenarioDefinition = {
   id: 'gate1-two-week-management',
-  version: '0.5.0',
+  version: '0.5.1',
   fixedSeed: 104729,
   startTick: START_TICK,
   weekStartTicks: WEEK_START_TICKS,
@@ -423,6 +476,7 @@ export const gate1WeekOneScenario: ScenarioDefinition = {
   ],
   createInitialState(): SimulationState {
     return {
+      stateRevision: 0,
       currentTick: START_TICK,
       isPaused: true,
       activity: 'rest',
@@ -464,6 +518,20 @@ export const gate1WeekOneScenario: ScenarioDefinition = {
         'qiao-pan': ['接受正常排班与连续不超过两日的短期加班。'],
         'su-ji': ['物流效率稳定，可承担基础岗位交接。'],
         'chen-du': ['泛用协作稳定，适合作为粮食与维修之间的调剂者。'],
+      },
+      managementChoices: {
+        authority: null,
+        opportunities: {
+          preventiveCapacity: null,
+          recoveryAllocation: null,
+        },
+        commitments: [],
+        effectOwnership: {},
+        equipmentExposure: 'high',
+        equipmentRecoveryLoad: 2,
+        preventiveCapacityAllocation: 'unallocated',
+        linHeRecoveryUnits: 0,
+        personnelReadiness: 0,
       },
     }
   },

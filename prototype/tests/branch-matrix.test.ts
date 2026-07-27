@@ -13,6 +13,16 @@ import {
   GATE1_REPAIR_TARGET,
 } from '../src/sim/forecast'
 
+const LEGACY_CHOICE_SET_IDS = Object.keys(
+  GATE1_CHOICE_SET_ORACLE,
+).filter(
+  (choiceSetId) =>
+    ![
+      'choice:w0:preventive-capacity',
+      'choice:w1:recovery-allocation',
+    ].includes(choiceSetId),
+)
+
 describe('Gate 1 RC9 branch-matrix oracle', () => {
   it('marks every option unverified when continuation policies are incomplete', () => {
     const result = evaluateDominance({
@@ -131,10 +141,12 @@ describe('Gate 1 RC9 branch-matrix oracle', () => {
     expect(Object.keys(GATE1_CHOICE_SET_ORACLE).sort()).toEqual([
       'choice:w0:fertilizer',
       'choice:w0:food-plan',
+      'choice:w0:preventive-capacity',
       'choice:w0:pump-repair',
       'choice:w0:transport-route',
       'choice:w1:fertilizer',
       'choice:w1:lin-he-study',
+      'choice:w1:recovery-allocation',
       'choice:w1:transport-route',
     ])
 
@@ -155,7 +167,7 @@ describe('Gate 1 RC9 branch-matrix oracle', () => {
     expect(matrix.contexts).toHaveLength(132)
     expect(
       Object.fromEntries(
-        Object.keys(GATE1_CHOICE_SET_ORACLE).map((choiceSetId) => [
+        LEGACY_CHOICE_SET_IDS.map((choiceSetId) => [
           choiceSetId,
           matrix.contexts.filter(
             (context) => context.choiceSetId === choiceSetId,
@@ -207,6 +219,7 @@ describe('Gate 1 RC9 branch-matrix oracle', () => {
     for (const [choiceSetId, choiceSet] of Object.entries(
       GATE1_CHOICE_SET_ORACLE,
     )) {
+      if (!LEGACY_CHOICE_SET_IDS.includes(choiceSetId)) continue
       const matrixOptionIds = [
         ...new Set(
           matrix.contexts
@@ -259,7 +272,7 @@ describe('Gate 1 RC9 branch-matrix oracle', () => {
 
   it('freezes the auditable matrix summary used by the design note', () => {
     const matrix = buildGate1BranchMatrixOracle(scenario)
-    const choiceSetIds = Object.keys(GATE1_CHOICE_SET_ORACLE)
+    const choiceSetIds = LEGACY_CHOICE_SET_IDS
     const summary = {
       completeTrajectoryCount: matrix.completeTrajectoryCount,
       contextCount: matrix.contexts.length,
@@ -355,7 +368,7 @@ describe('Gate 1 RC9 branch-matrix oracle', () => {
       .join('')
 
     expect(digest).toBe(
-      'c400755ff33e8497ae7e5c35e1cd6845c2f4b7c5de255ba91f5d7771ca412578',
+      '9139effdf753dc46dfaab03ce4d35907257079afc64c911cf377b0435a4be975',
     )
   })
 })

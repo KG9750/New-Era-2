@@ -13,10 +13,13 @@ import type { SessionRecorder } from './session'
 import { stableStateHash } from './session'
 import {
   LIN_HE_STUDY_BLOCK_ID,
+  PUMP_MAINTENANCE_BLOCK_ID,
+  RECOVERY_ALLOCATION_BLOCK_ID,
   blockEndTick,
   parseBlockId,
   resolveScheduleBlock,
 } from '../sim/schedule'
+import { sha256Canonical } from '../sim/canonical-hash'
 
 const MAX_BLOCKED_REASON_LENGTH = 240
 const LIN_HE_INTENT_ID = 'w1:character-request:lin-he-study'
@@ -80,118 +83,21 @@ type ExportedV2Action =
   | { id: string; type: 'UNDO'; revertsActionId: string }
   | { id: string; type: 'SET_PAUSED'; paused: boolean }
   | { id: string; type: 'CONTINUE_TO_NEXT_WEEK' }
-
-function canonicalJson(value: unknown): string {
-  if (Array.isArray(value)) {
-    return `[${value.map((item) => canonicalJson(item)).join(',')}]`
-  }
-  if (value && typeof value === 'object') {
-    return `{${Object.keys(value as Record<string, unknown>)
-      .sort()
-      .map(
-        (key) =>
-          `${JSON.stringify(key)}:${canonicalJson(
-            (value as Record<string, unknown>)[key],
-          )}`,
-      )
-      .join(',')}}`
-  }
-  return JSON.stringify(value)
-}
-
-function rotateRight(value: number, count: number): number {
-  return (value >>> count) | (value << (32 - count))
-}
-
-function sha256(value: unknown): string {
-  const source = new TextEncoder().encode(canonicalJson(value))
-  const bitLength = source.length * 8
-  const paddedLength = Math.ceil((source.length + 9) / 64) * 64
-  const bytes = new Uint8Array(paddedLength)
-  bytes.set(source)
-  bytes[source.length] = 0x80
-  const view = new DataView(bytes.buffer)
-  view.setUint32(paddedLength - 4, bitLength, false)
-  const constants = [
-    0x428a2f98, 0x71374491, 0xb5c0fbcf, 0xe9b5dba5,
-    0x3956c25b, 0x59f111f1, 0x923f82a4, 0xab1c5ed5,
-    0xd807aa98, 0x12835b01, 0x243185be, 0x550c7dc3,
-    0x72be5d74, 0x80deb1fe, 0x9bdc06a7, 0xc19bf174,
-    0xe49b69c1, 0xefbe4786, 0x0fc19dc6, 0x240ca1cc,
-    0x2de92c6f, 0x4a7484aa, 0x5cb0a9dc, 0x76f988da,
-    0x983e5152, 0xa831c66d, 0xb00327c8, 0xbf597fc7,
-    0xc6e00bf3, 0xd5a79147, 0x06ca6351, 0x14292967,
-    0x27b70a85, 0x2e1b2138, 0x4d2c6dfc, 0x53380d13,
-    0x650a7354, 0x766a0abb, 0x81c2c92e, 0x92722c85,
-    0xa2bfe8a1, 0xa81a664b, 0xc24b8b70, 0xc76c51a3,
-    0xd192e819, 0xd6990624, 0xf40e3585, 0x106aa070,
-    0x19a4c116, 0x1e376c08, 0x2748774c, 0x34b0bcb5,
-    0x391c0cb3, 0x4ed8aa4a, 0x5b9cca4f, 0x682e6ff3,
-    0x748f82ee, 0x78a5636f, 0x84c87814, 0x8cc70208,
-    0x90befffa, 0xa4506ceb, 0xbef9a3f7, 0xc67178f2,
-  ]
-  const hash = [
-    0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a,
-    0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19,
-  ]
-  const words = new Uint32Array(64)
-  for (let offset = 0; offset < bytes.length; offset += 64) {
-    for (let index = 0; index < 16; index += 1) {
-      words[index] = view.getUint32(offset + index * 4, false)
+  | {
+      id: string
+      type: 'COMMIT_MANAGEMENT_CHOICE'
+      opportunityId: string
+      choiceSetId: string
+      candidateId: string
+      stateRevision: number
+      projectionBaseHash: string
+      candidateProjectionHash: string
+      idempotencyKey: string
+      commitCause: 'explicit-candidate-action'
     }
-    for (let index = 16; index < 64; index += 1) {
-      const left =
-        rotateRight(words[index - 15], 7) ^
-        rotateRight(words[index - 15], 18) ^
-        (words[index - 15] >>> 3)
-      const right =
-        rotateRight(words[index - 2], 17) ^
-        rotateRight(words[index - 2], 19) ^
-        (words[index - 2] >>> 10)
-      words[index] =
-        (words[index - 16] + left + words[index - 7] + right) >>> 0
-    }
-    let [a, b, c, d, e, f, g, h] = hash
-    for (let index = 0; index < 64; index += 1) {
-      const choose = (e & f) ^ (~e & g)
-      const majority = (a & b) ^ (a & c) ^ (b & c)
-      const first =
-        (h +
-          (rotateRight(e, 6) ^
-            rotateRight(e, 11) ^
-            rotateRight(e, 25)) +
-          choose +
-          constants[index] +
-          words[index]) >>>
-        0
-      const second =
-        (rotateRight(a, 2) ^
-          rotateRight(a, 13) ^
-          rotateRight(a, 22)) +
-        majority
-      h = g
-      g = f
-      f = e
-      e = (d + first) >>> 0
-      d = c
-      c = b
-      b = a
-      a = (first + second) >>> 0
-    }
-    hash[0] = (hash[0] + a) >>> 0
-    hash[1] = (hash[1] + b) >>> 0
-    hash[2] = (hash[2] + c) >>> 0
-    hash[3] = (hash[3] + d) >>> 0
-    hash[4] = (hash[4] + e) >>> 0
-    hash[5] = (hash[5] + f) >>> 0
-    hash[6] = (hash[6] + g) >>> 0
-    hash[7] = (hash[7] + h) >>> 0
-  }
-  return hash.map((item) => item.toString(16).padStart(8, '0')).join('')
-}
 
 function decisionHash(decisionIntentId: string, projection: unknown) {
-  return sha256({ decisionIntentId, projection })
+  return sha256Canonical({ decisionIntentId, projection })
 }
 
 function oracleChoiceSet(
@@ -259,6 +165,8 @@ function createV2Export(
   monotonicNow: number,
   blockedReason?: string,
 ) {
+  const isV03 =
+    state.managementChoices.authority !== null
   const requestTransitions = recorder.playerTransitions.filter(
     ({ envelope }) =>
       envelope.action.type === 'RESOLVE_LIN_HE_REQUEST',
@@ -380,6 +288,28 @@ function createV2Export(
   }
   const actions = recorder.playerTransitions.flatMap<ExportedV2Action>(
     ({ envelope, before, after }) => {
+      if (
+        envelope.action.type ===
+        'COMMIT_MANAGEMENT_CHOICE'
+      ) {
+        const { request } = envelope.action
+        return [
+          {
+            id: envelope.id,
+            type: 'COMMIT_MANAGEMENT_CHOICE' as const,
+            opportunityId: request.opportunityId,
+            choiceSetId: request.choiceSetId,
+            candidateId: request.candidateId,
+            stateRevision: request.stateRevision,
+            projectionBaseHash:
+              request.projectionBaseHash,
+            candidateProjectionHash:
+              request.candidateProjectionHash,
+            idempotencyKey: request.idempotencyKey,
+            commitCause: request.commitCause,
+          },
+        ]
+      }
       if (envelope.action.type === 'RESOLVE_LIN_HE_REQUEST') {
         return [
           envelope.action.decision === 'accepted'
@@ -1112,7 +1042,7 @@ function createV2Export(
       }
     },
   )
-  const candidateManagementCommitmentGroups = [
+  const legacyCandidateManagementCommitmentGroups = [
     ...foodCommitmentGroups,
     ...(repairDebtCommitmentGroups.length > 0
       ? repairDebtCommitmentGroups
@@ -1121,8 +1051,86 @@ function createV2Export(
     ...transportCommitmentGroups,
     ...fertilizerCommitmentGroups,
   ]
+  const managementCommitmentGroupsV03 =
+    state.managementChoices.commitments.map(
+      (commitment) => {
+        const action = state.actionLog.find(
+          (entry) =>
+            entry.sequence ===
+            commitment.committedAtSequence,
+        )
+        if (
+          action?.action.type !==
+          'COMMIT_MANAGEMENT_CHOICE'
+        ) {
+          throw new Error(
+            `Management commitment ${commitment.opportunityId} has no canonical action`,
+          )
+        }
+        return {
+          decisionIntentId: commitment.decisionIntentId,
+          choiceSetId: commitment.choiceSetId,
+          weekIndex: commitment.week,
+          problemCategory:
+            commitment.week === 0
+              ? ('preventive-capacity' as const)
+              : ('recovery-allocation' as const),
+          actionIds: [action.id],
+          consequenceRefs: commitment.consequences.map(
+            (consequence) => ({
+              kind:
+                consequence.objectRef ===
+                  PUMP_MAINTENANCE_BLOCK_ID ||
+                consequence.objectRef ===
+                  RECOVERY_ALLOCATION_BLOCK_ID
+                  ? ('schedule' as const)
+                  : consequence.objectRef.startsWith(
+                        'forecast:',
+                      )
+                    ? ('forecast' as const)
+                    : ('risk' as const),
+              id: consequence.objectRef,
+            }),
+          ),
+          beforeDecisionStateHash:
+            commitment.projectionBaseHash,
+          finalDecisionStateHash:
+            commitment.candidateProjectionHash,
+          finalOutcomeCode: `committed:${commitment.candidateId}`,
+          finalDisposition: 'committed' as const,
+        }
+      },
+    )
+  const candidateManagementCommitmentGroups = [
+    ...legacyCandidateManagementCommitmentGroups,
+    ...(isV03 ? managementCommitmentGroupsV03 : []),
+  ]
+  const managementChoiceSetsV03 = [
+    state.managementChoices.opportunities.preventiveCapacity,
+    state.managementChoices.opportunities.recoveryAllocation,
+  ].flatMap((opportunity) =>
+    opportunity === null
+      ? []
+      : [
+          oracleChoiceSet(
+            opportunity.choiceSetId,
+            state.managementChoices.commitments.find(
+              (commitment) =>
+                commitment.opportunityId ===
+                opportunity.opportunityId,
+            )?.candidateId ?? null,
+          ),
+        ],
+  )
   return {
     schemaVersion: 'gate1-playtest-v2' as const,
+    ...(isV03
+      ? {
+          protocolVersion:
+            recorder.meta.protocolVersion,
+          scenarioVersion: recorder.meta.scenarioVersion,
+        }
+      : {}),
     captureKind:
       blockedReason === undefined
         ? ('complete' as const)
@@ -1133,7 +1141,22 @@ function createV2Export(
           blockedAtTick: state.currentTick,
           blockedReason,
         }),
-    meta: { ...recorder.meta },
+    meta: isV03
+      ? { ...recorder.meta }
+      : {
+          sampleId: recorder.meta.sampleId,
+          sessionId: recorder.meta.sessionId,
+          buildId: recorder.meta.buildId,
+          gitSha: recorder.meta.gitSha,
+          artifactHash: recorder.meta.artifactHash,
+          scenarioId: recorder.meta.scenarioId,
+          scenarioVersion: '0.5.0',
+          fixedSeed: recorder.meta.fixedSeed,
+          initialStateHash:
+            recorder.meta.initialStateHash,
+          viewport: recorder.meta.viewport,
+          inputDevice: recorder.meta.inputDevice,
+        },
     machineTiming: {
       machineStartedAtEpochMs: recorder.machineStartedAtEpochMs,
       machineEndedAtEpochMs: epochNow,
@@ -1148,8 +1171,36 @@ function createV2Export(
     },
     actions,
     candidateEditGroups,
-    choiceSets,
+    choiceSets: [
+      ...choiceSets,
+      ...(isV03 ? managementChoiceSetsV03 : []),
+    ],
     candidateManagementCommitmentGroups,
+    ...(isV03
+      ? {
+          managementChoiceOpportunitiesV03: [
+            state.managementChoices.opportunities
+              .preventiveCapacity,
+            state.managementChoices.opportunities
+              .recoveryAllocation,
+          ].filter((value) => value !== null),
+          managementChoiceCommitmentsV03:
+            state.managementChoices.commitments.map(
+              (commitment) => ({
+                ...commitment,
+                consequences:
+                  commitment.consequences.map(
+                    (consequence) => ({
+                      ...consequence,
+                    }),
+                  ),
+              }),
+            ),
+          effectOwnershipV03: {
+            ...state.managementChoices.effectOwnership,
+          },
+        }
+      : {}),
     domainEvents: recorder.domainEvents.map((event) => ({ ...event })),
     telemetry: recorder.telemetry.map((event) => ({ ...event })),
     speedTrajectory: recorder.speedTrajectory.map((entry) => ({ ...entry })),
@@ -1160,6 +1211,22 @@ function createV2Export(
       completedWeekCount: state.completedWeekIndexes.length,
       recapCount: state.recaps.length,
       processedScriptEventIds: [...state.processedScriptEventIds],
+      ...(isV03
+        ? {
+            equipmentExposure:
+              state.managementChoices.equipmentExposure,
+            equipmentRecoveryLoad:
+              state.managementChoices
+                .equipmentRecoveryLoad,
+            preventiveCapacityAllocation:
+              state.managementChoices
+                .preventiveCapacityAllocation,
+            linHeRecoveryUnits:
+              state.managementChoices.linHeRecoveryUnits,
+            personnelReadiness:
+              state.managementChoices.personnelReadiness,
+          }
+        : {}),
     },
     recap: state.recaps.map((week, weekIndex) => ({
       weekIndex,
@@ -1184,6 +1251,18 @@ function createV2Export(
         candidateManagementCommitmentGroups.filter(
           ({ weekIndex }) => weekIndex === 1,
         ).length,
+      ...(isV03
+        ? {
+            week1C03TerminalCommitmentCount:
+              managementCommitmentGroupsV03.filter(
+                ({ weekIndex }) => weekIndex === 0,
+              ).length,
+            week2C03TerminalCommitmentCount:
+              managementCommitmentGroupsV03.filter(
+                ({ weekIndex }) => weekIndex === 1,
+              ).length,
+          }
+        : {}),
     },
   }
 }
@@ -1213,6 +1292,17 @@ type ExportedPlayerAction =
   | { type: 'ACCEPT_REPAIR_DEBT' }
   | { type: 'RESOLVE_LIN_HE_REQUEST'; decision: string }
   | { type: 'OPEN_TRANSPORT_SHORTCUT' }
+  | {
+      type: 'COMMIT_MANAGEMENT_CHOICE'
+      opportunityId: string
+      choiceSetId: string
+      candidateId: string
+      stateRevision: number
+      projectionBaseHash: string
+      candidateProjectionHash: string
+      idempotencyKey: string
+      commitCause: 'explicit-candidate-action'
+    }
   | { type: 'CONTINUE_TO_NEXT_WEEK' }
   | { type: 'SET_PAUSED'; paused: boolean }
 
@@ -1246,6 +1336,20 @@ function exportAction(action: PlayerAction): ExportedPlayerAction {
       return { type: action.type, decision: action.decision }
     case 'SET_PAUSED':
       return { type: action.type, paused: action.paused }
+    case 'COMMIT_MANAGEMENT_CHOICE':
+      return {
+        type: action.type,
+        opportunityId: action.request.opportunityId,
+        choiceSetId: action.request.choiceSetId,
+        candidateId: action.request.candidateId,
+        stateRevision: action.request.stateRevision,
+        projectionBaseHash:
+          action.request.projectionBaseHash,
+        candidateProjectionHash:
+          action.request.candidateProjectionHash,
+        idempotencyKey: action.request.idempotencyKey,
+        commitCause: action.request.commitCause,
+      }
     default:
       return { type: action.type }
   }
@@ -1278,7 +1382,10 @@ function createExport(
   monotonicNow = performance.now(),
   blockedReason?: string,
 ) {
-  if (scenario.version === '0.5.0') {
+  if (
+    scenario.version === '0.5.0' ||
+    scenario.version === '0.5.1'
+  ) {
     return createV2Export(
       recorder,
       state,

@@ -18,6 +18,7 @@ import {
   parseBlockId,
   resolveScheduleBlock,
 } from '../sim/schedule'
+import { isManagementScheduleBlockLocked } from '../sim/management-choices'
 
 const ACTIVITY_LABELS: Record<Activity, string> = {
   food: '农务',
@@ -249,6 +250,17 @@ export function ScheduleBoard({
       createBlockId(copyCharacter, firstDay + targetDayOffset, blockIndex),
     ),
   )
+  const copyTouchesManagementLock = [0, 1, 2, 3].some(
+    (blockIndex) =>
+      isManagementScheduleBlockLocked(
+        simulation,
+        createBlockId(
+          copyCharacter,
+          firstDay + targetDayOffset,
+          blockIndex,
+        ),
+      ),
+  )
   const copyPairs = [0, 1, 2, 3].map((blockIndex) => {
     const sourceBlockId = createBlockId(
       copyCharacter,
@@ -302,6 +314,15 @@ export function ScheduleBoard({
         projectedActivity === 'repair' &&
         targetActivity === 'repair',
     )
+  const undoTouchesManagementLock =
+    simulation.scheduleTransactions
+      .at(-1)
+      ?.affectedBlockIds.some((blockId) =>
+        isManagementScheduleBlockLocked(
+          simulation,
+          blockId,
+        ),
+      ) ?? false
 
   function toggleBlock(blockId: string) {
     setSelectedIds((current) =>
@@ -417,7 +438,10 @@ export function ScheduleBoard({
         </button>
         <button
           className="secondary-button"
-          disabled={simulation.scheduleTransactions.length === 0}
+          disabled={
+            simulation.scheduleTransactions.length === 0 ||
+            undoTouchesManagementLock
+          }
           onClick={() => submit({ type: 'UNDO_SCHEDULE' })}
           type="button"
         >
@@ -453,12 +477,21 @@ export function ScheduleBoard({
                     const selected = selectedIds.includes(blockId)
                     const isPast = blockEndTick(blockId) <= simulation.currentTick
                     const requestLocked = isLinHeRequestBlockLocked(blockId)
+                    const managementLocked =
+                      isManagementScheduleBlockLocked(
+                        simulation,
+                        blockId,
+                      )
                     return (
                       <button
-                        aria-label={`${character.name} ${DAY_LABELS[dayIndex]} ${BLOCK_LABELS[blockIndex]} ${ACTIVITY_LABELS[block.activity]} ${block.source}${isPast ? ' 已执行' : ''}${requestLocked ? ' 人物请求锁定' : ''}`}
+                        aria-label={`${character.name} ${DAY_LABELS[dayIndex]} ${BLOCK_LABELS[blockIndex]} ${ACTIVITY_LABELS[block.activity]} ${block.source}${isPast ? ' 已执行' : ''}${requestLocked ? ' 人物请求锁定' : ''}${managementLocked ? ' 管理选择锁定' : ''}`}
                         aria-pressed={selected}
                         className={`schedule-block activity-${block.activity} ${selected ? 'selected' : ''}`}
-                        disabled={isPast || requestLocked}
+                        disabled={
+                          isPast ||
+                          requestLocked ||
+                          managementLocked
+                        }
                         key={blockId}
                         onClick={() => toggleBlock(blockId)}
                         role="gridcell"
@@ -466,7 +499,13 @@ export function ScheduleBoard({
                       >
                         <span>{BLOCK_LABELS[blockIndex].slice(0, 2)}</span>
                         <strong>{ACTIVITY_LABELS[block.activity]}</strong>
-                        <small>{requestLocked ? '人物请求' : block.source}</small>
+                        <small>
+                          {requestLocked
+                            ? '人物请求'
+                            : managementLocked
+                              ? '管理选择'
+                              : block.source}
+                        </small>
                       </button>
                     )
                   })}
@@ -521,6 +560,7 @@ export function ScheduleBoard({
             copyBoundaryWarning !== null ||
             copyTargetsPast ||
             copyTouchesRequestBlock ||
+            copyTouchesManagementLock ||
             copyIsNoOp ||
             copyWouldNoOpConfirmResponsibility
           }
@@ -531,6 +571,8 @@ export function ScheduleBoard({
             ? '复制会触发红线'
             : copyTouchesRequestBlock
               ? '目标日含人物请求'
+              : copyTouchesManagementLock
+                ? '目标日含已兑现选择'
               : copyWouldNoOpConfirmResponsibility
                 ? '责任格已是维修，先撤销旧事务'
                 : copyIsNoOp
