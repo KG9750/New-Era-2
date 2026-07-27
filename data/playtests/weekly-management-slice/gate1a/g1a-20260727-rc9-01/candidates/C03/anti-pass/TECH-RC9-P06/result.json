@@ -1,0 +1,640 @@
+{
+  "schemaVersion": "gate1-rc9-anti-pass-result-v1",
+  "candidateAttempt": "C03",
+  "sampleId": "TECH-RC9-P06",
+  "pathKind": "minimal-intervention-and-invalid-consequence",
+  "status": "PASS",
+  "buildId": "g1-rc-20260727.rc9-c03",
+  "sourceSha": "cd2fc9716d98c160fe530c593347992f18bf96e4",
+  "artifactHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+  "candidateCore": {
+    "path": "../../candidate-core.json",
+    "sha256": "640d3f807aa3d52bef7e7ecc4c9975c5bb714672c99a9895adb4b4bc4914ec95",
+    "gitObject": "f2f1018efe9e5ce4143c8b1f0628c6c584692a70",
+    "sourceTree": "2533f76438dc6d3b584ba44629a28756ba675c66",
+    "sourcePrototypeTree": "5dea3df621fa7ddf782d235f30f08fd6ca2a4954",
+    "rcDistTree": "330b67df1e7e9771ca816bbf433d498f07f09ece",
+    "rcDistInventorySha256": "dbb7bfe948b154ff11c7c9e0e1ff1a27587d5915aa7e2694f7186c7baedfed83"
+  },
+  "previousAntiPass": {
+    "sampleId": "TECH-RC9-P05",
+    "path": "../TECH-RC9-P05",
+    "tree": "b6691311e87113ba5448ce0502d262107c5a3d82",
+    "resultSha256": "1509a2f80df6196ec827dd11f1c1a3f9cbe26edd89084212da18abfd8cb12277"
+  },
+  "sessionAuthority": {
+    "diagnosisId": "TECH-RC9-P06",
+    "sessionId": "92458945-7412-471c-a784-aa348920ad26",
+    "candidateBuildAuthorityHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+    "sessionAuthorityToken": "8c365e1ccbc7faeae70c315d9f0b8c1bdf47c166b382e7a3844ed63fa5323255",
+    "applicationSessionCount": 1
+  },
+  "viewport": "1440x900",
+  "inputMode": "browser-pointer-keyboard",
+  "minimalInterventionTimeline": [
+    {
+      "phase": "w1-before-deadline",
+      "observedAtTick": 0,
+      "deadlineTick": 240,
+      "cardOpenedAndClosed": true,
+      "candidateSubmitted": false,
+      "terminalState": "open",
+      "stateRevision": 0,
+      "weekCommitmentCount": 0,
+      "ordinaryActivity": "rest"
+    },
+    {
+      "phase": "w1-after-deadline",
+      "observedAtTick": 342,
+      "deadlineTick": 240,
+      "candidateButtonsDisabled": true,
+      "terminalState": "omitted",
+      "stateRevision": 0,
+      "weekCommitmentCount": 0,
+      "ordinaryActivity": "rest",
+      "recapClaim": "预防容量机会未形成合格承诺；林禾按普通休息执行，未获得专项恢复或人员准备度提升"
+    },
+    {
+      "phase": "w1-recap",
+      "observedAtTick": 1002,
+      "recapCount": 1,
+      "endingFood": 3,
+      "ordinaryFlowBlocked": false
+    },
+    {
+      "phase": "w2-before-deadline",
+      "observedAtTick": 1002,
+      "deadlineTick": 1554,
+      "cardOpenedAndClosed": true,
+      "candidateSubmitted": false,
+      "terminalState": "open",
+      "stateRevision": 1,
+      "weekCommitmentCount": 0,
+      "resourceLot": {
+        "resourceClaimRef": "schedule-slot:chen-du:d10:b2",
+        "tickInterval": [
+          1536,
+          1554
+        ],
+        "tickCount": 18,
+        "originalActivity": "rest"
+      }
+    },
+    {
+      "phase": "w2-ordinary-request-deadline",
+      "observedAtTick": 1206,
+      "memberRequestResolution": "deadline-default-declined",
+      "endingFoodForecast": -12,
+      "endingRepairForecast": -7,
+      "ordinaryFlowBlocked": false
+    },
+    {
+      "phase": "w2-after-deadline",
+      "observedAtTick": 1870,
+      "deadlineTick": 1554,
+      "candidateButtonsDisabled": true,
+      "terminalState": "omitted",
+      "stateRevision": 1,
+      "weekCommitmentCount": 0,
+      "ordinaryActivity": "rest"
+    },
+    {
+      "phase": "w2-recap-and-terminal",
+      "observedAtTick": 2010,
+      "terminalState": "omitted",
+      "weekCommitmentCount": 0,
+      "totalCommitmentCount": 0,
+      "recapCount": 2,
+      "endingFood": -12,
+      "endingRepair": -7,
+      "recapClaim": "恢复资源机会未形成合格承诺；本周未获得额外粮食或维修保障",
+      "ordinaryFlowBlocked": false
+    }
+  ],
+  "terminalLedger": {
+    "managementChoiceOpportunitiesV03": 2,
+    "managementChoiceCommitmentsV03": 0,
+    "settledManagementOutcomesV03": 0,
+    "effectOwnershipCount": 0,
+    "candidateEditGroups": 0,
+    "candidateManagementCommitmentGroups": 0,
+    "week1C03TerminalCommitmentCount": 0,
+    "week2C03TerminalCommitmentCount": 0,
+    "finalTick": 2010,
+    "completedWeekCount": 2,
+    "recapCount": 2,
+    "w1Terminal": {
+      "choiceSetId": "choice:w0:preventive-capacity",
+      "terminalState": "omitted",
+      "stateRevision": 0,
+      "candidateId": null,
+      "committedAtSequence": null,
+      "effectFingerprints": []
+    },
+    "w2Terminal": {
+      "choiceSetId": "choice:w1:recovery-allocation",
+      "terminalState": "omitted",
+      "stateRevision": 1,
+      "candidateId": null,
+      "committedAtSequence": null,
+      "effectFingerprints": []
+    },
+    "finalState": {
+      "preventiveCapacityAllocation": "unallocated",
+      "preventiveCapacityActivity": "rest",
+      "recoveryAllocationActivity": "rest",
+      "equipmentExposure": "high",
+      "equipmentRecoveryLoad": 2,
+      "linHeRecoveryUnits": 0,
+      "personnelReadiness": 0,
+      "endingFood": {
+        "low": -12,
+        "high": -12
+      },
+      "endingRepair": {
+        "low": -7,
+        "high": -7
+      }
+    }
+  },
+  "runtimeAntiPass": {
+    "oldProjectionHash": {
+      "errorCode": "STALE_PROJECTION",
+      "sameStateObject": true,
+      "countDelta": 0
+    },
+    "wrongOpportunityObject": {
+      "errorCode": "OPPORTUNITY_MISMATCH",
+      "sameStateObject": true,
+      "countDelta": 0
+    },
+    "crossDiagnosisRebind": {
+      "errorCode": "AUTHORITY_MISMATCH",
+      "sameStateObject": true,
+      "countDelta": 0
+    },
+    "w2MustReadW1Terminal": {
+      "mutation": "change the frozen W1 terminal after creating the W2 request",
+      "errorCode": "STALE_PROJECTION",
+      "sameStateObject": true,
+      "countDelta": 0
+    },
+    "competingTargetChangedAfterQuestion": {
+      "staleRequestErrorCode": "STALE_PROJECTION",
+      "freshRequestErrorCode": "ORIGINAL_ACTIVITY_MISMATCH",
+      "bothReturnOriginalState": true,
+      "countDelta": 0
+    },
+    "w2CannotRepurchasePreventiveCapacity": {
+      "w1Terminal": "retain-rest-capacity",
+      "w1EquipmentRecoveryLoadBeforeW2": 2,
+      "equipmentRecoveryLoadAfterW2RepairAllocation": 2,
+      "preventiveCapacityAllocationAfterW2": "rest",
+      "w2EndingRepairDelta": 1,
+      "w2EndingFoodDelta": 0,
+      "w2CommitmentCount": 1
+    }
+  },
+  "actualLedgerTamperMatrix": [
+    {
+      "case": "actual-ledger",
+      "canonicalAccepted": true,
+      "hostAccepted": true,
+      "errorCode": null
+    },
+    {
+      "case": "old-initial-state-hash",
+      "canonicalAccepted": true,
+      "hostAccepted": false,
+      "errorCode": "HOST_V03_CAPTURE_REJECTED"
+    },
+    {
+      "case": "wrong-w1-object",
+      "canonicalAccepted": false,
+      "hostAccepted": false,
+      "errorCode": "V03_CANONICAL_CONTRACT"
+    },
+    {
+      "case": "wrong-w2-week",
+      "canonicalAccepted": false,
+      "hostAccepted": false,
+      "errorCode": "V03_CANONICAL_CONTRACT"
+    },
+    {
+      "case": "wrong-w2-resource-lot",
+      "canonicalAccepted": false,
+      "hostAccepted": false,
+      "errorCode": "V03_CANONICAL_CONTRACT"
+    },
+    {
+      "case": "w2-without-w1-opportunity",
+      "canonicalAccepted": false,
+      "hostAccepted": false,
+      "errorCode": "V03_COMPLETE_TERMINALS"
+    },
+    {
+      "case": "candidate-terminal-without-commitment",
+      "canonicalAccepted": false,
+      "hostAccepted": false,
+      "errorCode": "V03_TERMINAL_MISMATCH"
+    },
+    {
+      "case": "summary-fabricates-w1-count",
+      "canonicalAccepted": false,
+      "hostAccepted": false,
+      "errorCode": "V03_SUMMARY_MISMATCH"
+    },
+    {
+      "case": "recap-only-settled-claim",
+      "canonicalAccepted": false,
+      "hostAccepted": false,
+      "errorCode": "V03_RECAP_MISMATCH"
+    },
+    {
+      "case": "no-op-recap-claim",
+      "canonicalAccepted": false,
+      "hostAccepted": false,
+      "errorCode": "V03_RECAP_MISMATCH"
+    },
+    {
+      "case": "main-schedule-without-context",
+      "canonicalAccepted": false,
+      "hostAccepted": false,
+      "errorCode": "V03_FINAL_STATE_MISMATCH"
+    },
+    {
+      "case": "context-without-main-schedule",
+      "canonicalAccepted": false,
+      "hostAccepted": false,
+      "errorCode": "V03_FINAL_STATE_MISMATCH"
+    },
+    {
+      "case": "w2-schedule-without-supply",
+      "canonicalAccepted": false,
+      "hostAccepted": false,
+      "errorCode": "V03_FINAL_STATE_MISMATCH"
+    },
+    {
+      "case": "cross-session-opportunity-rebind",
+      "canonicalAccepted": false,
+      "hostAccepted": false,
+      "errorCode": "V03_CANONICAL_CONTRACT"
+    },
+    {
+      "case": "diagnosis-opportunity-rebind",
+      "canonicalAccepted": false,
+      "hostAccepted": false,
+      "errorCode": "V03_CANONICAL_CONTRACT"
+    }
+  ],
+  "committedFixtureTamperMatrix": [
+    {
+      "case": "committed-fixture",
+      "fixture": "playtest-v03/ledger-valid.json",
+      "accepted": true,
+      "errorCode": null
+    },
+    {
+      "case": "required-consequence-missing",
+      "accepted": false,
+      "errorCode": "V03_CANONICAL_CONTRACT"
+    },
+    {
+      "case": "required-consequence-partial-list",
+      "accepted": false,
+      "errorCode": "V03_CANONICAL_CONTRACT"
+    },
+    {
+      "case": "decision-success-domain-w1-not-applied",
+      "accepted": false,
+      "errorCode": "V03_FINAL_STATE_MISMATCH"
+    },
+    {
+      "case": "decision-success-domain-w2-schedule-not-applied",
+      "accepted": false,
+      "errorCode": "V03_FINAL_STATE_MISMATCH"
+    },
+    {
+      "case": "decision-success-domain-w2-supply-not-applied",
+      "accepted": false,
+      "errorCode": "V03_FINAL_STATE_MISMATCH"
+    },
+    {
+      "case": "consequence-rolled-back",
+      "accepted": false,
+      "errorCode": "V03_FINAL_STATE_MISMATCH"
+    },
+    {
+      "case": "terminal-candidate-mismatch",
+      "accepted": false,
+      "errorCode": "V03_CANONICAL_CONTRACT"
+    },
+    {
+      "case": "effect-owner-mismatch",
+      "accepted": false,
+      "errorCode": "V03_EFFECT_OWNER_MISMATCH"
+    },
+    {
+      "case": "export-summary-mismatch",
+      "accepted": false,
+      "errorCode": "V03_SUMMARY_MISMATCH"
+    },
+    {
+      "case": "recap-settlement-mismatch",
+      "accepted": false,
+      "errorCode": "V03_RECAP_MISMATCH"
+    },
+    {
+      "case": "settled-outcome-missing",
+      "accepted": false,
+      "errorCode": "V03_SETTLED_OUTCOME_MISMATCH"
+    },
+    {
+      "case": "cross-session-rebind",
+      "accepted": false,
+      "errorCode": "V03_CANONICAL_CONTRACT"
+    },
+    {
+      "case": "cross-diagnosis-rebind",
+      "accepted": false,
+      "errorCode": "V03_CANONICAL_CONTRACT"
+    }
+  ],
+  "frozenFixtureAndTestMatrix": [
+    {
+      "claim": "no-op consequence is rejected",
+      "fixture": "playtest-v03/no-op-consequence-rejected.json",
+      "errorCode": "V03_EFFECT_FINGERPRINT"
+    },
+    {
+      "claim": "wrong canonical W2 lot is rejected",
+      "fixture": "playtest-v03/resource-lot-rejected.json",
+      "errorCode": "V03_CANONICAL_CONTRACT"
+    },
+    {
+      "claim": "cross-session record is rejected",
+      "fixture": "playtest-v03/cross-session-rejected.json",
+      "errorCode": "V03_CANONICAL_CONTRACT"
+    },
+    {
+      "claim": "missing W1 required consequence is rejected",
+      "fixture": "playtest-v03/w1-required-consequences-missing-rejected.json",
+      "errorCode": "V03_CANONICAL_CONTRACT"
+    },
+    {
+      "claim": "effect owner mismatch is rejected",
+      "fixture": "playtest-v03/effect-double-owner-rejected.json",
+      "errorCode": "V03_EFFECT_OWNER_MISMATCH"
+    },
+    {
+      "claim": "settled consequence rollback is rejected",
+      "fixture": "playtest-v03/settled-outcome-consequence-tamper-rejected.json",
+      "errorCode": "V03_SETTLED_OUTCOME_MISMATCH"
+    },
+    {
+      "claim": "candidate-terminal-settlement mismatch is rejected",
+      "fixture": "playtest-v03/settled-outcome-candidate-tamper-rejected.json",
+      "errorCode": "V03_SETTLED_OUTCOME_MISMATCH"
+    },
+    {
+      "claim": "recap settlement mismatch is rejected",
+      "fixture": "playtest-v03/recap-settled-value-tamper-rejected.json",
+      "errorCode": "V03_RECAP_MISMATCH"
+    },
+    {
+      "claim": "terminal state without an opportunity is rejected",
+      "fixture": "playtest-v03/complete-missing-opportunity-rejected.json",
+      "errorCode": "V03_COMPLETE_TERMINALS"
+    },
+    {
+      "claim": "open terminal cannot masquerade as a complete capture",
+      "fixture": "playtest-v03/complete-open-opportunity-rejected.json",
+      "errorCode": "V03_COMPLETE_TERMINALS"
+    },
+    {
+      "claim": "duplicate action identity and sequence are rejected",
+      "fixtures": [
+        "playtest-v03/duplicate-action-id-rejected.json",
+        "playtest-v03/duplicate-action-sequence-rejected.json"
+      ],
+      "errorCode": "V03_ACTION_MISMATCH"
+    }
+  ],
+  "deterministicBranchFixtures": [
+    {
+      "fixtureId": "repair-favored",
+      "test": "management-branch-matrix.test.ts > matches the frozen repair-favored and food-favored outcomes",
+      "repairCandidate": {
+        "endingFood": 14,
+        "endingRepair": 5,
+        "equipmentRecoveryLoad": 2,
+        "personnelReadiness": 1
+      },
+      "foodCandidate": {
+        "endingFood": 15,
+        "endingRepair": 4,
+        "equipmentRecoveryLoad": 2,
+        "personnelReadiness": 1
+      }
+    },
+    {
+      "fixtureId": "food-favored",
+      "test": "management-branch-matrix.test.ts > matches the frozen repair-favored and food-favored outcomes",
+      "foodCandidate": {
+        "endingFood": 12,
+        "endingRepair": 6,
+        "equipmentRecoveryLoad": 1,
+        "personnelReadiness": 0
+      },
+      "repairCandidate": {
+        "endingFood": 11,
+        "endingRepair": 7,
+        "equipmentRecoveryLoad": 1,
+        "personnelReadiness": 0
+      }
+    }
+  ],
+  "positiveRetainRestContract": {
+    "stateTest": "management-choices.test.ts > keeps retain-rest consequences mutation-only and persists readiness",
+    "settlementTest": "management-choices.test.ts > settles the canonical W1 numeric outcome before weekly overrides expire",
+    "exportTest": "export.test.ts > exports two authority-bound C03 terminals as one complete v0.3 ledger",
+    "fixture": "playtest-v03/ledger-valid.json",
+    "candidateId": "retain-rest-capacity",
+    "consequences": [
+      "consequence:w0:preventive-capacity:allocation",
+      "consequence:w0:preventive-capacity:rest-recovery",
+      "consequence:w0:preventive-capacity:personnel-readiness"
+    ],
+    "canonicalState": {
+      "preventiveCapacityAllocation": "rest",
+      "linHeRecoveryUnits": 1,
+      "personnelReadiness": 1
+    },
+    "exportSettledOutcome": {
+      "consequenceId": "consequence:w0:preventive-capacity:personnel-readiness",
+      "beforeValue": 0,
+      "afterValue": 1,
+      "delta": 1,
+      "settledAtTick": 1002
+    },
+    "recapSettledValues": {
+      "settledBeforeValue": 0,
+      "settledAfterValue": 1,
+      "settledDelta": 1
+    }
+  },
+  "atomicityAndRollbackEvidence": [
+    {
+      "test": "management-choices.test.ts > atomically commits one W1 candidate and rejects the concurrent stale candidate",
+      "errorCode": "STATE_REVISION_CONFLICT",
+      "failedCountDelta": 0
+    },
+    {
+      "test": "management-choices.test.ts > rejects a fresh second selection without mutating the terminal state",
+      "errorCode": "OPPORTUNITY_ALREADY_COMMITTED",
+      "failedCountDelta": 0
+    },
+    {
+      "test": "management-choices.test.ts > rejects cross-session replay even with the same intent and revision",
+      "errorCode": "AUTHORITY_MISMATCH",
+      "failedCountDelta": 0
+    },
+    {
+      "test": "playtest-host.test.ts > requires every settled commitment to round-trip through the immutable outcome and recap values",
+      "errorCodes": [
+        "V03_SETTLED_OUTCOME_MISMATCH",
+        "V03_RECAP_MISMATCH"
+      ]
+    },
+    {
+      "test": "playtest-host.test.ts > rejects tampered v0.3 authority, ownership, consequences, resource lot, and economic delta",
+      "hostAccepted": false
+    }
+  ],
+  "assertions": {
+    "applicationSessionCount": 1,
+    "w1CardOpenCloseCommitmentDelta": 0,
+    "w2CardOpenCloseCommitmentDelta": 0,
+    "w1DeadlineTick": 240,
+    "w2ResourceTickInterval": [
+      1536,
+      1554
+    ],
+    "w1Terminal": "omitted",
+    "w2Terminal": "omitted",
+    "w1C03TerminalCommitmentCount": 0,
+    "w2C03TerminalCommitmentCount": 0,
+    "canonicalTerminalCommitmentCount": 0,
+    "ownedEffectCount": 0,
+    "finalTick": 2010,
+    "twoWeeksCompleted": true,
+    "recapCount": 2,
+    "ordinaryFlowBlocked": false,
+    "w1OrdinaryRestPreserved": true,
+    "w2OrdinaryRestPreserved": true,
+    "browserDownloadMatchesServerRaw": true,
+    "sessionCleared": true,
+    "hostStopped": true
+  },
+  "machineEvidence": {
+    "serverRawPath": "captures/g1-rc-20260727.rc9-c03-TECH-RC9-P06-92458945-7412-471c-a784-aa348920ad26.json",
+    "serverRawSha256": "cd662da48ced877758e13b3287bec958fa320532a8f9ecd23d24e1a006665f9d",
+    "serverRawBytes": 66688,
+    "sha256SidecarPath": "captures/g1-rc-20260727.rc9-c03-TECH-RC9-P06-92458945-7412-471c-a784-aa348920ad26.json.sha256",
+    "sha256SidecarSha256": "6df68001ad9b7cfd9640d9076c19e42344ef6e18ee5704b39ef4dcddc92472fa",
+    "receiptPath": "captures/g1-rc-20260727.rc9-c03-TECH-RC9-P06-92458945-7412-471c-a784-aa348920ad26.json.receipt.json",
+    "receiptSha256": "c5606facb11a126760574c4c198a4ce408240f9dc25658a12ff23ff49e1d299c",
+    "browserDownloadPath": "browser-download.json",
+    "browserDownloadSha256": "cd662da48ced877758e13b3287bec958fa320532a8f9ecd23d24e1a006665f9d",
+    "browserDownloadBytes": 66688,
+    "allClaimsMatchServerRaw": true,
+    "captureFileCount": 3
+  },
+  "validationCommands": [
+    {
+      "id": "runtime-host-export-ui",
+      "command": "npm run test:run -- --reporter=verbose tests/management-choices.test.ts tests/management-branch-matrix.test.ts tests/export.test.ts tests/playtest-host.test.ts tests/App.test.tsx",
+      "status": "PASS",
+      "testFiles": 5,
+      "tests": 96
+    },
+    {
+      "id": "schema-fixtures",
+      "command": "npm run schema:fixtures",
+      "status": "PASS",
+      "cases": 120,
+      "contract": "gate1-playtest-fixtures-v2"
+    },
+    {
+      "id": "frozen-rc-dist-actual-ledger-validator",
+      "command": "validateCanonicalManagementLedger(browser-download.json) and validateCapturedExport(browser-download.json, rc-build.json)",
+      "status": "PASS",
+      "canonicalAccepted": true,
+      "hostAccepted": true,
+      "terminalCommitmentCount": 0,
+      "ownedEffectCount": 0
+    },
+    {
+      "id": "actual-zero-ledger-tamper-matrix",
+      "command": "in-memory mutations of browser-download.json through frozen rc-dist/management-ledger-contract.mjs and rc-dist/playtest-host.mjs",
+      "status": "PASS",
+      "rejectedCases": 14
+    },
+    {
+      "id": "committed-fixture-tamper-matrix",
+      "command": "in-memory mutations of frozen playtest-v03/ledger-valid.json through frozen rc-dist/management-ledger-contract.mjs",
+      "status": "PASS",
+      "acceptedControls": 1,
+      "rejectedCases": 13
+    },
+    {
+      "id": "runtime-invalid-state-probe",
+      "command": "temporary read-only vite-node probe against frozen source; removed after execution",
+      "status": "PASS",
+      "cases": 6
+    },
+    {
+      "id": "rc8-tree-guard",
+      "command": "npm run guard:rc8 -- --baseline c0f4269bc3fef56962199629bad8db041aafc5f0 --path ../data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc8-01",
+      "status": "PASS",
+      "tree": "c5714f7ca7adb5e8fe052d4d00f27c545b988347",
+      "files": 67,
+      "inventorySha256": "e6990ddc8acd6ff4dbacfec975c06e4d0b9bbc7f6a2fc1324f5023caec1b96ee"
+    }
+  ],
+  "immutableTreeGuards": {
+    "rc8Tree": "c5714f7ca7adb5e8fe052d4d00f27c545b988347",
+    "c01Tree": "55f661518c7ed8a2cc99f0fc0f25fabecd24c286",
+    "c02Tree": "9b7dbae2c0c5d1bba45399e77dac65766911d3b3",
+    "candidateCoreGitObject": "f2f1018efe9e5ce4143c8b1f0628c6c584692a70",
+    "rcDistTree": "330b67df1e7e9771ca816bbf433d498f07f09ece",
+    "p05Tree": "b6691311e87113ba5448ce0502d262107c5a3d82",
+    "c03HeadTreeBeforeP06Namespace": "ab5daf19ab71e492c60cbbeab853048b27ff42aa",
+    "candidateCoreAndRcDistWorkingDiffCount": 0,
+    "p05WorkingDiffCount": 0,
+    "c01WorkingDiffCount": 0,
+    "c02WorkingDiffCount": 0,
+    "rc8WorkingDiffCount": 0
+  },
+  "hostOutput": [
+    "Gate 1 RC listening on http://127.0.0.1:4196/; capture=/private/tmp/new-era-g1a-postseal.tvZFdL/repo/data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C03/anti-pass/TECH-RC9-P06/captures"
+  ],
+  "hostStopped": true,
+  "sessionCleared": true,
+  "trackLocks": {
+    "gate1A": "PRE_DIAGNOSTIC",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED"
+  },
+  "scope": {
+    "diagnosticsRun": false,
+    "issueChanged": false,
+    "gateChanged": false,
+    "operationsAggregateCreated": false,
+    "candidateBuildManifestCreated": false,
+    "candidateCoreModified": false,
+    "rcDistModified": false,
+    "p05Modified": false,
+    "pushPerformed": false
+  }
+}
