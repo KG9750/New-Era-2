@@ -1,4 +1,8 @@
-import { gate1WeekOneScenario as scenario } from '../scenario/gate1-week-one'
+import {
+  gate1WeekOneScenario as scenario,
+  getGate1ChoiceSetOracle,
+  type Gate1ChoiceSetId,
+} from '../scenario/gate1-week-one'
 import type {
   PlayerAction,
   PlayerActionEnvelope,
@@ -190,152 +194,62 @@ function decisionHash(decisionIntentId: string, projection: unknown) {
   return sha256({ decisionIntentId, projection })
 }
 
-function linHeChoiceSet(selectedOptionId: string | null) {
+function oracleChoiceSet(
+  choiceSetId: Gate1ChoiceSetId,
+  selectedOptionId: string | null,
+  reachableByOption: Readonly<Record<string, boolean>> = {},
+) {
+  const oracle = getGate1ChoiceSetOracle(choiceSetId)
   return {
-    choiceSetId: 'choice:w1:lin-he-study',
-    decisionIntentId: LIN_HE_INTENT_ID,
-    options: [
-      {
-        optionId: 'accept-study',
-        reachable: true,
-        visibleConsequenceRefs: [
-          'forecast:w1:food',
-          `schedule:${LIN_HE_STUDY_BLOCK_ID}`,
-          'character-record:lin-he-study',
-        ],
-        dominanceStatus: 'non-dominated' as const,
-      },
-      {
-        optionId: 'decline-study',
-        reachable: true,
-        visibleConsequenceRefs: [
-          'forecast:w1:food',
-          'character-record:lin-he-study-declined',
-        ],
-        dominanceStatus: 'non-dominated' as const,
-      },
-    ],
+    choiceSetId: oracle.choiceSetId,
+    decisionIntentId: oracle.decisionIntentId,
+    options: oracle.options.map((option) => ({
+      optionId: option.optionId,
+      reachable: reachableByOption[option.optionId] ?? true,
+      visibleConsequenceRefs: option.visibleConsequenceRefs,
+      dominanceStatus: option.dominanceStatus,
+    })),
     selectedOptionId,
   }
+}
+
+function linHeChoiceSet(selectedOptionId: string | null) {
+  return oracleChoiceSet(
+    'choice:w1:lin-he-study',
+    selectedOptionId,
+  )
 }
 
 function foodChoiceSet(
   selectedOptionId: string | null,
   scheduleOptionReachable: boolean,
 ) {
-  return {
-    choiceSetId: 'choice:w0:food-plan',
-    decisionIntentId: FOOD_INTENT_ID,
-    options: [
-      {
-        optionId: 'food-shift-qiao',
-        reachable: scheduleOptionReachable,
-        visibleConsequenceRefs: [
-          'forecast:w0:food',
-          'forecast:w0:repair',
-          'schedule:qiao-pan:d1:b1',
-        ],
-        dominanceStatus: 'non-dominated' as const,
-      },
-      {
-        optionId: 'accept-food-gap',
-        reachable: true,
-        visibleConsequenceRefs: [
-          'forecast:w0:food',
-          'forecast:w0:repair',
-        ],
-        dominanceStatus: 'non-dominated' as const,
-      },
-    ],
+  return oracleChoiceSet(
+    'choice:w0:food-plan',
     selectedOptionId,
-  }
+    { 'food-shift-qiao': scheduleOptionReachable },
+  )
 }
 
 function repairChoiceSet(selectedOptionId: string | null) {
-  return {
-    choiceSetId: 'choice:w0:pump-repair',
-    decisionIntentId: REPAIR_INTENT_ID,
-    options: [
-      {
-        optionId: 'schedule-repair',
-        reachable: true,
-        visibleConsequenceRefs: [
-          'forecast:w0:repair',
-          'risk:pump',
-          'schedule:qiao-pan:d3:b2',
-          'schedule:chen-du:d3:b0',
-          'schedule:su-ji:d3:b0',
-        ],
-        dominanceStatus: 'non-dominated' as const,
-      },
-      {
-        optionId: 'accept-debt',
-        reachable: true,
-        visibleConsequenceRefs: [
-          'recap:w0:repair',
-          'risk:repair-debt',
-        ],
-        dominanceStatus: 'non-dominated' as const,
-      },
-    ],
+  return oracleChoiceSet(
+    'choice:w0:pump-repair',
     selectedOptionId,
-  }
+  )
 }
 
 function transportChoiceSet(weekIndex: 0 | 1) {
-  return {
-    choiceSetId: `choice:w${weekIndex}:transport-route`,
-    decisionIntentId: `w${weekIndex}:transport-route`,
-    options: [
-      {
-        optionId: 'north-loop',
-        reachable: true,
-        visibleConsequenceRefs: [
-          `forecast:w${weekIndex}:food`,
-          `risk:w${weekIndex}:transport-loss`,
-        ],
-        dominanceStatus: 'non-dominated' as const,
-      },
-      {
-        optionId: 'south-shortcut',
-        reachable: true,
-        visibleConsequenceRefs: [
-          `forecast:w${weekIndex}:food`,
-          `risk:w${weekIndex}:transport-loss`,
-        ],
-        dominanceStatus: 'non-dominated' as const,
-      },
-    ],
-    selectedOptionId: 'south-shortcut',
-  }
+  return oracleChoiceSet(
+    `choice:w${weekIndex}:transport-route`,
+    'south-shortcut',
+  )
 }
 
 function fertilizerChoiceSet(weekIndex: 0 | 1) {
-  return {
-    choiceSetId: `choice:w${weekIndex}:fertilizer`,
-    decisionIntentId: `w${weekIndex}:asset-use:fertilizer`,
-    options: [
-      {
-        optionId: 'use-fertilizer',
-        reachable: true,
-        visibleConsequenceRefs: [
-          `forecast:w${weekIndex}:food`,
-          'inventory:fertilizer',
-        ],
-        dominanceStatus: 'non-dominated' as const,
-      },
-      {
-        optionId: 'keep-fertilizer',
-        reachable: true,
-        visibleConsequenceRefs: [
-          `forecast:w${weekIndex}:food`,
-          'inventory:fertilizer',
-        ],
-        dominanceStatus: 'non-dominated' as const,
-      },
-    ],
-    selectedOptionId: 'use-fertilizer',
-  }
+  return oracleChoiceSet(
+    `choice:w${weekIndex}:fertilizer`,
+    'use-fertilizer',
+  )
 }
 
 function createV2Export(

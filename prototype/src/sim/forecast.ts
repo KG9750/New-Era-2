@@ -21,9 +21,9 @@ import {
 import { weekIndexForTick } from './week-phase'
 
 const FOOD_KNOWN_CONSUMPTION = 42
-const FOOD_TARGET = { low: 12, high: 20 }
+export const GATE1_FOOD_TARGET = { low: 12, high: 20 } as const
 const REPAIR_KNOWN_CONSUMPTION = 32
-const REPAIR_TARGET = { low: 5, high: 9 }
+export const GATE1_REPAIR_TARGET = { low: 5, high: 9 } as const
 const BASELINE_FOOD_OUTPUT = 35
 const BASELINE_REPAIR_OUTPUT = 28
 const BASELINE_LOGISTICS_OUTPUT = 41
@@ -200,7 +200,7 @@ export function calculateFoodForecast(state: SimulationState): FoodForecast {
     low: state.inventory.food + production.low - FOOD_KNOWN_CONSUMPTION,
     high: state.inventory.food + production.high - FOOD_KNOWN_CONSUMPTION,
   }
-  const status = statusFor(endingStock, FOOD_TARGET, 4)
+  const status = statusFor(endingStock, GATE1_FOOD_TARGET, 4)
   const requestAccepted = state.linHeRequestDecision === 'accepted'
   const modifiers = [
     fertilizerBonus > 0
@@ -293,7 +293,7 @@ export function calculateRepairForecast(state: SimulationState): RepairForecast 
     consumption:
       REPAIR_KNOWN_CONSUMPTION + transportRepairCost + repairDebtPenalty,
     endingStock,
-    status: statusFor(endingStock, REPAIR_TARGET, 0),
+    status: statusFor(endingStock, GATE1_REPAIR_TARGET, 0),
     trend:
       state.pumpStatus === 'failed'
         ? '事件下调'

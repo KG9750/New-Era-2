@@ -2,6 +2,8 @@ import {
   calculateFoodForecast,
   calculateRepairForecast,
   formatRange,
+  GATE1_FOOD_TARGET,
+  GATE1_REPAIR_TARGET,
 } from './forecast'
 import type {
   DomainEvent,
@@ -34,6 +36,17 @@ import {
   selectTransportRoute,
 } from './transport'
 import { weekIndexForTick } from './week-phase'
+import {
+  GATE1_BRANCH_MATRIX_AXES,
+  evaluateDominance,
+  gate1BranchOutcomeVector,
+  type Gate1BranchMatrixContext,
+  type Gate1BranchMatrixOracle,
+  Gate1BranchOutcome,
+  Gate1BranchPlan,
+  type Gate1ChoiceSetId,
+  type Gate1WeekOneOutcome,
+} from '../scenario/gate1-week-one'
 
 export function createPlayerAction(
   sequence: number,
@@ -217,31 +230,41 @@ export function applyPlayerAction(
           ),
         }
       : edited
+    const responsibilitySelection =
+      state.repairResponsibilitySelection
     const assignment =
       responsibilityBase.repairResponsibility === 'unresolved' &&
-      state.repairResponsibilitySelection !== null
+      responsibilitySelection !== null
         ? findRepairResponsibilityAssignment(
             responsibilityBase,
             envelope.id,
-            state.repairResponsibilitySelection,
+            responsibilitySelection,
             envelope.affectedBlockIds,
           )
         : null
-    const responsibilityDraft: SimulationState = assignment
-      ? {
-          ...responsibilityBase,
-          repairResponsibility: 'scheduled',
-          repairResponsibilityAssignment: assignment,
-          characterRecords: addCharacterRecord(
-            responsibilityBase,
-            assignment.actorId,
-            repairResponsibilityRecord(
-              state.repairResponsibilitySelection,
-              assignment,
-            ),
-          ),
-        }
-      : responsibilityBase
+    const responsibilityDraft: SimulationState =
+      assignment === null
+        ? responsibilityBase
+        : (() => {
+            if (responsibilitySelection === null) {
+              throw new Error(
+                'Repair responsibility assignment requires a selected direction',
+              )
+            }
+            return {
+              ...responsibilityBase,
+              repairResponsibility: 'scheduled',
+              repairResponsibilityAssignment: assignment,
+              characterRecords: addCharacterRecord(
+                responsibilityBase,
+                assignment.actorId,
+                repairResponsibilityRecord(
+                  responsibilitySelection,
+                  assignment,
+                ),
+              ),
+            }
+          })()
     const draft: SimulationState = {
       ...responsibilityDraft,
       activity: resolveScheduleBlock(
@@ -1062,4 +1085,800 @@ export function advanceSimulation(
     currentTick: targetTick,
   }
   return { state: base, events: [] }
+}
+
+export function simulateGate1Branch(
+  plan: Gate1BranchPlan,
+  scenario: ScenarioDefinition,
+): Gate1BranchOutcome {
+  let state = scenario.createInitialState()
+  let sequence = 1
+  const act = (action: PlayerAction) => {
+    state = applyPlayerAction(
+      state,
+      createPlayerAction(sequence, state.currentTick, action),
+      scenario,
+    ).state
+    sequence += 1
+  }
+
+  if (plan.food === 'food-shift-qiao') {
+    act({
+      type: 'EDIT_SCHEDULE',
+      blockIds: ['qiao-pan:d1:b1'],
+      activity: 'food',
+      scope: 'weekly',
+    })
+  } else {
+    act({ type: 'SET_FOOD_SHORTFALL_ACCEPTED', accepted: true })
+  }
+
+  if (plan.repair === 'accept-debt') {
+    act({ type: 'ACCEPT_REPAIR_DEBT' })
+  } else {
+    const actorId =
+      plan.repair === 'schedule-qiao'
+        ? 'qiao-pan'
+        : plan.repair === 'schedule-chen'
+          ? 'chen-du'
+          : 'su-ji'
+    const blockId =
+      actorId === 'qiao-pan'
+        ? 'qiao-pan:d3:b2'
+        : actorId === 'chen-du'
+          ? 'chen-du:d3:b0'
+          : 'su-ji:d3:b0'
+    act({
+      type: 'SELECT_REPAIR_RESPONSIBILITY',
+      responsible: actorId === 'qiao-pan' ? 'qiao-pan' : 'handoff',
+    })
+    act({
+      type: 'EDIT_SCHEDULE',
+      blockIds: [blockId],
+      activity: 'repair',
+      scope: 'weekly',
+    })
+  }
+
+  if (plan.transport === 'south-week-one') {
+    act({ type: 'OPEN_TRANSPORT_SHORTCUT' })
+  }
+  if (plan.fertilizer === 'use-week-one') {
+    act({ type: 'USE_FERTILIZER' })
+  }
+  if (plan.pumpPlan === 'protect') {
+    act({ type: 'CHANGE_ACTIVITY', activity: 'repair' })
+  }
+
+  act({ type: 'SET_PAUSED', paused: false })
+  state = advanceSimulation(state, scenario.pumpEventTick, scenario).state
+  act({ type: 'SET_PAUSED', paused: false })
+  state = advanceSimulation(state, scenario.weekEndTick, scenario).state
+  const weekOneRepairDebtCost =
+    state.repairDebt?.accruedPenalty ?? 0
+  const weekOneCharacterLoadCost =
+    state.repairResponsibilityAssignment?.characterLoadCost ?? 0
+  if (state.pumpStatus === 'at-risk') {
+    throw new Error(
+      'Gate 1 week-one outcome must resolve the pump incident',
+    )
+  }
+  const weekOnePumpStatus = state.pumpStatus
+  const weekOneRepairResolution =
+    state.repairResponsibility === 'debt'
+      ? 'debt'
+      : state.repairResponsibilityAssignment?.actorId
+  if (weekOneRepairResolution === undefined) {
+    throw new Error(
+      'Gate 1 week-one outcome must resolve repair responsibility',
+    )
+  }
+  if (weekOneRepairResolution === 'lin-he') {
+    throw new Error(
+      'Lin He is not a frozen repair-responsibility option',
+    )
+  }
+  const weekOneTransportRoute = state.transportRouteId
+  const weekOneFertilizerRemaining = state.fertilizer.remainingUnits
+  act({ type: 'CONTINUE_TO_NEXT_WEEK' })
+
+  act({
+    type: 'RESOLVE_LIN_HE_REQUEST',
+    decision:
+      plan.linHe === 'accept-study' ? 'accepted' : 'declined',
+  })
+  if (
+    plan.transport === 'south-week-two' &&
+    state.transportRouteId === 'north-loop'
+  ) {
+    act({ type: 'OPEN_TRANSPORT_SHORTCUT' })
+  }
+  if (
+    plan.fertilizer === 'use-week-two' &&
+    state.fertilizer.remainingUnits > 0
+  ) {
+    act({ type: 'USE_FERTILIZER' })
+  }
+  act({ type: 'SET_PAUSED', paused: false })
+  state = advanceSimulation(
+    state,
+    scenario.simulationEndTick,
+    scenario,
+  ).state
+
+  const [weekOne, weekTwo] = state.recaps
+  if (weekOne === undefined || weekTwo === undefined) {
+    throw new Error('Gate 1 branch simulation must complete both recaps')
+  }
+  const transportFoodLoss = state.recaps.reduce((total, recap) => {
+    const transport = recap.items.find((item) =>
+      item.id.endsWith('-transport-result'),
+    )
+    return total + (transport?.values.foodLoss ?? 0)
+  }, 0)
+
+  return {
+    isComplete: state.isComplete,
+    weekOneFood: weekOne.supplies.food.actual,
+    weekOneRepair: weekOne.supplies.repair.actual,
+    weekOneRepairDebtCost,
+    weekOneCharacterLoadCost,
+    weekOnePumpStatus,
+    weekOneRepairResolution,
+    weekOneTransportRoute,
+    weekOneFertilizerRemaining,
+    weekTwoFood: weekTwo.supplies.food.actual,
+    weekTwoRepair: weekTwo.supplies.repair.actual,
+    repairDebtCost: state.repairDebt?.accruedPenalty ?? 0,
+    characterLoadCost:
+      state.repairResponsibilityAssignment?.characterLoadCost ?? 0,
+    transportFoodLoss,
+    fertilizerRemaining: state.fertilizer.remainingUnits,
+    linHeCommitment:
+      state.linHeRequestDecision === 'accepted' ? 1 : 0,
+  }
+}
+
+const PUMP_PLANS = ['protect', 'expose'] as const
+const FOOD_OPTIONS = [
+  'food-shift-qiao',
+  'accept-food-gap',
+] as const
+const REPAIR_OPTIONS = [
+  'schedule-qiao',
+  'schedule-chen',
+  'schedule-su',
+  'accept-debt',
+] as const
+const TRANSPORT_TIMINGS = [
+  'south-week-one',
+  'south-week-two',
+  'north-loop',
+] as const
+const FERTILIZER_TIMINGS = [
+  'use-week-one',
+  'use-week-two',
+  'keep',
+] as const
+const LIN_HE_OPTIONS = [
+  'accept-study',
+  'decline-study',
+] as const
+
+function gate1BranchPlanKey(plan: Gate1BranchPlan): string {
+  return [
+    plan.pumpPlan,
+    plan.food,
+    plan.repair,
+    plan.transport,
+    plan.fertilizer,
+    plan.linHe,
+  ].join('|')
+}
+
+function allGate1BranchPlans(): readonly Gate1BranchPlan[] {
+  const plans: Gate1BranchPlan[] = []
+  for (const pumpPlan of PUMP_PLANS) {
+    for (const food of FOOD_OPTIONS) {
+      for (const repair of REPAIR_OPTIONS) {
+        for (const transport of TRANSPORT_TIMINGS) {
+          for (const fertilizer of FERTILIZER_TIMINGS) {
+            for (const linHe of LIN_HE_OPTIONS) {
+              plans.push({
+                pumpPlan,
+                food,
+                repair,
+                transport,
+                fertilizer,
+                linHe,
+              })
+            }
+          }
+        }
+      }
+    }
+  }
+  return plans
+}
+
+type PolicyPlans = Map<string, Gate1BranchPlan>
+
+function createBranchMatrixContext(
+  choiceSetId: Gate1ChoiceSetId,
+  choiceContextId: string,
+  optionPlans: ReadonlyMap<string, PolicyPlans>,
+  outcomeForPlan: (plan: Gate1BranchPlan) => Gate1BranchOutcome,
+): Gate1BranchMatrixContext {
+  const continuationPolicyIds = [
+    ...new Set(
+      [...optionPlans.values()].flatMap((plans) => [...plans.keys()]),
+    ),
+  ].sort()
+  const rawOptions = [...optionPlans.entries()].map(
+    ([optionId, plans]) => ({
+      optionId,
+      resultsByPolicy: Object.fromEntries(
+        [...plans.entries()].map(([policyId, plan]) => [
+          policyId,
+          gate1BranchOutcomeVector(outcomeForPlan(plan)),
+        ]),
+      ),
+    }),
+  )
+  const statuses = evaluateDominance({
+    continuationPolicyIds,
+    axes: GATE1_BRANCH_MATRIX_AXES,
+    options: rawOptions,
+  })
+  return {
+    choiceContextId,
+    choiceSetId,
+    continuationPolicyIds,
+    options: rawOptions.map((option) => ({
+      ...option,
+      dominanceStatus: statuses[option.optionId],
+    })),
+  }
+}
+
+function emptyOptionPlans(optionIds: readonly string[]) {
+  return new Map(
+    optionIds.map((optionId) => [optionId, new Map()]),
+  )
+}
+
+function setPolicyPlan(
+  optionPlans: Map<string, PolicyPlans>,
+  optionId: string,
+  policyId: string,
+  plan: Gate1BranchPlan,
+) {
+  optionPlans.get(optionId)?.set(policyId, plan)
+}
+
+const branchMatrixCache = new WeakMap<
+  ScenarioDefinition,
+  Gate1BranchMatrixOracle
+>()
+
+export function buildGate1BranchMatrixOracle(
+  scenario: ScenarioDefinition,
+): Gate1BranchMatrixOracle {
+  const cached = branchMatrixCache.get(scenario)
+  if (cached) return cached
+
+  const allPlans = allGate1BranchPlans()
+  const outcomeByPlan = new Map(
+    allPlans.map((plan) => [
+      gate1BranchPlanKey(plan),
+      simulateGate1Branch(plan, scenario),
+    ]),
+  )
+  const outcomeForPlan = (plan: Gate1BranchPlan) => {
+    const outcome = outcomeByPlan.get(gate1BranchPlanKey(plan))
+    if (!outcome) {
+      throw new Error(
+        `Gate 1 branch plan is outside the frozen state space: ${gate1BranchPlanKey(plan)}`,
+      )
+    }
+    return outcome
+  }
+  const contexts: Gate1BranchMatrixContext[] = []
+
+  const foodPlans = emptyOptionPlans(FOOD_OPTIONS)
+  for (const pumpPlan of PUMP_PLANS) {
+    for (const repair of REPAIR_OPTIONS) {
+      for (const transport of TRANSPORT_TIMINGS) {
+        for (const fertilizer of FERTILIZER_TIMINGS) {
+          for (const linHe of LIN_HE_OPTIONS) {
+            const policyId = [
+              `pump=${pumpPlan}`,
+              `repair=${repair}`,
+              `transport=${transport}`,
+              `fertilizer=${fertilizer}`,
+              `linHe=${linHe}`,
+            ].join('|')
+            for (const food of FOOD_OPTIONS) {
+              setPolicyPlan(foodPlans, food, policyId, {
+                pumpPlan,
+                food,
+                repair,
+                transport,
+                fertilizer,
+                linHe,
+              })
+            }
+          }
+        }
+      }
+    }
+  }
+  contexts.push(
+    createBranchMatrixContext(
+      'choice:w0:food-plan',
+      'context:w0:initial:food-plan',
+      foodPlans,
+      outcomeForPlan,
+    ),
+  )
+
+  const repairPlans = emptyOptionPlans(REPAIR_OPTIONS)
+  for (const pumpPlan of PUMP_PLANS) {
+    for (const food of FOOD_OPTIONS) {
+      for (const transport of TRANSPORT_TIMINGS) {
+        for (const fertilizer of FERTILIZER_TIMINGS) {
+          for (const linHe of LIN_HE_OPTIONS) {
+            const policyId = [
+              `pump=${pumpPlan}`,
+              `food=${food}`,
+              `transport=${transport}`,
+              `fertilizer=${fertilizer}`,
+              `linHe=${linHe}`,
+            ].join('|')
+            for (const repair of REPAIR_OPTIONS) {
+              setPolicyPlan(repairPlans, repair, policyId, {
+                pumpPlan,
+                food,
+                repair,
+                transport,
+                fertilizer,
+                linHe,
+              })
+            }
+          }
+        }
+      }
+    }
+  }
+  contexts.push(
+    createBranchMatrixContext(
+      'choice:w0:pump-repair',
+      'context:w0:initial:pump-repair',
+      repairPlans,
+      outcomeForPlan,
+    ),
+  )
+
+  const weekOneTransportPlans = emptyOptionPlans([
+    'north-loop',
+    'south-shortcut',
+  ])
+  for (const pumpPlan of PUMP_PLANS) {
+    for (const food of FOOD_OPTIONS) {
+      for (const repair of REPAIR_OPTIONS) {
+        for (const fertilizer of FERTILIZER_TIMINGS) {
+          for (const linHe of LIN_HE_OPTIONS) {
+            for (const futureTransport of ['open', 'keep'] as const) {
+              const policyId = [
+                `pump=${pumpPlan}`,
+                `food=${food}`,
+                `repair=${repair}`,
+                `futureTransport=${futureTransport}`,
+                `fertilizer=${fertilizer}`,
+                `linHe=${linHe}`,
+              ].join('|')
+              setPolicyPlan(
+                weekOneTransportPlans,
+                'south-shortcut',
+                policyId,
+                {
+                  pumpPlan,
+                  food,
+                  repair,
+                  transport: 'south-week-one',
+                  fertilizer,
+                  linHe,
+                },
+              )
+              setPolicyPlan(
+                weekOneTransportPlans,
+                'north-loop',
+                policyId,
+                {
+                  pumpPlan,
+                  food,
+                  repair,
+                  transport:
+                    futureTransport === 'open'
+                      ? 'south-week-two'
+                      : 'north-loop',
+                  fertilizer,
+                  linHe,
+                },
+              )
+            }
+          }
+        }
+      }
+    }
+  }
+  contexts.push(
+    createBranchMatrixContext(
+      'choice:w0:transport-route',
+      'context:w0:initial:transport-route',
+      weekOneTransportPlans,
+      outcomeForPlan,
+    ),
+  )
+
+  const weekOneFertilizerPlans = emptyOptionPlans([
+    'use-fertilizer',
+    'keep-fertilizer',
+  ])
+  for (const pumpPlan of PUMP_PLANS) {
+    for (const food of FOOD_OPTIONS) {
+      for (const repair of REPAIR_OPTIONS) {
+        for (const transport of TRANSPORT_TIMINGS) {
+          for (const linHe of LIN_HE_OPTIONS) {
+            for (const futureFertilizer of ['use', 'keep'] as const) {
+              const policyId = [
+                `pump=${pumpPlan}`,
+                `food=${food}`,
+                `repair=${repair}`,
+                `transport=${transport}`,
+                `futureFertilizer=${futureFertilizer}`,
+                `linHe=${linHe}`,
+              ].join('|')
+              setPolicyPlan(
+                weekOneFertilizerPlans,
+                'use-fertilizer',
+                policyId,
+                {
+                  pumpPlan,
+                  food,
+                  repair,
+                  transport,
+                  fertilizer: 'use-week-one',
+                  linHe,
+                },
+              )
+              setPolicyPlan(
+                weekOneFertilizerPlans,
+                'keep-fertilizer',
+                policyId,
+                {
+                  pumpPlan,
+                  food,
+                  repair,
+                  transport,
+                  fertilizer:
+                    futureFertilizer === 'use'
+                      ? 'use-week-two'
+                      : 'keep',
+                  linHe,
+                },
+              )
+            }
+          }
+        }
+      }
+    }
+  }
+  contexts.push(
+    createBranchMatrixContext(
+      'choice:w0:fertilizer',
+      'context:w0:initial:fertilizer',
+      weekOneFertilizerPlans,
+      outcomeForPlan,
+    ),
+  )
+
+  for (const pumpPlan of PUMP_PLANS) {
+    for (const food of FOOD_OPTIONS) {
+      for (const repair of REPAIR_OPTIONS) {
+        for (const weekOneTransport of [
+          'south-week-one',
+          'north-loop',
+        ] as const) {
+          for (const weekOneFertilizer of [
+            'use-week-one',
+            'keep',
+          ] as const) {
+            const linPlans = emptyOptionPlans(LIN_HE_OPTIONS)
+            const futureTransports =
+              weekOneTransport === 'south-week-one'
+                ? (['inherited'] as const)
+                : (['open', 'keep'] as const)
+            const futureFertilizers =
+              weekOneFertilizer === 'use-week-one'
+                ? (['consumed'] as const)
+                : (['use', 'keep'] as const)
+            for (const futureTransport of futureTransports) {
+              for (const futureFertilizer of futureFertilizers) {
+                const policyId = [
+                  `futureTransport=${futureTransport}`,
+                  `futureFertilizer=${futureFertilizer}`,
+                ].join('|')
+                for (const linHe of LIN_HE_OPTIONS) {
+                  setPolicyPlan(linPlans, linHe, policyId, {
+                    pumpPlan,
+                    food,
+                    repair,
+                    transport:
+                      futureTransport === 'open'
+                        ? 'south-week-two'
+                        : weekOneTransport,
+                    fertilizer:
+                      futureFertilizer === 'use'
+                        ? 'use-week-two'
+                        : weekOneFertilizer,
+                    linHe,
+                  })
+                }
+              }
+            }
+            contexts.push(
+              createBranchMatrixContext(
+                'choice:w1:lin-he-study',
+                [
+                  'context:w1:lin-he-study',
+                  `pump=${pumpPlan}`,
+                  `food=${food}`,
+                  `repair=${repair}`,
+                  `route=${weekOneTransport}`,
+                  `fertilizer=${weekOneFertilizer}`,
+                ].join('|'),
+                linPlans,
+                outcomeForPlan,
+              ),
+            )
+          }
+        }
+      }
+    }
+  }
+
+  for (const pumpPlan of PUMP_PLANS) {
+    for (const food of FOOD_OPTIONS) {
+      for (const repair of REPAIR_OPTIONS) {
+        for (const weekOneFertilizer of [
+          'use-week-one',
+          'keep',
+        ] as const) {
+          const transportPlans = emptyOptionPlans([
+            'north-loop',
+            'south-shortcut',
+          ])
+          const futureFertilizers =
+            weekOneFertilizer === 'use-week-one'
+              ? (['consumed'] as const)
+              : (['use', 'keep'] as const)
+          for (const futureFertilizer of futureFertilizers) {
+            for (const linHe of LIN_HE_OPTIONS) {
+              const policyId = [
+                `futureFertilizer=${futureFertilizer}`,
+                `linHe=${linHe}`,
+              ].join('|')
+              const fertilizer =
+                futureFertilizer === 'use'
+                  ? 'use-week-two'
+                  : weekOneFertilizer
+              setPolicyPlan(
+                transportPlans,
+                'north-loop',
+                policyId,
+                {
+                  pumpPlan,
+                  food,
+                  repair,
+                  transport: 'north-loop',
+                  fertilizer,
+                  linHe,
+                },
+              )
+              setPolicyPlan(
+                transportPlans,
+                'south-shortcut',
+                policyId,
+                {
+                  pumpPlan,
+                  food,
+                  repair,
+                  transport: 'south-week-two',
+                  fertilizer,
+                  linHe,
+                },
+              )
+            }
+          }
+          contexts.push(
+            createBranchMatrixContext(
+              'choice:w1:transport-route',
+              [
+                'context:w1:transport-route',
+                `pump=${pumpPlan}`,
+                `food=${food}`,
+                `repair=${repair}`,
+                `fertilizer=${weekOneFertilizer}`,
+              ].join('|'),
+              transportPlans,
+              outcomeForPlan,
+            ),
+          )
+        }
+      }
+    }
+  }
+
+  for (const pumpPlan of PUMP_PLANS) {
+    for (const food of FOOD_OPTIONS) {
+      for (const repair of REPAIR_OPTIONS) {
+        for (const weekOneTransport of [
+          'south-week-one',
+          'north-loop',
+        ] as const) {
+          const fertilizerPlans = emptyOptionPlans([
+            'use-fertilizer',
+            'keep-fertilizer',
+          ])
+          const futureTransports =
+            weekOneTransport === 'south-week-one'
+              ? (['inherited'] as const)
+              : (['open', 'keep'] as const)
+          for (const futureTransport of futureTransports) {
+            for (const linHe of LIN_HE_OPTIONS) {
+              const policyId = [
+                `futureTransport=${futureTransport}`,
+                `linHe=${linHe}`,
+              ].join('|')
+              const transport =
+                futureTransport === 'open'
+                  ? 'south-week-two'
+                  : weekOneTransport
+              setPolicyPlan(
+                fertilizerPlans,
+                'use-fertilizer',
+                policyId,
+                {
+                  pumpPlan,
+                  food,
+                  repair,
+                  transport,
+                  fertilizer: 'use-week-two',
+                  linHe,
+                },
+              )
+              setPolicyPlan(
+                fertilizerPlans,
+                'keep-fertilizer',
+                policyId,
+                {
+                  pumpPlan,
+                  food,
+                  repair,
+                  transport,
+                  fertilizer: 'keep',
+                  linHe,
+                },
+              )
+            }
+          }
+          contexts.push(
+            createBranchMatrixContext(
+              'choice:w1:fertilizer',
+              [
+                'context:w1:fertilizer',
+                `pump=${pumpPlan}`,
+                `food=${food}`,
+                `repair=${repair}`,
+                `route=${weekOneTransport}`,
+              ].join('|'),
+              fertilizerPlans,
+              outcomeForPlan,
+            ),
+          )
+        }
+      }
+    }
+  }
+
+  const weekOneOutcomeById = new Map<
+    string,
+    Omit<
+      Gate1WeekOneOutcome,
+      'responseOptionIds' | 'improvementOpportunityIds'
+    > & {
+      responseOptionIds: Set<string>
+    }
+  >()
+  for (const plan of allPlans) {
+    const outcome = outcomeForPlan(plan)
+    const outcomeId = [
+      `food=${outcome.weekOneFood}`,
+      `repair=${outcome.weekOneRepair}`,
+      `debt=${outcome.weekOneRepairDebtCost}`,
+      `load=${outcome.weekOneCharacterLoadCost}`,
+      `pump=${outcome.weekOnePumpStatus}`,
+      `responsibility=${outcome.weekOneRepairResolution}`,
+      `route=${outcome.weekOneTransportRoute}`,
+      `fertilizer=${outcome.weekOneFertilizerRemaining}`,
+    ].join('|')
+    const entry = weekOneOutcomeById.get(outcomeId) ?? {
+      outcomeId,
+      food: outcome.weekOneFood,
+      repair: outcome.weekOneRepair,
+      repairDebtCost: outcome.weekOneRepairDebtCost,
+      characterLoadCost: outcome.weekOneCharacterLoadCost,
+      pumpStatus: outcome.weekOnePumpStatus,
+      repairResolution: outcome.weekOneRepairResolution,
+      transportRoute: outcome.weekOneTransportRoute,
+      fertilizerRemaining: outcome.weekOneFertilizerRemaining,
+      responseOptionIds: new Set<string>(),
+    }
+    entry.responseOptionIds.add(`character:${plan.linHe}`)
+    if (outcome.weekOneTransportRoute === 'north-loop') {
+      entry.responseOptionIds.add(
+        plan.transport === 'south-week-two'
+          ? 'transport:south-shortcut'
+          : 'transport:north-loop',
+      )
+    }
+    if (outcome.weekOneFertilizerRemaining === 1) {
+      entry.responseOptionIds.add(
+        plan.fertilizer === 'use-week-two'
+          ? 'fertilizer:use-week-two'
+          : 'fertilizer:keep',
+      )
+    }
+    weekOneOutcomeById.set(outcomeId, entry)
+  }
+  const weekOneOutcomes: Gate1WeekOneOutcome[] = [
+    ...weekOneOutcomeById.values(),
+  ]
+    .map((entry) => {
+      const responseOptionIds = [...entry.responseOptionIds].sort()
+      const improvementOpportunityIds = [
+        ...(entry.food >= GATE1_FOOD_TARGET.low &&
+        entry.repair >= GATE1_REPAIR_TARGET.low &&
+        entry.responseOptionIds.has('character:accept-study')
+          ? ['character:accept-study']
+          : []),
+        ...(entry.responseOptionIds.has(
+          'transport:south-shortcut',
+        )
+          ? ['transport:south-shortcut']
+          : []),
+        ...(entry.responseOptionIds.has('fertilizer:keep')
+          ? ['fertilizer:keep-as-reserve']
+          : []),
+      ]
+      return {
+        ...entry,
+        responseOptionIds,
+        improvementOpportunityIds,
+      }
+    })
+    .sort((left, right) =>
+      left.outcomeId.localeCompare(right.outcomeId),
+    )
+
+  const oracle: Gate1BranchMatrixOracle = {
+    scenarioVersion: scenario.version,
+    completeTrajectoryCount: allPlans.length,
+    axes: GATE1_BRANCH_MATRIX_AXES,
+    contexts,
+    weekOneOutcomes,
+  }
+  branchMatrixCache.set(scenario, oracle)
+  return oracle
 }
