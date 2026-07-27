@@ -1,0 +1,215 @@
+{
+  "schemaVersion": "gate1a-rc9-diagnostic-sample-record-v1",
+  "sampleId": "TECH-RC9-D08",
+  "cohortId": "g1a-20260727-rc9-01",
+  "candidateAttempt": "C02",
+  "sampleKind": "blind-diagnostic",
+  "issue": 56,
+  "operator": "/root",
+  "adjudicator": "/root",
+  "sealedAtUtc": "2026-07-27T14:55:09Z",
+  "identityAndIsolation": {
+    "agentTask": "/root/rc9_d08_player",
+    "agentSessionId": null,
+    "agentSessionIdReason": "collaboration_tool_did_not_expose_session_uuid",
+    "freshContextAttestation": true,
+    "freshContextMechanism": "fork_turns=none",
+    "freshApplicationSession": true,
+    "freshApplicationSessionMechanism": "one new isolated browser/context/page and exactly one fixed-state application session",
+    "contextContaminationDetected": false,
+    "priorCandidateExposure": false,
+    "readOnlyAttestation": true,
+    "playerPacketReleasedBeforePlay": true,
+    "postSessionInterviewReleasedAfterPlayDownloadAndClear": true,
+    "concurrentRc9PlayerSessionDetected": false
+  },
+  "releaseCandidate": {
+    "buildId": "g1-rc-20260727.rc9-c02",
+    "gitSha": "6837c7230806f2c5c218336668f9e201e3e6cca1",
+    "sourceTree": "e63f1a2938a4568d4f0bc9b4557f3d8da4f6c6e1",
+    "dependencyIntegrationSha": "c9c207d7fb1cafc24301ef04c8d89afed3d87527",
+    "artifactHash": "64e8ddc85d15502c3b2776f89b13d71fbb621d9f350682d6c71ec5c998998552",
+    "archiveHash": "9b2fbbffd7168f3bbd66eaf5c2c3b9d2872cf79da9d413771dd897014dc27c3d",
+    "candidateBuildManifestHash": "a1756949810c87cc339c8d4184237ab776eca2bc98417b95e1feeda34b55b860",
+    "scenarioId": "gate1-two-week-management",
+    "scenarioVersion": "0.5.0",
+    "fixedSeed": 104729,
+    "initialStateHash": "fnv1a32-b33f1b1d",
+    "playerPacketHash": "ca01f407c0d2e7f0db9dc07699251190bcc55ef5c946b9a86bac17d8f24dd2ad",
+    "postSessionInterviewHash": "f10c6294edf5776dc426f90228e3030f328a80d823c23a65280d60721467c12c",
+    "captureHostHash": "a670411afaec37fff51d52924ad6e9b85efa19fe628371bfc0448f76c177c03b",
+    "viewport": "1696x1503",
+    "inputMode": "browser-pointer-keyboard"
+  },
+  "applicationSession": {
+    "sessionId": "b946a48e-a87d-47b7-8544-ee2587e2ded9",
+    "machineStartedAtEpochMs": 1785163559660,
+    "machineEndedAtEpochMs": 1785163840242,
+    "machineElapsedMs": 280584,
+    "week1RawDurationMs": 157090,
+    "week2RawDurationMs": 86285,
+    "captureKind": "complete",
+    "finalTick": 2010,
+    "finalStateHash": "fnv1a32-cd965233",
+    "twoWeeksCompleted": true,
+    "recapCount": 2,
+    "exportTriggered": true,
+    "exportReceiptObserved": true,
+    "clearCompleted": true,
+    "clearEvidence": "Agent returned CLEAR_CONFIRMED from the original browser/context/page after four-way evidence verification."
+  },
+  "machineEvidence": {
+    "exportFilePath": "captures/g1-rc-20260727.rc9-c02-TECH-RC9-D08-b946a48e-a87d-47b7-8544-ee2587e2ded9.json",
+    "exportFileSha256": "f88f7c24c072f48939e0cb53dfc3ed3b31d919d8de5790051b90afe8f9458c1e",
+    "exportFileSizeBytes": 69317,
+    "receiptPath": "captures/g1-rc-20260727.rc9-c02-TECH-RC9-D08-b946a48e-a87d-47b7-8544-ee2587e2ded9.json.receipt.json",
+    "receiptDeclaredRawSha256": "f88f7c24c072f48939e0cb53dfc3ed3b31d919d8de5790051b90afe8f9458c1e",
+    "receiptDeclaredRawSizeBytes": 69317,
+    "sha256SidecarPath": "captures/g1-rc-20260727.rc9-c02-TECH-RC9-D08-b946a48e-a87d-47b7-8544-ee2587e2ded9.json.sha256",
+    "sidecarDeclaredRawSha256": "f88f7c24c072f48939e0cb53dfc3ed3b31d919d8de5790051b90afe8f9458c1e",
+    "browserDownloadPath": "browser-download.json",
+    "browserDownloadEventCompleted": true,
+    "browserDownloadSha256": "f88f7c24c072f48939e0cb53dfc3ed3b31d919d8de5790051b90afe8f9458c1e",
+    "browserDownloadSizeBytes": 69317,
+    "browserDownloadMatchesServerRaw": true,
+    "serverRawMatchesSidecarClaim": true,
+    "serverRawMatchesReceiptClaim": true,
+    "allClaimsMatchServerRaw": true,
+    "actions": 11,
+    "domainEvents": 14,
+    "telemetryEntries": 260,
+    "choiceSets": 4,
+    "machineWeek1LegacyCandidateCount": 0,
+    "machineWeek2LegacyCandidateCount": 2,
+    "machineWeek1V2CandidateCount": 2,
+    "machineWeek2V2CandidateCount": 2
+  },
+  "legacyEffectiveEditsAdjudication": {
+    "basis": "weekly-management-slice-playtest-v0.1 section 8.1 and V0.2 legacy whitelist",
+    "week1": {
+      "count": 0,
+      "acceptedGroups": []
+    },
+    "week2": {
+      "count": 2,
+      "acceptedGroups": [
+        {
+          "groupId": "legacy:w1:lin-he-study",
+          "actionIds": [
+            "action-0008"
+          ],
+          "reason": "The accepted request persistently changed Lin He's schedule, food forecast and character record."
+        },
+        {
+          "groupId": "legacy:w1:transport-route",
+          "actionIds": [
+            "action-0009"
+          ],
+          "reason": "The south shortcut persistently changed route, transport loss and the visible week-two food forecast."
+        }
+      ]
+    },
+    "manualCandidateDifferenceCount": 0
+  },
+  "effectiveManagementCommitmentsV2Adjudication": {
+    "basis": "weekly-management-slice-playtest-v0.2 sections 1, 7, 8 and 9",
+    "week1": {
+      "count": 2,
+      "acceptedGroups": [
+        {
+          "decisionIntentId": "w0:repair-responsibility:pump-incident-day-3",
+          "choiceSetId": "choice:w0:pump-repair",
+          "actionIds": [
+            "action-0002"
+          ],
+          "finalOutcomeCode": "committed:schedule-repair",
+          "reason": "The agent explicitly chose a non-dominated responsibility direction, confirmed Qiao Pan's repair block and retained forecast, pump-risk and schedule consequences."
+        },
+        {
+          "decisionIntentId": "w0:asset-use:fertilizer",
+          "choiceSetId": "choice:w0:fertilizer",
+          "actionIds": [
+            "action-0004"
+          ],
+          "finalOutcomeCode": "committed:use-fertilizer",
+          "reason": "The agent explicitly used the single-use asset instead of keeping it and retained the food and inventory consequences."
+        }
+      ]
+    },
+    "week2": {
+      "count": 2,
+      "acceptedGroups": [
+        {
+          "decisionIntentId": "w1:character-request:lin-he-study",
+          "choiceSetId": "choice:w1:lin-he-study",
+          "actionIds": [
+            "action-0008"
+          ],
+          "finalOutcomeCode": "committed:accept-study",
+          "reason": "The agent explicitly accepted the request and retained schedule, food and character-record consequences."
+        },
+        {
+          "decisionIntentId": "w1:transport-route",
+          "choiceSetId": "choice:w1:transport-route",
+          "actionIds": [
+            "action-0009"
+          ],
+          "finalOutcomeCode": "committed:south-shortcut",
+          "reason": "The agent explicitly chose the shortcut over the north loop and retained visible route, food-loss and maintenance consequences."
+        }
+      ]
+    },
+    "rejectedGroups": [
+      {
+        "actionIds": [
+          "action-0010"
+        ],
+        "reason": "The week-two shortfall acceptance exists in raw but has no exported candidate group or qualifying choice set; the operator cannot backfill a commitment."
+      }
+    ],
+    "manualCandidateDifferenceCount": 0,
+    "sameIntentDuplicateCount": 0,
+    "ctaOnlyCommitmentCount": 0
+  },
+  "agentReportedEvidence": {
+    "initialObservation": "当前需要处理：粮食预计轻度缺口（期末 3–11），水泵还缺一个预防检修活动块，且维修责任尚未落地；三者会争用粮食、维修、物流的共享劳动力，需要在补粮、安排检修/责任与承担欠账之间取舍。若不处理水泵检修，逾期会同时压低粮食与维修保障；若不补粮，则可能承担可见的轻度缺口。",
+    "completionSignal": "PLAYTHROUGH_COMPLETE",
+    "predictionExplanationProvided": true,
+    "personAndDecisionImpactProvided": true,
+    "mapEnteredDecision": true,
+    "mapActionTaken": true,
+    "week2FullInspection": false,
+    "week2FullReplan": false,
+    "mustClickAllCardsObserved": false,
+    "comparisonBiasReported": false,
+    "verbatimOutputPath": "agent-verbatim-output.md"
+  },
+  "hostPrompts": [
+    {
+      "stage": "week1_recap",
+      "kind": "technical_continuity_check",
+      "impact": "The operator requested only confirmation of the same browser and application session plus current progress; no strategy or choice guidance was provided."
+    }
+  ],
+  "technicalInterruptions": [],
+  "symptoms": [],
+  "severityCounts": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0
+  },
+  "subjectiveHumanFields": "not_applicable_agent_proxy",
+  "validityDecision": {
+    "status": "VALID_DIAGNOSTIC",
+    "reasonCode": "VALID_COMPLETE_CAPTURE_AND_PROTOCOL_COMPLIANCE",
+    "reason": "A fresh blind agent completed both weeks in exactly one C02 application session; raw, sidecar, receipt and browser download are byte-identical; no browser or session loss occurred; and the frozen interview was released only after clear.",
+    "includedInGate1ADenominator": false,
+    "sampleIdReusable": false,
+    "replacementRequired": false
+  },
+  "trackLocks": {
+    "gate1A": "PRE_DIAGNOSTIC",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED"
+  }
+}
