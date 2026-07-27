@@ -19,6 +19,7 @@ import {
 import type {
   ManagementCandidateId,
   PlayerAction,
+  ScenarioDefinition,
   SimulationState,
 } from '../src/sim/model'
 import { resolveScheduleBlock } from '../src/sim/schedule'
@@ -212,6 +213,249 @@ describe('C03 management choice domain', () => {
       linHeRecoveryUnits: 1,
       personnelReadiness: 1,
     })
+  })
+
+  it('settles the canonical W1 numeric outcome before weekly overrides expire', () => {
+    let state = choose(
+      initial(),
+      1,
+      'retain-rest-capacity',
+    )
+    const commitment = state.managementChoices.commitments[0]
+    const readiness = commitment.consequences.find(
+      (item) =>
+        item.consequenceId ===
+        'consequence:w0:preventive-capacity:personnel-readiness',
+    )!
+    state = act(state, 2, {
+      type: 'SET_PAUSED',
+      paused: false,
+    })
+    state = advanceSimulation(
+      state,
+      scenario.pumpEventTick,
+      scenario,
+    ).state
+    state = act(state, 3, {
+      type: 'SET_PAUSED',
+      paused: false,
+    })
+    state = advanceSimulation(
+      state,
+      scenario.weekEndTick,
+      scenario,
+    ).state
+
+    expect(state.managementChoices.settledOutcomes).toEqual([
+      {
+        choiceSetId: commitment.choiceSetId,
+        decisionIntentId: commitment.decisionIntentId,
+        candidateId: commitment.candidateId,
+        consequenceId: readiness.consequenceId,
+        effectFingerprint: readiness.effectFingerprint,
+        beforeValue: 0,
+        afterValue: 1,
+        delta: 1,
+        settledWeek: 0,
+        settledAtTick: scenario.weekEndTick,
+        diagnosisId: AUTHORITY.diagnosisId,
+        sessionId: AUTHORITY.sessionId,
+        candidateBuildAuthorityHash:
+          AUTHORITY.candidateBuildAuthorityHash,
+        sessionAuthorityToken:
+          AUTHORITY.sessionAuthorityToken,
+        actionId: 'action-0001',
+        actionSequence: 1,
+      },
+    ])
+    expect(
+      state.recap?.items.find(
+        ({ sourceId }) =>
+          sourceId === PREVENTIVE_CAPACITY_CHOICE_SET_ID,
+      )?.values,
+    ).toMatchObject({
+      settledBeforeValue: 0,
+      settledAfterValue: 1,
+      settledDelta: 1,
+    })
+  })
+
+  it('appends the canonical W2 economic outcome without rewriting the W1 settlement', () => {
+    let state = enterWeekTwo(
+      'schedule-preventive-maintenance',
+    )
+    const settledWeekOne =
+      state.managementChoices.settledOutcomes[0]
+    state = choose(
+      state,
+      5,
+      'allocate-food-production',
+    )
+    const commitment =
+      state.managementChoices.commitments[1]
+    const endingFood = commitment.consequences.find(
+      (item) =>
+        item.consequenceId ===
+        'consequence:w1:recovery-allocation:ending-food',
+    )!
+    state = act(state, 6, {
+      type: 'RESOLVE_LIN_HE_REQUEST',
+      decision: 'declined',
+    })
+    state = act(state, 7, {
+      type: 'SET_PAUSED',
+      paused: false,
+    })
+    state = advanceSimulation(
+      state,
+      scenario.simulationEndTick,
+      scenario,
+    ).state
+
+    expect(
+      state.managementChoices.settledOutcomes[0],
+    ).toEqual(settledWeekOne)
+    expect(
+      state.managementChoices.settledOutcomes[1],
+    ).toEqual({
+      choiceSetId: commitment.choiceSetId,
+      decisionIntentId: commitment.decisionIntentId,
+      candidateId: commitment.candidateId,
+      consequenceId: endingFood.consequenceId,
+      effectFingerprint: endingFood.effectFingerprint,
+      beforeValue: endingFood.beforeValue,
+      afterValue: endingFood.afterValue,
+      delta: 1,
+      settledWeek: 1,
+      settledAtTick: scenario.simulationEndTick,
+      diagnosisId: AUTHORITY.diagnosisId,
+      sessionId: AUTHORITY.sessionId,
+      candidateBuildAuthorityHash:
+        AUTHORITY.candidateBuildAuthorityHash,
+      sessionAuthorityToken:
+        AUTHORITY.sessionAuthorityToken,
+      actionId: 'action-0005',
+      actionSequence: 5,
+    })
+    expect(
+      state.recap?.items.find(
+        ({ sourceId }) =>
+          sourceId === RECOVERY_ALLOCATION_CHOICE_SET_ID,
+      )?.values,
+    ).toMatchObject({
+      settledBeforeValue: endingFood.beforeValue,
+      settledAfterValue: endingFood.afterValue,
+      settledDelta: 1,
+    })
+  })
+
+  it('stops at the earlier W2 scripted event before freezing the later management deadline', () => {
+    let state = enterWeekTwo(
+      'schedule-preventive-maintenance',
+    )
+    state = act(state, 5, {
+      type: 'SET_PAUSED',
+      paused: false,
+    })
+
+    const advanced = advanceSimulation(
+      state,
+      scenario.simulationEndTick,
+      scenario,
+    ).state
+
+    expect(advanced.currentTick).toBe(
+      scenario.linHeRequestDeadlineTick,
+    )
+    expect(advanced.linHeRequestResolutionSource).toBe(
+      'deadline',
+    )
+    expect(
+      advanced.managementChoices.opportunities
+        .recoveryAllocation?.terminalState,
+    ).toBe('open')
+  })
+
+  it('freezes the W2 opportunity at 1554 before the resumed clock reaches week end', () => {
+    let state = enterWeekTwo(
+      'schedule-preventive-maintenance',
+    )
+    state = act(state, 5, {
+      type: 'SET_PAUSED',
+      paused: false,
+    })
+    state = advanceSimulation(
+      state,
+      scenario.simulationEndTick,
+      scenario,
+    ).state
+    state = act(state, 6, {
+      type: 'SET_PAUSED',
+      paused: false,
+    })
+
+    const advanced = advanceSimulation(
+      state,
+      scenario.simulationEndTick,
+      scenario,
+    ).state
+
+    expect(advanced.currentTick).toBe(
+      scenario.simulationEndTick,
+    )
+    expect(
+      advanced.managementChoices.opportunities
+        .recoveryAllocation?.terminalState,
+    ).toBe('omitted')
+    expect(advanced.recap).not.toBeNull()
+  })
+
+  it('orders a same-tick deadline, scripted event, and week end deterministically', () => {
+    const tiedScenario = {
+      ...scenario,
+      weekEndTick: PREVENTIVE_CAPACITY_DEADLINE_TICK,
+      weekEndTicks: [
+        PREVENTIVE_CAPACITY_DEADLINE_TICK,
+        scenario.simulationEndTick,
+      ],
+      pumpEventTick: PREVENTIVE_CAPACITY_DEADLINE_TICK,
+      scriptedEvents: [
+        {
+          id: 'same-tick-pump-incident',
+          atTick: PREVENTIVE_CAPACITY_DEADLINE_TICK,
+          type: 'PUMP_INCIDENT',
+        },
+      ],
+    } satisfies ScenarioDefinition
+
+    const deadline = advanceSimulation(
+      initial(),
+      PREVENTIVE_CAPACITY_DEADLINE_TICK,
+      tiedScenario,
+    ).state
+    expect(
+      deadline.managementChoices.opportunities
+        .preventiveCapacity?.terminalState,
+    ).toBe('omitted')
+    expect(deadline.processedScriptEventIds).toEqual([])
+    expect(deadline.completedWeekIndexes).toEqual([])
+
+    const event = advanceSimulation(
+      deadline,
+      PREVENTIVE_CAPACITY_DEADLINE_TICK,
+      tiedScenario,
+    ).state
+    expect(event.processedScriptEventIds).toEqual([
+      'same-tick-pump-incident',
+    ])
+    expect(event.completedWeekIndexes).toEqual([])
+
+    const weekEnd = advanceSimulation(
+      event,
+      PREVENTIVE_CAPACITY_DEADLINE_TICK,
+      tiedScenario,
+    ).state
+    expect(weekEnd.completedWeekIndexes).toEqual([0])
   })
 
   it('treats a low-level W1 schedule edit as real state but never as an explicit commitment', () => {

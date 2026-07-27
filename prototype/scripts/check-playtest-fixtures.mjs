@@ -7,6 +7,11 @@ import { validateCanonicalManagementLedger } from './management-ledger-contract.
 const prototypeRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const fixturesRoot = join(prototypeRoot, 'tests', 'fixtures')
 const expectationsPath = join(fixturesRoot, 'fixture-expectations.json')
+const legacyBranchMatrixBaselinePath = join(
+  fixturesRoot,
+  'legacy',
+  'branch-matrix-v050-normalized-baseline.json',
+)
 const HEX_64 = /^[a-f0-9]{64}$/
 const GIT_SHA = /^[a-f0-9]{40}$/
 const SAMPLE_ID_V1 = /^(?:A\d{2,}|P\d{2,}|M-[ABC])$/
@@ -2772,6 +2777,11 @@ const requiredFixtureFiles = [
   'playtest-v03/effect-double-owner-rejected.json',
   'playtest-v03/complete-missing-opportunity-rejected.json',
   'playtest-v03/complete-open-opportunity-rejected.json',
+  'playtest-v03/settled-outcome-missing-rejected.json',
+  'playtest-v03/settled-outcome-value-tamper-rejected.json',
+  'playtest-v03/settled-outcome-candidate-tamper-rejected.json',
+  'playtest-v03/settled-outcome-consequence-tamper-rejected.json',
+  'playtest-v03/recap-settled-value-tamper-rejected.json',
   'manifests/candidate-valid.json',
   'manifests/candidate-invalid-source-sha.json',
   'manifests/candidate-invalid-incomplete-authority.json',
@@ -2837,6 +2847,11 @@ const REQUIRED_FIXTURE_OUTCOMES = new Map([
   ['playtest-v03/effect-double-owner-rejected.json', [false, 'V03_EFFECT_OWNER_MISMATCH']],
   ['playtest-v03/complete-missing-opportunity-rejected.json', [false, 'V03_COMPLETE_TERMINALS']],
   ['playtest-v03/complete-open-opportunity-rejected.json', [false, 'V03_COMPLETE_TERMINALS']],
+  ['playtest-v03/settled-outcome-missing-rejected.json', [false, 'V03_SETTLED_OUTCOME_MISMATCH']],
+  ['playtest-v03/settled-outcome-value-tamper-rejected.json', [false, 'V03_SETTLED_OUTCOME_MISMATCH']],
+  ['playtest-v03/settled-outcome-candidate-tamper-rejected.json', [false, 'V03_SETTLED_OUTCOME_MISMATCH']],
+  ['playtest-v03/settled-outcome-consequence-tamper-rejected.json', [false, 'V03_SETTLED_OUTCOME_MISMATCH']],
+  ['playtest-v03/recap-settled-value-tamper-rejected.json', [false, 'V03_RECAP_MISMATCH']],
   ['manifests/candidate-zero-id-rejected.json', [false, 'CANDIDATE_MANIFEST_SHAPE']],
   ['manifests/candidate-c02-reuses-c01-evidence-rejected.json', [false, 'CANDIDATE_MANIFEST_EVIDENCE']],
   ['manifests/candidate-c02-first-manifest-valid.json', [true, null]],
@@ -3029,7 +3044,10 @@ async function collectJsonFiles(directory) {
   return files
 }
 
-const ignored = new Set([resolve(expectationsPath)])
+const ignored = new Set([
+  resolve(expectationsPath),
+  resolve(legacyBranchMatrixBaselinePath),
+])
 const allFixtureFiles = (await collectJsonFiles(fixturesRoot)).filter(
   (path) => !ignored.has(path),
 )

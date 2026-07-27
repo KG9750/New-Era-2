@@ -6,6 +6,7 @@ import {
   expect,
   test,
   type Download,
+  type Locator,
   type Page,
 } from '@playwright/test'
 
@@ -16,6 +17,35 @@ async function readDownload(download: Download) {
     chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
   }
   return Buffer.concat(chunks)
+}
+
+async function visualStates(elements: Locator) {
+  return elements.evaluateAll((nodes) =>
+    nodes.map((node) => {
+      const rect = node.getBoundingClientRect()
+      const style = getComputedStyle(node)
+      return {
+        width: rect.width,
+        height: rect.height,
+        paint: {
+          backgroundColor: style.backgroundColor,
+          color: style.color,
+          borderColor: style.borderColor,
+          borderStyle: style.borderStyle,
+          borderWidth: style.borderWidth,
+        },
+      }
+    }),
+  )
+}
+
+function expectEquivalentPair(
+  states: Awaited<ReturnType<typeof visualStates>>,
+) {
+  expect(states).toHaveLength(2)
+  expect(Math.abs(states[0].width - states[1].width)).toBeLessThanOrEqual(1)
+  expect(Math.abs(states[0].height - states[1].height)).toBeLessThanOrEqual(1)
+  expect(states[0].paint).toEqual(states[1].paint)
 }
 
 async function downloadSession(
@@ -152,6 +182,13 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   const preventiveCandidates = preventiveDialog
     .getByRole('list', { name: '预防容量候选' })
     .getByRole('button')
+  const preventiveCardVisuals = await visualStates(
+    preventiveDialog.getByRole('listitem'),
+  )
+  const preventiveButtonVisuals =
+    await visualStates(preventiveCandidates)
+  expectEquivalentPair(preventiveCardVisuals)
+  expectEquivalentPair(preventiveButtonVisuals)
   await expect(preventiveCandidates).toHaveCount(2)
   await expect(preventiveCandidates.nth(0)).toHaveAttribute(
     'aria-pressed',
@@ -240,15 +277,19 @@ test('new session to two-week export and memory clear', async ({ page }) => {
     await expect(card).toContainText('准备度')
     await expect(card).toContainText('压力')
   }
-  const candidateWidths =
-    await recoveryCandidateCards.evaluateAll((cards) =>
-      cards.map(
-        (card) => card.getBoundingClientRect().width,
-      ),
-    )
-  expect(
-    Math.abs(candidateWidths[0] - candidateWidths[1]),
-  ).toBeLessThanOrEqual(1)
+  const recoveryCardVisuals = await visualStates(
+    recoveryCandidateCards,
+  )
+  const recoveryButtonVisuals =
+    await visualStates(recoveryCandidates)
+  expectEquivalentPair(recoveryCardVisuals)
+  expectEquivalentPair(recoveryButtonVisuals)
+  expect(recoveryCardVisuals[0].paint).toEqual(
+    preventiveCardVisuals[0].paint,
+  )
+  expect(recoveryButtonVisuals[0].paint).toEqual(
+    preventiveButtonVisuals[0].paint,
+  )
   expect(
     await page.evaluate(
       () =>
@@ -580,7 +621,104 @@ test('new session to two-week export and memory clear', async ({ page }) => {
   ).toBeVisible()
 })
 
-test('skipping both C03 choices reaches two honest recaps and a zero-commitment export', async ({}, testInfo) => {
+test('authority timeout aborts the stale attempt and a retry installs only the newer session', async ({}, testInfo) => {
+  const browser = await chromium.launch(
+    testInfo.project.use.launchOptions,
+  )
+  const page = await browser.newPage({
+    baseURL: testInfo.project.use.baseURL,
+    viewport: testInfo.project.use.viewport,
+  })
+  let releaseFirst: (() => void) | undefined
+  try {
+    await page.clock.install({
+      time: new Date('2026-07-26T06:00:00Z'),
+    })
+    const buildMetadata = await page
+      .request
+      .get('/rc-build.json')
+      .then((response) => response.json())
+    let requestCount = 0
+    await page.route(
+      '**/__gate1/session-authority',
+      async (route) => {
+        requestCount += 1
+        const attempt = requestCount
+        const sessionId =
+          attempt === 1
+            ? '11111111-1111-4111-8111-111111111111'
+            : '22222222-2222-4222-8222-222222222222'
+        if (attempt === 1) {
+          await new Promise<void>((resolve) => {
+            releaseFirst = resolve
+          })
+        }
+        try {
+          await route.fulfill({
+            status: 201,
+            contentType:
+              'application/json; charset=utf-8',
+            body: JSON.stringify({
+              diagnosisId: 'A38',
+              sessionId,
+              candidateBuildAuthorityHash:
+                buildMetadata.artifactHash,
+              sessionAuthorityToken:
+                attempt === 1
+                  ? '3'.repeat(64)
+                  : '4'.repeat(64),
+            }),
+          })
+        } catch {
+          // The timed-out request is expected to be aborted before its late response.
+        }
+      },
+    )
+    await page.goto('/')
+
+    await page
+      .getByRole('button', {
+        name: '创建固定初态会话',
+      })
+      .click()
+    await page.clock.runFor(5_000)
+    await expect(page.getByRole('alert')).toHaveText(
+      '会话登记超时，请重试。',
+    )
+    await expect(
+      page.getByRole('button', {
+        name: '创建固定初态会话',
+      }),
+    ).toBeEnabled()
+
+    await page
+      .getByRole('button', {
+        name: '创建固定初态会话',
+      })
+      .click()
+    const meta = page.getByRole('region', {
+      name: '当前测试会话元数据',
+    })
+    await expect(meta).toContainText(
+      '22222222-2222-4222-8222-222222222222',
+    )
+
+    releaseFirst?.()
+    await page.clock.runFor(1)
+    await expect(meta).toContainText(
+      '22222222-2222-4222-8222-222222222222',
+    )
+    await expect(meta).not.toContainText(
+      '11111111-1111-4111-8111-111111111111',
+    )
+    expect(requestCount).toBe(2)
+  } finally {
+    releaseFirst?.()
+    await browser.close()
+  }
+})
+
+test('skipping explicit C03 choices preserves an honest direct-edit result and zero commitments', async ({}, testInfo) => {
   const browser = await chromium.launch(
     testInfo.project.use.launchOptions,
   )
@@ -634,6 +772,42 @@ test('skipping both C03 choices reaches two honest recaps and a zero-commitment 
       .click()
 
     await page
+      .getByRole('button', { name: '展开完整周计划' })
+      .click()
+    const weekTwoGrid = page.getByRole('grid', {
+      name: '第 2 周完整计划',
+    })
+    await weekTwoGrid
+      .getByRole('gridcell', {
+        name: /陈渡 第11日 B3 16–19 休息/,
+      })
+      .click()
+    await page
+      .getByLabel('批量活动')
+      .selectOption('repair')
+    await page
+      .getByRole('button', { name: '修改所选格' })
+      .click()
+    await page
+      .getByRole('button', { name: '比较应急班次' })
+      .click()
+    await expect(
+      page.getByRole('button', {
+        name: '分配给维修备件',
+      }),
+    ).toBeDisabled()
+    await expect(
+      page.getByRole('button', {
+        name: '分配给粮食生产',
+      }),
+    ).toBeDisabled()
+    await expect(
+      page.getByRole('status'),
+    ).toContainText(
+      '真实粮食或维修结果继续生效，但系统不会事后补记本次恢复资源意图',
+    )
+
+    await page
       .getByRole('button', { name: '开始运行' })
       .click()
     await page.clock.runFor(6_000)
@@ -652,7 +826,7 @@ test('skipping both C03 choices reaches two honest recaps and a zero-commitment 
       name: /周末偏差复盘/,
     }).locator('..')
     await expect(weekTwoRecap).toContainText(
-      '管理者没有指定应急班次用途，本周未获得额外粮食或维修保障。',
+      '目标日程格曾被直接修改，真实经营结果继续生效，但本次没有形成可核验的恢复资源承诺。',
     )
     await expect(weekTwoRecap).not.toContainText(
       /terminalState=|omitted|unqualified-direct-edit/,
@@ -687,7 +861,7 @@ test('skipping both C03 choices reaches two honest recaps and a zero-commitment 
           terminalState: string
         }) => terminalState,
       ),
-    ).toEqual(['omitted', 'omitted'])
+    ).toEqual(['omitted', 'unqualified-direct-edit'])
   } finally {
     await browser.close()
   }

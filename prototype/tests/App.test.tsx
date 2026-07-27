@@ -16,7 +16,7 @@ const TEST_BUILD_METADATA = {
   artifactHash: '2'.repeat(64),
   artifactHashAlgorithm: 'sha256-canonical-file-manifest-v1' as const,
   artifactManifestPath: 'artifact-manifest.json' as const,
-  initialStateHash: 'fnv1a32-6b11fd08',
+  initialStateHash: 'fnv1a32-1f72f2d0',
   initialStateHashAlgorithm: 'fnv1a32-stable-json-v1' as const,
 }
 
@@ -43,6 +43,113 @@ describe('minimal weekly flow UI', () => {
     vi.useRealTimers()
     vi.restoreAllMocks()
     vi.unstubAllGlobals()
+  })
+
+  it('times out a never-resolving authority request and re-enables retry', async () => {
+    vi.useFakeTimers()
+    let receivedSignal: AbortSignal | undefined
+    render(
+      <App
+        buildMetadata={TEST_BUILD_METADATA}
+        sessionAuthorityProvider={(_sampleId, { signal }) => {
+          receivedSignal = signal
+          return new Promise(() => undefined)
+        }}
+      />,
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: '创建固定初态会话',
+      }),
+    )
+    expect(
+      screen.getByRole('button', {
+        name: '正在登记会话…',
+      }),
+    ).toBeDisabled()
+
+    await act(async () => {
+      vi.advanceTimersByTime(5_000)
+      await Promise.resolve()
+    })
+
+    expect(receivedSignal?.aborted).toBe(true)
+    expect(screen.getByRole('alert')).toHaveTextContent(
+      '会话登记超时，请重试。',
+    )
+    expect(
+      screen.getByRole('button', {
+        name: '创建固定初态会话',
+      }),
+    ).toBeEnabled()
+  })
+
+  it('ignores a late authority response after a retry has installed a newer session', async () => {
+    vi.useFakeTimers()
+    let resolveFirst:
+      | ((authority: typeof TEST_SESSION_AUTHORITY) => void)
+      | undefined
+    const secondAuthority = {
+      ...TEST_SESSION_AUTHORITY,
+      sessionId:
+        '22222222-2222-4222-8222-222222222222',
+    }
+    const provider = vi
+      .fn()
+      .mockImplementationOnce(
+        () =>
+          new Promise<typeof TEST_SESSION_AUTHORITY>(
+            (resolve) => {
+              resolveFirst = resolve
+            },
+          ),
+      )
+      .mockResolvedValueOnce(secondAuthority)
+    render(
+      <App
+        buildMetadata={TEST_BUILD_METADATA}
+        sessionAuthorityProvider={provider}
+      />,
+    )
+
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: '创建固定初态会话',
+      }),
+    )
+    await act(async () => {
+      vi.advanceTimersByTime(5_000)
+      await Promise.resolve()
+    })
+    fireEvent.click(
+      screen.getByRole('button', {
+        name: '创建固定初态会话',
+      }),
+    )
+    await act(async () => {
+      await Promise.resolve()
+    })
+    expect(
+      screen.getByRole('region', {
+        name: '当前测试会话元数据',
+      }),
+    ).toHaveTextContent(secondAuthority.sessionId)
+
+    await act(async () => {
+      resolveFirst?.(TEST_SESSION_AUTHORITY)
+      await Promise.resolve()
+    })
+    expect(
+      screen.getByRole('region', {
+        name: '当前测试会话元数据',
+      }),
+    ).toHaveTextContent(secondAuthority.sessionId)
+    expect(
+      screen.getByRole('region', {
+        name: '当前测试会话元数据',
+      }),
+    ).not.toHaveTextContent(TEST_SESSION_AUTHORITY.sessionId)
   })
 
   it('opens on the weekly issue summary instead of a full schedule grid', () => {
@@ -278,7 +385,7 @@ describe('minimal weekly flow UI', () => {
     expect(within(forecastPanel!).getByText('9')).toBeInTheDocument()
     expect(
       screen.getByRole('button', { name: '查看容量结果' }).closest('article'),
-    ).toHaveTextContent('设备暴露降为 low')
+    ).toHaveTextContent('设备暴露降为低')
   })
 
   it('shows a player-facing message when a management choice commit is rejected', () => {

@@ -19,7 +19,7 @@
       "scenarioVersion": "0.5.1",
       "protocolVersion": "weekly-management-slice-playtest-v0.3",
       "fixedSeed": 104729,
-      "initialStateHash": "fnv1a32-6b11fd08",
+      "initialStateHash": "fnv1a32-1f72f2d0",
       "viewport": "unknown",
       "inputDevice": "browser-pointer-keyboard"
     },
@@ -734,6 +734,17 @@
           "pump-incident-day-3",
           "choice:w0:preventive-capacity",
           "north-loop"
+        ],
+        "itemValues": [
+          {},
+          {},
+          {},
+          {
+            "settledBeforeValue": 0,
+            "settledAfterValue": 1,
+            "settledDelta": 1
+          },
+          {}
         ]
       },
       {
@@ -754,6 +765,12 @@
           "lin-he-request-declined",
           "choice:w1:recovery-allocation",
           "north-loop"
+        ],
+        "itemValues": [
+          {},
+          {},
+          {},
+          {}
         ]
       }
     ],
@@ -772,6 +789,26 @@
       "week2CandidateManagementCount": 1,
       "week1C03TerminalCommitmentCount": 1,
       "week2C03TerminalCommitmentCount": 0
-    }
+    },
+    "settledManagementOutcomesV03": [
+      {
+        "choiceSetId": "choice:w0:preventive-capacity",
+        "decisionIntentId": "w0:preventive-capacity:pump",
+        "candidateId": "retain-rest-capacity",
+        "consequenceId": "consequence:w0:preventive-capacity:personnel-readiness",
+        "effectFingerprint": "effect:0525a0777f73fe1116a2d1129cf0a5ce7b429ee2cbed27f42f1bede3abcb9dc2",
+        "beforeValue": 0,
+        "afterValue": 1,
+        "delta": 1,
+        "settledWeek": 0,
+        "settledAtTick": 1002,
+        "diagnosisId": "TECH-RC9-D80",
+        "sessionId": "11111111-1111-4111-8111-111111111111",
+        "candidateBuildAuthorityHash": "2222222222222222222222222222222222222222222222222222222222222222",
+        "sessionAuthorityToken": "3333333333333333333333333333333333333333333333333333333333333333",
+        "actionId": "action-0001",
+        "actionSequence": 1
+      }
+    ]
   }
 }

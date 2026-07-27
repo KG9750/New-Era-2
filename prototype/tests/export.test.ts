@@ -283,6 +283,35 @@ describe('Gate 1 v2 production export', () => {
     expect(Object.keys(exported.effectOwnershipV03!).sort()).toEqual(
       [...fingerprints].sort(),
     )
+    expect(
+      exported.settledManagementOutcomesV03,
+    ).toEqual([
+      expect.objectContaining({
+        choiceSetId:
+          PREVENTIVE_CAPACITY_CHOICE_SET_ID,
+        candidateId: 'retain-rest-capacity',
+        consequenceId:
+          'consequence:w0:preventive-capacity:personnel-readiness',
+        beforeValue: 0,
+        afterValue: 1,
+        delta: 1,
+        settledWeek: 0,
+        settledAtTick: scenario.weekEndTick,
+        actionId: 'action-0001',
+        actionSequence: 1,
+      }),
+    ])
+    const managementItemIndex =
+      exported.recap[0].sourceIds.indexOf(
+        PREVENTIVE_CAPACITY_CHOICE_SET_ID,
+      )
+    expect(
+      exported.recap[0].itemValues![managementItemIndex],
+    ).toMatchObject({
+      settledBeforeValue: 0,
+      settledAfterValue: 1,
+      settledDelta: 1,
+    })
     expect(exported.candidateEditGroups).toEqual([])
   })
 

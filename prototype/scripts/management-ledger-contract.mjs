@@ -9,6 +9,17 @@ const TERMINAL_WITHOUT_COMMITMENT = new Set([
   'omitted',
   'unqualified-direct-edit',
 ])
+const SETTLED_CONSEQUENCE_BY_CANDIDATE = Object.freeze({
+  'schedule-preventive-maintenance':
+    'consequence:w0:preventive-capacity:recovery-load',
+  'retain-rest-capacity':
+    'consequence:w0:preventive-capacity:personnel-readiness',
+  'allocate-repair-buffer':
+    'consequence:w1:recovery-allocation:ending-repair',
+  'allocate-food-production':
+    'consequence:w1:recovery-allocation:ending-food',
+})
+const SETTLED_AT_TICK_BY_WEEK = [1002, 2010]
 
 export const C03_CANONICAL_CHOICE_CONTRACT = Object.freeze({
   'choice:w0:preventive-capacity': {
@@ -367,7 +378,89 @@ function validateFinalState(
   return null
 }
 
-function validateRecaps(input, opportunitiesByChoiceSet) {
+function validateSettledOutcomes(
+  input,
+  commitmentsByChoiceSet,
+  authority,
+) {
+  const completedWeekCount = input.finalState.completedWeekCount
+  const expectedCommitments = [
+    ...commitmentsByChoiceSet.values(),
+  ].filter(({ week }) => week < completedWeekCount)
+  if (
+    input.settledManagementOutcomesV03.length !==
+    expectedCommitments.length
+  ) {
+    return {
+      error: 'V03_SETTLED_OUTCOME_MISMATCH',
+      outcomesByChoiceSet: new Map(),
+    }
+  }
+  const outcomesByChoiceSet = new Map()
+  for (const outcome of input.settledManagementOutcomesV03) {
+    const commitment = commitmentsByChoiceSet.get(
+      outcome?.choiceSetId,
+    )
+    const expectedConsequenceId =
+      SETTLED_CONSEQUENCE_BY_CANDIDATE[
+        commitment?.candidateId
+      ]
+    const consequence = commitment?.consequences.find(
+      (item) =>
+        item.consequenceId === expectedConsequenceId,
+    )
+    const action = input.actions.find(
+      (item) =>
+        item?.type === 'COMMIT_MANAGEMENT_CHOICE' &&
+        item.sequence === commitment?.committedAtSequence,
+    )
+    if (
+      !isRecord(outcome) ||
+      commitment === undefined ||
+      commitment.week >= completedWeekCount ||
+      consequence === undefined ||
+      action === undefined ||
+      outcomesByChoiceSet.has(outcome.choiceSetId) ||
+      outcome.decisionIntentId !==
+        commitment.decisionIntentId ||
+      outcome.candidateId !== commitment.candidateId ||
+      outcome.consequenceId !== consequence.consequenceId ||
+      outcome.effectFingerprint !==
+        consequence.effectFingerprint ||
+      outcome.beforeValue !== consequence.beforeValue ||
+      outcome.afterValue !== consequence.afterValue ||
+      !Number.isFinite(outcome.beforeValue) ||
+      !Number.isFinite(outcome.afterValue) ||
+      outcome.delta !==
+        outcome.afterValue - outcome.beforeValue ||
+      outcome.delta === 0 ||
+      outcome.settledWeek !== commitment.week ||
+      outcome.settledAtTick !==
+        SETTLED_AT_TICK_BY_WEEK[commitment.week] ||
+      !sameAuthority(outcome, authority) ||
+      outcome.actionId !== action.id ||
+      outcome.actionSequence !== action.sequence ||
+      outcome.actionSequence !==
+        commitment.committedAtSequence
+    ) {
+      return {
+        error: 'V03_SETTLED_OUTCOME_MISMATCH',
+        outcomesByChoiceSet: new Map(),
+      }
+    }
+    outcomesByChoiceSet.set(
+      outcome.choiceSetId,
+      outcome,
+    )
+  }
+  return { error: null, outcomesByChoiceSet }
+}
+
+function validateRecaps(
+  input,
+  opportunitiesByChoiceSet,
+  settledOutcomesByChoiceSet,
+) {
   if (!Array.isArray(input.recap)) {
     return 'V03_RECAP_MISMATCH'
   }
@@ -383,6 +476,9 @@ function validateRecaps(input, opportunitiesByChoiceSet) {
       !isRecord(recap) ||
       !Array.isArray(recap.itemIds) ||
       !Array.isArray(recap.sourceIds) ||
+      !Array.isArray(recap.itemValues) ||
+      recap.itemIds.length !== recap.sourceIds.length ||
+      recap.itemValues.length !== recap.sourceIds.length ||
       recap.sourceIds.filter((value) => value === choiceSetId)
         .length !== 1
     ) {
@@ -390,6 +486,20 @@ function validateRecaps(input, opportunitiesByChoiceSet) {
     }
     const index = recap.sourceIds.indexOf(choiceSetId)
     if (recap.itemIds[index] !== expectedItemId) {
+      return 'V03_RECAP_MISMATCH'
+    }
+    const settledOutcome =
+      settledOutcomesByChoiceSet.get(choiceSetId)
+    if (
+      settledOutcome !== undefined &&
+      (!isRecord(recap.itemValues[index]) ||
+        recap.itemValues[index].settledBeforeValue !==
+          settledOutcome.beforeValue ||
+        recap.itemValues[index].settledAfterValue !==
+          settledOutcome.afterValue ||
+        recap.itemValues[index].settledDelta !==
+          settledOutcome.delta)
+    ) {
       return 'V03_RECAP_MISMATCH'
     }
   }
@@ -408,6 +518,7 @@ export function validateCanonicalManagementLedger(input) {
     !input.actions.every(isRecord) ||
     !Array.isArray(input.managementChoiceOpportunitiesV03) ||
     !Array.isArray(input.managementChoiceCommitmentsV03) ||
+    !Array.isArray(input.settledManagementOutcomesV03) ||
     !isRecord(input.effectOwnershipV03)
   ) {
     return reject('V03_LEDGER_SHAPE')
@@ -705,9 +816,18 @@ export function validateCanonicalManagementLedger(input) {
     commitmentsByChoiceSet,
   )
   if (finalStateError !== null) return reject(finalStateError)
+  const settledValidation = validateSettledOutcomes(
+    input,
+    commitmentsByChoiceSet,
+    authority,
+  )
+  if (settledValidation.error !== null) {
+    return reject(settledValidation.error)
+  }
   const recapError = validateRecaps(
     input,
     opportunitiesByChoiceSet,
+    settledValidation.outcomesByChoiceSet,
   )
   if (recapError !== null) return reject(recapError)
 
