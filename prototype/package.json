@@ -7,6 +7,8 @@
     "dev": "vite",
     "lint": "tsc --noEmit",
     "test:run": "vitest run",
+    "schema:fixtures": "node scripts/check-playtest-fixtures.mjs",
+    "guard:rc8": "node scripts/verify-tree-guard.mjs",
     "build": "tsc -b && vite build",
     "rc:build": "node scripts/rc-build.mjs",
     "rc:verify": "node scripts/verify-rc-build.mjs",

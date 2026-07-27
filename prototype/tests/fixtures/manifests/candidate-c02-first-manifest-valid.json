@@ -1,0 +1,154 @@
+{
+  "fixtureId": "candidate-manifest-c02-first-manifest-valid",
+  "kind": "candidate-manifest",
+  "input": {
+    "candidateManifestId": "CM01",
+    "candidateAttempt": "C02",
+    "status": "PENDING_INDEPENDENT_REVIEW",
+    "sourceSha": "1111111111111111111111111111111111111111",
+    "dependencyIntegrationSha": "2222222222222222222222222222222222222222",
+    "candidateAttemptManifestHash": "9999999999999999999999999999999999999999999999999999999999999999",
+    "buildId": "g1-rc9-C02",
+    "scenarioId": "gate1-two-week-management",
+    "scenarioVersion": "0.5.0",
+    "schemaVersion": "gate1-playtest-v2",
+    "artifactHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "archiveHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "authorityHashes": [
+      {
+        "role": "protocol",
+        "path": "docs/product-specs/weekly-management-slice-playtest-v0.2.md",
+        "sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      {
+        "role": "design",
+        "path": "docs/design-docs/weekly-plan-production-forecast-slice-v0.2.md",
+        "sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+      },
+      {
+        "role": "operations",
+        "path": "docs/exec-plans/active/2026-07-27-gate1a-rc9-test-operations.md",
+        "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+      },
+      {
+        "role": "player-packet",
+        "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/player-packet-v0.2.md",
+        "sha256": "4444444444444444444444444444444444444444444444444444444444444444"
+      },
+      {
+        "role": "interview",
+        "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/post-session-interview-v0.2.md",
+        "sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+      },
+      {
+        "role": "fixture-oracle",
+        "path": "prototype/tests/fixtures/fixture-expectations.json",
+        "sha256": "6666666666666666666666666666666666666666666666666666666666666666"
+      },
+      {
+        "role": "capture-host",
+        "path": "prototype/scripts/playtest-host.mjs",
+        "sha256": "7777777777777777777777777777777777777777777777777777777777777777"
+      }
+    ],
+    "diagnosticManifest": {
+      "status": "PASS",
+      "path": "candidates/C02/diagnostics/manifest.json",
+      "sha256": "8888888888888888888888888888888888888888888888888888888888888888",
+      "sampleIds": [
+        "TECH-RC9-D06",
+        "TECH-RC9-D07",
+        "TECH-RC9-D08",
+        "TECH-RC9-D09",
+        "TECH-RC9-D10"
+      ]
+    },
+    "antiPass": [
+      {
+        "sampleId": "TECH-RC9-P03",
+        "status": "PASS",
+        "evidenceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"
+      },
+      {
+        "sampleId": "TECH-RC9-P04",
+        "status": "PASS",
+        "evidenceHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb"
+      }
+    ],
+    "rc8Guard": {
+      "baselineSha": "c0f4269bc3fef56962199629bad8db041aafc5f0",
+      "treeId": "c5714f7ca7adb5e8fe052d4d00f27c545b988347",
+      "inventorySha256": "e6990ddc8acd6ff4dbacfec975c06e4d0b9bbc7f6a2fc1324f5023caec1b96ee",
+      "status": "PASS"
+    },
+    "commandResults": [
+      {
+        "id": "lint",
+        "status": "PASS",
+        "outputHash": "0101010101010101010101010101010101010101010101010101010101010101"
+      },
+      {
+        "id": "test",
+        "status": "PASS",
+        "outputHash": "0202020202020202020202020202020202020202020202020202020202020202"
+      },
+      {
+        "id": "build",
+        "status": "PASS",
+        "outputHash": "0303030303030303030303030303030303030303030303030303030303030303"
+      },
+      {
+        "id": "rc-build",
+        "status": "PASS",
+        "outputHash": "0404040404040404040404040404040404040404040404040404040404040404"
+      },
+      {
+        "id": "rc-verify",
+        "status": "PASS",
+        "outputHash": "0505050505050505050505050505050505050505050505050505050505050505"
+      },
+      {
+        "id": "e2e-rc",
+        "status": "PASS",
+        "outputHash": "0606060606060606060606060606060606060606060606060606060606060606"
+      },
+      {
+        "id": "rc-archive",
+        "status": "PASS",
+        "outputHash": "0707070707070707070707070707070707070707070707070707070707070707"
+      },
+      {
+        "id": "rc-verify-archive",
+        "status": "PASS",
+        "outputHash": "0808080808080808080808080808080808080808080808080808080808080808"
+      },
+      {
+        "id": "schema-fixtures",
+        "status": "PASS",
+        "outputHash": "0909090909090909090909090909090909090909090909090909090909090909"
+      },
+      {
+        "id": "guard-rc8",
+        "status": "PASS",
+        "outputHash": "1010101010101010101010101010101010101010101010101010101010101010"
+      },
+      {
+        "id": "manifest-verify",
+        "status": "PASS",
+        "outputHash": "1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      {
+        "id": "rc-repro",
+        "status": "PASS",
+        "outputHash": "1212121212121212121212121212121212121212121212121212121212121212"
+      }
+    ],
+    "priorManifests": [],
+    "rejectedAttempts": [
+      {
+        "candidateAttempt": "C01",
+        "rejectionHash": "1313131313131313131313131313131313131313131313131313131313131313"
+      }
+    ]
+  }
+}

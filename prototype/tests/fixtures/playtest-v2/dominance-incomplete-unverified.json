@@ -1,0 +1,44 @@
+{
+  "fixtureId": "v2-dominance-incomplete-unverified",
+  "kind": "dominance-case",
+  "input": {
+    "continuationPolicyIds": [
+      "continue-food",
+      "continue-repair"
+    ],
+    "axes": [
+      {
+        "id": "repairStock",
+        "direction": "higher"
+      },
+      {
+        "id": "foodStock",
+        "direction": "higher"
+      }
+    ],
+    "options": [
+      {
+        "optionId": "repair-fast",
+        "resultsByPolicy": {
+          "continue-food": [
+            14,
+            12
+          ],
+          "continue-repair": [
+            18,
+            9
+          ]
+        }
+      },
+      {
+        "optionId": "repair-slow",
+        "resultsByPolicy": {
+          "continue-food": [
+            12,
+            11
+          ]
+        }
+      }
+    ]
+  }
+}

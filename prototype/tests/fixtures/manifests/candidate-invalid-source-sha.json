@@ -1,0 +1,16 @@
+{
+  "fixtureId": "candidate-manifest-invalid-source-sha",
+  "kind": "candidate-manifest",
+  "input": {
+    "candidateManifestId": "CM02",
+    "candidateAttempt": "C02",
+    "status": "PENDING_INDEPENDENT_REVIEW",
+    "sourceSha": "branch-name-is-not-authority",
+    "artifactHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "archiveHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "authorityHashes": [],
+    "rejectedAttempts": [
+      "C01"
+    ]
+  }
+}

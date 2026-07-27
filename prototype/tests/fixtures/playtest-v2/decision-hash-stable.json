@@ -1,0 +1,60 @@
+{
+  "fixtureId": "v2-decision-hash-stable",
+  "kind": "decision-hash-case",
+  "input": {
+    "snapshots": [
+      {
+        "id": "ordered-a",
+        "decisionIntentId": "w0:food-plan",
+        "projection": {
+          "scheduleCells": [
+            "lin-he:d1:b2=food",
+            "su-ji:d1:b2=logistics"
+          ],
+          "inventory": {
+            "food": 18,
+            "repair": 9
+          }
+        },
+        "excludedContext": {
+          "actionLog": [
+            "action-0001",
+            "action-0002"
+          ],
+          "forecast": {
+            "food": 83
+          }
+        }
+      },
+      {
+        "id": "ordered-b",
+        "decisionIntentId": "w0:food-plan",
+        "projection": {
+          "inventory": {
+            "repair": 9,
+            "food": 18
+          },
+          "scheduleCells": [
+            "lin-he:d1:b2=food",
+            "su-ji:d1:b2=logistics"
+          ]
+        },
+        "excludedContext": {
+          "actionLog": [
+            "action-0099"
+          ],
+          "forecast": {
+            "food": 97
+          }
+        }
+      }
+    ],
+    "relations": [
+      {
+        "left": "ordered-a",
+        "right": "ordered-b",
+        "expected": "equal"
+      }
+    ]
+  }
+}

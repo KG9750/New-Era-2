@@ -1,0 +1,73 @@
+{
+  "fixtureId": "v2-outcome-fingerprint-stability",
+  "kind": "outcome-fingerprint-case",
+  "input": {
+    "snapshots": [
+      {
+        "id": "order-a",
+        "outcomes": [
+          {
+            "decisionIntentId": "w0:food-plan",
+            "finalOutcomeCode": "committed:accept-food-gap",
+            "actionIds": [
+              "action-0001",
+              "action-0003"
+            ]
+          },
+          {
+            "decisionIntentId": "w0:transport-route",
+            "finalOutcomeCode": "committed:open-shortcut",
+            "actionIds": [
+              "action-0002"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "order-b",
+        "outcomes": [
+          {
+            "decisionIntentId": "w0:transport-route",
+            "finalOutcomeCode": "committed:open-shortcut",
+            "actionIds": [
+              "action-0099"
+            ]
+          },
+          {
+            "decisionIntentId": "w0:food-plan",
+            "finalOutcomeCode": "committed:accept-food-gap",
+            "actionIds": [
+              "action-0097",
+              "action-0098"
+            ]
+          }
+        ]
+      },
+      {
+        "id": "different-choice",
+        "outcomes": [
+          {
+            "decisionIntentId": "w0:food-plan",
+            "finalOutcomeCode": "committed:schedule:eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee"
+          },
+          {
+            "decisionIntentId": "w0:transport-route",
+            "finalOutcomeCode": "committed:open-shortcut"
+          }
+        ]
+      }
+    ],
+    "relations": [
+      {
+        "left": "order-a",
+        "right": "order-b",
+        "expected": "equal"
+      },
+      {
+        "left": "order-a",
+        "right": "different-choice",
+        "expected": "different"
+      }
+    ]
+  }
+}

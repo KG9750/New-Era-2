@@ -1,0 +1,82 @@
+{
+  "fixtureId": "v2-dangling-action-rejected",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-D05",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "EDIT_SCHEDULE",
+        "memberId": "lin-he",
+        "dayIndex": 1,
+        "blockId": "lin-he:d1:b2",
+        "fromActivity": "baseline",
+        "toActivity": "food"
+      }
+    ],
+    "candidateEditGroups": [],
+    "choiceSets": [
+      {
+        "choiceSetId": "choice:w0:food-plan",
+        "decisionIntentId": "w0:food-plan",
+        "options": [
+          {
+            "optionId": "food-shift",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food"
+            ],
+            "dominanceStatus": "non-dominated"
+          },
+          {
+            "optionId": "accept-gap",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food"
+            ],
+            "dominanceStatus": "non-dominated"
+          }
+        ],
+        "selectedOptionId": "food-shift"
+      }
+    ],
+    "candidateManagementCommitmentGroups": [
+      {
+        "decisionIntentId": "w0:food-plan",
+        "choiceSetId": "choice:w0:food-plan",
+        "weekIndex": 0,
+        "problemCategory": "food",
+        "actionIds": [
+          "action-9999"
+        ],
+        "consequenceRefs": [
+          {
+            "kind": "forecast",
+            "id": "w0:food"
+          }
+        ],
+        "beforeDecisionStateHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "finalDecisionStateHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "finalOutcomeCode": "committed:food-shift",
+        "finalDisposition": "committed"
+      }
+    ],
+    "weekRecaps": [
+      {
+        "weekIndex": 0
+      },
+      {
+        "weekIndex": 1
+      }
+    ],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

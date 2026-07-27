@@ -1,0 +1,27 @@
+{
+  "fixtureId": "v2-comparison-biased-rejected",
+  "kind": "comparison-state",
+  "input": {
+    "selectedOptionId": "schedule-repair",
+    "initialFocusTarget": "schedule-repair",
+    "enterBeforeSelectionCommits": true,
+    "spaceBeforeSelectionCommits": false,
+    "authorityMutationCountOnOpen": 1,
+    "options": [
+      {
+        "optionId": "schedule-repair",
+        "reachable": true,
+        "visualRole": "primary",
+        "ariaRole": "button",
+        "recommended": true
+      },
+      {
+        "optionId": "accept-debt",
+        "reachable": true,
+        "visualRole": "secondary",
+        "ariaRole": "button",
+        "recommended": false
+      }
+    ]
+  }
+}

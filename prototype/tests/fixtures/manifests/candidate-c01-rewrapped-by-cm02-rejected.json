@@ -1,0 +1,58 @@
+{
+  "fixtureId": "candidate-manifest-c01-rewrapped-by-cm02-rejected",
+  "kind": "candidate-manifest",
+  "input": {
+    "candidateManifestId": "CM02",
+    "candidateAttempt": "C01",
+    "status": "PENDING_INDEPENDENT_REVIEW",
+    "sourceSha": "1111111111111111111111111111111111111111",
+    "artifactHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "archiveHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "authorityHashes": [
+      {
+        "role": "protocol",
+        "path": "docs/product-specs/weekly-management-slice-playtest-v0.2.md",
+        "sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      {
+        "role": "design",
+        "path": "docs/design-docs/weekly-plan-production-forecast-slice-v0.2.md",
+        "sha256": "2222222222222222222222222222222222222222222222222222222222222222"
+      },
+      {
+        "role": "operations",
+        "path": "docs/exec-plans/active/2026-07-27-gate1a-rc9-test-operations.md",
+        "sha256": "3333333333333333333333333333333333333333333333333333333333333333"
+      },
+      {
+        "role": "player-packet",
+        "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/player-packet-v0.2.md",
+        "sha256": "4444444444444444444444444444444444444444444444444444444444444444"
+      },
+      {
+        "role": "interview",
+        "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/post-session-interview-v0.2.md",
+        "sha256": "5555555555555555555555555555555555555555555555555555555555555555"
+      },
+      {
+        "role": "fixture-oracle",
+        "path": "prototype/tests/fixtures/fixture-expectations.json",
+        "sha256": "6666666666666666666666666666666666666666666666666666666666666666"
+      },
+      {
+        "role": "capture-host",
+        "path": "prototype/scripts/playtest-host.mjs",
+        "sha256": "7777777777777777777777777777777777777777777777777777777777777777"
+      }
+    ],
+    "priorManifests": [
+      {
+        "candidateManifestId": "CM01",
+        "manifestHash": "8888888888888888888888888888888888888888888888888888888888888888",
+        "candidateAttempt": "C01",
+        "status": "REJECTED_INDEPENDENT_REVIEW"
+      }
+    ],
+    "rejectedAttempts": []
+  }
+}

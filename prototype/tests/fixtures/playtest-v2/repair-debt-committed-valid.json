@@ -1,0 +1,104 @@
+{
+  "fixtureId": "v2-repair-debt-committed-valid",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "A42",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "ACCEPT_REPAIR_DEBT"
+      }
+    ],
+    "candidateEditGroups": [],
+    "choiceSets": [
+      {
+        "choiceSetId": "choice:w0:pump-repair",
+        "decisionIntentId": "w0:repair-responsibility:pump-incident-day-3",
+        "options": [
+          {
+            "optionId": "schedule-repair",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:repair",
+              "risk:pump",
+              "schedule:qiao-pan:d3:b2"
+            ],
+            "dominanceStatus": "non-dominated"
+          },
+          {
+            "optionId": "accept-debt",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "risk:repair-debt",
+              "recap:w0:repair"
+            ],
+            "dominanceStatus": "non-dominated"
+          }
+        ],
+        "selectedOptionId": "accept-debt"
+      }
+    ],
+    "candidateManagementCommitmentGroups": [
+      {
+        "decisionIntentId": "w0:repair-responsibility:pump-incident-day-3",
+        "choiceSetId": "choice:w0:pump-repair",
+        "weekIndex": 0,
+        "problemCategory": "repair",
+        "actionIds": [
+          "action-0001"
+        ],
+        "consequenceRefs": [
+          {
+            "kind": "risk",
+            "id": "repair-debt"
+          },
+          {
+            "kind": "recap",
+            "id": "w0:repair"
+          }
+        ],
+        "beforeDecisionStateHash": "3f7a995664ccf22d9014d84dc59b3467ecc51837ce33edd36c61efdc9358f2c2",
+        "finalDecisionStateHash": "b2b081b36e5b1a1590c460aae28c9e3d503a9633fe34f411607c2c4c987cfdc2",
+        "finalOutcomeCode": "committed:accept-debt",
+        "finalDisposition": "committed"
+      }
+    ],
+    "oracleDecisionProjections": {
+      "0:w0:repair-responsibility:pump-incident-day-3": {
+        "before": {
+          "repairResponsibility": "unresolved",
+          "repairDebt": null
+        },
+        "final": {
+          "repairResponsibility": "debt",
+          "repairDebt": {
+            "dueTick": 2010,
+            "weeklyPenalty": 3
+          }
+        }
+      }
+    },
+    "weekRecaps": [
+      {
+        "weekIndex": 0
+      },
+      {
+        "weekIndex": 1
+      }
+    ],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true,
+      "repairDebt": {
+        "dueTick": 2010,
+        "weeklyPenalty": 3,
+        "settled": true
+      }
+    }
+  }
+}

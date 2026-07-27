@@ -1,0 +1,19 @@
+{
+  "fixtureId": "mixed-v1-v2-rejected",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v1",
+    "meta": {
+      "sampleId": "A31",
+      "scenarioVersion": "0.4.0"
+    },
+    "actions": [],
+    "candidateEditGroups": [],
+    "choiceSets": [],
+    "candidateManagementCommitmentGroups": [],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

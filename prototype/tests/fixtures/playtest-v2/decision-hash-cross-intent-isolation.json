@@ -1,0 +1,84 @@
+{
+  "fixtureId": "v2-decision-hash-cross-intent-isolation",
+  "kind": "decision-hash-case",
+  "input": {
+    "snapshots": [
+      {
+        "id": "food-before-repair",
+        "decisionIntentId": "w0:food-plan",
+        "projection": {
+          "scheduleCells": [
+            "lin-he:d1:b2=food"
+          ]
+        },
+        "excludedContext": {
+          "forecast": {
+            "food": 83,
+            "repair": 10
+          },
+          "repairDebt": null
+        }
+      },
+      {
+        "id": "food-after-repair",
+        "decisionIntentId": "w0:food-plan",
+        "projection": {
+          "scheduleCells": [
+            "lin-he:d1:b2=food"
+          ]
+        },
+        "excludedContext": {
+          "forecast": {
+            "food": 79,
+            "repair": 17
+          },
+          "repairDebt": {
+            "dueTick": 2010
+          }
+        }
+      },
+      {
+        "id": "repair-before-food",
+        "decisionIntentId": "w0:repair-responsibility:pump-incident-day-3",
+        "projection": {
+          "responsibility": "qiao-pan",
+          "repairDebt": null
+        },
+        "excludedContext": {
+          "forecast": {
+            "food": 83,
+            "repair": 10
+          },
+          "foodSchedule": "baseline"
+        }
+      },
+      {
+        "id": "repair-after-food",
+        "decisionIntentId": "w0:repair-responsibility:pump-incident-day-3",
+        "projection": {
+          "repairDebt": null,
+          "responsibility": "qiao-pan"
+        },
+        "excludedContext": {
+          "forecast": {
+            "food": 96,
+            "repair": 8
+          },
+          "foodSchedule": "shifted"
+        }
+      }
+    ],
+    "relations": [
+      {
+        "left": "food-before-repair",
+        "right": "food-after-repair",
+        "expected": "equal"
+      },
+      {
+        "left": "repair-before-food",
+        "right": "repair-after-food",
+        "expected": "equal"
+      }
+    ]
+  }
+}

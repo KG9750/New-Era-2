@@ -1,0 +1,106 @@
+{
+  "fixtureId": "v2-accept-debt-with-schedule-action-rejected",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-D21",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "EDIT_SCHEDULE",
+        "memberId": "qiao-pan",
+        "dayIndex": 3,
+        "blockId": "qiao-pan:d3:b2",
+        "fromActivity": "baseline",
+        "toActivity": "repair",
+        "responsibility": "scheduled"
+      }
+    ],
+    "candidateEditGroups": [],
+    "choiceSets": [
+      {
+        "choiceSetId": "choice:w0:pump-repair",
+        "decisionIntentId": "w0:repair-responsibility:pump-incident-day-3",
+        "options": [
+          {
+            "optionId": "schedule-repair",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:repair",
+              "risk:pump",
+              "schedule:qiao-pan:d3:b2"
+            ],
+            "dominanceStatus": "non-dominated"
+          },
+          {
+            "optionId": "accept-debt",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "recap:w0:repair",
+              "risk:repair-debt"
+            ],
+            "dominanceStatus": "non-dominated"
+          }
+        ],
+        "selectedOptionId": "accept-debt"
+      }
+    ],
+    "candidateManagementCommitmentGroups": [
+      {
+        "decisionIntentId": "w0:repair-responsibility:pump-incident-day-3",
+        "choiceSetId": "choice:w0:pump-repair",
+        "weekIndex": 0,
+        "problemCategory": "repair",
+        "actionIds": [
+          "action-0001"
+        ],
+        "consequenceRefs": [
+          {
+            "kind": "recap",
+            "id": "w0:repair"
+          },
+          {
+            "kind": "risk",
+            "id": "repair-debt"
+          }
+        ],
+        "beforeDecisionStateHash": "22667a488a2578d8f608d87a0d298187f6700e5c47924a7947b6c338a5d54c82",
+        "finalDecisionStateHash": "fb19e1bc01aa464a5af6812d71be406fb1144eb7ec48ed91d8ce325b3728afb8",
+        "finalOutcomeCode": "committed:accept-debt",
+        "finalDisposition": "committed"
+      }
+    ],
+    "oracleDecisionProjections": {
+      "0:w0:repair-responsibility:pump-incident-day-3": {
+        "before": {
+          "repairResponsibility": "unresolved",
+          "scheduleCells": [
+            "qiao-pan:d3:b2=baseline"
+          ]
+        },
+        "final": {
+          "repairResponsibility": "scheduled",
+          "scheduleCells": [
+            "qiao-pan:d3:b2=repair"
+          ]
+        }
+      }
+    },
+    "weekRecaps": [
+      {
+        "weekIndex": 0
+      },
+      {
+        "weekIndex": 1
+      }
+    ],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

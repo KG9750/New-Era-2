@@ -1,0 +1,8 @@
+{
+  "fixtureId": "candidate-manifest-zero-id-rejected",
+  "kind": "candidate-manifest",
+  "input": {
+    "candidateManifestId": "CM00",
+    "candidateAttempt": "C00"
+  }
+}

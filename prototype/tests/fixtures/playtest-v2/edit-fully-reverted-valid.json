@@ -1,0 +1,113 @@
+{
+  "fixtureId": "v2-edit-fully-reverted-valid",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "A44",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "EDIT_SCHEDULE",
+        "memberId": "lin-he",
+        "dayIndex": 1,
+        "blockId": "lin-he:d1:b2",
+        "fromActivity": "baseline",
+        "toActivity": "food"
+      },
+      {
+        "id": "action-0002",
+        "type": "UNDO",
+        "revertsActionId": "action-0001"
+      }
+    ],
+    "candidateEditGroups": [
+      {
+        "groupId": "legacy:w0:food-plan",
+        "actionIds": [
+          "action-0001",
+          "action-0002"
+        ]
+      }
+    ],
+    "choiceSets": [
+      {
+        "choiceSetId": "choice:w0:food-plan",
+        "decisionIntentId": "w0:food-plan",
+        "options": [
+          {
+            "optionId": "food-shift-lin",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food",
+              "forecast:w0:repair",
+              "schedule:lin-he:d1:b2"
+            ],
+            "dominanceStatus": "non-dominated"
+          },
+          {
+            "optionId": "accept-food-gap",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food",
+              "forecast:w0:repair"
+            ],
+            "dominanceStatus": "non-dominated"
+          }
+        ],
+        "selectedOptionId": null
+      }
+    ],
+    "candidateManagementCommitmentGroups": [
+      {
+        "decisionIntentId": "w0:food-plan",
+        "choiceSetId": "choice:w0:food-plan",
+        "weekIndex": 0,
+        "problemCategory": "food",
+        "actionIds": [
+          "action-0001",
+          "action-0002"
+        ],
+        "consequenceRefs": [
+          {
+            "kind": "schedule",
+            "id": "lin-he:d1:b2"
+          }
+        ],
+        "beforeDecisionStateHash": "91354ca85456e6f9b6d5aaae90a14c4c4ec132bc7a4d86bb501f1b1927274c45",
+        "finalDecisionStateHash": "91354ca85456e6f9b6d5aaae90a14c4c4ec132bc7a4d86bb501f1b1927274c45",
+        "finalOutcomeCode": "reverted",
+        "finalDisposition": "reverted"
+      }
+    ],
+    "oracleDecisionProjections": {
+      "0:w0:food-plan": {
+        "before": {
+          "scheduleCells": [
+            "lin-he:d1:b2=baseline"
+          ]
+        },
+        "final": {
+          "scheduleCells": [
+            "lin-he:d1:b2=baseline"
+          ]
+        }
+      }
+    },
+    "weekRecaps": [
+      {
+        "weekIndex": 0
+      },
+      {
+        "weekIndex": 1
+      }
+    ],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

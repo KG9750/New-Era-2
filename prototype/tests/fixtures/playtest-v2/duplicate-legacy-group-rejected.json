@@ -1,0 +1,43 @@
+{
+  "fixtureId": "v2-duplicate-legacy-group-rejected",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-D11",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "EDIT_SCHEDULE",
+        "memberId": "lin-he",
+        "dayIndex": 1,
+        "blockId": "lin-he:d1:b2",
+        "fromActivity": "baseline",
+        "toActivity": "food"
+      }
+    ],
+    "candidateEditGroups": [
+      {
+        "groupId": "legacy:w0:food-plan",
+        "actionIds": [
+          "action-0001"
+        ]
+      },
+      {
+        "groupId": "legacy:w0:food-plan",
+        "actionIds": [
+          "action-0001"
+        ]
+      }
+    ],
+    "choiceSets": [],
+    "candidateManagementCommitmentGroups": [],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

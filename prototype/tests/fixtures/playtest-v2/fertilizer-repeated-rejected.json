@@ -1,0 +1,19 @@
+{
+  "fixtureId": "v2-fertilizer-repeated-rejected",
+  "kind": "fertilizer-lifecycle",
+  "input": {
+    "initialUnits": 1,
+    "appliedWeekIndex": 0,
+    "remainingUnits": 0,
+    "weekRecaps": [
+      {
+        "weekIndex": 0,
+        "fertilizerBonus": 6
+      },
+      {
+        "weekIndex": 1,
+        "fertilizerBonus": 6
+      }
+    ]
+  }
+}

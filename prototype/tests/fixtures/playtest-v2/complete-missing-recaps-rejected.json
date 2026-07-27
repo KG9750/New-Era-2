@@ -1,0 +1,20 @@
+{
+  "fixtureId": "v2-complete-missing-recaps-rejected",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-D08",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [],
+    "candidateEditGroups": [],
+    "choiceSets": [],
+    "candidateManagementCommitmentGroups": [],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

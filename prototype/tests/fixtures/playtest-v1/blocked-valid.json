@@ -1,0 +1,32 @@
+{
+  "fixtureId": "v1-blocked-valid",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v1",
+    "meta": {
+      "sampleId": "A37",
+      "scenarioVersion": "0.4.0"
+    },
+    "captureKind": "blocked",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "EDIT_SCHEDULE"
+      }
+    ],
+    "candidateEditGroups": [
+      {
+        "groupId": "legacy:w0:food-plan",
+        "actionIds": [
+          "action-0001"
+        ]
+      }
+    ],
+    "finalTick": 1002,
+    "blockedAtTick": 1002,
+    "blockedReason": "无法进入第二周",
+    "finalState": {
+      "isComplete": false
+    }
+  }
+}

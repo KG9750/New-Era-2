@@ -1,0 +1,22 @@
+{
+  "fixtureId": "v2-unreachable-tick-rejected",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-D01",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "blocked",
+    "actions": [],
+    "candidateEditGroups": [],
+    "choiceSets": [],
+    "candidateManagementCommitmentGroups": [],
+    "finalTick": 1030,
+    "blockedAtTick": 1030,
+    "blockedReason": "不可达换周间隙",
+    "finalState": {
+      "isComplete": false
+    }
+  }
+}

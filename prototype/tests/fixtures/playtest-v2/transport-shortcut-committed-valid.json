@@ -1,0 +1,100 @@
+{
+  "fixtureId": "v2-transport-shortcut-committed-valid",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-D19",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "OPEN_TRANSPORT_SHORTCUT"
+      }
+    ],
+    "candidateEditGroups": [
+      {
+        "groupId": "legacy:w1:transport-route",
+        "actionIds": [
+          "action-0001"
+        ]
+      }
+    ],
+    "choiceSets": [
+      {
+        "choiceSetId": "choice:w1:transport-route",
+        "decisionIntentId": "w1:transport-route",
+        "options": [
+          {
+            "optionId": "north-loop",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w1:food",
+              "risk:w1:transport-loss"
+            ],
+            "dominanceStatus": "non-dominated"
+          },
+          {
+            "optionId": "south-shortcut",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w1:food",
+              "risk:w1:transport-loss"
+            ],
+            "dominanceStatus": "non-dominated"
+          }
+        ],
+        "selectedOptionId": "south-shortcut"
+      }
+    ],
+    "candidateManagementCommitmentGroups": [
+      {
+        "decisionIntentId": "w1:transport-route",
+        "choiceSetId": "choice:w1:transport-route",
+        "weekIndex": 1,
+        "problemCategory": "transport",
+        "actionIds": [
+          "action-0001"
+        ],
+        "consequenceRefs": [
+          {
+            "kind": "forecast",
+            "id": "w1:food"
+          },
+          {
+            "kind": "risk",
+            "id": "w1:transport-loss"
+          }
+        ],
+        "beforeDecisionStateHash": "d3c6578b029cf325a1efb93f6b3e83b7bfe4f88f7e9bf4587af475a0fad14016",
+        "finalDecisionStateHash": "1b42cef2768bcf2749c3efb9364adab4e23948f4838bc34471c75ea2f1433e2e",
+        "finalOutcomeCode": "committed:south-shortcut",
+        "finalDisposition": "committed"
+      }
+    ],
+    "oracleDecisionProjections": {
+      "1:w1:transport-route": {
+        "before": {
+          "transportRoute": "north-loop"
+        },
+        "final": {
+          "transportRoute": "south-shortcut"
+        }
+      }
+    },
+    "weekRecaps": [
+      {
+        "weekIndex": 0
+      },
+      {
+        "weekIndex": 1
+      }
+    ],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

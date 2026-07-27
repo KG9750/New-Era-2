@@ -1,0 +1,17 @@
+{
+  "fixtureId": "v1-complete-valid",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v1",
+    "meta": {
+      "sampleId": "A31",
+      "scenarioVersion": "0.4.0"
+    },
+    "actions": [],
+    "candidateEditGroups": [],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

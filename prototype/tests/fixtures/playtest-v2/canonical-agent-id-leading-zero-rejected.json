@@ -1,0 +1,12 @@
+{
+  "fixtureId": "v2-canonical-agent-id-leading-zero-rejected",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "A038",
+      "scenarioVersion": "0.5.0"
+    },
+    "finalTick": 2010
+  }
+}

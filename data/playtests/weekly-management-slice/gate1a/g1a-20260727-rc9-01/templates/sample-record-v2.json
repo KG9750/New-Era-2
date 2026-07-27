@@ -1,0 +1,162 @@
+{
+  "schemaVersion": "gate1a-sample-record-v2",
+  "sampleId": null,
+  "cohortId": "g1a-20260727-rc9-01",
+  "sampleKind": null,
+  "batchId": null,
+  "issue": null,
+  "operator": "/root",
+  "validityAdjudicator": null,
+  "sealedAtUtc": null,
+  "identityAndIsolation": {
+    "agentTask": null,
+    "agentSessionId": null,
+    "agentSessionIdReason": null,
+    "freshContextAttestation": null,
+    "freshContextMechanism": "fork_turns=none",
+    "freshBrowserEvidence": null,
+    "contextContaminationDetected": null,
+    "priorPrototypeExposure": null,
+    "readOnlyAttestation": null,
+    "playerPacketReleasedBeforePlay": null,
+    "postSessionInterviewReleasedAfterPlayDownloadAndClear": null,
+    "overlapAudit": {
+      "status": null,
+      "evidence": null
+    }
+  },
+  "releaseCandidate": {
+    "candidateAttempt": null,
+    "candidateManifestId": null,
+    "candidateManifestHash": null,
+    "independentReviewId": null,
+    "independentReviewHash": null,
+    "irHistory": [],
+    "allIrHistoryEnumerated": null,
+    "noSubstantiveFailedIr": null,
+    "sealAttemptId": null,
+    "sealRecordHash": null,
+    "sealedCandidateIndexHash": null,
+    "buildId": null,
+    "sourceSha": null,
+    "dependencyIntegrationSha": null,
+    "artifactHash": null,
+    "archiveHash": null,
+    "scenarioId": "gate1-two-week-management",
+    "scenarioVersion": "0.5.0",
+    "schemaVersion": "gate1-playtest-v2",
+    "fixedSeed": null,
+    "initialStateHash": null,
+    "protocolVersion": "weekly-management-slice-playtest-v0.2",
+    "playerPacketVersion": "gate1a-rc9-player-packet-v0.2",
+    "playerPacketHash": null,
+    "postSessionInterviewVersion": "gate1a-rc9-interview-v0.2",
+    "postSessionInterviewHash": null,
+    "captureHostHash": null,
+    "viewport": null,
+    "inputMode": "browser-pointer-keyboard"
+  },
+  "applicationSession": {
+    "sessionId": null,
+    "machineStartedAtEpochMs": null,
+    "machineEndedAtEpochMs": null,
+    "machineElapsedMs": null,
+    "week1RawDurationMs": null,
+    "week2RawDurationMs": null,
+    "captureKind": null,
+    "finalTick": null,
+    "blockedAtTick": null,
+    "blockedReason": null,
+    "twoWeeksCompleted": null,
+    "recapCount": null,
+    "exportTriggered": null,
+    "exportReceiptObserved": null,
+    "clearCompleted": null,
+    "clearEvidence": null
+  },
+  "machineEvidence": {
+    "exportFilePath": null,
+    "exportFileSha256": null,
+    "exportFileSizeBytes": null,
+    "receiptPath": null,
+    "receiptDeclaredRawSha256": null,
+    "receiptDeclaredRawSizeBytes": null,
+    "sha256SidecarPath": null,
+    "sidecarDeclaredRawSha256": null,
+    "browserDownloadFilename": null,
+    "browserDownloadEventCompleted": null,
+    "browserDownloadSha256": null,
+    "browserDownloadSizeBytes": null,
+    "browserDownloadMatchesServerRaw": null,
+    "serverRawMatchesSidecarClaim": null,
+    "serverRawMatchesReceiptClaim": null,
+    "allClaimsMatchServerRaw": null,
+    "actions": null,
+    "domainEvents": null,
+    "telemetry": null,
+    "candidateEditGroups": [],
+    "candidateManagementCommitmentGroups": [],
+    "choiceSets": [],
+    "weekRecaps": [],
+    "finalInventory": null
+  },
+  "manualAdjudication": {
+    "legacyEffectiveEdits": {
+      "week1": {
+        "actionIds": [],
+        "count": null
+      },
+      "week2": {
+        "actionIds": [],
+        "count": null
+      }
+    },
+    "effectiveManagementCommitmentsV2": {
+      "week1": {
+        "commitments": [],
+        "count": null
+      },
+      "week2": {
+        "commitments": [],
+        "count": null
+      }
+    },
+    "candidateDifferences": [],
+    "adjudicationBasis": "docs/product-specs/weekly-management-slice-playtest-v0.2.md",
+    "rawActionsInventedOrBackfilled": false
+  },
+  "agentReportedEvidence": {
+    "initialObservation": null,
+    "completionSignal": null,
+    "keyProblemRecall": [],
+    "predictionExplanationProvided": null,
+    "personAndDecisionImpactProvided": null,
+    "mapEnteredDecision": null,
+    "mapActionTaken": null,
+    "week2FullInspection": null,
+    "week2FullReplan": null,
+    "comparisonBiasReported": null,
+    "verbatimOutputPath": null
+  },
+  "hostPrompts": [],
+  "technicalInterruptions": [],
+  "symptoms": [],
+  "rootCauseClusters": [],
+  "subjectiveHumanFields": "not_applicable_agent_proxy",
+  "validityDecision": {
+    "status": null,
+    "reasonCode": null,
+    "reason": null,
+    "negativeOutcomeExcludedBecauseOfResult": false,
+    "productObservationsRetained": null,
+    "includedInSevenValidSampleDenominator": null,
+    "sampleIdReusable": false,
+    "replacementRequired": null,
+    "replacementSampleId": null
+  },
+  "trackLocks": {
+    "gate1A": "NOT_STARTED",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED"
+  }
+}

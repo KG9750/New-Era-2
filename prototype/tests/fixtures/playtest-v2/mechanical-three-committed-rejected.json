@@ -1,0 +1,184 @@
+{
+  "fixtureId": "v2-mechanical-three-committed-rejected",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-P03",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "EDIT_SCHEDULE",
+        "memberId": "lin-he",
+        "dayIndex": 1,
+        "blockId": "lin-he:d1:b2",
+        "fromActivity": "baseline",
+        "toActivity": "food"
+      },
+      {
+        "id": "action-0002",
+        "type": "EDIT_SCHEDULE",
+        "memberId": "lin-he",
+        "dayIndex": 2,
+        "blockId": "lin-he:d2:b2",
+        "fromActivity": "baseline",
+        "toActivity": "food"
+      },
+      {
+        "id": "action-0003",
+        "type": "EDIT_SCHEDULE",
+        "memberId": "lin-he",
+        "dayIndex": 3,
+        "blockId": "lin-he:d3:b2",
+        "fromActivity": "baseline",
+        "toActivity": "food"
+      }
+    ],
+    "candidateEditGroups": [],
+    "choiceSets": [
+      {
+        "choiceSetId": "choice:w0:food-plan-a",
+        "decisionIntentId": "w0:food-plan-a",
+        "options": [
+          {
+            "optionId": "a1",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food"
+            ],
+            "dominanceStatus": "non-dominated"
+          },
+          {
+            "optionId": "a2",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food"
+            ],
+            "dominanceStatus": "non-dominated"
+          }
+        ],
+        "selectedOptionId": "a1"
+      },
+      {
+        "choiceSetId": "choice:w0:food-plan-b",
+        "decisionIntentId": "w0:food-plan-b",
+        "options": [
+          {
+            "optionId": "b1",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food"
+            ],
+            "dominanceStatus": "non-dominated"
+          },
+          {
+            "optionId": "b2",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food"
+            ],
+            "dominanceStatus": "non-dominated"
+          }
+        ],
+        "selectedOptionId": "b1"
+      },
+      {
+        "choiceSetId": "choice:w0:food-plan-c",
+        "decisionIntentId": "w0:food-plan-c",
+        "options": [
+          {
+            "optionId": "c1",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food"
+            ],
+            "dominanceStatus": "non-dominated"
+          },
+          {
+            "optionId": "c2",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food"
+            ],
+            "dominanceStatus": "non-dominated"
+          }
+        ],
+        "selectedOptionId": "c1"
+      }
+    ],
+    "candidateManagementCommitmentGroups": [
+      {
+        "decisionIntentId": "w0:food-plan-a",
+        "choiceSetId": "choice:w0:food-plan-a",
+        "weekIndex": 0,
+        "problemCategory": "food",
+        "actionIds": [
+          "action-0001"
+        ],
+        "consequenceRefs": [
+          {
+            "kind": "forecast",
+            "id": "w0:food"
+          }
+        ],
+        "beforeDecisionStateHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "finalDecisionStateHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "finalOutcomeCode": "committed:a1",
+        "finalDisposition": "committed"
+      },
+      {
+        "decisionIntentId": "w0:food-plan-b",
+        "choiceSetId": "choice:w0:food-plan-b",
+        "weekIndex": 0,
+        "problemCategory": "food",
+        "actionIds": [
+          "action-0002"
+        ],
+        "consequenceRefs": [
+          {
+            "kind": "forecast",
+            "id": "w0:food"
+          }
+        ],
+        "beforeDecisionStateHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "finalDecisionStateHash": "dddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddddd",
+        "finalOutcomeCode": "committed:b1",
+        "finalDisposition": "committed"
+      },
+      {
+        "decisionIntentId": "w0:food-plan-c",
+        "choiceSetId": "choice:w0:food-plan-c",
+        "weekIndex": 0,
+        "problemCategory": "food",
+        "actionIds": [
+          "action-0003"
+        ],
+        "consequenceRefs": [
+          {
+            "kind": "forecast",
+            "id": "w0:food"
+          }
+        ],
+        "beforeDecisionStateHash": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+        "finalDecisionStateHash": "ffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffffff",
+        "finalOutcomeCode": "committed:c1",
+        "finalDisposition": "committed"
+      }
+    ],
+    "weekRecaps": [
+      {
+        "weekIndex": 0
+      },
+      {
+        "weekIndex": 1
+      }
+    ],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

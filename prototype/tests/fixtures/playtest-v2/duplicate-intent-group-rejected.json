@@ -1,0 +1,121 @@
+{
+  "fixtureId": "v2-duplicate-intent-group-rejected",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-D03",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "EDIT_SCHEDULE",
+        "memberId": "lin-he",
+        "dayIndex": 1,
+        "blockId": "lin-he:d1:b2",
+        "fromActivity": "baseline",
+        "toActivity": "food"
+      },
+      {
+        "id": "action-0002",
+        "type": "EDIT_SCHEDULE",
+        "memberId": "lin-he",
+        "dayIndex": 1,
+        "blockId": "lin-he:d1:b2",
+        "fromActivity": "baseline",
+        "toActivity": "food"
+      }
+    ],
+    "candidateEditGroups": [],
+    "choiceSets": [
+      {
+        "choiceSetId": "choice:w0:food-plan",
+        "decisionIntentId": "w0:food-plan",
+        "options": [
+          {
+            "optionId": "food-shift-lin",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food",
+              "forecast:w0:repair",
+              "schedule:lin-he:d1:b2"
+            ],
+            "dominanceStatus": "non-dominated"
+          },
+          {
+            "optionId": "accept-food-gap",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food",
+              "forecast:w0:repair"
+            ],
+            "dominanceStatus": "non-dominated"
+          }
+        ],
+        "selectedOptionId": "food-shift-lin"
+      }
+    ],
+    "candidateManagementCommitmentGroups": [
+      {
+        "decisionIntentId": "w0:food-plan",
+        "choiceSetId": "choice:w0:food-plan",
+        "weekIndex": 0,
+        "problemCategory": "food",
+        "actionIds": [
+          "action-0001"
+        ],
+        "consequenceRefs": [
+          {
+            "kind": "forecast",
+            "id": "w0:food"
+          },
+          {
+            "kind": "schedule",
+            "id": "lin-he:d1:b2"
+          }
+        ],
+        "beforeDecisionStateHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "finalDecisionStateHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "finalOutcomeCode": "committed:food-shift-lin",
+        "finalDisposition": "committed"
+      },
+      {
+        "decisionIntentId": "w0:food-plan",
+        "choiceSetId": "choice:w0:food-plan",
+        "weekIndex": 0,
+        "problemCategory": "food",
+        "actionIds": [
+          "action-0002"
+        ],
+        "consequenceRefs": [
+          {
+            "kind": "forecast",
+            "id": "w0:food"
+          },
+          {
+            "kind": "schedule",
+            "id": "lin-he:d1:b2"
+          }
+        ],
+        "beforeDecisionStateHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "finalDecisionStateHash": "cccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccccc",
+        "finalOutcomeCode": "committed:food-shift-lin",
+        "finalDisposition": "committed"
+      }
+    ],
+    "weekRecaps": [
+      {
+        "weekIndex": 0
+      },
+      {
+        "weekIndex": 1
+      }
+    ],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

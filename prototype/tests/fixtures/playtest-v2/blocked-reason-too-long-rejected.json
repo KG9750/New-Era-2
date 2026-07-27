@@ -1,0 +1,22 @@
+{
+  "fixtureId": "v2-blocked-reason-too-long-rejected",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-D09",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "blocked",
+    "actions": [],
+    "candidateEditGroups": [],
+    "choiceSets": [],
+    "candidateManagementCommitmentGroups": [],
+    "finalTick": 1002,
+    "blockedAtTick": 1002,
+    "blockedReason": "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx",
+    "finalState": {
+      "isComplete": false
+    }
+  }
+}

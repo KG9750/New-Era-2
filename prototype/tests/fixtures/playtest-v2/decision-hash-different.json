@@ -1,0 +1,35 @@
+{
+  "fixtureId": "v2-decision-hash-different",
+  "kind": "decision-hash-case",
+  "input": {
+    "snapshots": [
+      {
+        "id": "accept-study",
+        "decisionIntentId": "w1:character-request:lin-he-study",
+        "projection": {
+          "resolution": "accepted",
+          "scheduleCells": [
+            "lin-he:d7:b2=study"
+          ]
+        }
+      },
+      {
+        "id": "decline-study",
+        "decisionIntentId": "w1:character-request:lin-he-study",
+        "projection": {
+          "resolution": "declined",
+          "scheduleCells": [
+            "lin-he:d7:b2=food"
+          ]
+        }
+      }
+    ],
+    "relations": [
+      {
+        "left": "accept-study",
+        "right": "decline-study",
+        "expected": "different"
+      }
+    ]
+  }
+}

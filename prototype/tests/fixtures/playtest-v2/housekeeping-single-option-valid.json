@@ -1,0 +1,57 @@
+{
+  "fixtureId": "v2-housekeeping-single-option-valid",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-D02",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "CONFIRM_ONLY_REACHABLE_SCHEDULE"
+      }
+    ],
+    "candidateEditGroups": [],
+    "choiceSets": [
+      {
+        "choiceSetId": "choice:w0:repair-housekeeping",
+        "decisionIntentId": "w0:repair-housekeeping",
+        "options": [
+          {
+            "optionId": "only-reachable",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:repair"
+            ],
+            "dominanceStatus": "non-dominated"
+          },
+          {
+            "optionId": "not-reachable",
+            "reachable": false,
+            "visibleConsequenceRefs": [
+              "forecast:w0:repair"
+            ],
+            "dominanceStatus": "unverified"
+          }
+        ],
+        "selectedOptionId": "only-reachable"
+      }
+    ],
+    "candidateManagementCommitmentGroups": [],
+    "weekRecaps": [
+      {
+        "weekIndex": 0
+      },
+      {
+        "weekIndex": 1
+      }
+    ],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

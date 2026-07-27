@@ -1,0 +1,33 @@
+{
+  "fixtureId": "v2-dominance-nonnumeric-unverified",
+  "kind": "dominance-case",
+  "input": {
+    "continuationPolicyIds": [
+      "continue-food"
+    ],
+    "axes": [
+      {
+        "id": "repairStock",
+        "direction": "higher"
+      }
+    ],
+    "options": [
+      {
+        "optionId": "valid",
+        "resultsByPolicy": {
+          "continue-food": [
+            14
+          ]
+        }
+      },
+      {
+        "optionId": "not-numeric",
+        "resultsByPolicy": {
+          "continue-food": [
+            "not-a-number"
+          ]
+        }
+      }
+    ]
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "fixtureId": "v2-repair-direction-unconfirmed-valid",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "A41",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "blocked",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "SELECT_REPAIR_RESPONSIBILITY",
+        "responsible": "qiao-pan",
+        "scheduleConfirmed": false
+      }
+    ],
+    "candidateEditGroups": [],
+    "choiceSets": [],
+    "candidateManagementCommitmentGroups": [],
+    "finalTick": 1002,
+    "blockedAtTick": 1002,
+    "blockedReason": "测试未确认维修日程时不形成承诺",
+    "finalState": {
+      "isComplete": false
+    }
+  }
+}

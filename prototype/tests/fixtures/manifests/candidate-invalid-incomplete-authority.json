@@ -1,0 +1,14 @@
+{
+  "fixtureId": "candidate-manifest-invalid-incomplete-authority",
+  "kind": "candidate-manifest",
+  "input": {
+    "candidateManifestId": "CM03",
+    "candidateAttempt": "C03",
+    "status": "PENDING_INDEPENDENT_REVIEW",
+    "sourceSha": "3333333333333333333333333333333333333333",
+    "artifactHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "archiveHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "authorityHashes": [],
+    "rejectedAttempts": []
+  }
+}

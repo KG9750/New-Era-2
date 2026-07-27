@@ -1,0 +1,60 @@
+{
+  "fixtureId": "v2-legacy-food-intent-split-rejected",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-D24",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "EDIT_SCHEDULE",
+        "memberId": "lin-he",
+        "dayIndex": 1,
+        "blockId": "lin-he:d1:b2",
+        "fromActivity": "baseline",
+        "toActivity": "food"
+      },
+      {
+        "id": "action-0002",
+        "type": "EDIT_SCHEDULE",
+        "memberId": "lin-he",
+        "dayIndex": 1,
+        "blockId": "lin-he:d1:b2",
+        "fromActivity": "food",
+        "toActivity": "repair"
+      }
+    ],
+    "candidateEditGroups": [
+      {
+        "groupId": "legacy:w0:food-plan:split-a",
+        "actionIds": [
+          "action-0001"
+        ]
+      },
+      {
+        "groupId": "legacy:w0:food-plan:split-b",
+        "actionIds": [
+          "action-0002"
+        ]
+      }
+    ],
+    "choiceSets": [],
+    "candidateManagementCommitmentGroups": [],
+    "weekRecaps": [
+      {
+        "weekIndex": 0
+      },
+      {
+        "weekIndex": 1
+      }
+    ],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "fixtureId": "v2-decision-hash-history-only-rejected",
+  "kind": "decision-hash-case",
+  "input": {
+    "snapshots": [
+      {
+        "id": "history-a",
+        "decisionIntentId": "w0:food-plan",
+        "projection": {
+          "actionLog": [
+            "action-0001"
+          ],
+          "focusTarget": "food-card"
+        }
+      },
+      {
+        "id": "history-b",
+        "decisionIntentId": "w0:food-plan",
+        "projection": {
+          "actionLog": [
+            "action-0099"
+          ],
+          "focusTarget": "repair-card"
+        }
+      }
+    ],
+    "relations": [
+      {
+        "left": "history-a",
+        "right": "history-b",
+        "expected": "different"
+      }
+    ]
+  }
+}

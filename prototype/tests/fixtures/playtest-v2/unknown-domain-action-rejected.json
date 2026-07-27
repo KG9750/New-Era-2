@@ -1,0 +1,69 @@
+{
+  "fixtureId": "v2-unknown-domain-action-rejected",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-D14",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "NOT_A_DOMAIN_ACTION"
+      }
+    ],
+    "candidateEditGroups": [],
+    "choiceSets": [
+      {
+        "choiceSetId": "choice:w0:food-plan",
+        "decisionIntentId": "w0:food-plan",
+        "options": [
+          {
+            "optionId": "food-shift-lin",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food"
+            ],
+            "dominanceStatus": "non-dominated"
+          },
+          {
+            "optionId": "accept-food-gap",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food"
+            ],
+            "dominanceStatus": "non-dominated"
+          }
+        ],
+        "selectedOptionId": "food-shift-lin"
+      }
+    ],
+    "candidateManagementCommitmentGroups": [
+      {
+        "decisionIntentId": "w0:food-plan",
+        "choiceSetId": "choice:w0:food-plan",
+        "weekIndex": 0,
+        "problemCategory": "food",
+        "actionIds": [
+          "action-0001"
+        ],
+        "consequenceRefs": [
+          {
+            "kind": "forecast",
+            "id": "w0:food"
+          }
+        ],
+        "beforeDecisionStateHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "finalDecisionStateHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "finalOutcomeCode": "committed:food-shift-lin",
+        "finalDisposition": "committed"
+      }
+    ],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

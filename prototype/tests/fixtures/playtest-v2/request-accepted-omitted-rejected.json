@@ -1,0 +1,39 @@
+{
+  "fixtureId": "v2-request-accepted-omitted-rejected",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-D06",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "RESOLVE_LIN_HE_REQUEST",
+        "resolution": "accepted",
+        "memberId": "lin-he",
+        "dayIndex": 7,
+        "blockId": "lin-he:d7:b2",
+        "fromActivity": "food",
+        "toActivity": "study"
+      }
+    ],
+    "candidateEditGroups": [],
+    "choiceSets": [],
+    "candidateManagementCommitmentGroups": [],
+    "weekRecaps": [
+      {
+        "weekIndex": 0
+      },
+      {
+        "weekIndex": 1
+      }
+    ],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

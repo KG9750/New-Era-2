@@ -1,0 +1,99 @@
+{
+  "fixtureId": "v2-fertilizer-use-committed-valid",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-D20",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "USE_FERTILIZER"
+      }
+    ],
+    "candidateEditGroups": [],
+    "choiceSets": [
+      {
+        "choiceSetId": "choice:w1:fertilizer",
+        "decisionIntentId": "w1:asset-use:fertilizer",
+        "options": [
+          {
+            "optionId": "use-fertilizer",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w1:food",
+              "inventory:fertilizer"
+            ],
+            "dominanceStatus": "non-dominated"
+          },
+          {
+            "optionId": "keep-fertilizer",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w1:food",
+              "inventory:fertilizer"
+            ],
+            "dominanceStatus": "non-dominated"
+          }
+        ],
+        "selectedOptionId": "use-fertilizer"
+      }
+    ],
+    "candidateManagementCommitmentGroups": [
+      {
+        "decisionIntentId": "w1:asset-use:fertilizer",
+        "choiceSetId": "choice:w1:fertilizer",
+        "weekIndex": 1,
+        "problemCategory": "asset-use",
+        "actionIds": [
+          "action-0001"
+        ],
+        "consequenceRefs": [
+          {
+            "kind": "forecast",
+            "id": "w1:food"
+          },
+          {
+            "kind": "inventory",
+            "id": "fertilizer"
+          }
+        ],
+        "beforeDecisionStateHash": "4b0f5ddd9938ff9eaf8b8a7720166adc60fcd70540d4905712c025af8aaa38a1",
+        "finalDecisionStateHash": "17574353901206f0b9eb15538934e798316759e8cc7bda2d19d677d9cc5c941e",
+        "finalOutcomeCode": "committed:use-fertilizer",
+        "finalDisposition": "committed"
+      }
+    ],
+    "oracleDecisionProjections": {
+      "1:w1:asset-use:fertilizer": {
+        "before": {
+          "fertilizer": {
+            "remainingUnits": 1,
+            "appliedWeekIndex": null
+          }
+        },
+        "final": {
+          "fertilizer": {
+            "remainingUnits": 0,
+            "appliedWeekIndex": 1
+          }
+        }
+      }
+    },
+    "weekRecaps": [
+      {
+        "weekIndex": 0
+      },
+      {
+        "weekIndex": 1
+      }
+    ],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

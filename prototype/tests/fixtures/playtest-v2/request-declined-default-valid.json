@@ -1,0 +1,59 @@
+{
+  "fixtureId": "v2-request-declined-default-valid",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "A40",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "RESOLVE_LIN_HE_REQUEST",
+        "resolution": "declined",
+        "persistentCharacterRecord": false
+      }
+    ],
+    "candidateEditGroups": [],
+    "choiceSets": [
+      {
+        "choiceSetId": "choice:w1:lin-he-study",
+        "decisionIntentId": "w1:character-request:lin-he-study",
+        "options": [
+          {
+            "optionId": "accept-study",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w1:food"
+            ],
+            "dominanceStatus": "non-dominated"
+          },
+          {
+            "optionId": "decline-study",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w1:food"
+            ],
+            "dominanceStatus": "non-dominated"
+          }
+        ],
+        "selectedOptionId": "decline-study"
+      }
+    ],
+    "candidateManagementCommitmentGroups": [],
+    "weekRecaps": [
+      {
+        "weekIndex": 0
+      },
+      {
+        "weekIndex": 1
+      }
+    ],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

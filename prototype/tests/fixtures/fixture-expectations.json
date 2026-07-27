@@ -1,0 +1,718 @@
+{
+  "contractVersion": "gate1-playtest-fixtures-v2",
+  "fixtures": [
+    {
+      "file": "playtest-v1/complete-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v1",
+        "candidateEditCount": 0,
+        "candidateEditGroupIds": [],
+        "candidateManagementCount": 0,
+        "candidateManagementGroupIds": [],
+        "committedCount": 0,
+        "decisionHashes": []
+      }
+    },
+    {
+      "file": "playtest-v2/decision-hash-stable.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "hashes": {
+          "ordered-a": "5ef5e9acb79b7879d0ea265dbf7d5eb1c2070875fefaf8b663a4caefe03c14e9",
+          "ordered-b": "5ef5e9acb79b7879d0ea265dbf7d5eb1c2070875fefaf8b663a4caefe03c14e9"
+        },
+        "relations": [
+          {
+            "left": "ordered-a",
+            "right": "ordered-b",
+            "actual": "equal",
+            "expected": "equal"
+          }
+        ]
+      }
+    },
+    {
+      "file": "playtest-v1/blocked-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v1",
+        "candidateEditCount": 1,
+        "candidateEditGroupIds": [
+          "legacy:w0:food-plan"
+        ],
+        "candidateManagementCount": 0,
+        "candidateManagementGroupIds": [],
+        "committedCount": 0,
+        "decisionHashes": []
+      }
+    },
+    {
+      "file": "playtest-v2/request-accepted-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v2",
+        "candidateEditCount": 1,
+        "candidateEditGroupIds": [
+          "legacy:w1:lin-he-study"
+        ],
+        "candidateManagementCount": 1,
+        "candidateManagementGroupIds": [
+          "w1:character-request:lin-he-study"
+        ],
+        "committedCount": 1,
+        "decisionHashes": [
+          "4d732e6d14c04582005e44b67ac312d510ad60a5b3df632e426a349b63b89f1c"
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/request-declined-persistent-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v2",
+        "candidateEditCount": 0,
+        "candidateEditGroupIds": [],
+        "candidateManagementCount": 1,
+        "candidateManagementGroupIds": [
+          "w1:character-request:lin-he-study"
+        ],
+        "committedCount": 1,
+        "decisionHashes": [
+          "75ec91124f259cd9cde61a7e8ee2b07a5cd7ad3a8833065273c0a12eacd070b4"
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/request-declined-default-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v2",
+        "candidateEditCount": 0,
+        "candidateEditGroupIds": [],
+        "candidateManagementCount": 0,
+        "candidateManagementGroupIds": [],
+        "committedCount": 0,
+        "decisionHashes": []
+      }
+    },
+    {
+      "file": "playtest-v2/repair-direction-unconfirmed-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v2",
+        "candidateEditCount": 0,
+        "candidateEditGroupIds": [],
+        "candidateManagementCount": 0,
+        "candidateManagementGroupIds": [],
+        "committedCount": 0,
+        "decisionHashes": []
+      }
+    },
+    {
+      "file": "playtest-v2/repair-debt-committed-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v2",
+        "candidateEditCount": 0,
+        "candidateEditGroupIds": [],
+        "candidateManagementCount": 1,
+        "candidateManagementGroupIds": [
+          "w0:repair-responsibility:pump-incident-day-3"
+        ],
+        "committedCount": 1,
+        "decisionHashes": [
+          "b2b081b36e5b1a1590c460aae28c9e3d503a9633fe34f411607c2c4c987cfdc2"
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/edit-undo-redo-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v2",
+        "candidateEditCount": 1,
+        "candidateEditGroupIds": [
+          "legacy:w0:food-plan"
+        ],
+        "candidateManagementCount": 1,
+        "candidateManagementGroupIds": [
+          "w0:food-plan"
+        ],
+        "committedCount": 1,
+        "decisionHashes": [
+          "a2545b81a8bb22597e37d9fa248a06d653b72c76a83408555f1e7cecb038ed0d"
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/edit-fully-reverted-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v2",
+        "candidateEditCount": 1,
+        "candidateEditGroupIds": [
+          "legacy:w0:food-plan"
+        ],
+        "candidateManagementCount": 1,
+        "candidateManagementGroupIds": [
+          "w0:food-plan"
+        ],
+        "committedCount": 0,
+        "decisionHashes": [
+          "91354ca85456e6f9b6d5aaae90a14c4c4ec132bc7a4d86bb501f1b1927274c45"
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/mixed-v1-v2-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "MIXED_SCHEMA_FIELDS"
+      }
+    },
+    {
+      "file": "playtest-v2/unreachable-tick-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "UNREACHABLE_WEEK_GAP"
+      }
+    },
+    {
+      "file": "playtest-v2/housekeeping-single-option-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v2",
+        "candidateEditCount": 0,
+        "candidateEditGroupIds": [],
+        "candidateManagementCount": 0,
+        "candidateManagementGroupIds": [],
+        "committedCount": 0,
+        "decisionHashes": []
+      }
+    },
+    {
+      "file": "playtest-v2/comparison-neutral-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "authorityMutationCount": 0,
+        "availableOptionCount": 2
+      }
+    },
+    {
+      "file": "playtest-v2/comparison-biased-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "COMPARISON_BIAS_OR_MUTATION"
+      }
+    },
+    {
+      "file": "playtest-v2/dominance-complete-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "dominanceStatus": {
+          "repair-fast": "non-dominated",
+          "repair-slow": "dominated"
+        }
+      }
+    },
+    {
+      "file": "playtest-v2/dominance-incomplete-unverified.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "dominanceStatus": {
+          "repair-fast": "unverified",
+          "repair-slow": "unverified"
+        }
+      }
+    },
+    {
+      "file": "playtest-v2/dominance-nonnumeric-unverified.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "dominanceStatus": {
+          "valid": "unverified",
+          "not-numeric": "unverified"
+        }
+      }
+    },
+    {
+      "file": "playtest-v2/decision-hash-different.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "hashes": {
+          "accept-study": "a82bfe333ac89f15a757dad717d27d0d341fe3f570bd57c86a2daf5b81b000fe",
+          "decline-study": "56b989fe6f3e9b719f911928b41686361c31ffd40902ebedad1b330c73d3e161"
+        },
+        "relations": [
+          {
+            "left": "accept-study",
+            "right": "decline-study",
+            "actual": "different",
+            "expected": "different"
+          }
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/fertilizer-week1-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "appliedWeekIndex": 0,
+        "remainingUnits": 0,
+        "weekBonuses": [
+          6,
+          0
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/fertilizer-week2-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "appliedWeekIndex": 1,
+        "remainingUnits": 0,
+        "weekBonuses": [
+          0,
+          6
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/fertilizer-unused-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "appliedWeekIndex": null,
+        "remainingUnits": 1,
+        "weekBonuses": [
+          0,
+          0
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/fertilizer-repeated-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "FERTILIZER_LIFECYCLE_MISMATCH",
+        "appliedWeekIndex": 0,
+        "remainingUnits": 0,
+        "weekBonuses": [
+          6,
+          6
+        ]
+      }
+    },
+    {
+      "file": "manifests/candidate-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "candidateManifestId": "CM01",
+        "candidateAttempt": "C01"
+      }
+    },
+    {
+      "file": "manifests/candidate-invalid-source-sha.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "CANDIDATE_MANIFEST_SHAPE"
+      }
+    },
+    {
+      "file": "manifests/candidate-invalid-incomplete-authority.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "CANDIDATE_MANIFEST_AUTHORITY"
+      }
+    },
+    {
+      "file": "playtest-v2/outcome-fingerprint-stability.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "hashes": {
+          "order-a": "0a8f6fa18b202eb0c16e24bcc509d7b0c80d54d72eaef6462179c6a47289043b",
+          "order-b": "0a8f6fa18b202eb0c16e24bcc509d7b0c80d54d72eaef6462179c6a47289043b",
+          "different-choice": "8335f6fe87b2138399ec030405c9d0481d4529231d4420153a561ed8b7c2352c"
+        },
+        "relations": [
+          {
+            "left": "order-a",
+            "right": "order-b",
+            "actual": "equal",
+            "expected": "equal"
+          },
+          {
+            "left": "order-a",
+            "right": "different-choice",
+            "actual": "different",
+            "expected": "different"
+          }
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/duplicate-intent-group-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_COMMITMENT_GROUP_DUPLICATE"
+      }
+    },
+    {
+      "file": "playtest-v2/decision-hash-cross-intent-isolation.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "hashes": {
+          "food-before-repair": "a2545b81a8bb22597e37d9fa248a06d653b72c76a83408555f1e7cecb038ed0d",
+          "food-after-repair": "a2545b81a8bb22597e37d9fa248a06d653b72c76a83408555f1e7cecb038ed0d",
+          "repair-before-food": "b7386d3e4ef059fa503dc5942d5a8a0569a24bd23c539f76dbe172c44a689ffa",
+          "repair-after-food": "b7386d3e4ef059fa503dc5942d5a8a0569a24bd23c539f76dbe172c44a689ffa"
+        },
+        "relations": [
+          {
+            "left": "food-before-repair",
+            "right": "food-after-repair",
+            "actual": "equal",
+            "expected": "equal"
+          },
+          {
+            "left": "repair-before-food",
+            "right": "repair-after-food",
+            "actual": "equal",
+            "expected": "equal"
+          }
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/selected-dominated-option-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_SELECTED_OPTION_NOT_QUALIFIED"
+      }
+    },
+    {
+      "file": "playtest-v2/dangling-action-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_CANDIDATE_ACTION_UNKNOWN"
+      }
+    },
+    {
+      "file": "playtest-v2/request-accepted-omitted-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_ACCEPTED_REQUEST_CLASSIFICATION"
+      }
+    },
+    {
+      "file": "playtest-v2/consequence-not-visible-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_CONSEQUENCE_NOT_VISIBLE"
+      }
+    },
+    {
+      "file": "playtest-v2/decision-hash-history-only-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "DECISION_HASH_PROJECTION_FIELDS"
+      }
+    },
+    {
+      "file": "playtest-v2/human-sample-id-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "SAMPLE_ID_V2"
+      }
+    },
+    {
+      "file": "playtest-v2/complete-missing-recaps-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "COMPLETE_RECAPS"
+      }
+    },
+    {
+      "file": "playtest-v2/blocked-reason-too-long-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "BLOCKED_REASON_LENGTH"
+      }
+    },
+    {
+      "file": "playtest-v2/undo-chain-omitted-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_ACTION_CHAIN_INCOMPLETE"
+      }
+    },
+    {
+      "file": "playtest-v2/duplicate-legacy-group-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_CANDIDATE_EDIT_GROUP_DUPLICATE"
+      }
+    },
+    {
+      "file": "playtest-v2/wrong-week-category-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_INTENT_CONTRACT"
+      }
+    },
+    {
+      "file": "playtest-v2/same-action-two-intents-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_MANAGEMENT_ACTION_REUSED"
+      }
+    },
+    {
+      "file": "playtest-v2/unknown-domain-action-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_ACTION_TYPE"
+      }
+    },
+    {
+      "file": "playtest-v2/food-cross-intent-projection-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_DECISION_PROJECTION_FIELDS"
+      }
+    },
+    {
+      "file": "playtest-v2/food-choice-oracle-mismatch-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_CHOICE_SET_ORACLE_MISMATCH"
+      }
+    },
+    {
+      "file": "playtest-v2/mechanical-three-committed-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_INTENT_CONTRACT"
+      }
+    },
+    {
+      "file": "playtest-v2/canonical-agent-id-leading-zero-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "SAMPLE_ID_V2"
+      }
+    },
+    {
+      "file": "playtest-v2/canonical-tech-id-leading-zero-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "SAMPLE_ID_V2"
+      }
+    },
+    {
+      "file": "manifests/candidate-zero-id-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "CANDIDATE_MANIFEST_SHAPE"
+      }
+    },
+    {
+      "file": "manifests/candidate-c02-reuses-c01-evidence-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "CANDIDATE_MANIFEST_EVIDENCE"
+      }
+    },
+    {
+      "file": "manifests/candidate-c02-first-manifest-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "candidateManifestId": "CM01",
+        "candidateAttempt": "C02"
+      }
+    },
+    {
+      "file": "manifests/candidate-c02-second-manifest-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "candidateManifestId": "CM02",
+        "candidateAttempt": "C02"
+      }
+    },
+    {
+      "file": "manifests/candidate-c01-rewrapped-by-cm02-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "CANDIDATE_MANIFEST_HISTORY"
+      }
+    },
+    {
+      "file": "playtest-v2/food-shortfall-committed-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v2",
+        "candidateEditCount": 0,
+        "candidateEditGroupIds": [],
+        "candidateManagementCount": 1,
+        "candidateManagementGroupIds": [
+          "w0:food-plan"
+        ],
+        "committedCount": 1,
+        "decisionHashes": [
+          "244e1c3590840fa639700713f093f3e8a5d8b8061d3aad8011ddeaacb7aac8f0"
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/repair-schedule-committed-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v2",
+        "candidateEditCount": 0,
+        "candidateEditGroupIds": [],
+        "candidateManagementCount": 1,
+        "candidateManagementGroupIds": [
+          "w0:repair-responsibility:pump-incident-day-3"
+        ],
+        "committedCount": 1,
+        "decisionHashes": [
+          "fb19e1bc01aa464a5af6812d71be406fb1144eb7ec48ed91d8ce325b3728afb8"
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/transport-shortcut-committed-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v2",
+        "candidateEditCount": 1,
+        "candidateEditGroupIds": [
+          "legacy:w1:transport-route"
+        ],
+        "candidateManagementCount": 1,
+        "candidateManagementGroupIds": [
+          "w1:transport-route"
+        ],
+        "committedCount": 1,
+        "decisionHashes": [
+          "1b42cef2768bcf2749c3efb9364adab4e23948f4838bc34471c75ea2f1433e2e"
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/fertilizer-use-committed-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v2",
+        "candidateEditCount": 0,
+        "candidateEditGroupIds": [],
+        "candidateManagementCount": 1,
+        "candidateManagementGroupIds": [
+          "w1:asset-use:fertilizer"
+        ],
+        "committedCount": 1,
+        "decisionHashes": [
+          "17574353901206f0b9eb15538934e798316759e8cc7bda2d19d677d9cc5c941e"
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/accept-debt-with-schedule-action-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_OPTION_ACTION_MISMATCH"
+      }
+    },
+    {
+      "file": "playtest-v2/decline-study-accepted-payload-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_OPTION_ACTION_MISMATCH"
+      }
+    },
+    {
+      "file": "playtest-v2/food-shift-with-shortfall-action-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_OPTION_ACTION_MISMATCH"
+      }
+    },
+    {
+      "file": "playtest-v2/legacy-food-intent-split-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_LEGACY_GROUP_CONTRACT"
+      }
+    },
+    {
+      "file": "playtest-v2/food-projection-repair-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_OPTION_PROJECTION_MISMATCH"
+      }
+    },
+    {
+      "file": "playtest-v2/repair-projection-food-unresolved-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_OPTION_PROJECTION_MISMATCH"
+      }
+    },
+    {
+      "file": "playtest-v2/study-projection-other-member-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_OPTION_PROJECTION_MISMATCH"
+      }
+    },
+    {
+      "file": "playtest-v2/schedule-object-consequence-mismatch-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_CONSEQUENCE_OBJECT_MISMATCH"
+      }
+    },
+    {
+      "file": "playtest-v2/only-noncore-consequence-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_REQUIRED_CONSEQUENCE_MISSING"
+      }
+    },
+    {
+      "file": "playtest-v2/schedule-outcome-hash-mismatch-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_COMMITMENT_NOT_QUALIFIED"
+      }
+    }
+  ]
+}
