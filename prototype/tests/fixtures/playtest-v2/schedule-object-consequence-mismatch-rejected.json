@@ -12,10 +12,10 @@
       {
         "id": "action-0001",
         "type": "EDIT_SCHEDULE",
-        "memberId": "lin-he",
+        "memberId": "qiao-pan",
         "dayIndex": 1,
-        "blockId": "lin-he:d1:b2",
-        "fromActivity": "baseline",
+        "blockId": "qiao-pan:d1:b1",
+        "fromActivity": "repair",
         "toActivity": "food"
       }
     ],
@@ -26,12 +26,12 @@
         "decisionIntentId": "w0:food-plan",
         "options": [
           {
-            "optionId": "food-shift-lin",
+            "optionId": "food-shift-qiao",
             "reachable": true,
             "visibleConsequenceRefs": [
               "forecast:w0:food",
               "forecast:w0:repair",
-              "schedule:lin-he:d1:b2"
+              "schedule:qiao-pan:d1:b1"
             ],
             "dominanceStatus": "non-dominated"
           },
@@ -45,7 +45,7 @@
             "dominanceStatus": "non-dominated"
           }
         ],
-        "selectedOptionId": "food-shift-lin"
+        "selectedOptionId": "food-shift-qiao"
       }
     ],
     "candidateManagementCommitmentGroups": [
@@ -69,7 +69,7 @@
         ],
         "beforeDecisionStateHash": "91354ca85456e6f9b6d5aaae90a14c4c4ec132bc7a4d86bb501f1b1927274c45",
         "finalDecisionStateHash": "a2545b81a8bb22597e37d9fa248a06d653b72c76a83408555f1e7cecb038ed0d",
-        "finalOutcomeCode": "committed:food-shift-lin",
+        "finalOutcomeCode": "committed:food-shift-qiao",
         "finalDisposition": "committed"
       }
     ],

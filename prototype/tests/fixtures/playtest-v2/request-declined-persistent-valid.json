@@ -27,7 +27,7 @@
             "reachable": true,
             "visibleConsequenceRefs": [
               "forecast:w1:food",
-              "schedule:lin-he:d7:b2",
+              "schedule:lin-he:d8:b0",
               "character-record:lin-he-study"
             ],
             "dominanceStatus": "non-dominated"
@@ -60,8 +60,8 @@
             "id": "lin-he-study-declined"
           }
         ],
-        "beforeDecisionStateHash": "ab76b1a497bc717cb41c9a84fb68a7064a72a6c5763a2eb8fd363c762dfe1567",
-        "finalDecisionStateHash": "75ec91124f259cd9cde61a7e8ee2b07a5cd7ad3a8833065273c0a12eacd070b4",
+        "beforeDecisionStateHash": "e8115a6454c3206d92c99656952e1887cd538e2b2666b377599d8cf5e06cb5d2",
+        "finalDecisionStateHash": "4cd8595bc437cc5a46331d1936344c78412831f5e9dc165f2f7f15a72dd1d204",
         "finalOutcomeCode": "committed:decline-study",
         "finalDisposition": "committed"
       }
@@ -71,13 +71,13 @@
         "before": {
           "resolution": "pending",
           "scheduleCells": [
-            "lin-he:d7:b2=food"
+            "lin-he:d8:b0=food"
           ]
         },
         "final": {
           "resolution": "declined",
           "scheduleCells": [
-            "lin-he:d7:b2=food"
+            "lin-he:d8:b0=food"
           ],
           "characterRecord": {
             "linHeStudy": "declined"

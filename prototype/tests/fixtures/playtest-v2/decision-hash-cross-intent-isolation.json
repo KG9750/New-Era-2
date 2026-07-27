@@ -8,7 +8,7 @@
         "decisionIntentId": "w0:food-plan",
         "projection": {
           "scheduleCells": [
-            "lin-he:d1:b2=food"
+            "qiao-pan:d1:b1=food"
           ]
         },
         "excludedContext": {
@@ -24,7 +24,7 @@
         "decisionIntentId": "w0:food-plan",
         "projection": {
           "scheduleCells": [
-            "lin-he:d1:b2=food"
+            "qiao-pan:d1:b1=food"
           ]
         },
         "excludedContext": {

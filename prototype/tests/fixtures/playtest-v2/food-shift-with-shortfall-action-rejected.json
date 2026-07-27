@@ -22,12 +22,12 @@
         "decisionIntentId": "w0:food-plan",
         "options": [
           {
-            "optionId": "food-shift-lin",
+            "optionId": "food-shift-qiao",
             "reachable": true,
             "visibleConsequenceRefs": [
               "forecast:w0:food",
               "forecast:w0:repair",
-              "schedule:lin-he:d1:b2"
+              "schedule:qiao-pan:d1:b1"
             ],
             "dominanceStatus": "non-dominated"
           },
@@ -41,7 +41,7 @@
             "dominanceStatus": "non-dominated"
           }
         ],
-        "selectedOptionId": "food-shift-lin"
+        "selectedOptionId": "food-shift-qiao"
       }
     ],
     "candidateManagementCommitmentGroups": [
@@ -65,7 +65,7 @@
         ],
         "beforeDecisionStateHash": "963237c894c03a5dfe8d91ed1f17a12a096cfa34ad7e5811d4a7c237f920a6a9",
         "finalDecisionStateHash": "244e1c3590840fa639700713f093f3e8a5d8b8061d3aad8011ddeaacb7aac8f0",
-        "finalOutcomeCode": "committed:food-shift-lin",
+        "finalOutcomeCode": "committed:food-shift-qiao",
         "finalDisposition": "committed"
       }
     ],

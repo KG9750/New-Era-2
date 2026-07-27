@@ -1,0 +1,88 @@
+{
+  "fixtureId": "v2-schedule-reverted-without-undo-rejected",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-D43",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "EDIT_SCHEDULE",
+        "memberId": "qiao-pan",
+        "dayIndex": 3,
+        "blockId": "qiao-pan:d3:b2",
+        "fromActivity": "rest",
+        "toActivity": "repair",
+        "responsibility": "scheduled"
+      }
+    ],
+    "candidateEditGroups": [],
+    "choiceSets": [
+      {
+        "choiceSetId": "choice:w0:pump-repair",
+        "decisionIntentId": "w0:repair-responsibility:pump-incident-day-3",
+        "options": [
+          {
+            "optionId": "schedule-repair",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:repair",
+              "risk:pump",
+              "schedule:qiao-pan:d3:b2",
+              "schedule:chen-du:d3:b0",
+              "schedule:su-ji:d3:b0"
+            ],
+            "dominanceStatus": "non-dominated"
+          },
+          {
+            "optionId": "accept-debt",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "recap:w0:repair",
+              "risk:repair-debt"
+            ],
+            "dominanceStatus": "non-dominated"
+          }
+        ],
+        "selectedOptionId": null
+      }
+    ],
+    "candidateManagementCommitmentGroups": [
+      {
+        "decisionIntentId": "w0:repair-responsibility:pump-incident-day-3",
+        "choiceSetId": "choice:w0:pump-repair",
+        "weekIndex": 0,
+        "problemCategory": "repair",
+        "actionIds": [
+          "action-0001"
+        ],
+        "consequenceRefs": [
+          {
+            "kind": "schedule",
+            "id": "qiao-pan:d3:b2"
+          }
+        ],
+        "beforeDecisionStateHash": "5e06411dbfd7c0405df2884f294a49208ea9b89241a6619a3122f7a91fc83960",
+        "finalDecisionStateHash": "5e06411dbfd7c0405df2884f294a49208ea9b89241a6619a3122f7a91fc83960",
+        "finalOutcomeCode": "reverted",
+        "finalDisposition": "reverted"
+      }
+    ],
+    "weekRecaps": [
+      {
+        "weekIndex": 0
+      },
+      {
+        "weekIndex": 1
+      }
+    ],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

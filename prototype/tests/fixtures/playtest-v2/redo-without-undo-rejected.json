@@ -1,0 +1,43 @@
+{
+  "fixtureId": "v2-redo-without-undo-rejected",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-D48",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "EDIT_SCHEDULE",
+        "memberId": "qiao-pan",
+        "dayIndex": 1,
+        "blockId": "qiao-pan:d1:b1",
+        "fromActivity": "repair",
+        "toActivity": "food"
+      },
+      {
+        "id": "action-0002",
+        "type": "REDO",
+        "replaysActionId": "action-0001"
+      }
+    ],
+    "candidateEditGroups": [],
+    "choiceSets": [],
+    "candidateManagementCommitmentGroups": [],
+    "weekRecaps": [
+      {
+        "weekIndex": 0
+      },
+      {
+        "weekIndex": 1
+      }
+    ],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

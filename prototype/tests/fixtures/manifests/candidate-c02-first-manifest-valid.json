@@ -18,7 +18,7 @@
       {
         "role": "protocol",
         "path": "docs/product-specs/weekly-management-slice-playtest-v0.2.md",
-        "sha256": "1111111111111111111111111111111111111111111111111111111111111111"
+        "sha256": "194f83d9cbfb7dc64e4795e7c84666d54bcbdb3a4cc899a6e508a286ec396aa3"
       },
       {
         "role": "design",
@@ -43,7 +43,7 @@
       {
         "role": "fixture-oracle",
         "path": "prototype/tests/fixtures/fixture-expectations.json",
-        "sha256": "6666666666666666666666666666666666666666666666666666666666666666"
+        "sha256": "bd1a749e1f5c11d4189ec2fafcb601a7bcf8278a7a55f8b35880a78ef66d6ef1"
       },
       {
         "role": "capture-host",

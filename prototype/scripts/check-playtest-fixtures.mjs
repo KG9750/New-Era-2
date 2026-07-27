@@ -91,10 +91,7 @@ const FORBIDDEN_DECISION_PROJECTION_FIELDS = new Set([
   'recap',
 ])
 const ALLOWED_V2_ACTION_TYPES = new Set([
-  'CHANGE_ACTIVITY',
   'EDIT_SCHEDULE',
-  'COPY_DAY',
-  'UNDO_SCHEDULE',
   'USE_FERTILIZER',
   'SET_FOOD_SHORTFALL_ACCEPTED',
   'RESOLVE_LIN_HE_REQUEST',
@@ -107,6 +104,11 @@ const ALLOWED_V2_ACTION_TYPES = new Set([
   'ACCEPT_REPAIR_DEBT',
   'CONFIRM_ONLY_REACHABLE_SCHEDULE',
 ])
+const REVERSIBLE_V2_ACTION_TYPES = new Set(['EDIT_SCHEDULE'])
+const REVERTIBLE_BY_FINAL_STATE_V2_ACTION_TYPES = new Set([
+  'EDIT_SCHEDULE',
+  'SET_FOOD_SHORTFALL_ACCEPTED',
+])
 const INTENT_CONTRACTS = new Map([
   [
     'w0:food-plan',
@@ -115,37 +117,35 @@ const INTENT_CONTRACTS = new Map([
       problemCategory: 'food',
       choiceSetId: 'choice:w0:food-plan',
       actionTypes: new Set([
-        'CHANGE_ACTIVITY',
         'EDIT_SCHEDULE',
-        'COPY_DAY',
-        'UNDO_SCHEDULE',
         'SET_FOOD_SHORTFALL_ACCEPTED',
         'UNDO',
         'REDO',
       ]),
       optionContracts: new Map([
         [
-          'food-shift-lin',
+          'food-shift-qiao',
           {
             dominanceStatus: 'non-dominated',
             visibleConsequenceRefs: [
               'forecast:w0:food',
               'forecast:w0:repair',
-              'schedule:lin-he:d1:b2',
+              'schedule:qiao-pan:d1:b1',
             ],
             requiredAction: {
               type: 'EDIT_SCHEDULE',
               payload: {
-                memberId: 'lin-he',
+                memberId: 'qiao-pan',
                 dayIndex: 1,
-                blockId: 'lin-he:d1:b2',
-                fromActivity: 'baseline',
+                blockId: 'qiao-pan:d1:b1',
+                fromActivity: 'repair',
                 toActivity: 'food',
               },
             },
             requiredConsequenceRefs: [
-              'schedule:lin-he:d1:b2',
+              'schedule:qiao-pan:d1:b1',
               'forecast:w0:food',
+              'forecast:w0:repair',
             ],
             projectionPredicate: 'food-schedule-changed',
             committable: true,
@@ -188,10 +188,7 @@ const INTENT_CONTRACTS = new Map([
       problemCategory: 'repair',
       choiceSetId: 'choice:w0:pump-repair',
       actionTypes: new Set([
-        'CHANGE_ACTIVITY',
         'EDIT_SCHEDULE',
-        'COPY_DAY',
-        'UNDO_SCHEDULE',
         'SELECT_REPAIR_RESPONSIBILITY',
         'ACCEPT_REPAIR_DEBT',
         'UNDO',
@@ -206,20 +203,45 @@ const INTENT_CONTRACTS = new Map([
               'forecast:w0:repair',
               'risk:pump',
               'schedule:qiao-pan:d3:b2',
+              'schedule:chen-du:d3:b0',
+              'schedule:su-ji:d3:b0',
             ],
-            requiredAction: {
-              type: 'EDIT_SCHEDULE',
-              payload: {
-                memberId: 'qiao-pan',
-                dayIndex: 3,
-                blockId: 'qiao-pan:d3:b2',
-                fromActivity: 'baseline',
-                toActivity: 'repair',
-                responsibility: 'scheduled',
+            requiredActions: [
+              {
+                type: 'EDIT_SCHEDULE',
+                payload: {
+                  memberId: 'qiao-pan',
+                  dayIndex: 3,
+                  blockId: 'qiao-pan:d3:b2',
+                  fromActivity: 'rest',
+                  toActivity: 'repair',
+                  responsibility: 'scheduled',
+                },
               },
-            },
+              {
+                type: 'EDIT_SCHEDULE',
+                payload: {
+                  memberId: 'chen-du',
+                  dayIndex: 3,
+                  blockId: 'chen-du:d3:b0',
+                  fromActivity: 'food',
+                  toActivity: 'repair',
+                  responsibility: 'scheduled',
+                },
+              },
+              {
+                type: 'EDIT_SCHEDULE',
+                payload: {
+                  memberId: 'su-ji',
+                  dayIndex: 3,
+                  blockId: 'su-ji:d3:b0',
+                  fromActivity: 'logistics',
+                  toActivity: 'repair',
+                  responsibility: 'scheduled',
+                },
+              },
+            ],
             requiredConsequenceRefs: [
-              'schedule:qiao-pan:d3:b2',
               'risk:pump',
               'forecast:w0:repair',
             ],
@@ -277,7 +299,7 @@ const INTENT_CONTRACTS = new Map([
             visibleConsequenceRefs: [
               'character-record:lin-he-study',
               'forecast:w1:food',
-              'schedule:lin-he:d7:b2',
+              'schedule:lin-he:d8:b0',
             ],
             requiredAction: {
               type: 'RESOLVE_LIN_HE_REQUEST',
@@ -285,14 +307,14 @@ const INTENT_CONTRACTS = new Map([
               value: 'accepted',
               payload: {
                 memberId: 'lin-he',
-                dayIndex: 7,
-                blockId: 'lin-he:d7:b2',
+                dayIndex: 8,
+                blockId: 'lin-he:d8:b0',
                 fromActivity: 'food',
                 toActivity: 'study',
               },
             },
             requiredConsequenceRefs: [
-              'schedule:lin-he:d7:b2',
+              'schedule:lin-he:d8:b0',
               'character-record:lin-he-study',
             ],
             projectionPredicate: 'lin-he-accepted',
@@ -331,6 +353,56 @@ const INTENT_CONTRACTS = new Map([
     },
   ],
   [
+    'w0:transport-route',
+    {
+      weekIndex: 0,
+      problemCategory: 'transport',
+      choiceSetId: 'choice:w0:transport-route',
+      actionTypes: new Set(['OPEN_TRANSPORT_SHORTCUT']),
+      optionContracts: new Map([
+        [
+          'north-loop',
+          {
+            dominanceStatus: 'non-dominated',
+            visibleConsequenceRefs: [
+              'forecast:w0:food',
+              'risk:w0:transport-loss',
+            ],
+            requiredAction: null,
+            requiredConsequenceRefs: [
+              'forecast:w0:food',
+              'risk:w0:transport-loss',
+            ],
+            projectionPredicate: 'transport-default',
+            committable: false,
+          },
+        ],
+        [
+          'south-shortcut',
+          {
+            dominanceStatus: 'non-dominated',
+            visibleConsequenceRefs: [
+              'forecast:w0:food',
+              'risk:w0:transport-loss',
+            ],
+            requiredAction: {
+              type: 'OPEN_TRANSPORT_SHORTCUT',
+              field: 'weekIndex',
+              value: 0,
+            },
+            requiredConsequenceRefs: [
+              'forecast:w0:food',
+              'risk:w0:transport-loss',
+            ],
+            projectionPredicate: 'transport-shortcut-opened',
+            committable: true,
+          },
+        ],
+      ]),
+      projectionFields: new Set(['inventory', 'transportRoute']),
+    },
+  ],
+  [
     'w1:transport-route',
     {
       weekIndex: 1,
@@ -365,6 +437,8 @@ const INTENT_CONTRACTS = new Map([
             ],
             requiredAction: {
               type: 'OPEN_TRANSPORT_SHORTCUT',
+              field: 'weekIndex',
+              value: 1,
             },
             requiredConsequenceRefs: [
               'forecast:w1:food',
@@ -376,6 +450,56 @@ const INTENT_CONTRACTS = new Map([
         ],
       ]),
       projectionFields: new Set(['inventory', 'transportRoute']),
+    },
+  ],
+  [
+    'w0:asset-use:fertilizer',
+    {
+      weekIndex: 0,
+      problemCategory: 'asset-use',
+      choiceSetId: 'choice:w0:fertilizer',
+      actionTypes: new Set(['USE_FERTILIZER']),
+      optionContracts: new Map([
+        [
+          'use-fertilizer',
+          {
+            dominanceStatus: 'non-dominated',
+            visibleConsequenceRefs: [
+              'forecast:w0:food',
+              'inventory:fertilizer',
+            ],
+            requiredAction: {
+              type: 'USE_FERTILIZER',
+              field: 'weekIndex',
+              value: 0,
+            },
+            requiredConsequenceRefs: [
+              'forecast:w0:food',
+              'inventory:fertilizer',
+            ],
+            projectionPredicate: 'fertilizer-used',
+            committable: true,
+          },
+        ],
+        [
+          'keep-fertilizer',
+          {
+            dominanceStatus: 'non-dominated',
+            visibleConsequenceRefs: [
+              'forecast:w0:food',
+              'inventory:fertilizer',
+            ],
+            requiredAction: null,
+            requiredConsequenceRefs: [
+              'forecast:w0:food',
+              'inventory:fertilizer',
+            ],
+            projectionPredicate: 'fertilizer-default',
+            committable: false,
+          },
+        ],
+      ]),
+      projectionFields: new Set(['inventory', 'fertilizer']),
     },
   ],
   [
@@ -396,6 +520,8 @@ const INTENT_CONTRACTS = new Map([
             ],
             requiredAction: {
               type: 'USE_FERTILIZER',
+              field: 'weekIndex',
+              value: 1,
             },
             requiredConsequenceRefs: [
               'forecast:w1:food',
@@ -431,10 +557,7 @@ const LEGACY_GROUP_CONTRACTS = new Map([
   [
     'legacy:w0:food-plan',
     new Set([
-      'CHANGE_ACTIVITY',
       'EDIT_SCHEDULE',
-      'COPY_DAY',
-      'UNDO_SCHEDULE',
       'UNDO',
       'REDO',
     ]),
@@ -442,6 +565,10 @@ const LEGACY_GROUP_CONTRACTS = new Map([
   [
     'legacy:w1:lin-he-study',
     new Set(['RESOLVE_LIN_HE_REQUEST', 'UNDO', 'REDO']),
+  ],
+  [
+    'legacy:w0:transport-route',
+    new Set(['OPEN_TRANSPORT_SHORTCUT']),
   ],
   [
     'legacy:w1:transport-route',
@@ -507,6 +634,300 @@ function actionMatchesRequirement(action, requirement) {
   )
 }
 
+function weekIndexForActionTick(atTick) {
+  if (!Number.isInteger(atTick)) return null
+  if (atTick >= 54 && atTick <= 1002) return 0
+  if (atTick >= 1062 && atTick <= 2010) return 1
+  return null
+}
+
+function optionActionRequirements(contract) {
+  return [...contract.optionContracts.values()]
+    .filter((option) => option.committable)
+    .flatMap((option) =>
+      option.requiredActions ?? [option.requiredAction],
+    )
+    .filter((requirement) => requirement !== null)
+}
+
+function actionIsExplicitlyActive(
+  actionId,
+  groupActionIds,
+  actionsById,
+) {
+  const ownedActionIds = new Set(groupActionIds)
+  let active = true
+  for (const action of actionsById.values()) {
+    if (!ownedActionIds.has(action.id)) continue
+    if (
+      action.type === 'UNDO' &&
+      action.revertsActionId === actionId
+    ) {
+      active = false
+    } else if (
+      action.type === 'REDO' &&
+      action.replaysActionId === actionId
+    ) {
+      active = true
+    }
+  }
+  return active
+}
+
+function actionDeterminesFinalState(
+  actionId,
+  groupActionIds,
+  actionsById,
+) {
+  if (
+    !actionIsExplicitlyActive(
+      actionId,
+      groupActionIds,
+      actionsById,
+    )
+  ) {
+    return false
+  }
+  const target = actionsById.get(actionId)
+  if (target?.type === 'SET_FOOD_SHORTFALL_ACCEPTED') {
+    let afterTarget = false
+    for (const action of actionsById.values()) {
+      if (action.id === actionId) {
+        afterTarget = true
+        continue
+      }
+      if (
+        afterTarget &&
+        groupActionIds.includes(action.id) &&
+        action.type === 'SET_FOOD_SHORTFALL_ACCEPTED'
+      ) {
+        return false
+      }
+    }
+    return true
+  }
+  if (target?.type !== 'EDIT_SCHEDULE') return true
+
+  const ownedActionIds = new Set(groupActionIds)
+  let afterTarget = false
+  for (const action of actionsById.values()) {
+    if (action.id === actionId) {
+      afterTarget = true
+      continue
+    }
+    if (
+      afterTarget &&
+      ownedActionIds.has(action.id) &&
+      action.type === 'EDIT_SCHEDULE' &&
+      action.blockId === target.blockId &&
+      actionIsExplicitlyActive(
+        action.id,
+        groupActionIds,
+        actionsById,
+      )
+    ) {
+      return false
+    }
+  }
+  return true
+}
+
+function actionReturnsToOriginalState(
+  actionId,
+  groupActionIds,
+  actionsById,
+) {
+  if (
+    !actionIsExplicitlyActive(
+      actionId,
+      groupActionIds,
+      actionsById,
+    )
+  ) {
+    return true
+  }
+  const target = actionsById.get(actionId)
+  if (target?.type === 'SET_FOOD_SHORTFALL_ACCEPTED') {
+    return !actionDeterminesFinalState(
+      actionId,
+      groupActionIds,
+      actionsById,
+    )
+  }
+  if (target?.type !== 'EDIT_SCHEDULE') return false
+
+  const ownedActionIds = new Set(groupActionIds)
+  let afterTarget = false
+  let finalActiveEdit = null
+  for (const action of actionsById.values()) {
+    if (action.id === actionId) {
+      afterTarget = true
+      continue
+    }
+    if (
+      afterTarget &&
+      ownedActionIds.has(action.id) &&
+      action.type === 'EDIT_SCHEDULE' &&
+      action.blockId === target.blockId &&
+      actionIsExplicitlyActive(
+        action.id,
+        groupActionIds,
+        actionsById,
+      )
+    ) {
+      finalActiveEdit = action
+    }
+  }
+  return finalActiveEdit?.toActivity === target.fromActivity
+}
+
+function hasActionTransitionOutsideGroup(
+  actionId,
+  groupActionIds,
+  actionsById,
+) {
+  const ownedActionIds = new Set(groupActionIds)
+  return [...actionsById.values()].some(
+    (action) =>
+      !ownedActionIds.has(action.id) &&
+      (
+        (
+          action.type === 'UNDO' &&
+          action.revertsActionId === actionId
+        ) ||
+        (
+          action.type === 'REDO' &&
+          action.replaysActionId === actionId
+        )
+      ),
+  )
+}
+
+function hasValidScheduleEditSequence(
+  groupActionIds,
+  actionsById,
+  beforeProjection,
+  finalProjection,
+) {
+  const ownedActionIds = new Set(groupActionIds)
+  const editedBlockIds = new Set(
+    groupActionIds
+      .map((actionId) => actionsById.get(actionId))
+      .filter((action) => action?.type === 'EDIT_SCHEDULE')
+      .map((action) => action.blockId),
+  )
+  const currentActivityByBlock = new Map()
+  for (const blockId of editedBlockIds) {
+    const beforeCells = beforeProjection.scheduleCells?.filter(
+      (cell) =>
+        typeof cell === 'string' &&
+        cell.startsWith(`${blockId}=`),
+    )
+    const finalCells = finalProjection.scheduleCells?.filter(
+      (cell) =>
+        typeof cell === 'string' &&
+        cell.startsWith(`${blockId}=`),
+    )
+    if (
+      beforeCells?.length !== 1 ||
+      finalCells?.length !== 1
+    ) {
+      return false
+    }
+    currentActivityByBlock.set(
+      blockId,
+      beforeCells[0].slice(blockId.length + 1),
+    )
+  }
+
+  for (const action of actionsById.values()) {
+    if (!ownedActionIds.has(action.id)) continue
+    if (action.type === 'EDIT_SCHEDULE') {
+      if (
+        currentActivityByBlock.get(action.blockId) !==
+        action.fromActivity
+      ) {
+        return false
+      }
+      currentActivityByBlock.set(
+        action.blockId,
+        action.toActivity,
+      )
+    } else if (
+      action.type === 'UNDO' ||
+      action.type === 'REDO'
+    ) {
+      const targetId =
+        action.type === 'UNDO'
+          ? action.revertsActionId
+          : action.replaysActionId
+      const target = actionsById.get(targetId)
+      if (
+        target?.type === 'EDIT_SCHEDULE' &&
+        currentActivityByBlock.get(target.blockId) !==
+          (
+            action.type === 'UNDO'
+              ? target.toActivity
+              : target.fromActivity
+          )
+      ) {
+        return false
+      }
+      if (target?.type === 'EDIT_SCHEDULE') {
+        currentActivityByBlock.set(
+          target.blockId,
+          action.type === 'UNDO'
+            ? target.fromActivity
+            : target.toActivity,
+        )
+      }
+    }
+  }
+  return [...editedBlockIds].every((blockId) => {
+    const finalCell = finalProjection.scheduleCells.find(
+      (cell) =>
+        typeof cell === 'string' &&
+        cell.startsWith(`${blockId}=`),
+    )
+    return (
+      currentActivityByBlock.get(blockId) ===
+      finalCell.slice(blockId.length + 1)
+    )
+  })
+}
+
+function hasValidFoodShortfallSequence(
+  groupActionIds,
+  actionsById,
+  beforeProjection,
+  finalProjection,
+) {
+  const ownedActionIds = new Set(groupActionIds)
+  const hasFoodShortfallAction = groupActionIds.some(
+    (actionId) =>
+      actionsById.get(actionId)?.type ===
+      'SET_FOOD_SHORTFALL_ACCEPTED',
+  )
+  if (!hasFoodShortfallAction) return true
+  if (
+    typeof beforeProjection.foodShortfallAccepted !== 'boolean' ||
+    typeof finalProjection.foodShortfallAccepted !== 'boolean'
+  ) {
+    return false
+  }
+
+  let accepted = beforeProjection.foodShortfallAccepted
+  for (const action of actionsById.values()) {
+    if (
+      ownedActionIds.has(action.id) &&
+      action.type === 'SET_FOOD_SHORTFALL_ACCEPTED'
+    ) {
+      accepted = action.accepted
+    }
+  }
+  return accepted === finalProjection.foodShortfallAccepted
+}
+
 function hasTypedSchedulePayload(action) {
   const blockMatch = /^([^:]+):d(\d+):b[0-3]$/.exec(
     action.blockId ?? '',
@@ -541,6 +962,18 @@ function hasValidActionPayload(action) {
     action.resolution === 'accepted'
   ) {
     return hasTypedSchedulePayload(action)
+  }
+  if (
+    action.type === 'OPEN_TRANSPORT_SHORTCUT' ||
+    action.type === 'USE_FERTILIZER'
+  ) {
+    return (
+      [0, 1].includes(action.weekIndex) &&
+      weekIndexForActionTick(action.atTick) === action.weekIndex
+    )
+  }
+  if (action.type === 'SET_FOOD_SHORTFALL_ACCEPTED') {
+    return typeof action.accepted === 'boolean'
   }
   return true
 }
@@ -655,7 +1088,7 @@ function projectionMatchesOption(
       beforeProjection.fertilizer?.remainingUnits === 1 &&
       beforeProjection.fertilizer?.appliedWeekIndex === null &&
       finalProjection.fertilizer?.remainingUnits === 0 &&
-      finalProjection.fertilizer?.appliedWeekIndex === 1
+      finalProjection.fertilizer?.appliedWeekIndex === requiredAction.value
     )
   }
   return false
@@ -706,26 +1139,105 @@ function validateIntentContract(group, choiceSet, actionsById) {
   ) {
     return reject('V2_INTENT_ACTION_MISMATCH')
   }
-
   const selectedOptionContract = contract.optionContracts.get(
     choiceSet.selectedOptionId,
   )
+  const qualifyingActions = group.actionIds
+    .map((actionId) => actionsById.get(actionId))
+    .filter((action) =>
+      optionActionRequirements(contract).some((requirement) =>
+        actionMatchesRequirement(action, requirement),
+      ),
+    )
+  const domainActions = group.actionIds
+    .map((actionId) => actionsById.get(actionId))
+    .filter(
+      (action) =>
+        action.type !== 'UNDO' && action.type !== 'REDO',
+    )
   let selectedOptionAction = null
+  let selectedActionRequirement = null
   if (group.finalDisposition === 'committed') {
     if (!selectedOptionContract?.committable) {
       return reject('V2_OPTION_NOT_COMMITTABLE')
     }
-    selectedOptionAction = group.actionIds
-      .map((actionId) => actionsById.get(actionId))
-      .find((action) =>
-        actionMatchesRequirement(
-          action,
-          selectedOptionContract.requiredAction,
-        ),
-      )
-    if (!selectedOptionAction) {
+    const requirements =
+      selectedOptionContract.requiredActions ??
+      [selectedOptionContract.requiredAction]
+    const matchingEntries = group.actionIds
+      .map((actionId) => {
+        const action = actionsById.get(actionId)
+        const requirement = requirements.find((candidate) =>
+          actionMatchesRequirement(action, candidate),
+        )
+        return requirement ? { action, requirement } : null
+      })
+      .filter((entry) => entry !== null)
+    if (matchingEntries.length === 0) {
       return reject('V2_OPTION_ACTION_MISMATCH')
     }
+    const competingFinalActions = qualifyingActions.filter(
+      (action) =>
+        !requirements.some((requirement) =>
+          actionMatchesRequirement(action, requirement),
+        ) &&
+        actionDeterminesFinalState(
+          action.id,
+          group.actionIds,
+          actionsById,
+        ),
+    )
+    if (competingFinalActions.length > 0) {
+      return reject('V2_COMPETING_OPTION_ACTION')
+    }
+    const scheduleRequirements = requirements.filter(
+      (requirement) =>
+        typeof requirement?.payload?.blockId === 'string',
+    )
+    const scheduleConsequenceIds = group.consequenceRefs
+      .filter((reference) => reference.kind === 'schedule')
+      .map((reference) => reference.id)
+    let requiredScheduleObject = null
+    if (scheduleRequirements.length > 0) {
+      if (scheduleConsequenceIds.length === 0) {
+        return reject('V2_REQUIRED_CONSEQUENCE_MISSING')
+      }
+      if (
+        scheduleConsequenceIds.length !== 1 ||
+        !scheduleRequirements.some(
+          (requirement) =>
+            requirement.payload.blockId ===
+            scheduleConsequenceIds[0],
+        )
+      ) {
+        return reject('V2_CONSEQUENCE_OBJECT_MISMATCH')
+      }
+      requiredScheduleObject = scheduleConsequenceIds[0]
+    }
+    const finalMatchingEntries = matchingEntries.filter(
+      ({ action }) =>
+        actionDeterminesFinalState(
+          action.id,
+          group.actionIds,
+          actionsById,
+        ),
+    )
+    if (finalMatchingEntries.length === 0) {
+      return reject('V2_COMMITTED_ACTION_REVERTED')
+    }
+    if (finalMatchingEntries.length > 1) {
+      return reject('V2_MULTIPLE_FINAL_OPTION_ACTIONS')
+    }
+    const [finalEntry] = finalMatchingEntries
+    if (
+      requiredScheduleObject !== null &&
+      finalEntry.requirement.payload.blockId !==
+        requiredScheduleObject
+    ) {
+      return reject('V2_CONSEQUENCE_OBJECT_MISMATCH')
+    }
+    selectedOptionAction = finalEntry.action
+    selectedActionRequirement = finalEntry.requirement
     const consequenceRefIds = group.consequenceRefs.map(
       (reference) => `${reference.kind}:${reference.id}`,
     )
@@ -736,11 +1248,85 @@ function validateIntentContract(group, choiceSet, actionsById) {
     ) {
       return reject('V2_REQUIRED_CONSEQUENCE_MISSING')
     }
+    const expectedScheduleObject =
+      selectedActionRequirement?.payload?.blockId
+    if (
+      expectedScheduleObject &&
+      group.consequenceRefs.some(
+        (reference) =>
+          reference.kind === 'schedule' &&
+          reference.id !== expectedScheduleObject,
+      )
+    ) {
+      return reject('V2_CONSEQUENCE_OBJECT_MISMATCH')
+    }
+    if (
+      expectedScheduleObject &&
+      !consequenceRefIds.includes(`schedule:${expectedScheduleObject}`)
+    ) {
+      return reject('V2_REQUIRED_CONSEQUENCE_MISSING')
+    }
+  }
+  if (group.finalDisposition === 'reverted') {
+    if (
+      choiceSet.selectedOptionId !== null ||
+      qualifyingActions.length === 0
+    ) {
+      return reject('V2_REVERT_ACTION_MISSING')
+    }
+    if (
+      domainActions.some(
+        (action) =>
+          !REVERTIBLE_BY_FINAL_STATE_V2_ACTION_TYPES.has(
+            action.type,
+          ),
+      )
+    ) {
+      return reject('V2_REVERT_NOT_SUPPORTED')
+    }
+    if (
+      qualifyingActions.some((action) =>
+        hasActionTransitionOutsideGroup(
+          action.id,
+          group.actionIds,
+          actionsById,
+        ),
+      )
+    ) {
+      return reject('V2_ACTION_CHAIN_INCOMPLETE')
+    }
+    if (
+      qualifyingActions.some(
+        (action) =>
+          actionDeterminesFinalState(
+            action.id,
+            group.actionIds,
+            actionsById,
+          ) ||
+          !actionReturnsToOriginalState(
+            action.id,
+            group.actionIds,
+            actionsById,
+          ),
+      )
+    ) {
+      return reject('V2_REVERT_CHAIN_MISSING')
+    }
+  }
+  if (
+    group.finalDisposition === 'default-maintained' &&
+    (
+      choiceSet.selectedOptionId !== null ||
+      domainActions.length > 0
+    )
+  ) {
+    return reject('V2_DEFAULT_CONTAINS_QUALIFYING_ACTION')
   }
 
   return accept({
     contract,
     selectedOptionContract,
+    selectedActionRequirement,
   })
 }
 
@@ -1034,6 +1620,7 @@ function validatePlaytestExport(input) {
   }
 
   const actionsById = new Map()
+  const reversibleActionStates = new Map()
   for (const action of input.actions) {
     if (
       !isRecord(action) ||
@@ -1052,23 +1639,62 @@ function validatePlaytestExport(input) {
       return reject('V2_ACTION_PAYLOAD')
     }
     actionsById.set(action.id, action)
+    if (REVERSIBLE_V2_ACTION_TYPES.has(action.type)) {
+      reversibleActionStates.set(action.id, true)
+    }
     if (
       action.type === 'UNDO' &&
       (
         typeof action.revertsActionId !== 'string' ||
-        !actionsById.has(action.revertsActionId)
+        !actionsById.has(action.revertsActionId) ||
+        !REVERSIBLE_V2_ACTION_TYPES.has(
+          actionsById.get(action.revertsActionId)?.type,
+        )
       )
     ) {
       return reject('V2_UNDO_TARGET')
     }
     if (
+      action.type === 'UNDO' &&
+      reversibleActionStates.get(action.revertsActionId) !== true
+    ) {
+      return reject('V2_UNDO_STATE')
+    }
+    if (action.type === 'UNDO') {
+      reversibleActionStates.set(action.revertsActionId, false)
+    }
+    if (
       action.type === 'REDO' &&
       (
         typeof action.replaysActionId !== 'string' ||
-        !actionsById.has(action.replaysActionId)
+        !actionsById.has(action.replaysActionId) ||
+        !REVERSIBLE_V2_ACTION_TYPES.has(
+          actionsById.get(action.replaysActionId)?.type,
+        )
       )
     ) {
       return reject('V2_REDO_TARGET')
+    }
+    if (
+      action.type === 'REDO' &&
+      reversibleActionStates.get(action.replaysActionId) !== false
+    ) {
+      return reject('V2_REDO_STATE')
+    }
+    if (action.type === 'REDO') {
+      reversibleActionStates.set(action.replaysActionId, true)
+    }
+  }
+  for (const singleUseActionType of [
+    'USE_FERTILIZER',
+    'OPEN_TRANSPORT_SHORTCUT',
+  ]) {
+    if (
+      input.actions.filter(
+        (action) => action.type === singleUseActionType,
+      ).length > 1
+    ) {
+      return reject('V2_SINGLE_USE_ACTION_REPEATED')
     }
   }
 
@@ -1210,6 +1836,7 @@ function validatePlaytestExport(input) {
     const {
       contract,
       selectedOptionContract,
+      selectedActionRequirement,
     } = intentContractsByGroupKey.get(key)
     if (
       !isRecord(projections) ||
@@ -1238,10 +1865,39 @@ function validatePlaytestExport(input) {
         selectedOptionContract.projectionPredicate,
         projections.before,
         projections.final,
-        selectedOptionContract.requiredAction,
+        selectedActionRequirement,
       )
     ) {
       return reject('V2_OPTION_PROJECTION_MISMATCH')
+    }
+    if (
+      (
+        group.finalDisposition === 'reverted' ||
+        group.finalDisposition === 'default-maintained'
+      ) &&
+      !sameJson(projections.before, projections.final)
+    ) {
+      return reject('V2_NONCOMMITTED_PROJECTION_MISMATCH')
+    }
+    if (
+      !hasValidScheduleEditSequence(
+        group.actionIds,
+        actionsById,
+        projections.before,
+        projections.final,
+      )
+    ) {
+      return reject('V2_SCHEDULE_ACTION_STATE')
+    }
+    if (
+      !hasValidFoodShortfallSequence(
+        group.actionIds,
+        actionsById,
+        projections.before,
+        projections.final,
+      )
+    ) {
+      return reject('V2_FOOD_SHORTFALL_ACTION_STATE')
     }
   }
 
@@ -1261,11 +1917,47 @@ function validatePlaytestExport(input) {
       )
     })
   }
+  function hasCompleteScheduleBlockChain(actionIds) {
+    const groupActionIds = new Set(actionIds)
+    const groupBlockIds = new Set(
+      actionIds
+        .map((actionId) => actionsById.get(actionId))
+        .filter((action) => action?.type === 'EDIT_SCHEDULE')
+        .map((action) => action.blockId),
+    )
+    return input.actions.every(
+      (action) =>
+        action.type !== 'EDIT_SCHEDULE' ||
+        !groupBlockIds.has(action.blockId) ||
+      groupActionIds.has(action.id),
+    )
+  }
+  function hasCompleteFoodShortfallChain(actionIds) {
+    const groupActionIds = new Set(actionIds)
+    const containsFoodShortfallAction = actionIds.some(
+      (actionId) =>
+        actionsById.get(actionId)?.type ===
+        'SET_FOOD_SHORTFALL_ACCEPTED',
+    )
+    return (
+      !containsFoodShortfallAction ||
+      input.actions.every(
+        (action) =>
+          action.type !== 'SET_FOOD_SHORTFALL_ACCEPTED' ||
+          groupActionIds.has(action.id),
+      )
+    )
+  }
   if (
     [
       ...input.candidateEditGroups,
       ...input.candidateManagementCommitmentGroups,
-    ].some((group) => !hasCompleteUndoRedoChain(group.actionIds))
+    ].some(
+      (group) =>
+        !hasCompleteUndoRedoChain(group.actionIds) ||
+        !hasCompleteScheduleBlockChain(group.actionIds) ||
+        !hasCompleteFoodShortfallChain(group.actionIds),
+    )
   ) {
     return reject('V2_ACTION_CHAIN_INCOMPLETE')
   }
@@ -1328,6 +2020,69 @@ function validatePlaytestExport(input) {
       )
     ) {
       return reject('V2_REPAIR_DEBT_CLASSIFICATION')
+    }
+
+    let expectedManagementIntent
+    let expectedLegacyGroup
+    if (
+      action.type === 'EDIT_SCHEDULE' &&
+      action.blockId === 'qiao-pan:d1:b1' &&
+      action.fromActivity === 'repair' &&
+      action.toActivity === 'food'
+    ) {
+      expectedManagementIntent = 'w0:food-plan'
+      expectedLegacyGroup = 'legacy:w0:food-plan'
+    } else if (
+      action.type === 'EDIT_SCHEDULE' &&
+      action.responsibility === 'scheduled' &&
+      [
+        'qiao-pan:d3:b2',
+        'chen-du:d3:b0',
+        'su-ji:d3:b0',
+      ].includes(action.blockId)
+    ) {
+      expectedManagementIntent =
+        'w0:repair-responsibility:pump-incident-day-3'
+    } else if (
+      action.type === 'SET_FOOD_SHORTFALL_ACCEPTED' &&
+      action.accepted === true
+    ) {
+      expectedManagementIntent = 'w0:food-plan'
+    } else if (
+      action.type === 'RESOLVE_LIN_HE_REQUEST' &&
+      (
+        action.resolution === 'accepted' ||
+        (
+          action.resolution === 'declined' &&
+          action.persistentCharacterRecord === true
+        )
+      )
+    ) {
+      expectedManagementIntent = 'w1:character-request:lin-he-study'
+      if (action.resolution === 'accepted') {
+        expectedLegacyGroup = 'legacy:w1:lin-he-study'
+      }
+    } else if (action.type === 'ACCEPT_REPAIR_DEBT') {
+      expectedManagementIntent =
+        'w0:repair-responsibility:pump-incident-day-3'
+    } else if (action.type === 'OPEN_TRANSPORT_SHORTCUT') {
+      expectedManagementIntent = `w${action.weekIndex}:transport-route`
+      expectedLegacyGroup = `legacy:w${action.weekIndex}:transport-route`
+    } else if (action.type === 'USE_FERTILIZER') {
+      expectedManagementIntent = `w${action.weekIndex}:asset-use:fertilizer`
+    }
+
+    if (
+      expectedManagementIntent !== undefined &&
+      managementGroup?.decisionIntentId !== expectedManagementIntent
+    ) {
+      return reject('V2_QUALIFYING_ACTION_UNCLASSIFIED')
+    }
+    if (
+      expectedLegacyGroup !== undefined &&
+      legacyGroup?.groupId !== expectedLegacyGroup
+    ) {
+      return reject('V2_QUALIFYING_LEGACY_ACTION_UNCLASSIFIED')
     }
   }
 
@@ -1923,6 +2678,41 @@ const requiredFixtureFiles = [
   'playtest-v2/request-declined-default-valid.json',
   'playtest-v2/repair-direction-unconfirmed-valid.json',
   'playtest-v2/repair-debt-committed-valid.json',
+  'playtest-v2/repair-schedule-chen-committed-valid.json',
+  'playtest-v2/repair-schedule-su-committed-valid.json',
+  'playtest-v2/transport-shortcut-week1-committed-valid.json',
+  'playtest-v2/fertilizer-use-week1-committed-valid.json',
+  'playtest-v2/transport-qualifying-legacy-omitted-rejected.json',
+  'playtest-v2/fertilizer-qualifying-group-omitted-rejected.json',
+  'playtest-v2/transport-week-index-at-tick-mismatch-rejected.json',
+  'playtest-v2/fertilizer-week-index-at-tick-mismatch-rejected.json',
+  'playtest-v2/transport-week-index-reverse-at-tick-mismatch-rejected.json',
+  'playtest-v2/fertilizer-week-index-reverse-at-tick-mismatch-rejected.json',
+  'playtest-v2/fertilizer-pseudo-reverted-rejected.json',
+  'playtest-v2/transport-pseudo-default-rejected.json',
+  'playtest-v2/study-pseudo-reverted-rejected.json',
+  'playtest-v2/repair-debt-pseudo-default-rejected.json',
+  'playtest-v2/schedule-reverted-without-undo-rejected.json',
+  'playtest-v2/schedule-committed-after-undo-rejected.json',
+  'playtest-v2/schedule-edit-undo-new-edit-valid.json',
+  'playtest-v2/redo-without-undo-rejected.json',
+  'playtest-v2/double-undo-rejected.json',
+  'playtest-v2/repair-reassign-after-normal-reverse-valid.json',
+  'playtest-v2/repair-multiple-active-actors-rejected.json',
+  'playtest-v2/food-ordinary-reverse-valid.json',
+  'playtest-v2/schedule-projection-before-anchor-rejected.json',
+  'playtest-v2/legacy-undo-schedule-rejected.json',
+  'playtest-v2/food-competing-option-action-rejected.json',
+  'playtest-v2/repair-competing-option-action-rejected.json',
+  'playtest-v2/food-shortfall-retracted-before-schedule-valid.json',
+  'playtest-v2/food-shortfall-retraction-omitted-rejected.json',
+  'playtest-v2/food-shortfall-retraction-projection-rejected.json',
+  'playtest-v2/food-shortfall-fully-reverted-valid.json',
+  'playtest-v2/food-shortfall-pseudo-reverted-rejected.json',
+  'playtest-v2/fertilizer-cross-week-repeat-rejected.json',
+  'playtest-v2/transport-cross-week-repeat-rejected.json',
+  'playtest-v2/food-ordinary-reverse-state-mismatch-rejected.json',
+  'playtest-v2/food-ordinary-reverse-omitted-rejected.json',
   'playtest-v2/fertilizer-week1-valid.json',
   'playtest-v2/fertilizer-week2-valid.json',
   'playtest-v2/fertilizer-unused-valid.json',
@@ -2018,6 +2808,41 @@ const REQUIRED_FIXTURE_OUTCOMES = new Map([
   ['manifests/candidate-c01-rewrapped-by-cm02-rejected.json', [false, 'CANDIDATE_MANIFEST_HISTORY']],
   ['playtest-v2/food-shortfall-committed-valid.json', [true, null]],
   ['playtest-v2/repair-schedule-committed-valid.json', [true, null]],
+  ['playtest-v2/repair-schedule-chen-committed-valid.json', [true, null]],
+  ['playtest-v2/repair-schedule-su-committed-valid.json', [true, null]],
+  ['playtest-v2/transport-shortcut-week1-committed-valid.json', [true, null]],
+  ['playtest-v2/fertilizer-use-week1-committed-valid.json', [true, null]],
+  ['playtest-v2/transport-qualifying-legacy-omitted-rejected.json', [false, 'V2_QUALIFYING_LEGACY_ACTION_UNCLASSIFIED']],
+  ['playtest-v2/fertilizer-qualifying-group-omitted-rejected.json', [false, 'V2_QUALIFYING_ACTION_UNCLASSIFIED']],
+  ['playtest-v2/transport-week-index-at-tick-mismatch-rejected.json', [false, 'V2_ACTION_PAYLOAD']],
+  ['playtest-v2/fertilizer-week-index-at-tick-mismatch-rejected.json', [false, 'V2_ACTION_PAYLOAD']],
+  ['playtest-v2/transport-week-index-reverse-at-tick-mismatch-rejected.json', [false, 'V2_ACTION_PAYLOAD']],
+  ['playtest-v2/fertilizer-week-index-reverse-at-tick-mismatch-rejected.json', [false, 'V2_ACTION_PAYLOAD']],
+  ['playtest-v2/fertilizer-pseudo-reverted-rejected.json', [false, 'V2_REVERT_NOT_SUPPORTED']],
+  ['playtest-v2/transport-pseudo-default-rejected.json', [false, 'V2_DEFAULT_CONTAINS_QUALIFYING_ACTION']],
+  ['playtest-v2/study-pseudo-reverted-rejected.json', [false, 'V2_REVERT_NOT_SUPPORTED']],
+  ['playtest-v2/repair-debt-pseudo-default-rejected.json', [false, 'V2_DEFAULT_CONTAINS_QUALIFYING_ACTION']],
+  ['playtest-v2/schedule-reverted-without-undo-rejected.json', [false, 'V2_REVERT_CHAIN_MISSING']],
+  ['playtest-v2/schedule-committed-after-undo-rejected.json', [false, 'V2_COMMITTED_ACTION_REVERTED']],
+  ['playtest-v2/schedule-edit-undo-new-edit-valid.json', [true, null]],
+  ['playtest-v2/redo-without-undo-rejected.json', [false, 'V2_REDO_STATE']],
+  ['playtest-v2/double-undo-rejected.json', [false, 'V2_UNDO_STATE']],
+  ['playtest-v2/repair-reassign-after-normal-reverse-valid.json', [true, null]],
+  ['playtest-v2/repair-multiple-active-actors-rejected.json', [false, 'V2_MULTIPLE_FINAL_OPTION_ACTIONS']],
+  ['playtest-v2/food-ordinary-reverse-valid.json', [true, null]],
+  ['playtest-v2/schedule-projection-before-anchor-rejected.json', [false, 'V2_SCHEDULE_ACTION_STATE']],
+  ['playtest-v2/legacy-undo-schedule-rejected.json', [false, 'V2_ACTION_TYPE']],
+  ['playtest-v2/food-competing-option-action-rejected.json', [false, 'V2_COMPETING_OPTION_ACTION']],
+  ['playtest-v2/repair-competing-option-action-rejected.json', [false, 'V2_COMPETING_OPTION_ACTION']],
+  ['playtest-v2/food-shortfall-retracted-before-schedule-valid.json', [true, null]],
+  ['playtest-v2/food-shortfall-retraction-omitted-rejected.json', [false, 'V2_ACTION_CHAIN_INCOMPLETE']],
+  ['playtest-v2/food-shortfall-retraction-projection-rejected.json', [false, 'V2_FOOD_SHORTFALL_ACTION_STATE']],
+  ['playtest-v2/food-shortfall-fully-reverted-valid.json', [true, null]],
+  ['playtest-v2/food-shortfall-pseudo-reverted-rejected.json', [false, 'V2_REVERT_CHAIN_MISSING']],
+  ['playtest-v2/fertilizer-cross-week-repeat-rejected.json', [false, 'V2_SINGLE_USE_ACTION_REPEATED']],
+  ['playtest-v2/transport-cross-week-repeat-rejected.json', [false, 'V2_SINGLE_USE_ACTION_REPEATED']],
+  ['playtest-v2/food-ordinary-reverse-state-mismatch-rejected.json', [false, 'V2_SCHEDULE_ACTION_STATE']],
+  ['playtest-v2/food-ordinary-reverse-omitted-rejected.json', [false, 'V2_ACTION_CHAIN_INCOMPLETE']],
   ['playtest-v2/transport-shortcut-committed-valid.json', [true, null]],
   ['playtest-v2/fertilizer-use-committed-valid.json', [true, null]],
   ['playtest-v2/accept-debt-with-schedule-action-rejected.json', [false, 'V2_OPTION_ACTION_MISMATCH']],

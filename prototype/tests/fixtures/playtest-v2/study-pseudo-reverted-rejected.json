@@ -1,0 +1,86 @@
+{
+  "fixtureId": "v2-study-pseudo-reverted-rejected",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-D41",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "RESOLVE_LIN_HE_REQUEST",
+        "resolution": "accepted",
+        "memberId": "lin-he",
+        "dayIndex": 8,
+        "blockId": "lin-he:d8:b0",
+        "fromActivity": "food",
+        "toActivity": "study"
+      }
+    ],
+    "candidateEditGroups": [],
+    "choiceSets": [
+      {
+        "choiceSetId": "choice:w1:lin-he-study",
+        "decisionIntentId": "w1:character-request:lin-he-study",
+        "options": [
+          {
+            "optionId": "accept-study",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w1:food",
+              "schedule:lin-he:d8:b0",
+              "character-record:lin-he-study"
+            ],
+            "dominanceStatus": "non-dominated"
+          },
+          {
+            "optionId": "decline-study",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w1:food",
+              "character-record:lin-he-study-declined"
+            ],
+            "dominanceStatus": "non-dominated"
+          }
+        ],
+        "selectedOptionId": null
+      }
+    ],
+    "candidateManagementCommitmentGroups": [
+      {
+        "decisionIntentId": "w1:character-request:lin-he-study",
+        "choiceSetId": "choice:w1:lin-he-study",
+        "weekIndex": 1,
+        "problemCategory": "character-request",
+        "actionIds": [
+          "action-0001"
+        ],
+        "consequenceRefs": [
+          {
+            "kind": "character-record",
+            "id": "lin-he-study"
+          }
+        ],
+        "beforeDecisionStateHash": "e8115a6454c3206d92c99656952e1887cd538e2b2666b377599d8cf5e06cb5d2",
+        "finalDecisionStateHash": "e8115a6454c3206d92c99656952e1887cd538e2b2666b377599d8cf5e06cb5d2",
+        "finalOutcomeCode": "reverted",
+        "finalDisposition": "reverted"
+      }
+    ],
+    "weekRecaps": [
+      {
+        "weekIndex": 0
+      },
+      {
+        "weekIndex": 1
+      }
+    ],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

@@ -180,10 +180,15 @@ projection 和 schedule consequence 必须指向同一个对象，不能各自�
 
 当前对象级规范为：
 
-- `food-shift-lin`：`lin-he:d1:b2` 从 `baseline` 变为 `food`；
-- `schedule-repair`：`qiao-pan:d3:b2` 从 `baseline` 变为 `repair`，且
-  `repairResponsibility=scheduled`；
-- `accept-study`：`lin-he:d7:b2` 从 `food` 变为 `study`。
+- `food-shift-qiao`：`qiao-pan:d1:b1` 从 `repair` 变为 `food`。在冻结
+  初态中，这会使粮食期末预测从 `3–11` 变为 `4–12`，同时使维修保障从
+  `3–5` 变为 `1–3`，形成真实而非 no-op 的供需取舍；
+- `schedule-repair` 保持一个高层 option，但允许三种对象一致的真实兑现：
+  `qiao-pan:d3:b2 rest→repair`、`chen-du:d3:b0 food→repair`、
+  `su-ji:d3:b0 logistics→repair`，且都必须满足
+  `repairResponsibility=scheduled`。typed action、projection 与 schedule
+  consequence 必须指向同一个实际执行对象；
+- `accept-study`：`lin-he:d8:b0` 从 `food` 变为 `study`。
 
 仅有同一意图允许的 action type 不够。例如 `EDIT_SCHEDULE` 不能证明玩家接受维修
 欠账，`SET_FOOD_SHORTFALL_ACCEPTED` 不能证明玩家调过粮食日程，
@@ -199,6 +204,53 @@ typed action 与 projection 的 `blockId`。
 当前 `north-loop` 和 `keep-fertilizer` 是无显式非默认 action 的默认分支，不得
 声明为 `committed`；只有后续设计新增可观察、可校验的主动保留 action 并同步
 升级协议与 fixtures 后，才能改变该约束。
+
+`OPEN_TRANSPORT_SHORTCUT` 与 `USE_FERTILIZER` 在 Week 1、Week 2 都可能合法
+发生。两类 typed action 必须同时记录 production action 的整数 `atTick` 和
+`weekIndex`；oracle 从冻结 tick 边界推导真实周次，并要求它与 `weekIndex` 一致，
+1003–1061 及范围外 tick 必须拒绝。随后分别使用 `w0:*` 或 `w1:*` intent、
+choice set、forecast/risk consequence 和化肥 `appliedWeekIndex`，不能错周伪装，
+也不能静默漏组。
+两者都是跨周共享状态上的 single-use 动作：同一份 export 中
+`USE_FERTILIZER` 与 `OPEN_TRANSPORT_SHORTCUT` 各自最多出现一次。W0 已使用或
+开启后，W1 不能再用局部 before projection 重新伪造一份化肥或 north-loop 初态。
+
+`reverted` 只允许日程 `EDIT_SCHEDULE`，且 before/final 权威投影必须完全相同。
+它可以由指向原动作的完整 undo/redo 因果链形成，也可以由同组内后续普通编辑把
+同一 `blockId` 最终恢复为原活动形成。运输、化肥、accepted study 与维修欠账等
+当前无领域逆动作的行为不得伪装成 `reverted`；包含任一领域动作的组也不得标成
+`default-maintained`。`committed` 的原动作若最终已撤销而未重做，同样必须拒绝。
+`REDO` 必须以同组、同目标且当前有效的既有 `UNDO` 为前置，重复 `UNDO` 也必须
+拒绝。判断某个日程动作是否决定终态时，还要考虑同组内后续对同一 `blockId` 的
+普通编辑：后续仍有效的编辑会替代此前动作；若后续编辑自身已撤销，则此前仍有效
+动作可以重新成为终态来源。每条普通编辑的 `fromActivity` 必须等于该组按动作顺序
+推导出的当前活动，undo/redo 前后的活动也必须连续，不能用伪造前态拼出合法终态。
+重放初态必须来自该意图 `oracleDecisionProjections.before.scheduleCells`，不能用组内
+首条编辑的 `fromActivity` 自举；凡组内触及的 `blockId`，before/final projection
+都必须各有且仅有一个值，且顺序重放后的活动必须与 final projection 完全一致。
+一个候选组只要纳入某个 `blockId` 的编辑，就必须完整包含 raw 中该格子的全部编辑
+链；不得只收录前向动作而漏掉后续普通反向编辑。
+
+V2 不直接接受 V1 的无对象事务动作 `CHANGE_ACTIVITY`、`COPY_DAY` 或
+`UNDO_SCHEDULE`。生产导出若观察到这些运行时动作，必须先把它们规范化为带完整
+对象前后态的 `EDIT_SCHEDULE`，并把撤销/重做规范化为显式绑定目标 action ID 的
+`UNDO`/`REDO`，再进入 V2 候选分类；不能把无目标的旧撤销当作未改变终态。
+
+`committed` 组只能保留由 `selectedOptionId` 对应 option 解释的最终有效
+qualifying action。若同一 intent 中另一个 committable option 的动作仍决定终态，
+必须拒绝整个组；不能只用被选 option 的 projection、consequence 和 outcome
+fingerprint 隐藏另一项互斥状态变化。已经由显式 `UNDO` 撤销或由后续同格编辑
+替代的动作不算最终有效。
+
+`SET_FOOD_SHORTFALL_ACCEPTED` 是同一布尔字段的 last-write-wins 动作：
+`true→false` 表示玩家已撤回缺口接受，早先的 `true` 不再是最终有效的竞争 option
+动作。只要候选组包含任一该类动作，就必须完整纳入 raw 中该字段的全部写入，并从
+before projection 的布尔值顺序重放到 final projection；漏掉撤回动作、漏掉字段或
+伪造 final 值都必须拒绝。
+若完整 `true→false` 链最终回到 before 值且玩家没有选择其他 option，该组可记为
+`reverted`、人工承诺计数为 0；单个 `true` 或最终仍为 `true` 的链不能伪装成
+`reverted`。这不把该动作加入通用 target-based `UNDO/REDO`，其可撤回性仅由同字段
+后续写入和权威投影共同证明。
 
 legacy candidate edit group 只允许 oracle 明列的稳定 group ID 与 action type
 组合。当前不授权 repair legacy group，因为通用 `EDIT_SCHEDULE` 无法仅凭 raw
@@ -350,6 +402,16 @@ manifest hash 与拒绝状态。历史不变量为：
 - option/action/payload/projection/consequence 正反例与默认分支不可提交反例；
 - food 误投 repair、repair 误投 food/unresolved、学习排给其他人物、schedule
   consequence 对象错配、只保留非核心 consequence 的反例；
+- `food-shift-qiao` 的真实粮食/维修变化、三种维修日程兑现，以及 W0/W1
+  transport/fertilizer 的正例与合法动作漏组反例；
+- projection before 锚定反例，以及 V1 无对象撤销不得进入 V2 的反例；
+- food shift 与 accepted shortfall、schedule repair 与 accepted debt 的互斥
+  option 动作共存反例；
+- accepted shortfall `true→false` 后改选 schedule 的正例，以及漏撤回动作和
+  final projection 伪造反例；
+- accepted shortfall 纯 `true→false` 的 reverted 正例和单个 `true` 伪 reverted
+  反例；
+- 化肥与运输捷径各自跨周重复提交的反例；
 - schedule outcome hash 与 final decision hash 精确绑定的正例；
 - manifest 首份跳过已拒绝 C、正常 CM/C 历史及重新包装旧 C 的反例；
 - fake legacy group 与同意图拆组反例。

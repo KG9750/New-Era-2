@@ -1,0 +1,41 @@
+{
+  "fixtureId": "v2-fertilizer-cross-week-repeat-rejected",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-D64",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "USE_FERTILIZER",
+        "atTick": 54,
+        "weekIndex": 0
+      },
+      {
+        "id": "action-0002",
+        "type": "USE_FERTILIZER",
+        "atTick": 1062,
+        "weekIndex": 1
+      }
+    ],
+    "candidateEditGroups": [],
+    "choiceSets": [],
+    "candidateManagementCommitmentGroups": [],
+    "weekRecaps": [
+      {
+        "weekIndex": 0
+      },
+      {
+        "weekIndex": 1
+      }
+    ],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

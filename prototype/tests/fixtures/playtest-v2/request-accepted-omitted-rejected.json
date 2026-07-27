@@ -14,8 +14,8 @@
         "type": "RESOLVE_LIN_HE_REQUEST",
         "resolution": "accepted",
         "memberId": "lin-he",
-        "dayIndex": 7,
-        "blockId": "lin-he:d7:b2",
+        "dayIndex": 8,
+        "blockId": "lin-he:d8:b0",
         "fromActivity": "food",
         "toActivity": "study"
       }

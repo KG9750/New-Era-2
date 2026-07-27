@@ -12,18 +12,18 @@
       {
         "id": "action-0001",
         "type": "EDIT_SCHEDULE",
-        "memberId": "lin-he",
+        "memberId": "qiao-pan",
         "dayIndex": 1,
-        "blockId": "lin-he:d1:b2",
-        "fromActivity": "baseline",
+        "blockId": "qiao-pan:d1:b1",
+        "fromActivity": "repair",
         "toActivity": "food"
       },
       {
         "id": "action-0002",
         "type": "EDIT_SCHEDULE",
-        "memberId": "lin-he",
+        "memberId": "qiao-pan",
         "dayIndex": 1,
-        "blockId": "lin-he:d1:b2",
+        "blockId": "qiao-pan:d1:b1",
         "fromActivity": "food",
         "toActivity": "repair"
       }

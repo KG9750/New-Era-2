@@ -9,7 +9,7 @@
         "projection": {
           "resolution": "accepted",
           "scheduleCells": [
-            "lin-he:d7:b2=study"
+            "lin-he:d8:b0=study"
           ]
         }
       },
@@ -19,7 +19,7 @@
         "projection": {
           "resolution": "declined",
           "scheduleCells": [
-            "lin-he:d7:b2=food"
+            "lin-he:d8:b0=food"
           ]
         }
       }

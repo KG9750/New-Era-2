@@ -12,10 +12,10 @@
       {
         "id": "action-0001",
         "type": "EDIT_SCHEDULE",
-        "memberId": "lin-he",
+        "memberId": "qiao-pan",
         "dayIndex": 1,
-        "blockId": "lin-he:d1:b2",
-        "fromActivity": "baseline",
+        "blockId": "qiao-pan:d1:b1",
+        "fromActivity": "repair",
         "toActivity": "food"
       }
     ],
@@ -26,12 +26,12 @@
         "decisionIntentId": "w0:food-plan",
         "options": [
           {
-            "optionId": "food-shift-lin",
+            "optionId": "food-shift-qiao",
             "reachable": true,
             "visibleConsequenceRefs": [
               "forecast:w0:food",
               "forecast:w0:repair",
-              "schedule:lin-he:d1:b2"
+              "schedule:qiao-pan:d1:b1"
             ],
             "dominanceStatus": "non-dominated"
           },
@@ -45,7 +45,7 @@
             "dominanceStatus": "non-dominated"
           }
         ],
-        "selectedOptionId": "food-shift-lin"
+        "selectedOptionId": "food-shift-qiao"
       }
     ],
     "candidateManagementCommitmentGroups": [
@@ -64,12 +64,16 @@
           },
           {
             "kind": "schedule",
-            "id": "lin-he:d1:b2"
+            "id": "qiao-pan:d1:b1"
+          },
+          {
+            "kind": "forecast",
+            "id": "w0:repair"
           }
         ],
-        "beforeDecisionStateHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
-        "finalDecisionStateHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
-        "finalOutcomeCode": "committed:food-shift-lin",
+        "beforeDecisionStateHash": "156483d9a9dd9cf597c1a88956e8eb023d0641762ce01752df4073b588c8a034",
+        "finalDecisionStateHash": "d68fdf6d81070897022910dda0ea2ef29be1e4976405013c38bf460f198dd0c1",
+        "finalOutcomeCode": "committed:food-shift-qiao",
         "finalDisposition": "committed"
       }
     ],

@@ -22,12 +22,12 @@
         "decisionIntentId": "w0:food-plan",
         "options": [
           {
-            "optionId": "food-shift-lin",
+            "optionId": "food-shift-qiao",
             "reachable": true,
             "visibleConsequenceRefs": [
               "forecast:w0:food",
               "forecast:w0:repair",
-              "schedule:lin-he:d1:b2"
+              "schedule:qiao-pan:d1:b1"
             ],
             "dominanceStatus": "non-dominated"
           },

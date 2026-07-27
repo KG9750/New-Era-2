@@ -12,10 +12,10 @@
       {
         "id": "action-0001",
         "type": "EDIT_SCHEDULE",
-        "memberId": "lin-he",
+        "memberId": "qiao-pan",
         "dayIndex": 1,
-        "blockId": "lin-he:d1:b2",
-        "fromActivity": "baseline",
+        "blockId": "qiao-pan:d1:b1",
+        "fromActivity": "repair",
         "toActivity": "food"
       },
       {
@@ -39,12 +39,12 @@
         "decisionIntentId": "w0:food-plan",
         "options": [
           {
-            "optionId": "food-shift-lin",
+            "optionId": "food-shift-qiao",
             "reachable": true,
             "visibleConsequenceRefs": [
               "forecast:w0:food",
               "forecast:w0:repair",
-              "schedule:lin-he:d1:b2"
+              "schedule:qiao-pan:d1:b1"
             ],
             "dominanceStatus": "non-dominated"
           },
@@ -74,11 +74,11 @@
         "consequenceRefs": [
           {
             "kind": "schedule",
-            "id": "lin-he:d1:b2"
+            "id": "qiao-pan:d1:b1"
           }
         ],
-        "beforeDecisionStateHash": "91354ca85456e6f9b6d5aaae90a14c4c4ec132bc7a4d86bb501f1b1927274c45",
-        "finalDecisionStateHash": "91354ca85456e6f9b6d5aaae90a14c4c4ec132bc7a4d86bb501f1b1927274c45",
+        "beforeDecisionStateHash": "8b5fd125cfcf01d9320e43ec07b177f1086452f156572fa49b253d132f8b7bea",
+        "finalDecisionStateHash": "8b5fd125cfcf01d9320e43ec07b177f1086452f156572fa49b253d132f8b7bea",
         "finalOutcomeCode": "reverted",
         "finalDisposition": "reverted"
       }
@@ -87,12 +87,12 @@
       "0:w0:food-plan": {
         "before": {
           "scheduleCells": [
-            "lin-he:d1:b2=baseline"
+            "qiao-pan:d1:b1=repair"
           ]
         },
         "final": {
           "scheduleCells": [
-            "lin-he:d1:b2=baseline"
+            "qiao-pan:d1:b1=repair"
           ]
         }
       }

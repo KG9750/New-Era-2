@@ -14,8 +14,8 @@
         "type": "RESOLVE_LIN_HE_REQUEST",
         "resolution": "accepted",
         "memberId": "lin-he",
-        "dayIndex": 7,
-        "blockId": "lin-he:d7:b2",
+        "dayIndex": 8,
+        "blockId": "lin-he:d8:b0",
         "fromActivity": "food",
         "toActivity": "study"
       }
@@ -38,7 +38,7 @@
             "reachable": true,
             "visibleConsequenceRefs": [
               "forecast:w1:food",
-              "schedule:lin-he:d7:b2",
+              "schedule:lin-he:d8:b0",
               "character-record:lin-he-study"
             ],
             "dominanceStatus": "non-dominated"
@@ -75,8 +75,8 @@
             "id": "lin-he-study-declined"
           }
         ],
-        "beforeDecisionStateHash": "ab76b1a497bc717cb41c9a84fb68a7064a72a6c5763a2eb8fd363c762dfe1567",
-        "finalDecisionStateHash": "4d732e6d14c04582005e44b67ac312d510ad60a5b3df632e426a349b63b89f1c",
+        "beforeDecisionStateHash": "e8115a6454c3206d92c99656952e1887cd538e2b2666b377599d8cf5e06cb5d2",
+        "finalDecisionStateHash": "cfcf718d731e52a579f5a5cfa08c5ed79df77e5cf0c30c34e2ba0a346aa1bec6",
         "finalOutcomeCode": "committed:decline-study",
         "finalDisposition": "committed"
       }
@@ -86,13 +86,13 @@
         "before": {
           "resolution": "pending",
           "scheduleCells": [
-            "lin-he:d7:b2=food"
+            "lin-he:d8:b0=food"
           ]
         },
         "final": {
           "resolution": "accepted",
           "scheduleCells": [
-            "lin-he:d7:b2=study"
+            "lin-he:d8:b0=study"
           ],
           "characterRecord": {
             "linHeStudy": "accepted"

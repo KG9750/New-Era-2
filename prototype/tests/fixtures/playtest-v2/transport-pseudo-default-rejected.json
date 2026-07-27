@@ -1,0 +1,81 @@
+{
+  "fixtureId": "v2-transport-pseudo-default-rejected",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-D40",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "OPEN_TRANSPORT_SHORTCUT",
+        "atTick": 54,
+        "weekIndex": 0
+      }
+    ],
+    "candidateEditGroups": [],
+    "choiceSets": [
+      {
+        "choiceSetId": "choice:w0:transport-route",
+        "decisionIntentId": "w0:transport-route",
+        "options": [
+          {
+            "optionId": "north-loop",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food",
+              "risk:w0:transport-loss"
+            ],
+            "dominanceStatus": "non-dominated"
+          },
+          {
+            "optionId": "south-shortcut",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food",
+              "risk:w0:transport-loss"
+            ],
+            "dominanceStatus": "non-dominated"
+          }
+        ],
+        "selectedOptionId": null
+      }
+    ],
+    "candidateManagementCommitmentGroups": [
+      {
+        "decisionIntentId": "w0:transport-route",
+        "choiceSetId": "choice:w0:transport-route",
+        "weekIndex": 0,
+        "problemCategory": "transport",
+        "actionIds": [
+          "action-0001"
+        ],
+        "consequenceRefs": [
+          {
+            "kind": "risk",
+            "id": "w0:transport-loss"
+          }
+        ],
+        "beforeDecisionStateHash": "5787a69bb55494fbb320bba90bc0f1c67a808bdabfa7ed6ae10d7f4194380441",
+        "finalDecisionStateHash": "5787a69bb55494fbb320bba90bc0f1c67a808bdabfa7ed6ae10d7f4194380441",
+        "finalOutcomeCode": "default-maintained",
+        "finalDisposition": "default-maintained"
+      }
+    ],
+    "weekRecaps": [
+      {
+        "weekIndex": 0
+      },
+      {
+        "weekIndex": 1
+      }
+    ],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

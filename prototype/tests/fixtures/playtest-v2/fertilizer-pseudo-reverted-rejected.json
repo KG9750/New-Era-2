@@ -1,0 +1,81 @@
+{
+  "fixtureId": "v2-fertilizer-pseudo-reverted-rejected",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-D39",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "USE_FERTILIZER",
+        "atTick": 54,
+        "weekIndex": 0
+      }
+    ],
+    "candidateEditGroups": [],
+    "choiceSets": [
+      {
+        "choiceSetId": "choice:w0:fertilizer",
+        "decisionIntentId": "w0:asset-use:fertilizer",
+        "options": [
+          {
+            "optionId": "use-fertilizer",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food",
+              "inventory:fertilizer"
+            ],
+            "dominanceStatus": "non-dominated"
+          },
+          {
+            "optionId": "keep-fertilizer",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food",
+              "inventory:fertilizer"
+            ],
+            "dominanceStatus": "non-dominated"
+          }
+        ],
+        "selectedOptionId": null
+      }
+    ],
+    "candidateManagementCommitmentGroups": [
+      {
+        "decisionIntentId": "w0:asset-use:fertilizer",
+        "choiceSetId": "choice:w0:fertilizer",
+        "weekIndex": 0,
+        "problemCategory": "asset-use",
+        "actionIds": [
+          "action-0001"
+        ],
+        "consequenceRefs": [
+          {
+            "kind": "inventory",
+            "id": "fertilizer"
+          }
+        ],
+        "beforeDecisionStateHash": "6a533698bbbafed44e2a5a7a2a849f6adbc78df5834616f74dd20cd1e34eeef4",
+        "finalDecisionStateHash": "6a533698bbbafed44e2a5a7a2a849f6adbc78df5834616f74dd20cd1e34eeef4",
+        "finalOutcomeCode": "reverted",
+        "finalDisposition": "reverted"
+      }
+    ],
+    "weekRecaps": [
+      {
+        "weekIndex": 0
+      },
+      {
+        "weekIndex": 1
+      }
+    ],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

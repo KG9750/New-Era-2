@@ -21,8 +21,8 @@
         "accepted": true,
         "errorCode": null,
         "hashes": {
-          "ordered-a": "5ef5e9acb79b7879d0ea265dbf7d5eb1c2070875fefaf8b663a4caefe03c14e9",
-          "ordered-b": "5ef5e9acb79b7879d0ea265dbf7d5eb1c2070875fefaf8b663a4caefe03c14e9"
+          "ordered-a": "c2ca148c63783c6a976bc8a7bb1f0366bc2242b5abfb7999f2f36bdd1ce2ef77",
+          "ordered-b": "c2ca148c63783c6a976bc8a7bb1f0366bc2242b5abfb7999f2f36bdd1ce2ef77"
         },
         "relations": [
           {
@@ -66,7 +66,7 @@
         ],
         "committedCount": 1,
         "decisionHashes": [
-          "4d732e6d14c04582005e44b67ac312d510ad60a5b3df632e426a349b63b89f1c"
+          "cfcf718d731e52a579f5a5cfa08c5ed79df77e5cf0c30c34e2ba0a346aa1bec6"
         ]
       }
     },
@@ -84,7 +84,7 @@
         ],
         "committedCount": 1,
         "decisionHashes": [
-          "75ec91124f259cd9cde61a7e8ee2b07a5cd7ad3a8833065273c0a12eacd070b4"
+          "4cd8595bc437cc5a46331d1936344c78412831f5e9dc165f2f7f15a72dd1d204"
         ]
       }
     },
@@ -150,7 +150,7 @@
         ],
         "committedCount": 1,
         "decisionHashes": [
-          "a2545b81a8bb22597e37d9fa248a06d653b72c76a83408555f1e7cecb038ed0d"
+          "8d7904c8b215ad06653fae43246b8329f6e4c9dbf93aad46f7d9f6fe0770bd98"
         ]
       }
     },
@@ -170,7 +170,7 @@
         ],
         "committedCount": 0,
         "decisionHashes": [
-          "91354ca85456e6f9b6d5aaae90a14c4c4ec132bc7a4d86bb501f1b1927274c45"
+          "8b5fd125cfcf01d9320e43ec07b177f1086452f156572fa49b253d132f8b7bea"
         ]
       }
     },
@@ -257,8 +257,8 @@
         "accepted": true,
         "errorCode": null,
         "hashes": {
-          "accept-study": "a82bfe333ac89f15a757dad717d27d0d341fe3f570bd57c86a2daf5b81b000fe",
-          "decline-study": "56b989fe6f3e9b719f911928b41686361c31ffd40902ebedad1b330c73d3e161"
+          "accept-study": "a3c33c7e649f450499ff76d290156791bd75a56ffbc50137172a4e7d49a3e8e7",
+          "decline-study": "78691b64b21a6ff2ac4b009ae2e67e80c9f620f7879ffbb436a1e50dd0409290"
         },
         "relations": [
           {
@@ -384,8 +384,8 @@
         "accepted": true,
         "errorCode": null,
         "hashes": {
-          "food-before-repair": "a2545b81a8bb22597e37d9fa248a06d653b72c76a83408555f1e7cecb038ed0d",
-          "food-after-repair": "a2545b81a8bb22597e37d9fa248a06d653b72c76a83408555f1e7cecb038ed0d",
+          "food-before-repair": "8d7904c8b215ad06653fae43246b8329f6e4c9dbf93aad46f7d9f6fe0770bd98",
+          "food-after-repair": "8d7904c8b215ad06653fae43246b8329f6e4c9dbf93aad46f7d9f6fe0770bd98",
           "repair-before-food": "b7386d3e4ef059fa503dc5942d5a8a0569a24bd23c539f76dbe172c44a689ffa",
           "repair-after-food": "b7386d3e4ef059fa503dc5942d5a8a0569a24bd23c539f76dbe172c44a689ffa"
         },
@@ -607,6 +607,42 @@
       }
     },
     {
+      "file": "playtest-v2/repair-schedule-chen-committed-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v2",
+        "candidateEditCount": 0,
+        "candidateEditGroupIds": [],
+        "candidateManagementCount": 1,
+        "candidateManagementGroupIds": [
+          "w0:repair-responsibility:pump-incident-day-3"
+        ],
+        "committedCount": 1,
+        "decisionHashes": [
+          "67171c70d00b96c6ccaf9f20380e671abe2d3e2e9595eb5d9e7e9e3b823e7586"
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/repair-schedule-su-committed-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v2",
+        "candidateEditCount": 0,
+        "candidateEditGroupIds": [],
+        "candidateManagementCount": 1,
+        "candidateManagementGroupIds": [
+          "w0:repair-responsibility:pump-incident-day-3"
+        ],
+        "committedCount": 1,
+        "decisionHashes": [
+          "7a0611b8727b312c00688283873e1358d25b1501c906484c2745490e6b0709f1"
+        ]
+      }
+    },
+    {
       "file": "playtest-v2/transport-shortcut-committed-valid.json",
       "assertions": {
         "accepted": true,
@@ -642,6 +678,322 @@
         "decisionHashes": [
           "17574353901206f0b9eb15538934e798316759e8cc7bda2d19d677d9cc5c941e"
         ]
+      }
+    },
+    {
+      "file": "playtest-v2/transport-shortcut-week1-committed-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v2",
+        "candidateEditCount": 1,
+        "candidateEditGroupIds": [
+          "legacy:w0:transport-route"
+        ],
+        "candidateManagementCount": 1,
+        "candidateManagementGroupIds": [
+          "w0:transport-route"
+        ],
+        "committedCount": 1,
+        "decisionHashes": [
+          "016c3bf2edbc34c9930e3190a6ee8e77e04efa9a32bf43b2219779159331d868"
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/fertilizer-use-week1-committed-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v2",
+        "candidateEditCount": 0,
+        "candidateEditGroupIds": [],
+        "candidateManagementCount": 1,
+        "candidateManagementGroupIds": [
+          "w0:asset-use:fertilizer"
+        ],
+        "committedCount": 1,
+        "decisionHashes": [
+          "216d7b44af16ccc33ff7a0fb56bcbfc3067e68a1043e38e82b8f2375ec33f3d3"
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/transport-qualifying-legacy-omitted-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_QUALIFYING_LEGACY_ACTION_UNCLASSIFIED"
+      }
+    },
+    {
+      "file": "playtest-v2/fertilizer-qualifying-group-omitted-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_QUALIFYING_ACTION_UNCLASSIFIED"
+      }
+    },
+    {
+      "file": "playtest-v2/transport-week-index-at-tick-mismatch-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_ACTION_PAYLOAD"
+      }
+    },
+    {
+      "file": "playtest-v2/fertilizer-week-index-at-tick-mismatch-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_ACTION_PAYLOAD"
+      }
+    },
+    {
+      "file": "playtest-v2/transport-week-index-reverse-at-tick-mismatch-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_ACTION_PAYLOAD"
+      }
+    },
+    {
+      "file": "playtest-v2/fertilizer-week-index-reverse-at-tick-mismatch-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_ACTION_PAYLOAD"
+      }
+    },
+    {
+      "file": "playtest-v2/fertilizer-pseudo-reverted-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_REVERT_NOT_SUPPORTED"
+      }
+    },
+    {
+      "file": "playtest-v2/transport-pseudo-default-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_DEFAULT_CONTAINS_QUALIFYING_ACTION"
+      }
+    },
+    {
+      "file": "playtest-v2/study-pseudo-reverted-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_REVERT_NOT_SUPPORTED"
+      }
+    },
+    {
+      "file": "playtest-v2/repair-debt-pseudo-default-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_DEFAULT_CONTAINS_QUALIFYING_ACTION"
+      }
+    },
+    {
+      "file": "playtest-v2/schedule-reverted-without-undo-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_REVERT_CHAIN_MISSING"
+      }
+    },
+    {
+      "file": "playtest-v2/schedule-committed-after-undo-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_COMMITTED_ACTION_REVERTED"
+      }
+    },
+    {
+      "file": "playtest-v2/schedule-edit-undo-new-edit-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v2",
+        "candidateEditCount": 1,
+        "candidateEditGroupIds": [
+          "legacy:w0:food-plan"
+        ],
+        "candidateManagementCount": 1,
+        "candidateManagementGroupIds": [
+          "w0:food-plan"
+        ],
+        "committedCount": 1,
+        "decisionHashes": [
+          "8d7904c8b215ad06653fae43246b8329f6e4c9dbf93aad46f7d9f6fe0770bd98"
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/redo-without-undo-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_REDO_STATE"
+      }
+    },
+    {
+      "file": "playtest-v2/double-undo-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_UNDO_STATE"
+      }
+    },
+    {
+      "file": "playtest-v2/repair-reassign-after-normal-reverse-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v2",
+        "candidateEditCount": 0,
+        "candidateEditGroupIds": [],
+        "candidateManagementCount": 1,
+        "candidateManagementGroupIds": [
+          "w0:repair-responsibility:pump-incident-day-3"
+        ],
+        "committedCount": 1,
+        "decisionHashes": [
+          "909eb9b5b92444be6ab665c4810abb27cb6b2a0942e40cf50a8aaf5814fa86ee"
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/repair-multiple-active-actors-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_MULTIPLE_FINAL_OPTION_ACTIONS"
+      }
+    },
+    {
+      "file": "playtest-v2/food-ordinary-reverse-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v2",
+        "candidateEditCount": 1,
+        "candidateEditGroupIds": [
+          "legacy:w0:food-plan"
+        ],
+        "candidateManagementCount": 1,
+        "candidateManagementGroupIds": [
+          "w0:food-plan"
+        ],
+        "committedCount": 0,
+        "decisionHashes": [
+          "8b5fd125cfcf01d9320e43ec07b177f1086452f156572fa49b253d132f8b7bea"
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/schedule-projection-before-anchor-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_SCHEDULE_ACTION_STATE"
+      }
+    },
+    {
+      "file": "playtest-v2/legacy-undo-schedule-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_ACTION_TYPE"
+      }
+    },
+    {
+      "file": "playtest-v2/food-competing-option-action-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_COMPETING_OPTION_ACTION"
+      }
+    },
+    {
+      "file": "playtest-v2/repair-competing-option-action-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_COMPETING_OPTION_ACTION"
+      }
+    },
+    {
+      "file": "playtest-v2/food-shortfall-retracted-before-schedule-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v2",
+        "candidateEditCount": 1,
+        "candidateEditGroupIds": [
+          "legacy:w0:food-plan"
+        ],
+        "candidateManagementCount": 1,
+        "candidateManagementGroupIds": [
+          "w0:food-plan"
+        ],
+        "committedCount": 1,
+        "decisionHashes": [
+          "d6858b04b1e1ce6a2a6347d3d0781693a45d35cf26342e70f410edeb1032d020"
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/food-shortfall-retraction-omitted-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_ACTION_CHAIN_INCOMPLETE"
+      }
+    },
+    {
+      "file": "playtest-v2/food-shortfall-retraction-projection-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_FOOD_SHORTFALL_ACTION_STATE"
+      }
+    },
+    {
+      "file": "playtest-v2/food-shortfall-fully-reverted-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "schemaVersion": "gate1-playtest-v2",
+        "candidateEditCount": 0,
+        "candidateEditGroupIds": [],
+        "candidateManagementCount": 1,
+        "candidateManagementGroupIds": [
+          "w0:food-plan"
+        ],
+        "committedCount": 0,
+        "decisionHashes": [
+          "963237c894c03a5dfe8d91ed1f17a12a096cfa34ad7e5811d4a7c237f920a6a9"
+        ]
+      }
+    },
+    {
+      "file": "playtest-v2/food-shortfall-pseudo-reverted-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_REVERT_CHAIN_MISSING"
+      }
+    },
+    {
+      "file": "playtest-v2/fertilizer-cross-week-repeat-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_SINGLE_USE_ACTION_REPEATED"
+      }
+    },
+    {
+      "file": "playtest-v2/transport-cross-week-repeat-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_SINGLE_USE_ACTION_REPEATED"
+      }
+    },
+    {
+      "file": "playtest-v2/food-ordinary-reverse-state-mismatch-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_SCHEDULE_ACTION_STATE"
+      }
+    },
+    {
+      "file": "playtest-v2/food-ordinary-reverse-omitted-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "V2_ACTION_CHAIN_INCOMPLETE"
       }
     },
     {

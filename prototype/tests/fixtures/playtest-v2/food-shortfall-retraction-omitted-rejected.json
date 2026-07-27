@@ -1,0 +1,100 @@
+{
+  "fixtureId": "v2-food-shortfall-retraction-omitted-rejected",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-D60",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "SET_FOOD_SHORTFALL_ACCEPTED",
+        "accepted": true
+      },
+      {
+        "id": "action-0002",
+        "type": "SET_FOOD_SHORTFALL_ACCEPTED",
+        "accepted": false
+      }
+    ],
+    "candidateEditGroups": [],
+    "choiceSets": [
+      {
+        "choiceSetId": "choice:w0:food-plan",
+        "decisionIntentId": "w0:food-plan",
+        "options": [
+          {
+            "optionId": "food-shift-qiao",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food",
+              "forecast:w0:repair",
+              "schedule:qiao-pan:d1:b1"
+            ],
+            "dominanceStatus": "non-dominated"
+          },
+          {
+            "optionId": "accept-food-gap",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food",
+              "forecast:w0:repair"
+            ],
+            "dominanceStatus": "non-dominated"
+          }
+        ],
+        "selectedOptionId": "accept-food-gap"
+      }
+    ],
+    "candidateManagementCommitmentGroups": [
+      {
+        "decisionIntentId": "w0:food-plan",
+        "choiceSetId": "choice:w0:food-plan",
+        "weekIndex": 0,
+        "problemCategory": "food",
+        "actionIds": [
+          "action-0001"
+        ],
+        "consequenceRefs": [
+          {
+            "kind": "forecast",
+            "id": "w0:food"
+          },
+          {
+            "kind": "forecast",
+            "id": "w0:repair"
+          }
+        ],
+        "beforeDecisionStateHash": "963237c894c03a5dfe8d91ed1f17a12a096cfa34ad7e5811d4a7c237f920a6a9",
+        "finalDecisionStateHash": "244e1c3590840fa639700713f093f3e8a5d8b8061d3aad8011ddeaacb7aac8f0",
+        "finalOutcomeCode": "committed:accept-food-gap",
+        "finalDisposition": "committed"
+      }
+    ],
+    "oracleDecisionProjections": {
+      "0:w0:food-plan": {
+        "before": {
+          "foodShortfallAccepted": false
+        },
+        "final": {
+          "foodShortfallAccepted": true
+        }
+      }
+    },
+    "weekRecaps": [
+      {
+        "weekIndex": 0
+      },
+      {
+        "weekIndex": 1
+      }
+    ],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}

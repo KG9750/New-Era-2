@@ -11,7 +11,9 @@
     "actions": [
       {
         "id": "action-0001",
-        "type": "USE_FERTILIZER"
+        "type": "USE_FERTILIZER",
+        "atTick": 1062,
+        "weekIndex": 1
       }
     ],
     "candidateEditGroups": [],

@@ -15,7 +15,7 @@
         "memberId": "qiao-pan",
         "dayIndex": 3,
         "blockId": "qiao-pan:d3:b2",
-        "fromActivity": "baseline",
+        "fromActivity": "rest",
         "toActivity": "repair",
         "responsibility": "scheduled"
       }
@@ -32,7 +32,9 @@
             "visibleConsequenceRefs": [
               "forecast:w0:repair",
               "risk:pump",
-              "schedule:qiao-pan:d3:b2"
+              "schedule:qiao-pan:d3:b2",
+              "schedule:chen-du:d3:b0",
+              "schedule:su-ji:d3:b0"
             ],
             "dominanceStatus": "non-dominated"
           },
@@ -72,7 +74,7 @@
             "id": "qiao-pan:d3:b2"
           }
         ],
-        "beforeDecisionStateHash": "22667a488a2578d8f608d87a0d298187f6700e5c47924a7947b6c338a5d54c82",
+        "beforeDecisionStateHash": "5e06411dbfd7c0405df2884f294a49208ea9b89241a6619a3122f7a91fc83960",
         "finalDecisionStateHash": "b289a0bde4b5d50d7e9da766c1270669fd42ab463b0043fe5247939fd3dc3ef3",
         "finalOutcomeCode": "committed:schedule-repair",
         "finalDisposition": "committed"
@@ -83,7 +85,7 @@
         "before": {
           "repairResponsibility": "unresolved",
           "scheduleCells": [
-            "qiao-pan:d3:b2=baseline"
+            "qiao-pan:d3:b2=rest"
           ]
         },
         "final": {

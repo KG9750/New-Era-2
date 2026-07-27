@@ -1,0 +1,117 @@
+{
+  "fixtureId": "v2-food-ordinary-reverse-valid",
+  "kind": "playtest-export",
+  "input": {
+    "schemaVersion": "gate1-playtest-v2",
+    "meta": {
+      "sampleId": "TECH-RC9-D52",
+      "scenarioVersion": "0.5.0"
+    },
+    "captureKind": "complete",
+    "actions": [
+      {
+        "id": "action-0001",
+        "type": "EDIT_SCHEDULE",
+        "memberId": "qiao-pan",
+        "dayIndex": 1,
+        "blockId": "qiao-pan:d1:b1",
+        "fromActivity": "repair",
+        "toActivity": "food"
+      },
+      {
+        "id": "action-0002",
+        "type": "EDIT_SCHEDULE",
+        "memberId": "qiao-pan",
+        "dayIndex": 1,
+        "blockId": "qiao-pan:d1:b1",
+        "fromActivity": "food",
+        "toActivity": "repair"
+      }
+    ],
+    "candidateEditGroups": [
+      {
+        "groupId": "legacy:w0:food-plan",
+        "actionIds": [
+          "action-0001",
+          "action-0002"
+        ]
+      }
+    ],
+    "choiceSets": [
+      {
+        "choiceSetId": "choice:w0:food-plan",
+        "decisionIntentId": "w0:food-plan",
+        "options": [
+          {
+            "optionId": "food-shift-qiao",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food",
+              "forecast:w0:repair",
+              "schedule:qiao-pan:d1:b1"
+            ],
+            "dominanceStatus": "non-dominated"
+          },
+          {
+            "optionId": "accept-food-gap",
+            "reachable": true,
+            "visibleConsequenceRefs": [
+              "forecast:w0:food",
+              "forecast:w0:repair"
+            ],
+            "dominanceStatus": "non-dominated"
+          }
+        ],
+        "selectedOptionId": null
+      }
+    ],
+    "candidateManagementCommitmentGroups": [
+      {
+        "decisionIntentId": "w0:food-plan",
+        "choiceSetId": "choice:w0:food-plan",
+        "weekIndex": 0,
+        "problemCategory": "food",
+        "actionIds": [
+          "action-0001",
+          "action-0002"
+        ],
+        "consequenceRefs": [
+          {
+            "kind": "schedule",
+            "id": "qiao-pan:d1:b1"
+          }
+        ],
+        "beforeDecisionStateHash": "8b5fd125cfcf01d9320e43ec07b177f1086452f156572fa49b253d132f8b7bea",
+        "finalDecisionStateHash": "8b5fd125cfcf01d9320e43ec07b177f1086452f156572fa49b253d132f8b7bea",
+        "finalOutcomeCode": "reverted",
+        "finalDisposition": "reverted"
+      }
+    ],
+    "oracleDecisionProjections": {
+      "0:w0:food-plan": {
+        "before": {
+          "scheduleCells": [
+            "qiao-pan:d1:b1=repair"
+          ]
+        },
+        "final": {
+          "scheduleCells": [
+            "qiao-pan:d1:b1=repair"
+          ]
+        }
+      }
+    },
+    "weekRecaps": [
+      {
+        "weekIndex": 0
+      },
+      {
+        "weekIndex": 1
+      }
+    ],
+    "finalTick": 2010,
+    "finalState": {
+      "isComplete": true
+    }
+  }
+}
