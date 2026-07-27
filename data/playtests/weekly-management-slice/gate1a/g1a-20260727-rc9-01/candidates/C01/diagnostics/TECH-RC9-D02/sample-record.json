@@ -1,0 +1,213 @@
+{
+  "schemaVersion": "gate1a-rc9-diagnostic-sample-record-v1",
+  "sampleId": "TECH-RC9-D02",
+  "cohortId": "g1a-20260727-rc9-01",
+  "candidateAttempt": "C01",
+  "sampleKind": "blind-diagnostic",
+  "issue": 49,
+  "operator": "/root",
+  "adjudicator": "/root",
+  "identityAndIsolation": {
+    "agentTask": "/root/rc9_d02_player",
+    "agentSessionId": null,
+    "agentSessionIdReason": "collaboration_tool_did_not_expose_session_uuid",
+    "freshContextAttestationAtTaskStart": true,
+    "freshContextMechanism": "fork_turns=none",
+    "finalApplicationSessionWasNew": true,
+    "priorCandidateExposureBeforeFinalApplicationSession": true,
+    "contextContaminationDetected": true,
+    "contaminationReason": "The same agent had already created a D02 application session and progressed into week 2 before a tool-kernel reset lost the browser handle and all evidence for that first session. The agent then restarted the deterministic candidate under the same sample ID and exported a second session.",
+    "firstApplicationSessionEvidenceAvailable": false,
+    "readOnlyAttestation": true,
+    "playerPacketReleasedBeforePlay": true,
+    "initialObservationSentBeforeFirstMutation": false,
+    "lateObservationPreservedWithoutBackdating": true,
+    "postSessionInterviewReleasedAfterFinalPlayDownloadAndClear": true,
+    "concurrentRc9PlayerSessionDetected": false
+  },
+  "releaseCandidate": {
+    "buildId": "g1-rc-20260727.rc9-c01",
+    "gitSha": "6837c7230806f2c5c218336668f9e201e3e6cca1",
+    "sourceTree": "e63f1a2938a4568d4f0bc9b4557f3d8da4f6c6e1",
+    "artifactHash": "64e8ddc85d15502c3b2776f89b13d71fbb621d9f350682d6c71ec5c998998552",
+    "archiveHash": "443fd0515e64fb528fb36b9dbedc08d0c299d33fa836a2aa1aa12bbfe5924d78",
+    "candidateBuildManifestHash": "127e3b9813281fc4a6ad31ccdfd1f2b54a482f4de8663ab0f08f6b1f109348fc",
+    "scenarioId": "gate1-two-week-management",
+    "scenarioVersion": "0.5.0",
+    "fixedSeed": 104729,
+    "initialStateHash": "fnv1a32-b33f1b1d",
+    "playerPacketHash": "ca01f407c0d2e7f0db9dc07699251190bcc55ef5c946b9a86bac17d8f24dd2ad",
+    "postSessionInterviewHash": "f10c6294edf5776dc426f90228e3030f328a80d823c23a65280d60721467c12c",
+    "viewport": "1440x1100",
+    "inputMode": "browser-pointer-keyboard"
+  },
+  "applicationSession": {
+    "sessionId": "aae210ab-5170-4552-9bec-4713a5b88e3a",
+    "sessionRole": "second_session_after_unrecoverable_first_session",
+    "machineStartedAtEpochMs": 1785159168350,
+    "machineEndedAtEpochMs": 1785159378816,
+    "machineElapsedMs": 210466,
+    "week1RawDurationMs": 89986,
+    "week2RawDurationMs": 80203,
+    "captureKind": "complete",
+    "finalTick": 2010,
+    "twoWeeksCompleted": true,
+    "recapCount": 2,
+    "exportTriggered": true,
+    "clearCompleted": true,
+    "clearEvidence": "Agent returned to the anonymous new-session entry without starting a third session."
+  },
+  "machineEvidence": {
+    "exportFilePath": "captures/g1-rc-20260727.rc9-c01-TECH-RC9-D02-aae210ab-5170-4552-9bec-4713a5b88e3a.json",
+    "exportFileSha256": "a4eddcf7028ea617595c643e0712556dcf5876b49c029745dd831394ade99965",
+    "exportFileSizeBytes": 69305,
+    "receiptPath": "captures/g1-rc-20260727.rc9-c01-TECH-RC9-D02-aae210ab-5170-4552-9bec-4713a5b88e3a.json.receipt.json",
+    "sha256SidecarPath": "captures/g1-rc-20260727.rc9-c01-TECH-RC9-D02-aae210ab-5170-4552-9bec-4713a5b88e3a.json.sha256",
+    "browserDownloadPath": "browser-download.json",
+    "browserDownloadEventCompleted": true,
+    "browserDownloadSha256": "a4eddcf7028ea617595c643e0712556dcf5876b49c029745dd831394ade99965",
+    "browserDownloadSizeBytes": 69305,
+    "browserDownloadMatchesServerRaw": true,
+    "allClaimsMatchServerRaw": true,
+    "actions": 11,
+    "domainEvents": 14,
+    "telemetryEntries": 260,
+    "machineWeek1LegacyCandidateCount": 1,
+    "machineWeek2LegacyCandidateCount": 1,
+    "machineWeek1V2CandidateCount": 3,
+    "machineWeek2V2CandidateCount": 1,
+    "firstApplicationSessionRawAvailable": false
+  },
+  "legacyEffectiveEditsAdjudication": {
+    "status": "DIAGNOSTIC_ONLY_EXCLUDED_INVALID_SAMPLE",
+    "week1": {
+      "count": 1,
+      "acceptedGroups": [
+        {
+          "groupId": "legacy:w0:transport-route",
+          "actionIds": [
+            "action-0004"
+          ]
+        }
+      ]
+    },
+    "week2": {
+      "count": 1,
+      "acceptedGroups": [
+        {
+          "groupId": "legacy:w1:lin-he-study",
+          "actionIds": [
+            "action-0009"
+          ]
+        }
+      ]
+    },
+    "includedInDiagnosticMedian": false
+  },
+  "effectiveManagementCommitmentsV2Adjudication": {
+    "status": "DIAGNOSTIC_ONLY_EXCLUDED_INVALID_SAMPLE",
+    "week1": {
+      "count": 3,
+      "acceptedGroups": [
+        {
+          "decisionIntentId": "w0:repair-responsibility:pump-incident-day-3",
+          "actionIds": [
+            "action-0002"
+          ],
+          "finalOutcomeCode": "committed:schedule-repair"
+        },
+        {
+          "decisionIntentId": "w0:transport-route",
+          "actionIds": [
+            "action-0004"
+          ],
+          "finalOutcomeCode": "committed:south-shortcut"
+        },
+        {
+          "decisionIntentId": "w0:asset-use:fertilizer",
+          "actionIds": [
+            "action-0006"
+          ],
+          "finalOutcomeCode": "committed:use-fertilizer"
+        }
+      ]
+    },
+    "week2": {
+      "count": 1,
+      "acceptedGroups": [
+        {
+          "decisionIntentId": "w1:character-request:lin-he-study",
+          "actionIds": [
+            "action-0009"
+          ],
+          "finalOutcomeCode": "committed:accept-study"
+        }
+      ]
+    },
+    "rejectedGroups": [],
+    "sameIntentDuplicateCount": 0,
+    "ctaOnlyCommitmentCount": 0,
+    "includedInDiagnosticMedian": false
+  },
+  "protocolDeviations": [
+    {
+      "id": "D02-PROTOCOL-01",
+      "kind": "LATE_INITIAL_OBSERVATION",
+      "description": "The observation message was sent after the agent had already created the session, mutated state and reported being in week 2. It is preserved as LATE_OBSERVATION and is not backdated."
+    },
+    {
+      "id": "D02-PROTOCOL-02",
+      "kind": "ABANDONED_FIRST_SESSION_AND_RESTART",
+      "description": "A first D02 session reached week 2, but its browser handle and evidence were lost after a node REPL reset. The agent restarted the same deterministic candidate and exported a second D02 session."
+    }
+  ],
+  "technicalInterruptions": [
+    {
+      "stage": "first_application_session_week2",
+      "kind": "playwright-locator-timeout_followed_by_node_repl_reset",
+      "recoverableWithoutSessionRestart": false,
+      "evidenceLost": true,
+      "impact": "The first application session could not be resumed or verified. Restarting exposed the final session to prior same-candidate knowledge."
+    },
+    {
+      "stage": "final_application_session_week2",
+      "kind": "playwright-accessible-name-timeout",
+      "recoverableWithoutSessionRestart": true,
+      "evidenceLost": false,
+      "impact": "No state changed; the agent recovered by using the visible control aria-label."
+    }
+  ],
+  "productSeverityCounts": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 0
+  },
+  "agentReportedEvidence": {
+    "lateObservation": "我认为最需要先处理的是水泵的预防检修缺口并把维修责任落到具体成员；如果不处理，水泵逾期会同时压低粮食产出和维修保障，还可能把维修欠账带到下一周。",
+    "completionSignal": "PLAYTHROUGH_COMPLETE",
+    "predictionExplanationProvided": true,
+    "personAndDecisionImpactProvided": true,
+    "mapEnteredDecision": true,
+    "mapActionTaken": true,
+    "week2FullInspection": false,
+    "week2FullReplan": false,
+    "mustClickAllCardsObserved": false,
+    "verbatimOutputPath": "agent-verbatim-output.md"
+  },
+  "subjectiveHumanFields": "not_applicable_agent_proxy",
+  "validityDecision": {
+    "status": "INVALID_TECHNICAL",
+    "reasonCode": "UNRECOVERABLE_FIRST_SESSION_EVIDENCE_LOSS_AND_RESTART_CONTAMINATION",
+    "reason": "Although the second-session export is internally complete and byte-consistent, the agent had already progressed through the same deterministic candidate into week 2 before an unrecoverable tool reset. The first session evidence was lost, and the same sample ID was restarted. The final agent/application-session pair therefore was not jointly fresh and isolated.",
+    "includedInGate1ADenominator": false,
+    "includedInDiagnosticMedian": false,
+    "sampleIdReusable": false,
+    "replacementRequired": true,
+    "replacementSampleId": null
+  },
+  "trackLocks": {
+    "gate1A": "DIAGNOSTIC_ATTEMPT_REJECTION_PENDING",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED"
+  }
+}
