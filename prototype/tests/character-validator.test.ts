@@ -122,6 +122,41 @@ describe('independent character contract validator', () => {
     ).toBe('blocked')
   })
 
+  it('blocks undeclared authority fields in the closed library envelope', () => {
+    const mutations: ((subject: Record<string, unknown>) => void)[] = [
+      (subject) => {
+        const validation = subject.validation as Record<string, unknown>
+        validation.machine_passed = true
+      },
+      (subject) => {
+        const validation = subject.validation as Record<string, unknown>
+        validation.release_status = 'ALL_GATES_PASSED'
+      },
+      (subject) => {
+        subject.release_status = 'ALL_GATES_PASSED'
+      },
+      (subject) => {
+        const contentPackVersions =
+          subject.content_pack_versions as Record<string, unknown>
+        contentPackVersions.release_status = 'APPROVED'
+      },
+    ]
+
+    for (const [index, mutate] of mutations.entries()) {
+      const forgedLibrary = structuredClone(
+        persistedLibrary,
+      ) as unknown as Record<string, unknown>
+      mutate(forgedLibrary)
+
+      expect(
+        validateCharacterLibrary(forgedLibrary).some(
+          (finding) => finding.result === 'blocked',
+        ),
+        `mutation=${index}`,
+      ).toBe(true)
+    }
+  })
+
   it('blocks forged stored findings that disagree with independent recomputation', () => {
     const forgedLibrary = structuredClone(persistedLibrary) as unknown as {
       validation: {
@@ -385,6 +420,32 @@ describe('independent character contract validator', () => {
     expect(result(character, 'M03')).toBe('blocked')
   })
 
+  it('enforces the minimum duration for major work responsibility', () => {
+    for (const durationYears of [0, 2, 4]) {
+      const character = persistedCharacter(1)
+      const work = (
+        character.biography_nodes as Record<string, unknown>[]
+      )[2]
+      work.age_start = (work.age_end as number) - durationYears
+
+      expect(result(character, 'M04'), `duration=${durationYears}`).toBe(
+        'blocked',
+      )
+    }
+
+    for (const durationYears of [5, 10, 29]) {
+      const character = persistedCharacter(1)
+      const work = (
+        character.biography_nodes as Record<string, unknown>[]
+      )[2]
+      work.age_start = (work.age_end as number) - durationYears
+
+      expect(result(character, 'M04'), `duration=${durationYears}`).toBe(
+        'passed',
+      )
+    }
+  })
+
   it('blocks an MBTI type that disagrees with its four dimension poles', () => {
     const character = persistedCharacter()
     const mbti = character.mbti as {
@@ -601,7 +662,7 @@ describe('independent character contract validator', () => {
     const originalWorkEnd = firstWork.age_end as number
     const secondWorkStart = Math.max(
       (firstWork.age_start as number) + 1,
-      originalWorkEnd - 4,
+      originalWorkEnd - 5,
     )
     firstWork.age_end = secondWorkStart
     const secondWork = structuredClone(firstWork)
@@ -634,7 +695,7 @@ describe('independent character contract validator', () => {
     const originalWorkEnd = firstWork.age_end as number
     const secondWorkStart = Math.max(
       (firstWork.age_start as number) + 1,
-      originalWorkEnd - 4,
+      originalWorkEnd - 5,
     )
     firstWork.age_end = secondWorkStart
     const secondWorkTemplate = WORK_TEMPLATES.find(
@@ -723,20 +784,23 @@ describe('independent character contract validator', () => {
   })
 
   it('blocks forged structured outputs on a third registered work node', () => {
-    const character = persistedCharacter()
+    const character = persistedCharacter(1)
     const biographyNodes =
       character.biography_nodes as Record<string, unknown>[]
     const firstWork = biographyNodes[2]
     const turningPoint = biographyNodes[3]
     const workEnd = firstWork.age_end as number
+    let nextWorkStart = workEnd - 10
+    firstWork.age_end = nextWorkStart
     let previousWorkId = String(firstWork.node_id)
 
     for (const suffix of ['second', 'third']) {
       const extraWork = structuredClone(firstWork)
       const extraWorkId = `${String(firstWork.node_id)}:${suffix}`
       extraWork.node_id = extraWorkId
-      extraWork.age_start = workEnd
-      extraWork.age_end = workEnd
+      extraWork.age_start = nextWorkStart
+      nextWorkStart += 5
+      extraWork.age_end = nextWorkStart
       extraWork.prerequisites = [previousWorkId]
       extraWork.attribute_modifiers = (
         extraWork.attribute_modifiers as Record<string, unknown>[]

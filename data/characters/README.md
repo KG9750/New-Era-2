@@ -30,6 +30,7 @@ PATH=/opt/homebrew/opt/node@24/bin:$PATH npm run characters:generate
 - 单人人物固定种子生成；
 - 正式姓名与关系型内部称呼规则；
 - 时间顺序履历及属性、技能、资格来源；
+- 技能经历按强度校验最低持续时间，零时长或过短 work 不能领取多年熟练度；
 - 七项属性、八项技能；
 - MBTI 四维倾向、强度和自然语言偏好；
 - 特质、压力反应、核心价值、机器可读红线；
@@ -41,6 +42,8 @@ PATH=/opt/homebrew/opt/node@24/bin:$PATH npm run characters:generate
 - `validateCharacterLibrary()` 校验 library 根 seed/版本/人物索引绑定，重算
   library ID，并从人物数组独立重建全部 308 条权威 finding；保存集合的 ID、
   顺序、数量、metadata、result、warning 与复算结果必须逐项一致；
+- library 根、content pack 与 `validation` 使用闭合字段集合，未声明的权威
+  状态字段会被阻断；
 - 五类履历模板的 ID、证据与结构化输出均从版本化内容包重建，资格 ID/evidence
   由教育模板决定；
 - 聚合结果使用 `passed / passed_with_warnings / blocked` 三态，并显式保存

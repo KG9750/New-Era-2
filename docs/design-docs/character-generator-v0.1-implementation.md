@@ -34,12 +34,12 @@ reducer、NPC dormant store 和开局四人选择器仍按规则阶段 C 单独�
 - `validateCharacter(character)`：通过独立 `validator.ts` 接收任意反序列化数据，
   执行 M03–M07、M09，并复算履历阶段、资格 evidence、MBTI 派生类型、出身模板、
   seed variation selector、候选库 person seed 与人物 ID；1–3 个 `work` 节点
-  均按各自登记模板逐节点重建结构化输出；
+  均按各自登记模板逐节点重建结构化输出，技能经历按强度校验最低持续年限；
 - `validateCharacterLibraryContent(characters)`：独立复算区分度指纹、引用和生活
   骨架，执行 M10 与候选库重复度门禁；
 - `validateCharacterLibrary(library)`：接收任意反序列化 library，校验根 seed、
   版本、人物索引、library ID、聚合 envelope，并从人物数组独立重建完整权威
-  finding 集合；
+  finding 集合；library 根、content pack 与 `validation` 均拒绝未声明字段；
 - `generateCharacterLibrary({ worldSeedHex, count })`：生成并校验批次；
 - `validatePopulationLimit(type, count)`：执行玩家 10 / NPC 15 人 M01 上限。
 
@@ -74,7 +74,7 @@ reducer、NPC dormant store 和开局四人选择器仍按规则阶段 C 单独�
 - 50 名人物；
 - Library ID：`character-library-e990760a870ff576`；
 - JSON SHA256：
-  `06b9248e66e0ffa7efc8fc76c8afedc55538060d71ed2a87941e0df981a7194f`；
+  `9f1bf2efb47fb944b494c851585a38547498a18f88415290664d9f67f559e09a`；
 - roster SHA256：
   `d931089e38ec389c465aa70f769da773094437e3728ce2750ea689f50b0c242d`；
 - 50 个稳定人物 ID、正式姓名与区分度指纹全部唯一；
@@ -88,6 +88,9 @@ reducer、NPC dormant store 和开局四人选择器仍按规则阶段 C 单独�
 - 四种关系型内部称呼结构均未超过批次的 50%；
 - M03–M07、M09、M10 和候选库生活骨架门禁通过；
 - 五类履历模板的 ID、证据与结构化输出由 validator 从版本化内容包重建；
+- `skill_experience` 的最低持续年限固定为 exposure=0、repeated=1、
+  regular=2、major_duty=5、long_profession=10；节点年龄只记录整段履历，
+  因此较长节点不会被强制升级为更高强度；
 - library 根 seed/版本/人物索引与 ID 通过公开 validator 复算；保存的 308 条
   权威 finding 必须在 ID、顺序、数量、metadata、result 与 warning 上和复算
   结果完全一致；
@@ -119,7 +122,8 @@ PATH=/opt/homebrew/opt/node@24/bin:$PATH npm run test:run -- tests/character-val
 `character-validator.test.ts` 直接读取已落盘 JSON，不调用生成器，并通过字段删除、
 伪造 prerequisite、履历阶段、MBTI、origin、seed provenance、模板 provenance、
 聚合 envelope、缺失/残缺/重复 finding、分布伪造、warning 擦除、技能、资格
-和 fingerprint 验证门禁负例。当前候选批次已在
+和 fingerprint 验证门禁负例；另覆盖 0/2/4/5/10/29 年 work 边界及 library
+根、content pack、validation 的未知字段。当前候选批次已在
 Node 20.20.2、22.23.1、24.18.0
 以及 `LANG=C` / `zh_CN.UTF-8` 下复算为上述相同 SHA。
 

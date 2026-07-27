@@ -3,7 +3,7 @@
 **审查基线：** `0aa2608dc8b90f36dacdf74fdea26fba82c5d242`
 **首次整改提交：** `a7c3f09132915587b502c0598d1e21b7b7190ed3`
 **首次整改复审：** `P0=0 / P1=2 / P2=1 / REVIEW_FAIL`
-**当前整改状态：** `R4_CODE_FIXED_PENDING_REREVIEW / HUMAN_GATES_OPEN`
+**当前整改状态：** `R5_CODE_FIXED_PENDING_REREVIEW / HUMAN_GATES_OPEN`
 
 ## P1-1：机器门禁 false negative
 
@@ -163,6 +163,30 @@
 - 新增缺失 finding、残缺 metadata、重复 finding、协调伪造 MBTI 分布和擦除
   warning 的回归反例。
 
+## v0.1.4 首轮代码复审 P1：零时长 work 刷技能
+
+状态：`R5_CODE_FIXED_PENDING_REREVIEW`
+
+- 复审报告：
+  `character-generator-v0.1-v014-independent-review-2026-07-27.md`；
+- `skill_experience` 按强度固定最低持续年限：exposure=0、repeated=1、
+  regular=2、major_duty=5、long_profession=10；
+- 节点年龄只表示整段履历，无法证明某项职责覆盖完整上限，因此当前只执行最低
+  年限，不因较长节点自动把 +6 升级成 +8；
+- 新增 0/2/4 年 blocked 与 5/10/29 年 passed 边界；合法双 work 和第三 work
+  伪造测试均改用至少 5 年的真实区间。
+
+## v0.1.4 首轮代码复审 P1：开放式权威 envelope
+
+状态：`R5_CODE_FIXED_PENDING_REREVIEW`
+
+- library 根固定 12 个字段；
+- `content_pack_versions` 固定 3 个版本字段；
+- `validation` 固定 scope、aggregate 三态、布尔汇总、warning、not-run、
+  findings 与 manual reviews 共 7 个字段；
+- 未声明的 `machine_passed`、`release_status`、根字段或 content pack 字段一律
+  阻断，不维护危险字段黑名单。
+
 ## 版本与验证
 
 - character schema：`character-v0.1.4-candidate`
@@ -170,10 +194,10 @@
 - generator schema：`char-gen-v0.1.4-candidate`
 - Library ID：`character-library-e990760a870ff576`
 - JSON SHA256：
-  `06b9248e66e0ffa7efc8fc76c8afedc55538060d71ed2a87941e0df981a7194f`
+  `9f1bf2efb47fb944b494c851585a38547498a18f88415290664d9f67f559e09a`
 - roster SHA256：
   `d931089e38ec389c465aa70f769da773094437e3728ce2750ea689f50b0c242d`
-- Vitest：9 files / 95 tests
+- Vitest：9 files / 97 tests
 - TypeScript：通过
 - Vite production build：通过
 - Node 20.20.2 / 22.23.1 / 24.18.0 与 `LANG=C` / `zh_CN.UTF-8`：

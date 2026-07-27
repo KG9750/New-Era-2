@@ -22,6 +22,7 @@ import {
   type AttributeValues,
   type GeneratedCharacter,
   type MbtiType,
+  type SkillExperience,
   type SkillKey,
   type SkillValues,
   type ValidationFinding,
@@ -300,6 +301,17 @@ function emptySkills(): SkillValues {
   }
 }
 
+const MINIMUM_SKILL_DURATION_YEARS: Record<
+  SkillExperience['intensity'],
+  number
+> = {
+  exposure: 0,
+  repeated: 1,
+  regular: 2,
+  major_duty: 5,
+  long_profession: 10,
+}
+
 function recomputePrimarySkills(skills: SkillValues): readonly SkillKey[] {
   return [...SKILL_KEYS]
     .filter((skill) => skills[skill] >= 6)
@@ -478,6 +490,16 @@ export function validateCharacter(
         return node.age_start === 0
       }
       return nodes[index - 1].age_end <= node.age_start
+    },
+  )
+  const skillExperienceDurationsValid = character.biography_nodes.every(
+    (node) => {
+      const durationYears = node.age_end - node.age_start
+      return node.skill_experience.every(
+        (experience) =>
+          durationYears >=
+          MINIMUM_SKILL_DURATION_YEARS[experience.intensity],
+      )
     },
   )
   const prerequisitesValid =
@@ -1057,14 +1079,15 @@ export function validateCharacter(
       'M04',
       'character_generation',
       character.character_id,
-      '履历年龄区间与前置节点合法；所有履历模板属于当前内容包，且出身与成长模板一致',
+      '履历年龄区间、技能经历最低持续时间与前置节点合法；所有履历模板属于当前内容包，且出身与成长模板一致',
       `${character.biography_nodes
         .map(
           (node) =>
             `${node.node_id}:${node.age_start}-${node.age_end},prerequisites=${node.prerequisites.join(',') || 'none'}`,
         )
-        .join(';')}; prerequisites_valid=${prerequisitesValid}; template_ids_versioned=${biographyTemplateIdsVersioned}; template_evidence_valid=${biographyTemplateEvidenceValid}; biography_summary_valid=${biographySummaryValid}; origin_provenance_valid=${originProvenanceValid}; template_outputs_valid=${biographyTemplateOutputsValid}`,
+        .join(';')}; skill_durations_valid=${skillExperienceDurationsValid}; prerequisites_valid=${prerequisitesValid}; template_ids_versioned=${biographyTemplateIdsVersioned}; template_evidence_valid=${biographyTemplateEvidenceValid}; biography_summary_valid=${biographySummaryValid}; origin_provenance_valid=${originProvenanceValid}; template_outputs_valid=${biographyTemplateOutputsValid}`,
       chronologyValid &&
+        skillExperienceDurationsValid &&
         prerequisitesValid &&
         biographyTemplateIdsVersioned &&
         biographyTemplateEvidenceValid &&
@@ -1468,9 +1491,26 @@ export function validateCharacterLibrary(
     diagnostics && isRecord(diagnostics.current_generator_replay)
       ? diagnostics.current_generator_replay
       : undefined
+  const validation = isRecord(subject.validation)
+    ? subject.validation
+    : undefined
   const worldSeedHex =
     typeof subject.world_seed_hex === 'string' ? subject.world_seed_hex : ''
   const libraryShapeValid =
+    sameData(Object.keys(subject).sort(), [
+      'characters',
+      'content_pack_versions',
+      'culture_pack_version',
+      'development_stage',
+      'diagnostics',
+      'generator_schema_version',
+      'library_id',
+      'schema_version',
+      'seed_derivation_version',
+      'status',
+      'validation',
+      'world_seed_hex',
+    ]) &&
     subject.schema_version === LIBRARY_SCHEMA_VERSION &&
     typeof subject.library_id === 'string' &&
     subject.status === 'CANDIDATE_NOT_FROZEN' &&
@@ -1478,6 +1518,12 @@ export function validateCharacterLibrary(
     /^[0-9a-f]{64}$/.test(worldSeedHex) &&
     subject.generator_schema_version === GENERATOR_SCHEMA_VERSION &&
     subject.seed_derivation_version === 'seed_derivation_v1' &&
+    contentPackVersions !== undefined &&
+    sameData(Object.keys(contentPackVersions).sort(), [
+      'biography',
+      'traits',
+      'values_and_redlines',
+    ]) &&
     contentPackVersions?.biography === CONTENT_PACK_VERSIONS.biography &&
     contentPackVersions?.traits === CONTENT_PACK_VERSIONS.traits &&
     contentPackVersions?.values_and_redlines ===
@@ -1496,6 +1542,16 @@ export function validateCharacterLibrary(
     replayDiagnostic.scope === 'CURRENT_GENERATOR_SELF_REPLAY_ONLY' &&
     ['passed', 'blocked'].includes(replayDiagnostic.result as string) &&
     typeof replayDiagnostic.evidence === 'string' &&
+    validation !== undefined &&
+    sameData(Object.keys(validation).sort(), [
+      'findings',
+      'implemented_machine_contracts_passed',
+      'implemented_machine_contracts_status',
+      'manual_reviews',
+      'not_run_ids',
+      'scope',
+      'warned_ids',
+    ]) &&
     subject.characters.length >= 1 &&
     subject.characters.length <= 500
 
@@ -1537,9 +1593,6 @@ export function validateCharacterLibrary(
           (finding) => finding.result === 'blocked',
         ),
     )
-  const validation = isRecord(subject.validation)
-    ? subject.validation
-    : undefined
   const storedFindings =
     validation && Array.isArray(validation.findings)
       ? validation.findings.filter(isValidationFinding)
