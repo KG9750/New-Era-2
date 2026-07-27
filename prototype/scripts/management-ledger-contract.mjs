@@ -382,6 +382,8 @@ function validateSettledOutcomes(
   input,
   commitmentsByChoiceSet,
   authority,
+  actionById,
+  actionBySequence,
 ) {
   const completedWeekCount = input.finalState.completedWeekCount
   const expectedCommitments = [
@@ -398,8 +400,14 @@ function validateSettledOutcomes(
   }
   const outcomesByChoiceSet = new Map()
   for (const outcome of input.settledManagementOutcomesV03) {
+    if (!isRecord(outcome)) {
+      return {
+        error: 'V03_SETTLED_OUTCOME_MISMATCH',
+        outcomesByChoiceSet: new Map(),
+      }
+    }
     const commitment = commitmentsByChoiceSet.get(
-      outcome?.choiceSetId,
+      outcome.choiceSetId,
     )
     const expectedConsequenceId =
       SETTLED_CONSEQUENCE_BY_CANDIDATE[
@@ -409,17 +417,20 @@ function validateSettledOutcomes(
       (item) =>
         item.consequenceId === expectedConsequenceId,
     )
-    const action = input.actions.find(
-      (item) =>
-        item?.type === 'COMMIT_MANAGEMENT_CHOICE' &&
-        item.sequence === commitment?.committedAtSequence,
+    const actionFromId = actionById.get(outcome.actionId)
+    const actionFromSequence = actionBySequence.get(
+      outcome.actionSequence,
     )
+    const action =
+      actionFromId === actionFromSequence
+        ? actionFromId
+        : undefined
     if (
-      !isRecord(outcome) ||
       commitment === undefined ||
       commitment.week >= completedWeekCount ||
       consequence === undefined ||
       action === undefined ||
+      action.type !== 'COMMIT_MANAGEMENT_CHOICE' ||
       outcomesByChoiceSet.has(outcome.choiceSetId) ||
       outcome.decisionIntentId !==
         commitment.decisionIntentId ||
@@ -438,10 +449,19 @@ function validateSettledOutcomes(
       outcome.settledAtTick !==
         SETTLED_AT_TICK_BY_WEEK[commitment.week] ||
       !sameAuthority(outcome, authority) ||
+      !sameAuthority(action, authority) ||
+      outcome.actionId !== commitment.actionId ||
       outcome.actionId !== action.id ||
       outcome.actionSequence !== action.sequence ||
       outcome.actionSequence !==
-        commitment.committedAtSequence
+        commitment.committedAtSequence ||
+      action.committedAtSequence !==
+        commitment.committedAtSequence ||
+      action.opportunityId !== commitment.opportunityId ||
+      action.choiceSetId !== commitment.choiceSetId ||
+      action.decisionIntentId !==
+        commitment.decisionIntentId ||
+      action.candidateId !== commitment.candidateId
     ) {
       return {
         error: 'V03_SETTLED_OUTCOME_MISMATCH',
@@ -490,15 +510,25 @@ function validateRecaps(
     }
     const settledOutcome =
       settledOutcomesByChoiceSet.get(choiceSetId)
+    const itemValue = recap.itemValues[index]
     if (
       settledOutcome !== undefined &&
-      (!isRecord(recap.itemValues[index]) ||
-        recap.itemValues[index].settledBeforeValue !==
+      (!isRecord(itemValue) ||
+        itemValue.settledBeforeValue !==
           settledOutcome.beforeValue ||
-        recap.itemValues[index].settledAfterValue !==
+        itemValue.settledAfterValue !==
           settledOutcome.afterValue ||
-        recap.itemValues[index].settledDelta !==
+        itemValue.settledDelta !==
           settledOutcome.delta)
+    ) {
+      return 'V03_RECAP_MISMATCH'
+    }
+    if (
+      settledOutcome === undefined &&
+      isRecord(itemValue) &&
+      Object.keys(itemValue).some((key) =>
+        key.startsWith('settled'),
+      )
     ) {
       return 'V03_RECAP_MISMATCH'
     }
@@ -535,6 +565,37 @@ export function validateCanonicalManagementLedger(input) {
     )
   ) {
     return reject('V03_AUTHORITY_MISMATCH')
+  }
+  const actionById = new Map()
+  const actionBySequence = new Map()
+  const committedAtSequences = new Set()
+  for (const action of input.actions) {
+    if (
+      typeof action.id !== 'string' ||
+      action.id.trim().length === 0 ||
+      actionById.has(action.id)
+    ) {
+      return reject('V03_ACTION_MISMATCH')
+    }
+    actionById.set(action.id, action)
+    if (action.sequence !== undefined) {
+      if (
+        !Number.isInteger(action.sequence) ||
+        actionBySequence.has(action.sequence)
+      ) {
+        return reject('V03_ACTION_MISMATCH')
+      }
+      actionBySequence.set(action.sequence, action)
+    }
+    if (action.type !== 'COMMIT_MANAGEMENT_CHOICE') continue
+    if (
+      !Number.isInteger(action.committedAtSequence) ||
+      action.sequence !== action.committedAtSequence ||
+      committedAtSequences.has(action.committedAtSequence)
+    ) {
+      return reject('V03_ACTION_MISMATCH')
+    }
+    committedAtSequences.add(action.committedAtSequence)
   }
 
   const complete = input.captureKind === 'complete'
@@ -629,6 +690,8 @@ export function validateCanonicalManagementLedger(input) {
         contract.resourceClaimRef ||
       commitment.commitCause !==
         'explicit-candidate-action' ||
+      typeof commitment.actionId !== 'string' ||
+      commitment.actionId.trim().length === 0 ||
       commitment.terminalState !== commitment.candidateId ||
       opportunity.terminalState !== commitment.candidateId ||
       !sameAuthority(commitment, authority) ||
@@ -656,19 +719,22 @@ export function validateCanonicalManagementLedger(input) {
     ) {
       return reject('V03_CANONICAL_CONTRACT')
     }
-    const actionMatches = input.actions.filter(
-      (action) =>
-        action?.type === 'COMMIT_MANAGEMENT_CHOICE' &&
-        action.opportunityId === commitment.opportunityId,
+    const actionFromId = actionById.get(commitment.actionId)
+    const actionFromSequence = actionBySequence.get(
+      commitment.committedAtSequence,
     )
     if (
-      actionMatches.length !== 1 ||
-      !sameAuthority(actionMatches[0], authority)
+      actionFromId === undefined ||
+      actionFromId !== actionFromSequence ||
+      actionFromId.type !== 'COMMIT_MANAGEMENT_CHOICE' ||
+      !sameAuthority(actionFromId, authority)
     ) {
       return reject('V03_ACTION_MISMATCH')
     }
-    const action = actionMatches[0]
+    const action = actionFromId
     if (
+      action.id !== commitment.actionId ||
+      action.opportunityId !== commitment.opportunityId ||
       action.choiceSetId !== commitment.choiceSetId ||
       action.candidateId !== commitment.candidateId ||
       action.decisionIntentId !==
@@ -820,6 +886,8 @@ export function validateCanonicalManagementLedger(input) {
     input,
     commitmentsByChoiceSet,
     authority,
+    actionById,
+    actionBySequence,
   )
   if (settledValidation.error !== null) {
     return reject(settledValidation.error)

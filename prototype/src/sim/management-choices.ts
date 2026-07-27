@@ -826,6 +826,7 @@ export function commitManagementChoice(
     committedAtSequence,
   }
   const commitment: ManagementChoiceCommitment = {
+    actionId,
     opportunityId: opportunity.opportunityId,
     decisionIntentId: opportunity.decisionIntentId,
     choiceSetId: opportunity.choiceSetId,

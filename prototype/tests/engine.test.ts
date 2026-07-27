@@ -47,6 +47,40 @@ describe('Gate 1 minimal simulation contract', () => {
     })
   })
 
+  it('rejects duplicate player action ids and sequences independently', () => {
+    const initial = scenario.createInitialState()
+    const first = createPlayerAction(
+      1,
+      initial.currentTick,
+      { type: 'SET_PAUSED', paused: true },
+    )
+    const state = applyPlayerAction(
+      initial,
+      first,
+      scenario,
+    ).state
+    const second = createPlayerAction(
+      2,
+      state.currentTick,
+      { type: 'SET_PAUSED', paused: false },
+    )
+
+    expect(() =>
+      applyPlayerAction(
+        state,
+        { ...second, id: first.id },
+        scenario,
+      ),
+    ).toThrow('Duplicate player action id')
+    expect(() =>
+      applyPlayerAction(
+        state,
+        { ...second, sequence: first.sequence },
+        scenario,
+      ),
+    ).toThrow('Duplicate player action sequence')
+  })
+
   it('updates the forecast immediately and explains preventive maintenance', () => {
     const initial = scenario.createInitialState()
     const repaired = chooseRepair(initial)

@@ -96,6 +96,7 @@ export interface ManagementChoiceConsequence {
 }
 
 export interface ManagementChoiceCommitment {
+  actionId: string
   opportunityId: string
   decisionIntentId: ManagementDecisionIntentId
   choiceSetId: ManagementChoiceSetId

@@ -199,14 +199,36 @@ function settleManagementOutcome(
   const consequence = commitment.consequences.find(
     (item) => item.consequenceId === consequenceId,
   )
-  const action = state.actionLog.find(
-    (item) => item.sequence === commitment.committedAtSequence,
+  const actionMatches = state.actionLog.filter(
+    (item) =>
+      item.id === commitment.actionId ||
+      item.sequence === commitment.committedAtSequence,
   )
+  const action =
+    actionMatches.length === 1 &&
+    actionMatches[0].id === commitment.actionId &&
+    actionMatches[0].sequence === commitment.committedAtSequence
+      ? actionMatches[0]
+      : undefined
+  const request =
+    action?.action.type === 'COMMIT_MANAGEMENT_CHOICE'
+      ? action.action.request
+      : undefined
   if (
     consequence === undefined ||
     typeof consequence.beforeValue !== 'number' ||
     typeof consequence.afterValue !== 'number' ||
-    action?.action.type !== 'COMMIT_MANAGEMENT_CHOICE'
+    action === undefined ||
+    request === undefined ||
+    request.opportunityId !== commitment.opportunityId ||
+    request.choiceSetId !== commitment.choiceSetId ||
+    request.candidateId !== commitment.candidateId ||
+    request.diagnosisId !== commitment.diagnosisId ||
+    request.sessionId !== commitment.sessionId ||
+    request.candidateBuildAuthorityHash !==
+      commitment.candidateBuildAuthorityHash ||
+    request.sessionAuthorityToken !==
+      commitment.sessionAuthorityToken
   ) {
     throw new Error(
       `Management commitment ${commitment.choiceSetId} cannot be settled`,
@@ -251,6 +273,15 @@ export function applyPlayerAction(
 ): TransitionResult {
   if (state.actionLog.some((item) => item.id === envelope.id)) {
     throw new Error(`Duplicate player action id: ${envelope.id}`)
+  }
+  if (
+    state.actionLog.some(
+      (item) => item.sequence === envelope.sequence,
+    )
+  ) {
+    throw new Error(
+      `Duplicate player action sequence: ${envelope.sequence}`,
+    )
   }
   if (envelope.atTick !== state.currentTick) {
     throw new Error('Player action tick must match the current simulation tick')
