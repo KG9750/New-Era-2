@@ -1,0 +1,230 @@
+{
+  "schemaVersion": "gate1a-rc9-diagnostic-sample-record-v1",
+  "sampleId": "TECH-RC9-D01",
+  "cohortId": "g1a-20260727-rc9-01",
+  "candidateAttempt": "C01",
+  "sampleKind": "blind-diagnostic",
+  "issue": 49,
+  "operator": "/root",
+  "adjudicator": "/root",
+  "identityAndIsolation": {
+    "agentTask": "/root/rc9_d01_player",
+    "agentSessionId": null,
+    "agentSessionIdReason": "collaboration_tool_did_not_expose_session_uuid",
+    "freshContextAttestation": true,
+    "freshContextMechanism": "fork_turns=none",
+    "freshApplicationSession": true,
+    "freshApplicationSessionMechanism": "new Playwright browser/context/page using the local Chrome executable",
+    "contextContaminationDetected": false,
+    "priorCandidateExposure": false,
+    "readOnlyAttestation": true,
+    "playerPacketReleasedBeforePlay": true,
+    "postSessionInterviewReleasedAfterPlayDownloadAndClear": true,
+    "concurrentRc9PlayerSessionDetected": false
+  },
+  "releaseCandidate": {
+    "buildId": "g1-rc-20260727.rc9-c01",
+    "gitSha": "6837c7230806f2c5c218336668f9e201e3e6cca1",
+    "sourceTree": "e63f1a2938a4568d4f0bc9b4557f3d8da4f6c6e1",
+    "artifactHash": "64e8ddc85d15502c3b2776f89b13d71fbb621d9f350682d6c71ec5c998998552",
+    "archiveHash": "443fd0515e64fb528fb36b9dbedc08d0c299d33fa836a2aa1aa12bbfe5924d78",
+    "candidateBuildManifestHash": "127e3b9813281fc4a6ad31ccdfd1f2b54a482f4de8663ab0f08f6b1f109348fc",
+    "scenarioId": "gate1-two-week-management",
+    "scenarioVersion": "0.5.0",
+    "fixedSeed": 104729,
+    "initialStateHash": "fnv1a32-b33f1b1d",
+    "playerPacketHash": "ca01f407c0d2e7f0db9dc07699251190bcc55ef5c946b9a86bac17d8f24dd2ad",
+    "postSessionInterviewHash": "f10c6294edf5776dc426f90228e3030f328a80d823c23a65280d60721467c12c",
+    "viewport": "1280x720",
+    "inputMode": "browser-pointer-keyboard"
+  },
+  "applicationSession": {
+    "sessionId": "7f4886dc-b6bb-4d2a-9cb7-d7a5b7d6d768",
+    "machineStartedAtEpochMs": 1785157602596,
+    "machineEndedAtEpochMs": 1785157817510,
+    "machineElapsedMs": 214916,
+    "week1RawDurationMs": 121403,
+    "week2RawDurationMs": 65735,
+    "captureKind": "complete",
+    "finalTick": 2010,
+    "finalStateHash": "fnv1a32-8337715d",
+    "twoWeeksCompleted": true,
+    "recapCount": 2,
+    "exportTriggered": true,
+    "clearCompleted": true,
+    "clearEvidence": "Agent returned to the anonymous new-session entry without starting another session."
+  },
+  "machineEvidence": {
+    "exportFilePath": "captures/g1-rc-20260727.rc9-c01-TECH-RC9-D01-7f4886dc-b6bb-4d2a-9cb7-d7a5b7d6d768.json",
+    "exportFileSha256": "9a4bf63e493e1117539f556023412b7abc8c683ca3c1e45b9309f6574835e34c",
+    "exportFileSizeBytes": 68660,
+    "receiptPath": "captures/g1-rc-20260727.rc9-c01-TECH-RC9-D01-7f4886dc-b6bb-4d2a-9cb7-d7a5b7d6d768.json.receipt.json",
+    "sha256SidecarPath": "captures/g1-rc-20260727.rc9-c01-TECH-RC9-D01-7f4886dc-b6bb-4d2a-9cb7-d7a5b7d6d768.json.sha256",
+    "browserDownloadPath": "browser-download.json",
+    "browserDownloadEventCompleted": true,
+    "browserDownloadSha256": "9a4bf63e493e1117539f556023412b7abc8c683ca3c1e45b9309f6574835e34c",
+    "browserDownloadSizeBytes": 68660,
+    "browserDownloadMatchesServerRaw": true,
+    "allClaimsMatchServerRaw": true,
+    "actions": 10,
+    "domainEvents": 13,
+    "telemetryEntries": 259,
+    "choiceSets": 4,
+    "machineWeek1LegacyCandidateCount": 1,
+    "machineWeek2LegacyCandidateCount": 1,
+    "machineWeek1V2CandidateCount": 2,
+    "machineWeek2V2CandidateCount": 2
+  },
+  "legacyEffectiveEditsAdjudication": {
+    "basis": "weekly-management-slice-playtest-v0.1 section 8.1 and V0.2 legacy whitelist",
+    "week1": {
+      "count": 1,
+      "acceptedGroups": [
+        {
+          "groupId": "legacy:w0:transport-route",
+          "actionIds": [
+            "action-0004"
+          ],
+          "reason": "The south shortcut persistently changed route, transport loss and the visible food forecast."
+        }
+      ]
+    },
+    "week2": {
+      "count": 1,
+      "acceptedGroups": [
+        {
+          "groupId": "legacy:w1:lin-he-study",
+          "actionIds": [
+            "action-0008"
+          ],
+          "reason": "The accepted request persistently changed Lin He's schedule, food forecast and character record."
+        }
+      ]
+    },
+    "manualCandidateDifferenceCount": 0
+  },
+  "effectiveManagementCommitmentsV2Adjudication": {
+    "basis": "weekly-management-slice-playtest-v0.2 sections 1, 7, 8 and 9",
+    "week1": {
+      "count": 2,
+      "acceptedGroups": [
+        {
+          "decisionIntentId": "w0:repair-responsibility:pump-incident-day-3",
+          "choiceSetId": "choice:w0:pump-repair",
+          "actionIds": [
+            "action-0002"
+          ],
+          "finalOutcomeCode": "committed:schedule-repair",
+          "reason": "The agent explicitly chose a non-dominated responsibility direction, confirmed the schedule, and retained visible repair, risk and schedule consequences."
+        },
+        {
+          "decisionIntentId": "w0:transport-route",
+          "choiceSetId": "choice:w0:transport-route",
+          "actionIds": [
+            "action-0004"
+          ],
+          "finalOutcomeCode": "committed:south-shortcut",
+          "reason": "The agent explicitly chose the shortcut over the north loop and retained visible food, route and maintenance consequences."
+        }
+      ]
+    },
+    "week2": {
+      "count": 2,
+      "acceptedGroups": [
+        {
+          "decisionIntentId": "w1:character-request:lin-he-study",
+          "choiceSetId": "choice:w1:lin-he-study",
+          "actionIds": [
+            "action-0008"
+          ],
+          "finalOutcomeCode": "committed:accept-study",
+          "reason": "The agent explicitly accepted the request and retained the schedule and character-record consequences."
+        },
+        {
+          "decisionIntentId": "w1:asset-use:fertilizer",
+          "choiceSetId": "choice:w1:fertilizer",
+          "actionIds": [
+            "action-0009"
+          ],
+          "finalOutcomeCode": "committed:use-fertilizer",
+          "reason": "The agent explicitly used the single-use asset instead of keeping it and retained the food and inventory consequences."
+        }
+      ]
+    },
+    "rejectedGroups": [],
+    "manualCandidateDifferenceCount": 0,
+    "sameIntentDuplicateCount": 0,
+    "ctaOnlyCommitmentCount": 0
+  },
+  "agentReportedEvidence": {
+    "initialObservation": "我会先处理水泵预防检修缺块和维修责任未落地，再判断是否用一次性化肥补粮。若不处理水泵，停机风险会压低粮食产出下限并额外消耗维修保障；若责任继续悬空，跨周维修欠账也可能累积。",
+    "completionSignal": "PLAYTHROUGH_COMPLETE",
+    "predictionExplanationProvided": true,
+    "personAndDecisionImpactProvided": true,
+    "mapEnteredDecision": true,
+    "mapActionTaken": true,
+    "week2FullInspection": false,
+    "week2FullReplan": false,
+    "mustClickAllCardsObserved": false,
+    "verbatimOutputPath": "agent-verbatim-output.md"
+  },
+  "technicalInterruptions": [
+    {
+      "stage": "before_application_session",
+      "kind": "requested-in-app-browser-unavailable",
+      "impact": "No candidate page was opened and no application session existed.",
+      "recovery": "The same fresh agent used a new isolated Playwright context with the local Chrome executable."
+    },
+    {
+      "stage": "before_application_session",
+      "kind": "playwright-bundled-chromium-not-installed",
+      "impact": "No candidate page was opened and no application session existed.",
+      "recovery": "Playwright launched the local Chrome executable in a new isolated browser/context/page."
+    }
+  ],
+  "symptoms": [
+    {
+      "id": "D01-SYM-01",
+      "clusterKey": "POST_COMMIT_COMPARISON_REMAINS_VISIBLE",
+      "description": "After a choice and schedule confirmation, the comparison area and its choice controls remained visible; repeated mutation was not tested.",
+      "source": "agent interview",
+      "severitySuggestion": "P2",
+      "affectedCompletion": false
+    },
+    {
+      "id": "D01-SYM-02",
+      "clusterKey": "RESOLVED_REQUEST_SUMMARY_TITLE_STALE",
+      "description": "After accepting the study request, the summary title still said one member-development request was pending while the card itself said the response was recorded.",
+      "source": "agent interview",
+      "severitySuggestion": "P2",
+      "affectedCompletion": false
+    },
+    {
+      "id": "D01-SYM-03",
+      "clusterKey": "SCHEDULE_LABEL_BLOCK_ID_MISMATCH",
+      "description": "The schedule confirmation used 第4日 B3 16–19 while the recap exposed qiao-pan:d3:b2; the agent perceived inconsistent labels.",
+      "source": "agent interview",
+      "severitySuggestion": "P2",
+      "affectedCompletion": false
+    }
+  ],
+  "severityCounts": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 3
+  },
+  "subjectiveHumanFields": "not_applicable_agent_proxy",
+  "validityDecision": {
+    "status": "VALID_DIAGNOSTIC",
+    "reasonCode": "VALID_COMPLETE_CAPTURE_AND_PROTOCOL_COMPLIANCE",
+    "reason": "A fresh blind agent completed both weeks using the sealed C01 build; raw, sidecar, receipt and browser download are byte-identical, the session was cleared before interview, and the pre-session browser recovery did not create or contaminate an application session.",
+    "includedInGate1ADenominator": false,
+    "sampleIdReusable": false,
+    "replacementRequired": false
+  },
+  "trackLocks": {
+    "gate1A": "PRE_DIAGNOSTIC",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED"
+  }
+}
