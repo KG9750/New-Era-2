@@ -3,6 +3,8 @@ import type {
   CharacterDefinition,
   CharacterId,
   PlayerAction,
+  RepairResponsibilityAssignment,
+  RepairResponsibilitySelection,
   ScheduleChange,
   ScheduleLayer,
   ScheduleScope,
@@ -41,6 +43,29 @@ export const PUMP_MAINTENANCE_BLOCK_IDS = [
   PUMP_MAINTENANCE_BLOCK_ID,
 ] as const
 export const LIN_HE_STUDY_BLOCK_ID = createBlockId('lin-he', 8, 0)
+export const REPAIR_RESPONSIBILITY_SCHEDULE_OPTIONS = [
+  {
+    direction: 'qiao-pan',
+    actorId: 'qiao-pan',
+    blockId: createBlockId('qiao-pan', 3, 2),
+    characterLoadCost: 2,
+    repairOutputDelta: 2,
+  },
+  {
+    direction: 'handoff',
+    actorId: 'chen-du',
+    blockId: createBlockId('chen-du', 3, 0),
+    characterLoadCost: 2,
+    repairOutputDelta: 1,
+  },
+  {
+    direction: 'handoff',
+    actorId: 'su-ji',
+    blockId: createBlockId('su-ji', 3, 0),
+    characterLoadCost: 1,
+    repairOutputDelta: 1,
+  },
+] as const
 
 export function isLinHeRequestBlockLocked(blockId: string): boolean {
   return blockId === LIN_HE_STUDY_BLOCK_ID
@@ -138,6 +163,29 @@ export function hasPreventiveMaintenance(state: SimulationState): boolean {
   return PUMP_MAINTENANCE_BLOCK_IDS.every(
     (blockId) => resolveScheduleBlock(state, blockId).activity === 'repair',
   )
+}
+
+export function findRepairResponsibilityAssignment(
+  state: SimulationState,
+  actionId: string,
+  direction: RepairResponsibilitySelection,
+  affectedBlockIds: readonly string[],
+): RepairResponsibilityAssignment | null {
+  const option = REPAIR_RESPONSIBILITY_SCHEDULE_OPTIONS.find(
+    (candidate) =>
+      candidate.direction === direction &&
+      affectedBlockIds.includes(candidate.blockId) &&
+      resolveScheduleBlock(state, candidate.blockId).activity === 'repair',
+  )
+  if (!option) return null
+  return {
+    actionId,
+    weekIndex: 0,
+    actorId: option.actorId,
+    blockId: option.blockId,
+    characterLoadCost: option.characterLoadCost,
+    repairOutputDelta: option.repairOutputDelta,
+  }
 }
 
 function layerFor(scope: ScheduleScope): ScheduleLayer {

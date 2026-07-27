@@ -15,7 +15,7 @@ const TEST_BUILD_METADATA = {
   artifactHash: '2'.repeat(64),
   artifactHashAlgorithm: 'sha256-canonical-file-manifest-v1' as const,
   artifactManifestPath: 'artifact-manifest.json' as const,
-  initialStateHash: 'fnv1a32-bbad047d',
+  initialStateHash: 'fnv1a32-b33f1b1d',
   initialStateHashAlgorithm: 'fnv1a32-stable-json-v1' as const,
 }
 

@@ -21,6 +21,7 @@ import {
   applyScheduleTransaction,
   blockEndTick,
   expireScheduleLayers,
+  findRepairResponsibilityAssignment,
   findQiaoPanBoundaryWarning,
   hasPreventiveMaintenance,
   isLinHeRequestBlockLocked,
@@ -80,6 +81,35 @@ function addCharacterRecord(
   return {
     ...state.characterRecords,
     [characterId]: [...state.characterRecords[characterId], record],
+  }
+}
+
+function repairResponsibilityRecord(
+  selection: NonNullable<
+    SimulationState['repairResponsibilitySelection']
+  >,
+  assignment: NonNullable<
+    SimulationState['repairResponsibilityAssignment']
+  >,
+): string {
+  if (selection === 'qiao-pan') {
+    return `[维修责任] 乔磐承担水泵维修；额外人物负荷为 ${assignment.characterLoadCost}。`
+  }
+  const actorName = assignment.actorId === 'chen-du' ? '陈渡' : '苏霁'
+  return `[维修责任] ${actorName}接手水泵维修；额外人物负荷为 ${assignment.characterLoadCost}。`
+}
+
+function removeRepairResponsibilityRecord(
+  state: SimulationState,
+  assignment: NonNullable<
+    SimulationState['repairResponsibilityAssignment']
+  >,
+): SimulationState['characterRecords'] {
+  return {
+    ...state.characterRecords,
+    [assignment.actorId]: state.characterRecords[assignment.actorId].filter(
+      (record) => !record.startsWith('[维修责任]'),
+    ),
   }
 }
 
@@ -156,10 +186,68 @@ export function applyPlayerAction(
     }
     const boundaryWarning = findQiaoPanBoundaryWarning(state, envelope.action)
     if (boundaryWarning) throw new Error(boundaryWarning.message)
-    const edited = applyScheduleTransaction(state, envelope.id, envelope.action)
+    let edited = applyScheduleTransaction(state, envelope.id, envelope.action)
+    const previousAssignment = state.repairResponsibilityAssignment
+    const assignmentInvalidated =
+      previousAssignment !== null &&
+      envelope.affectedBlockIds.includes(previousAssignment.blockId) &&
+      resolveScheduleBlock(edited, previousAssignment.blockId).activity !==
+        'repair'
+    if (assignmentInvalidated && previousAssignment !== null) {
+      const transaction = edited.scheduleTransactions.at(-1)!
+      edited = {
+        ...edited,
+        scheduleTransactions: [
+          ...edited.scheduleTransactions.slice(0, -1),
+          {
+            ...transaction,
+            repairResponsibilityBefore: previousAssignment,
+          },
+        ],
+      }
+    }
+    const responsibilityBase: SimulationState = assignmentInvalidated
+      ? {
+          ...edited,
+          repairResponsibility: 'unresolved',
+          repairResponsibilityAssignment: null,
+          characterRecords: removeRepairResponsibilityRecord(
+            edited,
+            previousAssignment,
+          ),
+        }
+      : edited
+    const assignment =
+      responsibilityBase.repairResponsibility === 'unresolved' &&
+      state.repairResponsibilitySelection !== null
+        ? findRepairResponsibilityAssignment(
+            responsibilityBase,
+            envelope.id,
+            state.repairResponsibilitySelection,
+            envelope.affectedBlockIds,
+          )
+        : null
+    const responsibilityDraft: SimulationState = assignment
+      ? {
+          ...responsibilityBase,
+          repairResponsibility: 'scheduled',
+          repairResponsibilityAssignment: assignment,
+          characterRecords: addCharacterRecord(
+            responsibilityBase,
+            assignment.actorId,
+            repairResponsibilityRecord(
+              state.repairResponsibilitySelection,
+              assignment,
+            ),
+          ),
+        }
+      : responsibilityBase
     const draft: SimulationState = {
-      ...edited,
-      activity: resolveScheduleBlock(edited, PUMP_MAINTENANCE_BLOCK_ID).activity,
+      ...responsibilityDraft,
+      activity: resolveScheduleBlock(
+        responsibilityDraft,
+        PUMP_MAINTENANCE_BLOCK_ID,
+      ).activity,
     }
     const after = rangeOf(draft)
     const count = envelope.affectedBlockIds.length
@@ -180,17 +268,73 @@ export function applyPlayerAction(
     }
     event = {
       id: envelope.id,
-      type: 'schedule-edited',
+      type: assignment
+        ? 'repair-responsibility-scheduled'
+        : 'schedule-edited',
       atTick: envelope.atTick,
       before,
       after,
     }
   } else if (envelope.action.type === 'UNDO_SCHEDULE') {
     const transaction = state.scheduleTransactions.at(-1)
+    const pastBlockId = transaction?.affectedBlockIds.find(
+      (blockId) => blockEndTick(blockId) <= state.currentTick,
+    )
+    if (pastBlockId) {
+      throw new Error(`已经执行的活动块不能撤销：${pastBlockId}`)
+    }
     const undone = undoLastScheduleTransaction(state)
+    const responsibilityUndone =
+      transaction !== undefined &&
+      state.repairResponsibilityAssignment?.actionId === transaction.actionId
+    const responsibilityBase: SimulationState =
+      responsibilityUndone &&
+      state.repairResponsibilityAssignment !== null
+        ? {
+            ...undone,
+            repairResponsibility: 'unresolved',
+            repairResponsibilityAssignment: null,
+            characterRecords: removeRepairResponsibilityRecord(
+              undone,
+              state.repairResponsibilityAssignment,
+            ),
+          }
+        : undone
+    const responsibilityBefore = transaction?.repairResponsibilityBefore
+    const responsibilitySelection =
+      responsibilityBefore?.actorId === 'qiao-pan' ? 'qiao-pan' : 'handoff'
+    const restoredAssignment =
+      responsibilityBase.repairResponsibility === 'unresolved' &&
+      responsibilityBefore !== undefined &&
+      responsibilityBase.repairResponsibilitySelection ===
+        responsibilitySelection &&
+      resolveScheduleBlock(responsibilityBase, responsibilityBefore.blockId)
+        .activity === 'repair'
+        ? responsibilityBefore
+        : null
+    const responsibilityDraft: SimulationState =
+      restoredAssignment !== null &&
+      responsibilityBase.repairResponsibilitySelection !== null
+        ? {
+            ...responsibilityBase,
+            repairResponsibility: 'scheduled',
+            repairResponsibilityAssignment: restoredAssignment,
+            characterRecords: addCharacterRecord(
+              responsibilityBase,
+              restoredAssignment.actorId,
+              repairResponsibilityRecord(
+                responsibilityBase.repairResponsibilitySelection,
+                restoredAssignment,
+              ),
+            ),
+          }
+        : responsibilityBase
     const draft: SimulationState = {
-      ...undone,
-      activity: resolveScheduleBlock(undone, PUMP_MAINTENANCE_BLOCK_ID).activity,
+      ...responsibilityDraft,
+      activity: resolveScheduleBlock(
+        responsibilityDraft,
+        PUMP_MAINTENANCE_BLOCK_ID,
+      ).activity,
     }
     const after = rangeOf(draft)
     next = {
@@ -282,6 +426,89 @@ export function applyPlayerAction(
       atTick: envelope.atTick,
       before,
       after: before,
+    }
+  } else if (envelope.action.type === 'SELECT_REPAIR_RESPONSIBILITY') {
+    if (
+      actionWeekIndex !== 0 ||
+      state.recap !== null ||
+      state.repairResponsibility !== 'unresolved'
+    ) {
+      throw new Error('维修责任方向只能在第一周尚未兑现时选择')
+    }
+    next = {
+      ...state,
+      repairResponsibilitySelection: envelope.action.responsible,
+      actionLog: [...state.actionLog, envelope],
+      timeline: appendTimeline(state, {
+        atTick: envelope.atTick,
+        kind: 'player-action',
+        id: envelope.id,
+        title:
+          envelope.action.responsible === 'qiao-pan'
+            ? '选择乔磐承担维修'
+            : '选择陈渡或苏霁交接维修',
+        detail: '这里只确定责任方向；确认具体日程前，不改变粮食或维修预测。',
+        before,
+        after: before,
+      }),
+    }
+    event = {
+      id: envelope.id,
+      type: 'repair-responsibility-selected',
+      atTick: envelope.atTick,
+      before,
+      after: before,
+    }
+  } else if (envelope.action.type === 'ACCEPT_REPAIR_DEBT') {
+    if (
+      actionWeekIndex !== 0 ||
+      state.recap !== null ||
+      state.repairResponsibility !== 'unresolved'
+    ) {
+      throw new Error('维修欠账只能在第一周责任尚未兑现时接受')
+    }
+    const draft: SimulationState = {
+      ...state,
+      repairResponsibilitySelection: null,
+      repairResponsibility: 'debt',
+      repairResponsibilityAssignment: null,
+      repairDebt: {
+        acceptedActionId: envelope.id,
+        dueTick: _scenario.simulationEndTick,
+        weeklyPenalty: 3,
+        accruedPenalty: 0,
+        settlementRecapIndex: 1,
+        settled: false,
+        settledAtTick: null,
+        currentRisk: '本周维修保障将在周末减少 3',
+        nextConsequence: '第一周复盘将累计 3 点维修欠账代价',
+      },
+      characterRecords: addCharacterRecord(
+        state,
+        'qiao-pan',
+        '[维修责任] 管理者接受维修欠账；乔磐本周不追加任务，欠账每周累计 3 点维修保障代价。',
+      ),
+    }
+    const after = rangeOf(draft)
+    next = {
+      ...draft,
+      actionLog: [...state.actionLog, envelope],
+      timeline: appendTimeline(state, {
+        atTick: envelope.atTick,
+        kind: 'player-action',
+        id: envelope.id,
+        title: '接受维修欠账',
+        detail: `欠账到期 tick ${_scenario.simulationEndTick}；每周累计代价 3，并在周末复盘兑现。${supplyChangeDetail(state, draft)}`,
+        before,
+        after,
+      }),
+    }
+    event = {
+      id: envelope.id,
+      type: 'repair-debt-accepted',
+      atTick: envelope.atTick,
+      before,
+      after,
     }
   } else if (envelope.action.type === 'OPEN_TRANSPORT_SHORTCUT') {
     if (!canOpenTransportShortcut(state, _scenario)) {
@@ -545,6 +772,50 @@ function createRecap(state: SimulationState, weekIndex: number): WeekendRecap {
     })
   }
 
+  if (
+    state.repairResponsibilityAssignment !== null &&
+    state.repairResponsibilityAssignment.weekIndex === weekIndex
+  ) {
+    const assignment = state.repairResponsibilityAssignment
+    const actorName =
+      assignment.actorId === 'qiao-pan'
+        ? '乔磐'
+        : assignment.actorId === 'chen-du'
+          ? '陈渡'
+          : '苏霁'
+    items.push({
+      id: `week-${weekIndex + 1}-repair-responsibility`,
+      category: '计划内结果',
+      sourceId: 'repair-responsibility',
+      title: `${actorName}兑现水泵维修责任`,
+      detail: `${assignment.blockId} 已按玩家确认写入日程；维修产出 +${assignment.repairOutputDelta}，人物负荷代价 ${assignment.characterLoadCost}。`,
+      values: {
+        repairOutputDelta: assignment.repairOutputDelta,
+        characterLoadCost: assignment.characterLoadCost,
+      },
+    })
+  }
+
+  if (state.repairDebt !== null) {
+    const accruedPenalty =
+      state.repairDebt.accruedPenalty + state.repairDebt.weeklyPenalty
+    const settled = weekIndex >= state.repairDebt.settlementRecapIndex
+    items.push({
+      id: `week-${weekIndex + 1}-repair-debt`,
+      category: settled ? '计划内结果' : '已知风险',
+      sourceId: 'repair-debt',
+      title: settled ? '维修欠账到期结清' : '维修欠账继续累计',
+      detail: settled
+        ? `本周再扣除 ${state.repairDebt.weeklyPenalty} 点维修保障，累计代价 ${accruedPenalty}；欠账在 tick ${state.repairDebt.dueTick} 结清。`
+        : `本周扣除 ${state.repairDebt.weeklyPenalty} 点维修保障，累计代价 ${accruedPenalty}；下一周复盘再扣除同额代价后结清。`,
+      values: {
+        weeklyPenalty: state.repairDebt.weeklyPenalty,
+        accruedPenalty,
+        dueTick: state.repairDebt.dueTick,
+      },
+    })
+  }
+
   items.push({
     id: `week-${weekIndex + 1}-transport-result`,
     category: route.id === 'south-shortcut' ? '计划内结果' : '已知风险',
@@ -591,6 +862,31 @@ function createRecap(state: SimulationState, weekIndex: number): WeekendRecap {
         ? '实际结果落在计划区间内'
         : '事件使实际结果偏离计划区间',
     items,
+  }
+}
+
+function repairDebtAfterRecap(
+  state: SimulationState,
+  endingWeekIndex: number,
+  currentTick: number,
+): SimulationState['repairDebt'] {
+  if (state.repairDebt === null || state.repairDebt.settled) {
+    return state.repairDebt
+  }
+  const accruedPenalty =
+    state.repairDebt.accruedPenalty + state.repairDebt.weeklyPenalty
+  const settled = endingWeekIndex >= state.repairDebt.settlementRecapIndex
+  return {
+    ...state.repairDebt,
+    accruedPenalty,
+    settled,
+    settledAtTick: settled ? currentTick : null,
+    currentRisk: settled
+      ? '维修欠账已在终局复盘结清'
+      : `已累计 ${accruedPenalty} 点维修欠账代价`,
+    nextConsequence: settled
+      ? '无后续欠账后果'
+      : '第二周复盘将再累计 3 点并结清欠账',
   }
 }
 
@@ -733,6 +1029,7 @@ export function advanceSimulation(
       scheduleTransactions: [],
       completedWeekIndexes: [...state.completedWeekIndexes, endingWeekIndex],
       isComplete: endingWeekIndex === scenario.weekEndTicks.length - 1,
+      repairDebt: repairDebtAfterRecap(state, endingWeekIndex, currentTick),
     }
     return {
       state: {

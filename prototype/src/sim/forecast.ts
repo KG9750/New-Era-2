@@ -253,7 +253,20 @@ export function calculateRepairForecast(state: SimulationState): RepairForecast 
         : hasPreventiveMaintenance(state)
           ? { low: 1, high: 1 }
           : { low: 2, high: 0 }
-  const repairOutput = Math.max(0, allocation.repair + logisticsBonus)
+  const responsibilityOutput =
+    state.repairResponsibilityAssignment?.weekIndex ===
+    weekIndexForTick(state.currentTick, scenario)
+      ? state.repairResponsibilityAssignment.repairOutputDelta
+      : 0
+  const repairDebtPenalty =
+    state.repairDebt !== null &&
+    state.currentTick <= state.repairDebt.dueTick
+      ? state.repairDebt.weeklyPenalty
+      : 0
+  const repairOutput = Math.max(
+    0,
+    allocation.repair + logisticsBonus + responsibilityOutput,
+  )
   const production = { low: repairOutput, high: repairOutput }
   const endingStock = {
     low:
@@ -261,13 +274,15 @@ export function calculateRepairForecast(state: SimulationState): RepairForecast 
       production.low -
       REPAIR_KNOWN_CONSUMPTION -
       riskCost.low -
-      transportRepairCost,
+      transportRepairCost -
+      repairDebtPenalty,
     high:
       state.inventory.repair +
       production.high -
       REPAIR_KNOWN_CONSUMPTION -
       riskCost.high -
-      transportRepairCost,
+      transportRepairCost -
+      repairDebtPenalty,
   }
 
   return {
@@ -275,7 +290,8 @@ export function calculateRepairForecast(state: SimulationState): RepairForecast 
     label: '维修保障',
     currentStock: state.inventory.repair,
     production,
-    consumption: REPAIR_KNOWN_CONSUMPTION + transportRepairCost,
+    consumption:
+      REPAIR_KNOWN_CONSUMPTION + transportRepairCost + repairDebtPenalty,
     endingStock,
     status: statusFor(endingStock, REPAIR_TARGET, 0),
     trend:
@@ -295,7 +311,7 @@ export function calculateRepairForecast(state: SimulationState): RepairForecast 
           ? '设施：维修工坊正常；预防性检修把水泵额外消耗锁定为 1。'
           : '设施：维修工坊正常；水泵停机已确定占用 4 维修保障。',
       laborReason(allocation, 'repair'),
-      `物流备件支持 ${logisticsBonus >= 0 ? '+' : ''}${logisticsBonus}；短通路本周启用成本 −${transportRepairCost}；${sharedLaborReason(allocation)}`,
+      `物流备件支持 ${logisticsBonus >= 0 ? '+' : ''}${logisticsBonus}；维修责任兑现 +${responsibilityOutput}；维修欠账本周代价 −${repairDebtPenalty}；短通路本周启用成本 −${transportRepairCost}；${sharedLaborReason(allocation)}`,
     ],
     acceptedRisk: false,
   }

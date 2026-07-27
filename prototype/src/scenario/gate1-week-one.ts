@@ -74,6 +74,10 @@ export const gate1WeekOneScenario: ScenarioDefinition = {
       linHeRequestResolutionSource: null,
       transportRouteId: 'north-loop',
       transportRouteOpenedAtTick: null,
+      repairResponsibilitySelection: null,
+      repairResponsibility: 'unresolved',
+      repairResponsibilityAssignment: null,
+      repairDebt: null,
       characterRecords: {
         'lin-he': ['第二周希望占用一个农务块学习，等待管理者答复。'],
         'qiao-pan': ['接受正常排班与连续不超过两日的短期加班。'],

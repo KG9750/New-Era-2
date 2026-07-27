@@ -14,6 +14,8 @@ export type LinHeRequestDecision = 'pending' | 'accepted' | 'declined'
 export type LinHeRequestResolutionSource = 'player' | 'deadline' | null
 export type TransportRouteId = 'north-loop' | 'south-shortcut'
 export type RecapCategory = '计划内结果' | '已知风险' | '新事件'
+export type RepairResponsibilitySelection = 'qiao-pan' | 'handoff'
+export type RepairResponsibility = 'unresolved' | 'scheduled' | 'debt'
 
 export interface CharacterDefinition {
   id: CharacterId
@@ -41,6 +43,7 @@ export interface ScheduleTransaction {
   actionId: string
   affectedBlockIds: readonly string[]
   changes: readonly ScheduleChange[]
+  repairResponsibilityBefore?: RepairResponsibilityAssignment
 }
 
 export interface ForecastRange {
@@ -132,6 +135,27 @@ export interface FertilizerLifecycle {
   remainingUnits: 0 | 1
 }
 
+export interface RepairResponsibilityAssignment {
+  actionId: string
+  weekIndex: 0 | 1
+  actorId: CharacterId
+  blockId: string
+  characterLoadCost: number
+  repairOutputDelta: number
+}
+
+export interface RepairDebtState {
+  acceptedActionId: string
+  dueTick: number
+  weeklyPenalty: 3
+  accruedPenalty: number
+  settlementRecapIndex: 1
+  settled: boolean
+  settledAtTick: number | null
+  currentRisk: string
+  nextConsequence: string
+}
+
 export interface SupplyPlanSnapshot {
   food: ForecastRange
   repair: ForecastRange
@@ -163,6 +187,10 @@ export interface SimulationState {
   linHeRequestResolutionSource: LinHeRequestResolutionSource
   transportRouteId: TransportRouteId
   transportRouteOpenedAtTick: number | null
+  repairResponsibilitySelection: RepairResponsibilitySelection | null
+  repairResponsibility: RepairResponsibility
+  repairResponsibilityAssignment: RepairResponsibilityAssignment | null
+  repairDebt: RepairDebtState | null
   characterRecords: Readonly<Record<CharacterId, readonly string[]>>
 }
 
@@ -184,6 +212,11 @@ export type PlayerAction =
   | { type: 'UNDO_SCHEDULE' }
   | { type: 'USE_FERTILIZER' }
   | { type: 'SET_FOOD_SHORTFALL_ACCEPTED'; accepted: boolean }
+  | {
+      type: 'SELECT_REPAIR_RESPONSIBILITY'
+      responsible: RepairResponsibilitySelection
+    }
+  | { type: 'ACCEPT_REPAIR_DEBT' }
   | { type: 'RESOLVE_LIN_HE_REQUEST'; decision: Exclude<LinHeRequestDecision, 'pending'> }
   | { type: 'OPEN_TRANSPORT_SHORTCUT' }
   | { type: 'CONTINUE_TO_NEXT_WEEK' }
@@ -228,6 +261,9 @@ export interface DomainEvent {
     | 'schedule-undone'
     | 'fertilizer-used'
     | 'food-shortfall-accepted'
+    | 'repair-responsibility-selected'
+    | 'repair-responsibility-scheduled'
+    | 'repair-debt-accepted'
     | 'lin-he-request-resolved'
     | 'transport-shortcut-opened'
     | 'clock-changed'
