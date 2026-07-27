@@ -3,7 +3,7 @@
 **审查基线：** `0aa2608dc8b90f36dacdf74fdea26fba82c5d242`
 **首次整改提交：** `a7c3f09132915587b502c0598d1e21b7b7190ed3`
 **首次整改复审：** `P0=0 / P1=2 / P2=1 / REVIEW_FAIL`
-**当前整改状态：** `R5_CODE_FIXED_PENDING_REREVIEW / HUMAN_GATES_OPEN`
+**当前整改状态：** `R5_CODE_REREVIEW_PASS / HUMAN_GATES_OPEN`
 
 ## P1-1：机器门禁 false negative
 
@@ -165,7 +165,7 @@
 
 ## v0.1.4 首轮代码复审 P1：零时长 work 刷技能
 
-状态：`R5_CODE_FIXED_PENDING_REREVIEW`
+状态：`R5_CODE_REREVIEW_PASS`
 
 - 复审报告：
   `character-generator-v0.1-v014-independent-review-2026-07-27.md`；
@@ -178,7 +178,7 @@
 
 ## v0.1.4 首轮代码复审 P1：开放式权威 envelope
 
-状态：`R5_CODE_FIXED_PENDING_REREVIEW`
+状态：`R5_CODE_REREVIEW_PASS`
 
 - library 根固定 12 个字段；
 - `content_pack_versions` 固定 3 个版本字段；
@@ -186,6 +186,20 @@
   findings 与 manual reviews 共 7 个字段；
 - 未声明的 `machine_passed`、`release_status`、根字段或 content pack 字段一律
   阻断，不维护危险字段黑名单。
+
+## R5 第二轮 Codex 独立复审
+
+状态：`P0=0 / P1=0 / P2=0 / P3=0 / REVIEW_PASS`
+
+- 受审提交：`6c3b9ba1ed76353ce63b88c2c37277808369c683`；
+- 报告：
+  `character-generator-v0.1-v014-r5-independent-rereview-2026-07-27.md`；
+- reviewer 独立验证 0/2/4 年 blocked、5/10/29 年 passed，并构造合法
+  `5,5,19` 年三 work 正例；
+- reviewer 对 library 根、content pack、diagnostics、validation、manual
+  reviews 和 finding 逐层注入额外字段，全部被阻断；
+- 308 条 finding、warning 三态、非权威 replay 和固定 artifact hash 全部复算
+  一致。
 
 ## 版本与验证
 
@@ -203,4 +217,5 @@
 - Node 20.20.2 / 22.23.1 / 24.18.0 与 `LANG=C` / `zh_CN.UTF-8`：
   JSON 与 roster 输出 SHA 全部一致
 
-以上结果只证明本轮代码和候选数据整改，不替代 E01–E06 或后续独立复审。
+以上结果只证明本轮代码复审和候选数据整改通过，不替代完整 M12、E01–E06、
+A1 内容冻结、阶段 C 运行时实现或玩家验证。
