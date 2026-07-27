@@ -1,0 +1,9 @@
+{
+  "buildId": "g1-rc-20260727.rc9-c01",
+  "gitSha": "6837c7230806f2c5c218336668f9e201e3e6cca1",
+  "artifactHash": "64e8ddc85d15502c3b2776f89b13d71fbb621d9f350682d6c71ec5c998998552",
+  "artifactHashAlgorithm": "sha256-canonical-file-manifest-v1",
+  "artifactManifestPath": "artifact-manifest.json",
+  "initialStateHash": "fnv1a32-b33f1b1d",
+  "initialStateHashAlgorithm": "fnv1a32-stable-json-v1"
+}

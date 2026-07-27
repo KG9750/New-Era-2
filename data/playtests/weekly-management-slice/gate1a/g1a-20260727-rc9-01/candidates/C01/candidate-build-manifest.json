@@ -1,0 +1,287 @@
+{
+  "schemaVersion": "gate1-rc9-candidate-build-manifest-v1",
+  "candidateAttempt": "C01",
+  "status": "PASS_PRE_DIAGNOSTIC",
+  "sealedAtUtc": "2026-07-27T12:58:09.114Z",
+  "sourceSha": "6837c7230806f2c5c218336668f9e201e3e6cca1",
+  "sourceTree": "e63f1a2938a4568d4f0bc9b4557f3d8da4f6c6e1",
+  "dependencyIntegrationSha": "6837c7230806f2c5c218336668f9e201e3e6cca1",
+  "buildId": "g1-rc-20260727.rc9-c01",
+  "scenarioId": "gate1-two-week-management",
+  "scenarioVersion": "0.5.0",
+  "playtestSchemaVersion": "gate1-playtest-v2",
+  "fixedSeed": 104729,
+  "sourceDateEpoch": 946684800,
+  "artifact": {
+    "artifactHash": "64e8ddc85d15502c3b2776f89b13d71fbb621d9f350682d6c71ec5c998998552",
+    "artifactHashAlgorithm": "sha256-canonical-file-manifest-v1",
+    "artifactManifestPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C01/rc-dist/artifact-manifest.json",
+    "artifactManifestHash": "b1760c935e1dba3fbc7577051cbc5983107e38b6394118bf1199e35fb04cda2f",
+    "artifactFileCount": 4,
+    "initialStateHash": "fnv1a32-b33f1b1d",
+    "initialStateHashAlgorithm": "fnv1a32-stable-json-v1",
+    "rcBuildMetadataPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C01/rc-dist/rc-build.json",
+    "rcBuildMetadataHash": "3a69391b5da7c70648d638fab41f107ce6d81598fbea0d5164c6a18323f3006e"
+  },
+  "archive": {
+    "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C01/rc-dist.tar",
+    "format": "ustar",
+    "sha256": "443fd0515e64fb528fb36b9dbedc08d0c299d33fa836a2aa1aa12bbfe5924d78",
+    "bytes": 393728
+  },
+  "authorityHashes": [
+    {
+      "role": "protocol",
+      "path": "docs/product-specs/weekly-management-slice-playtest-v0.2.md",
+      "sha256": "194f83d9cbfb7dc64e4795e7c84666d54bcbdb3a4cc899a6e508a286ec396aa3"
+    },
+    {
+      "role": "design",
+      "path": "docs/design-docs/weekly-plan-production-forecast-slice-v0.2.md",
+      "sha256": "110a6a9a2364a4d2f006b8f84c075b453a6d3edf6b42a11e7e2b64073d6adb2e"
+    },
+    {
+      "role": "operations",
+      "path": "docs/exec-plans/active/2026-07-27-gate1a-rc9-test-operations.md",
+      "sha256": "7d72ed5d268003cbbc3f814a6c3cc4577059d1847fd225f11e990a9baccdbb01"
+    },
+    {
+      "role": "player-packet",
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/player-packet-v0.2.md",
+      "sha256": "ca01f407c0d2e7f0db9dc07699251190bcc55ef5c946b9a86bac17d8f24dd2ad"
+    },
+    {
+      "role": "interview",
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/post-session-interview-v0.2.md",
+      "sha256": "f10c6294edf5776dc426f90228e3030f328a80d823c23a65280d60721467c12c"
+    },
+    {
+      "role": "fixture-oracle",
+      "path": "prototype/tests/fixtures/fixture-expectations.json",
+      "sha256": "bd1a749e1f5c11d4189ec2fafcb601a7bcf8278a7a55f8b35880a78ef66d6ef1"
+    },
+    {
+      "role": "capture-host",
+      "path": "prototype/scripts/playtest-host.mjs",
+      "sha256": "a670411afaec37fff51d52924ad6e9b85efa19fe628371bfc0448f76c177c03b"
+    }
+  ],
+  "captureHostDistHash": "a670411afaec37fff51d52924ad6e9b85efa19fe628371bfc0448f76c177c03b",
+  "rcDistInventory": {
+    "files": [
+      {
+        "path": "artifact-manifest.json",
+        "bytes": 684,
+        "sha256": "b1760c935e1dba3fbc7577051cbc5983107e38b6394118bf1199e35fb04cda2f"
+      },
+      {
+        "path": "assets/index--3I6THfm.js",
+        "bytes": 290672,
+        "sha256": "f05d6c3e1c581f574c46c64b7facec1a5c9c7a3650efa6c6acc6b26cb1d4e750"
+      },
+      {
+        "path": "assets/index-BpLXtV7r.css",
+        "bytes": 18301,
+        "sha256": "ae70d68654b43913d3edeb479f5544a9a5cd8e65c0d72feeee667371f8657c4d"
+      },
+      {
+        "path": "index.html",
+        "bytes": 468,
+        "sha256": "1f4d01b6ed64f556b44167fae2148df89b63fd8a735f25ec0655c283a5f9e3a0"
+      },
+      {
+        "path": "playtest-host.mjs",
+        "bytes": 77576,
+        "sha256": "a670411afaec37fff51d52924ad6e9b85efa19fe628371bfc0448f76c177c03b"
+      },
+      {
+        "path": "rc-build.json",
+        "bytes": 399,
+        "sha256": "3a69391b5da7c70648d638fab41f107ce6d81598fbea0d5164c6a18323f3006e"
+      }
+    ],
+    "inventorySha256": "649d3fc24b1534185475ed143728055aa02a55ac649c8d32b413c0e75e43e264"
+  },
+  "captureInventory": {
+    "files": [
+      {
+        "path": "TECH-RC9-P01/browser-download.json",
+        "bytes": 59102,
+        "sha256": "41be2217403017684fb36935cd3a39eddeae41ba32ec3bf580466956357c73ed"
+      },
+      {
+        "path": "TECH-RC9-P01/captures/g1-rc-20260727.rc9-c01-TECH-RC9-P01-7d436a3d-6afc-4f86-aef1-d2c9b3f28076.json",
+        "bytes": 59102,
+        "sha256": "41be2217403017684fb36935cd3a39eddeae41ba32ec3bf580466956357c73ed"
+      },
+      {
+        "path": "TECH-RC9-P01/captures/g1-rc-20260727.rc9-c01-TECH-RC9-P01-7d436a3d-6afc-4f86-aef1-d2c9b3f28076.json.receipt.json",
+        "bytes": 601,
+        "sha256": "dbe4a4b03c0682b33f38b52ecb75f17ff565b130620af7e0b3ddcd5f16626bf5"
+      },
+      {
+        "path": "TECH-RC9-P01/captures/g1-rc-20260727.rc9-c01-TECH-RC9-P01-7d436a3d-6afc-4f86-aef1-d2c9b3f28076.json.sha256",
+        "bytes": 144,
+        "sha256": "b36b198df092f29e30cce6595ca41fff64c282758d76e988f8b3d9256e0d85ae"
+      },
+      {
+        "path": "TECH-RC9-P01/result.json",
+        "bytes": 3635,
+        "sha256": "8f6fc9a16805d4466912ce6e176115209ea518816b18627301004bde66f61b20"
+      },
+      {
+        "path": "TECH-RC9-P01/result.json.sha256",
+        "bytes": 78,
+        "sha256": "bd938c7288700f8ef04ff31f3203437362fecc8814d0d1153bc05fbaa7840df4"
+      },
+      {
+        "path": "TECH-RC9-P02/browser-download.json",
+        "bytes": 59101,
+        "sha256": "d32ec8c46588b3579f1100ce2092a0e6e1f7aa9658de4ccc01a0647e6594de2c"
+      },
+      {
+        "path": "TECH-RC9-P02/captures/g1-rc-20260727.rc9-c01-TECH-RC9-P02-384f73b6-c6df-474d-b8e3-5f4435ff43b3.json",
+        "bytes": 59101,
+        "sha256": "d32ec8c46588b3579f1100ce2092a0e6e1f7aa9658de4ccc01a0647e6594de2c"
+      },
+      {
+        "path": "TECH-RC9-P02/captures/g1-rc-20260727.rc9-c01-TECH-RC9-P02-384f73b6-c6df-474d-b8e3-5f4435ff43b3.json.receipt.json",
+        "bytes": 601,
+        "sha256": "f83f06fdbf2c2367e31f97eb184bb0e4f3ddd156bc318b38f56025416b7b418c"
+      },
+      {
+        "path": "TECH-RC9-P02/captures/g1-rc-20260727.rc9-c01-TECH-RC9-P02-384f73b6-c6df-474d-b8e3-5f4435ff43b3.json.sha256",
+        "bytes": 144,
+        "sha256": "3307ed41f1e2fd796acf2ccb3214c1e4b3cc82c6d0e949c5260a38edc35a515d"
+      },
+      {
+        "path": "TECH-RC9-P02/result.json",
+        "bytes": 2300,
+        "sha256": "a829732872d2bf74061b2029a123a24541752e523a4ce2d36e6b41e0bf48c71a"
+      },
+      {
+        "path": "TECH-RC9-P02/result.json.sha256",
+        "bytes": 78,
+        "sha256": "10c67110e2c6c566cac40e42b20c749d8ab33181c7e0b603a8d278507bb2c5a2"
+      },
+      {
+        "path": "operations.json",
+        "bytes": 914,
+        "sha256": "31cca1507525915c32644acc661fee2b8448b72a2ba9b023591df5bccb49cf7d"
+      },
+      {
+        "path": "operations.json.sha256",
+        "bytes": 82,
+        "sha256": "914d9a5f2d4d3a721ca75b809b4aec41fda3a527c9478cfd82a1208a1ff45b14"
+      }
+    ],
+    "inventorySha256": "a9666a5f669c3c15ec8d660fd3a96128f0f99a134f00d09cdabc1471e01846c5"
+  },
+  "antiPass": [
+    {
+      "sampleId": "TECH-RC9-P01",
+      "pathKind": "summary-cta-only",
+      "status": "PASS",
+      "resultPath": "anti-pass/TECH-RC9-P01/result.json",
+      "resultHash": "8f6fc9a16805d4466912ce6e176115209ea518816b18627301004bde66f61b20",
+      "rawPath": "anti-pass/TECH-RC9-P01/captures/g1-rc-20260727.rc9-c01-TECH-RC9-P01-7d436a3d-6afc-4f86-aef1-d2c9b3f28076.json",
+      "rawHash": "41be2217403017684fb36935cd3a39eddeae41ba32ec3bf580466956357c73ed",
+      "browserDownloadHash": "41be2217403017684fb36935cd3a39eddeae41ba32ec3bf580466956357c73ed",
+      "authorityMutationCount": 0,
+      "committedCandidateCount": 0,
+      "mechanicallyReachedThreeCommitments": false
+    },
+    {
+      "sampleId": "TECH-RC9-P02",
+      "pathKind": "minimum-required",
+      "status": "PASS",
+      "resultPath": "anti-pass/TECH-RC9-P02/result.json",
+      "resultHash": "a829732872d2bf74061b2029a123a24541752e523a4ce2d36e6b41e0bf48c71a",
+      "rawPath": "anti-pass/TECH-RC9-P02/captures/g1-rc-20260727.rc9-c01-TECH-RC9-P02-384f73b6-c6df-474d-b8e3-5f4435ff43b3.json",
+      "rawHash": "d32ec8c46588b3579f1100ce2092a0e6e1f7aa9658de4ccc01a0647e6594de2c",
+      "browserDownloadHash": "d32ec8c46588b3579f1100ce2092a0e6e1f7aa9658de4ccc01a0647e6594de2c",
+      "authorityMutationCount": 0,
+      "committedCandidateCount": 0,
+      "mechanicallyReachedThreeCommitments": false
+    }
+  ],
+  "antiPassOperations": {
+    "path": "anti-pass/operations.json",
+    "sha256": "31cca1507525915c32644acc661fee2b8448b72a2ba9b023591df5bccb49cf7d",
+    "technicalInterruptions": [
+      {
+        "afterSampleId": "TECH-RC9-P01",
+        "beforeSampleId": "TECH-RC9-P02",
+        "kind": "browser-process-exited-before-new-page",
+        "impact": "P01 had already completed capture and result sealing; P02 had no evidence files before restart.",
+        "recovery": "Preserved P01 byte-for-byte and ran P02 in a fresh browser process without reusing or overwriting P01."
+      }
+    ]
+  },
+  "rc8Guard": {
+    "baselineSha": "c0f4269bc3fef56962199629bad8db041aafc5f0",
+    "treeId": "c5714f7ca7adb5e8fe052d4d00f27c545b988347",
+    "inventorySha256": "e6990ddc8acd6ff4dbacfec975c06e4d0b9bbc7f6a2fc1324f5023caec1b96ee",
+    "status": "PASS"
+  },
+  "commandResults": [
+    {
+      "id": "rc-verify",
+      "status": "PASS",
+      "output": "{\"verified\":true,\"buildId\":\"g1-rc-20260727.rc9-c01\",\"gitSha\":\"6837c7230806f2c5c218336668f9e201e3e6cca1\",\"artifactHash\":\"64e8ddc85d15502c3b2776f89b13d71fbb621d9f350682d6c71ec5c998998552\",\"artifactFileCount\":4,\"excludedFromArtifactHash\":[\"rc-build.json\",\"artifact-manifest.json\"],\"initialStateHash\":\"fnv1a32-b33f1b1d\"}",
+      "outputHash": "1cc3abf8f0817db3da7d6fb25f07b6b9be0afa5d6e944e798b9e5d9b6345418a"
+    },
+    {
+      "id": "rc-verify-archive",
+      "status": "PASS",
+      "output": "{\"verified\":true,\"archive\":\"/tmp/new-era-g1a-postseal.tvZFdL/repo/data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C01/rc-dist.tar\",\"archiveFormat\":\"ustar\",\"archiveHash\":\"443fd0515e64fb528fb36b9dbedc08d0c299d33fa836a2aa1aa12bbfe5924d78\",\"bytes\":393728,\"entryCount\":7,\"sourceDateEpoch\":946684800}",
+      "outputHash": "3c6c97203fcc01e14a9aa9c070d8915eb0cd248fb7b3269866adea375aec8853"
+    },
+    {
+      "id": "rc-repro",
+      "status": "PASS",
+      "output": "{\"reproducible\":true,\"gitSha\":\"6837c7230806f2c5c218336668f9e201e3e6cca1\",\"buildId\":\"g1-rc-20260727.rc9-c01\",\"sourceDateEpoch\":946684800,\"cloneCount\":2,\"artifactManifestHash\":\"b1760c935e1dba3fbc7577051cbc5983107e38b6394118bf1199e35fb04cda2f\",\"rcBuildMetadataHash\":\"3a69391b5da7c70648d638fab41f107ce6d81598fbea0d5164c6a18323f3006e\",\"archiveHash\":\"443fd0515e64fb528fb36b9dbedc08d0c299d33fa836a2aa1aa12bbfe5924d78\"}",
+      "outputHash": "eaeb866fb5c311821f4b963521ba2f76ecb075bb1c44de0f2cb7ed73ad4dd8d4"
+    },
+    {
+      "id": "guard-rc8",
+      "status": "PASS",
+      "output": "RC8 tree guard PASS baseline=c0f4269bc3fef56962199629bad8db041aafc5f0 currentHead=6837c7230806f2c5c218336668f9e201e3e6cca1 path=data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc8-01 tree=c5714f7ca7adb5e8fe052d4d00f27c545b988347 files=67 inventorySha256=e6990ddc8acd6ff4dbacfec975c06e4d0b9bbc7f6a2fc1324f5023caec1b96ee",
+      "outputHash": "04f2a45e59e26d8d572566f8c26da4852cb5724c8ad1aecf3b36caf764fbbbd1"
+    },
+    {
+      "id": "manifest-verify",
+      "status": "PASS",
+      "output": "{\"accepted\":true,\"candidateManifestId\":\"CM01\",\"candidateAttempt\":\"C01\",\"errorCode\":null}",
+      "outputHash": "53b0448f21b8dd9f1371c2396226f3feb1780fcf192bae681958e53c6ad63628"
+    },
+    {
+      "id": "schema-fixtures",
+      "status": "PASS",
+      "output": "schema fixtures PASS: 101 cases, contract=gate1-playtest-fixtures-v2",
+      "outputHash": "2a04c2b1a9bfba7ba2cb30d2a85448e3c0425aed2ff805a7da441c71e6bc002b"
+    }
+  ],
+  "immutability": {
+    "coreSealed": true,
+    "immutablePaths": [
+      "rc-dist/**",
+      "rc-dist.tar",
+      "candidate-build-manifest.json",
+      "candidate-build-manifest.sha256",
+      "anti-pass/**"
+    ],
+    "appendOnlyNewPaths": [
+      "diagnostics/**",
+      "evidence/**",
+      "rejection-record.json",
+      "rejection-record.sha256"
+    ],
+    "overwriteExistingFilesAllowed": false
+  },
+  "trackLocks": {
+    "gate1A": "PRE_DIAGNOSTIC",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED"
+  }
+}

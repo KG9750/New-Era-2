@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "gate1-rc9-anti-pass-result-v1",
+  "candidateAttempt": "C01",
+  "sampleId": "TECH-RC9-P02",
+  "pathKind": "minimum-required",
+  "status": "PASS",
+  "buildId": "g1-rc-20260727.rc9-c01",
+  "sourceSha": "6837c7230806f2c5c218336668f9e201e3e6cca1",
+  "artifactHash": "64e8ddc85d15502c3b2776f89b13d71fbb621d9f350682d6c71ec5c998998552",
+  "sessionId": "384f73b6-c6df-474d-b8e3-5f4435ff43b3",
+  "viewport": "1440x900",
+  "inputMode": "browser-pointer-keyboard",
+  "clickedSummaryCtas": [],
+  "comparisons": [],
+  "assertions": {
+    "summaryCtaAuthorityMutationCount": null,
+    "summaryCtaCommittedCandidateCount": null,
+    "comparisonRecommendedCount": 0,
+    "comparisonPreselectedCount": 0,
+    "comparisonSubmissionFocusCount": 0,
+    "enterSpaceSubmittedCount": 0,
+    "firstRecordedActionType": "SET_PAUSED",
+    "authorityMutationCount": 0,
+    "candidateEditCount": 0,
+    "committedCandidateCount": 0,
+    "mechanicallyReachedThreeCommitments": false,
+    "finalTick": 2010,
+    "twoWeeksCompleted": true,
+    "recapCount": 2
+  },
+  "machineEvidence": {
+    "serverRawPath": "captures/g1-rc-20260727.rc9-c01-TECH-RC9-P02-384f73b6-c6df-474d-b8e3-5f4435ff43b3.json",
+    "serverRawSha256": "d32ec8c46588b3579f1100ce2092a0e6e1f7aa9658de4ccc01a0647e6594de2c",
+    "serverRawBytes": 59101,
+    "sha256SidecarPath": "captures/g1-rc-20260727.rc9-c01-TECH-RC9-P02-384f73b6-c6df-474d-b8e3-5f4435ff43b3.json.sha256",
+    "sha256SidecarSha256": "3307ed41f1e2fd796acf2ccb3214c1e4b3cc82c6d0e949c5260a38edc35a515d",
+    "receiptPath": "captures/g1-rc-20260727.rc9-c01-TECH-RC9-P02-384f73b6-c6df-474d-b8e3-5f4435ff43b3.json.receipt.json",
+    "receiptSha256": "f83f06fdbf2c2367e31f97eb184bb0e4f3ddd156bc318b38f56025416b7b418c",
+    "browserDownloadPath": "browser-download.json",
+    "browserDownloadSha256": "d32ec8c46588b3579f1100ce2092a0e6e1f7aa9658de4ccc01a0647e6594de2c",
+    "browserDownloadBytes": 59101,
+    "allClaimsMatchServerRaw": true
+  },
+  "hostOutput": [
+    "Gate 1 RC listening on http://127.0.0.1:4192/; capture=/tmp/new-era-g1a-postseal.tvZFdL/repo/data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C01/anti-pass/TECH-RC9-P02/captures"
+  ],
+  "trackLocks": {
+    "gate1A": "PRE_DIAGNOSTIC",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED"
+  }
+}

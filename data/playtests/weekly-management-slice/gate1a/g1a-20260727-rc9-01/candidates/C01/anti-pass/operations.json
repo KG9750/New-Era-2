@@ -1,0 +1,34 @@
+{
+  "schemaVersion": "gate1-rc9-anti-pass-operations-v1",
+  "candidateAttempt": "C01",
+  "sampleOrder": [
+    "TECH-RC9-P01",
+    "TECH-RC9-P02"
+  ],
+  "technicalInterruptions": [
+    {
+      "afterSampleId": "TECH-RC9-P01",
+      "beforeSampleId": "TECH-RC9-P02",
+      "kind": "browser-process-exited-before-new-page",
+      "impact": "P01 had already completed capture and result sealing; P02 had no evidence files before restart.",
+      "recovery": "Preserved P01 byte-for-byte and ran P02 in a fresh browser process without reusing or overwriting P01."
+    }
+  ],
+  "sampleResults": [
+    {
+      "sampleId": "TECH-RC9-P01",
+      "pathKind": "summary-cta-only",
+      "status": "PASS"
+    },
+    {
+      "sampleId": "TECH-RC9-P02",
+      "pathKind": "minimum-required",
+      "status": "PASS"
+    }
+  ],
+  "trackLocks": {
+    "gate1A": "PRE_DIAGNOSTIC",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED"
+  }
+}
