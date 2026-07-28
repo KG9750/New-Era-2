@@ -2,7 +2,7 @@
 
 | 字段 | 内容 |
 |---|---|
-| 状态 | `AMENDMENT_REREVIEW_PASS / APPROVED_FOR_ISSUE / NOT_STARTED` |
+| 状态 | `COMPATIBILITY_AMENDMENT_PROPOSED / NOT_STARTED` |
 | candidate attempt | `C04` |
 | anti-pass | `TECH-RC9-P07`、`TECH-RC9-P08` |
 | blind diagnostics | `TECH-RC9-D16`–`TECH-RC9-D20` |
@@ -190,6 +190,21 @@ frozen-evidence 与 diagnostic-isolation 三类 production CLI 的统一外部�
 它必须以独立子进程验证真实 argv parsing、成功/失败 exit code、JSON schema/status/
 error code、input/output symlink 拒绝、no-clobber、两套 raw golden grammar 与
 single-session/aggregate 路线；不得 import production `main` 后自报结果。
+identity preflight 还必须包含六个彼此独立、每次只篡改一个字段的反例：
+
+| 单一篡改 | 精确 error code |
+|---|---|
+| absolute binary path | `C04_CLI_BINARY_PATH` |
+| CLI version | `C04_CLI_VERSION` |
+| binary SHA-256 | `C04_CLI_BINARY_SHA256` |
+| codesign TeamIdentifier | `C04_CLI_TEAM_IDENTIFIER` |
+| 完整 `Authority=Developer ID Application: OpenAI OpCo, LLC (2DC432GLL2)` | `C04_CLI_AUTHORITY` |
+| Node 24 identity | `C04_NODE_IDENTITY` |
+
+每个反例必须在篡改后重新计算 canonical input hash/sidecar，证明失败命中对应身份
+error 而非 stale-hash 校验；必须非零 exit、stderr/JSON 中出现唯一精确 error code、
+全新 output path 不产生任何文件，预置 output sentinel 时字节/hash 不变。六例不得
+合并成一个多字段错误 fixture，也不能由纯函数测试替代。
 production verifier 禁止 `--self-test`、hidden bypass 或内建“自报 PASS”，纯函数
 fixture 测试也不能替代该外部进程测试。
 
@@ -231,8 +246,60 @@ verifier、diagnostic isolation verification 与 review/seal record）必须作�
 D16–D20 统一使用：
 
 ```text
-diagnosticIsolationProfile=standalone-codex-cli-v1
+diagnosticIsolationProfile=standalone-codex-cli-v2
 ```
+
+版本决策的唯一现场 authority 是以下 exact artifact pair：
+
+```text
+docs/exec-plans/evidence/2026-07-29-c04-cli-compatibility-probe.json
+docs/exec-plans/evidence/2026-07-29-c04-cli-compatibility-probe.json.sha256
+```
+
+计划不得转述 artifact 未记录的版本、exit 或失败原因；review 与迁移必须逐字读取
+JSON、复算 sidecar，并只依据其中已封存的 argv、binary identity、exit、stdout/
+stderr commitment 和 server acceptance 结论选择 v2。该 evidence 只授权
+compatibility profile/version 决策；它不是 benign golden、D16–D20 diagnostic、
+isolation verifier 或 Gate PASS 证据。
+
+包含
+`mcp_servers.chrome-devtools.enabled=false` 或
+`mcp_servers.node_repl.enabled=false` 的旧模板已由现场 strict-config probe 证明在
+0.142/0.146 均以 `invalid transport` exit 1，固定裁定为
+`CONFIG_INVALID_TRANSPORT`，不得执行或作为 version/profile authority。review
+只能绑定 D13 按当前 §3.1 修正后重新生成的 candidate probe pair；该 pair 尚未
+通过 sidecar 与逐 token argv 核验前，不得生成 review receipt。
+
+两位 independent reviewer 都必须把 probe 中每次 invocation 的 argv 作为 token
+array，与 §3.1 的 absolute executable 及后续每个 argument 按顺序逐 token 比较；
+除场次专属绝对路径变量外，不允许重排、补省略参数、合并 `-c`、alias 或字符串
+normalize。`PATH`、stdin 与 stdout binding 必须分别逐字匹配 §3.1，但不伪装成
+argv token；任一差异使 compatibility review 失败。
+
+compatibility amendment review outcome 只由以下 exact receipt pair 表达，计划
+本身保持 outcome-neutral：
+
+```text
+docs/exec-plans/evidence/2026-07-29-c04-compatibility-amendment-review.json
+docs/exec-plans/evidence/2026-07-29-c04-compatibility-amendment-review.json.sha256
+```
+
+receipt schema 必须包含：
+
+- exact `planPath` 与当前计划内容的 `planBlobSha256`；
+- exact probe JSON/sidecar path，以及各自 SHA-256；
+- 恰好两名不同 reviewer 的 `reviewerId`、精确整数 `P0`/`P1`/`P2` 与
+  `outcome`；
+- 与两名 reviewer 均不同的 `issuerAgentId`、UTC `createdAt` 和
+  `finalStatus=PASS`；
+- 不得包含或声称任何 Gate、C04、Gate 1A、Gate 1H 或 Gate 2 outcome。
+
+只有两名 reviewer 对同一精确 plan blob 与同一 probe pair 都得到
+`P0=0 / P1=0 / P2=0 / outcome=PASS` 后，第三名 agent 才能按既有 JSON/sidecar
+create-new/no-clobber 成组发布规则生成 receipt；receipt 生成后不得再修改本计划。
+任何 plan/probe hash 变化都使 receipt 无效，必须另立 amendment，不得回写本计划
+“转为 PASS”。compatibility amendment 的 final seal 只验证 receipt pair 的
+schema、sidecar、三 agent 身份分离与全部 binding，不再把审查 outcome 写回计划。
 
 在启动 D16 前，必须先把该 profile 写入 RC9 测试运营合同，并冻结：
 
@@ -240,7 +307,8 @@ diagnosticIsolationProfile=standalone-codex-cli-v1
 
   ```bash
   PATH="/opt/homebrew/opt/node@24/bin:/opt/homebrew/bin:/usr/bin:/bin" \
-  codex exec --json --strict-config --ignore-user-config \
+  /Applications/ChatGPT.app/Contents/Resources/codex \
+    exec --json --strict-config --ignore-user-config \
     --skip-git-repo-check --sandbox read-only \
     --cd "$TEMP_WORKSPACE" \
     --model gpt-5.6-sol \
@@ -254,52 +322,74 @@ diagnosticIsolationProfile=standalone-codex-cli-v1
     -c 'mcp_servers.playwright.command="npx"' \
     -c 'mcp_servers.playwright.args=["-y","@playwright/mcp@0.0.76"]' \
     -c 'mcp_servers.playwright.default_tools_approval_mode="auto"' \
-    -c 'mcp_servers.chrome-devtools.enabled=false' \
-    -c 'mcp_servers.node_repl.enabled=false' \
     -c 'model_reasoning_effort="xhigh"' \
     -c 'approval_policy="never"' \
     - < "$NEUTRAL_PLAYER_PROMPT" > "$CLI_EVENT_STREAM"
   ```
 
-- `codex --version` 必须逐场等于场前冻结的 `codex-cli 0.142.4`；Node 必须来自
-  `/opt/homebrew/opt/node@24/bin`。版本变化使 C04 停止，不允许临场换版本；
+- CLI 只能使用绝对 binary
+  `/Applications/ChatGPT.app/Contents/Resources/codex`；不得通过 `PATH`、alias、
+  wrapper 或另一份安装解析 `codex`。上述 `PATH` 只用于冻结 Node/npm/npx，Node
+  必须来自 `/opt/homebrew/opt/node@24/bin`。该 binary path 是公开冻结常量，也是
+  preflight/verification 唯一允许明文保存的绝对 executable path；不得借此放宽
+  workspace、private evidence 或其他本机绝对路径的脱敏规则；
+- Node identity 必须绑定 compatibility artifact 已封存的 Node 24 absolute
+  binary path、version 与 binary SHA-256；不得只检查版本主号或 `PATH` 字符串；
+- 每场 preflight 都必须现场复算并逐字匹配：
+  absolute binary path、`codex-cli 0.146.0-alpha.3.1`、binary SHA-256
+  `6d8be49e49751554df16572369e636cbe02c84b208cad3dc35528c846eeca223`、
+  codesign `TeamIdentifier=2DC432GLL2` 与完整
+  `Authority=Developer ID Application: OpenAI OpCo, LLC (2DC432GLL2)`。任一
+  path、version、hash、签名或 Node 24 identity 漂移都立即停止 C04，不允许临场
+  更换 binary、版本或模型；
 - `prototype/scripts/verify-diagnostic-isolation.mjs` 及其正反 fixtures；
-- isolation fixture 必须冻结两套彼此独立、来自真实 `codex-cli 0.142.4` 的脱敏
-  golden raw，不能以一套 grammar 兼容另一套：
-  - persisted rollout JSONL 顶层 `type` 只接受 `session_meta`、
-    `turn_context`、`response_item`、`event_msg`。工具调用只能是
-    `response_item.payload.type=function_call`，其
-    `response_item.payload.arguments` 必须是 JSON string；verifier 对原字符串
-    恰好解析一次，要求结果为 object，再做工具参数 allowlist；
-  - `codex exec --json` event stream 顶层 `type` 只接受
-    `thread.started`、`turn.started`、`item.started`、`item.completed`、
-    `turn.completed`、`turn.failed`。MCP 工具调用只能位于
-    `item.type=mcp_tool_call`，`item.arguments` 必须直接是 object，不能套用
-    persisted rollout 的 JSON-string 解析；
-  - 两个来源的 `timestamp` 分别按各自真实 schema 可选；不得要求两边同时存在、
-    类型相同或互相补造。任何 camelCase 事件别名、跨来源 envelope 或 arguments
-    类型替换均拒绝；
+- isolation fixture 必须冻结两套彼此独立、来自上述唯一 binary 真实 benign
+  capture 的脱敏 golden raw，不能以一套 grammar 兼容另一套：
+  - persisted rollout grammar ID 固定为
+    `codex-0.146.0-alpha.3.1-persisted-rollout-v1`；
+  - `codex exec --json` event grammar ID 固定为
+    `codex-0.146.0-alpha.3.1-exec-events-v1`；
+  - persisted coverage 至少包含 `session_meta`、`turn_context`、
+    `response_item` 的 `message`、`reasoning`、`function_call`、
+    `function_call_output`，以及 `event_msg`；
+  - exec coverage 至少包含 `thread.started`、`turn.started`，
+    `item.started`/`item.completed` 各自覆盖 `agent_message`、`reasoning`、
+    `mcp_tool_call`，以及 `turn.completed` 和受控 benign `turn.failed`；
+  - 两套完整 known grammar 的 event/type/key、envelope、arguments 类型、
+    projection 与来源内 timestamp 规则必须从新版本真实 benign 空工作区 raw 单向
+    提取、独立 read-back 后冻结。允许按 provenance 声明的顺序合并多次真实 benign
+    run，但每段必须保留 source commitment、capture ordinal、source-line ordinal
+    与段内事件顺序；不得复制、改名或手写旧 grammar/golden，也不得让一套来源补造
+    另一套字段；
+  - 若真实 benign capture 的任何 known type/key、arguments 类型或 projection 与
+    预写合同不一致，立即停止，先重新 amendment + independent review；禁止在实现
+    或 D16–D20 现场扩 grammar。D16–D20 出现 golden matrix 未覆盖的类型时，该场
+    技术拒绝并停止 C04；
 - 两份 golden raw 固定为
-  `prototype/tests/fixtures/isolation/golden-codex-0.142.4-persisted-rollout.jsonl`
+  `prototype/tests/fixtures/isolation/golden-codex-0.146.0-alpha.3.1-persisted-rollout.jsonl`
   与
-  `prototype/tests/fixtures/isolation/golden-codex-0.142.4-exec-events.jsonl`。
+  `prototype/tests/fixtures/isolation/golden-codex-0.146.0-alpha.3.1-exec-events.jsonl`。
   它们必须分别从真实 persisted rollout 与真实 `codex exec --json` stream 单向
   脱敏取得，保留 envelope、字段类型与事件顺序；不得由 structural projection、
   预期 verification 或手写目标对象反向生成；
 - 两份 golden 的 provenance 只写入
   `prototype/tests/fixtures/fixture-expectations.json.isolationGoldenProvenance`，
   schema 固定为恰好两个 key：`persistedRollout` 与 `execEvents`。每项必须恰好包含
-  `sourceGrammar`、`codexCliVersion`、`benignSourceOpaqueCommitment`、
+  `sourceGrammar`、`codexCliVersion`、`benignSourceCaptures`、
   `sanitizerVersion`、`sanitizerRuleset`、`goldenPath`、`goldenSha256`、
   `goldenLineCount`、`independentReadBackStatus=PASS` 与
-  `privacyScanStatus=PASS`。`benignSourceOpaqueCommitment` 只承诺用于 fixture
+  `privacyScanStatus=PASS`。`benignSourceCaptures` 必须是非空有序数组，每项恰好
+  包含正整数 `ordinal`、64 位小写十六进制 `sourceOpaqueCommitment`、正整数
+  `sourceLineCount` 与按 source 顺序列出的 `coveredTypes`；只承诺用于 fixture
   制备的 benign 来源字节，不得写真实敏感内容、private evidence object ID 或任何
   绝对 private path。两个 `sourceGrammar` 必须分别为冻结 grammar ID，
-  `codexCliVersion` 必须逐字等于 `codex-cli 0.142.4`，commitment 与 SHA 必须为
-  64 位小写十六进制，version/ruleset 必须为非空 versioned ID，golden path 必须为
-  上述两个 exact path，line count 必须为正整数，两个 status 只接受 `PASS`；额外
-  provenance key、缺字段或 hash/line count 不匹配均失败；
-- sanitizer 为两个 grammar 各冻结一份 deterministic field allowlist：
+  `codexCliVersion` 必须逐字等于 `codex-cli 0.146.0-alpha.3.1`，SHA 必须为 64 位
+  小写十六进制，version/ruleset 必须为非空 versioned ID，golden path 必须为上述
+  两个 exact path，line count 必须为正整数，两个 status 只接受 `PASS`；额外
+  provenance key、缺字段、ordinal/order 或 hash/line count 不匹配均失败；
+- sanitizer 必须从两份新版本 benign raw 的独立 read-back 结果，为上述两个新
+  grammar ID 各冻结一份 deterministic field allowlist；旧 0.142.4 手写 schema
+  或 projection 不得作为生成输入：
   - sanitizer 在删除任何字段前，必须先按对应来源的完整 known grammar 校验 raw
     输入。raw 中来源 schema 已知的 system/developer/user message、reasoning、
     绝对路径及其他敏感字段允许存在，但只能删除或变成 commitment；未知顶层
@@ -309,12 +399,14 @@ diagnosticIsolationProfile=standalone-codex-cli-v1
     payload 只保留 session ID、source、model、reasoning effort、cwd commitment
     与 workspace-roots commitment；`turn_context` payload 只保留 turn ID、
     model、reasoning effort、cwd/workspace commitments、approval/sandbox
-    policy；`response_item(function_call)` payload 只保留 `type`、`name`、
-    `call_id` 与原始 `arguments` string；`event_msg` payload 只保留事件 subtype
-    与结构关联 ID；
+    policy；四种 `response_item` 均保留 type/call/结构关联 ID，message/reasoning/
+    function-call-output 的内容删除或 commitment 化，只有 `function_call` 额外保留
+    `name`、`call_id` 与真实 grammar 规定的 arguments；`event_msg` payload 只保留
+    事件 subtype 与结构关联 ID；
   - exec event envelope 只保留 `timestamp?`、`type`、thread/turn ID 与
-    allowlisted `item`；`mcp_tool_call` item 只保留 item ID、server、tool、
-    arguments object、status 与结构关联 ID；
+    allowlisted `item`；`agent_message`/`reasoning` 内容删除或 commitment 化，
+    `mcp_tool_call` item 保留 item ID、server、tool、真实 grammar 规定的
+    arguments、status 与结构关联 ID；
   - 严格拒绝 allowlist 外字段只适用于 sanitized golden 与 structural projection
     输出，不适用于完整 raw 的已知敏感字段。sanitized 输出必须递归扫描
     secret/token/key、PII、system/developer/user message、reasoning 内容和本机
@@ -324,8 +416,10 @@ diagnosticIsolationProfile=standalone-codex-cli-v1
     projection PASS 不能替代该 read-back；
 - 唯一 provider 为 direct-tools Playwright MCP
   `@playwright/mcp@0.0.76`；preflight 必须保存已解析 package version、
-  npm integrity、实际 server argv 与工具 inventory。禁止 in-app Browser
-  plugin、Chrome、Computer Use、Chrome DevTools MCP 与 `node_repl`；
+  npm integrity、实际 server argv 与工具 inventory。`--ignore-user-config`、唯一
+  显式 Playwright server 配置和逐场 tool/server inventory 共同证明 Chrome
+  DevTools MCP 与 `node_repl` 未启用；禁止为未定义 server 传
+  `enabled=false`。同时禁止 in-app Browser plugin、Chrome 与 Computer Use；
 - 唯一允许 origin 为 `http://127.0.0.1:4202`，只允许
   `browser_navigate`、`browser_snapshot`、`browser_click`、
   `browser_fill_form`、`browser_wait_for`、`browser_run_code_unsafe`；
@@ -430,9 +524,10 @@ CLI 无法运行，该样本判技术无效并停止 C04，不临场修改合同
 
 每场开始前生成并封存
 `diagnostic-isolation-preflight.json/.sha256`，内容包含有效 argv、非敏感环境
-投影、prompt hash、Codex/Node 版本、Playwright MCP package version/integrity/
-server argv、预期 tool inventory、两个 unsafe code hash、origin 和临时目录
-空态。
+投影、prompt hash、CLI absolute path/version/binary SHA-256/codesign
+TeamIdentifier/完整 Authority、Node 24 identity、Playwright MCP package
+version/integrity/server argv、预期 tool inventory、两个 unsafe code hash、origin
+和临时目录空态。
 
 CLI 结束后，verifier 读取真实 rollout 与 `--json` event stream。原文件含系统
 指令、内部推理和本机隐私，不得提交到公开仓库。两份原始文件必须立即写入本机
@@ -465,12 +560,13 @@ private evidence 解析必须从固定 root
 
 投影覆盖原文件每一行，保存 ordinal、来源内可选 timestamp、顶层 type、结构关联
 ID 与原始行 SHA-256。persisted projection 按 `session_meta`、`turn_context`、
-`response_item(function_call)`、`event_msg` 的独立 allowlist 输出；exec
-projection 按 thread/turn lifecycle 与 `item(mcp_tool_call)` 的独立 allowlist
-输出。工具参数必须来自各自 raw grammar：前者从原始 arguments string 单次解析，
-后者直接读取 arguments object；并额外保存两次 unsafe 探针的成功状态、
-context/page ID、origin、pageCount 与下载 metadata。删除其他 message、
-reasoning、system/developer/user 内容、绝对路径和无关 tool output。projection
+四种 `response_item` 与 `event_msg` coverage matrix 的独立 allowlist 输出；exec
+projection 按 thread/turn lifecycle、三种 item type 与受控 `turn.failed` matrix
+的独立 allowlist 输出。工具参数及 arguments 类型必须来自新 golden 对应的真实 raw
+grammar，只在 `function_call`/`mcp_tool_call` 投影保留 allowlisted 参数；并额外
+保存两次 unsafe 探针的成功状态、context/page ID、origin、pageCount 与下载
+metadata。删除其他 message、reasoning、system/developer/user 内容、绝对路径和
+无关 tool output。projection
 只能由已验证 raw 单向生成 allowlisted 结构，不能作为 raw 输入、不能补造 raw
 字段，也不能反向生成 golden raw。raw 必须先通过对应来源的完整 known grammar；
 已知敏感字段随后删除或 commitment 化，未知 event/type/key 则在生成 projection
@@ -502,7 +598,11 @@ cliEventStructuralEvidencePath
 cliEventStructuralEvidenceHash
 agentModel
 agentReasoningEffort
+agentCliBinaryPath
 agentCliVersion
+agentCliBinarySha256
+agentCliTeamIdentifier
+agentCliAuthority
 temporaryWorkspace
 temporaryWorkspaceInitiallyEmpty
 workspaceRoots
@@ -521,9 +621,9 @@ canonicalInputHash
 ```
 
 verifier 必须机械核验 session meta、首个 turn context、cwd、workspace roots、
-rollout source、模型、reasoning、CLI 版本、临时目录初态、Playwright MCP
-版本/integrity、origin、逐工具参数 allowlist、context/page 探针与恰好一个应用
-Session。
+rollout source、模型、reasoning、CLI absolute path/version/binary SHA-256/codesign
+identity、Node 24 identity、临时目录初态、Playwright MCP 版本/integrity、origin、
+逐工具参数 allowlist、context/page 探针与恰好一个应用 Session。
 
 每场 canonical input 与 verification path 冻结为：
 
@@ -554,34 +654,34 @@ mismatch、无法复算或 policy scan 失败，该样本技术无效并停止 C
 
 ## 4. C04 source 与证据谱系
 
-### 4.1 Amendment 迁移
+### 4.1 Compatibility amendment 迁移
 
-旧 plan commit `7354d86ecf5a38fc5797895d088f53acd1dca7bb` 及其
-`PLAN_REREVIEW_PASS` 现在只保留为 superseded historical record，不再授权 Issue、
-source commit、C04 evidence 或 CM01。取得下列第 1 步独立审查 PASS 前，状态保持
-`AMENDMENT_REVIEW_PENDING / NOT_STARTED`；第三轮 PASS 后仅解锁步骤 2–5，
-implementation 仍为 `NOT_STARTED`，必须完成全部迁移后才可实施：
+当前 `plan_ref=c085bb63a2cbce790e47859ec49ff05c58283c74` 的第三轮 PASS 只覆盖
+当时冻结的 CLI/version 合同，不覆盖本次现场 version drift。本计划始终保持
+`COMPATIBILITY_AMENDMENT_PROPOSED / NOT_STARTED`，不会因外部审查而修改自身；
+implementation 必须完成以下迁移后才可继续：
 
-1. 先取得本 amendment 的独立 `AMENDMENT_REREVIEW_PASS`；
-2. review PASS 后在 evidence-plan 分支创建只包含本计划文件的 plan-only commit，
-   推送后以该 commit 作为新 `plan_ref`；本次 amendment 不再改写 `CONTEXT.md` 或
-   `PLANS.md`；
+1. 先验证上述 external review receipt pair 有效且逐字绑定当前 plan/probe；
+2. 在 evidence-plan 分支创建只包含本计划、probe pair 与 review receipt pair 的
+   五文件 Phase 0 migration commit，推送后以该 commit 作为新 `plan_ref`；
 3. 在 #58 明确记录“新 `plan_ref` supersedes
-   `7354d86ecf5a38fc5797895d088f53acd1dca7bb`”，Issue 后续只引用新
-   `plan_ref`；
-4. 把该 plan-only commit cherry-pick 到现有
-   `codex/rc9-08r3-c04-implementation` 的 `9fb0c8828ab301402f9eee8f9d4135b88dc58c14`
-   之后；此 cherry-pick 必须发生在任何 implementation commit 之前。现有工作树
-   改动在此之前不得提交，也不能被称为已获新计划授权；
-5. cherry-pick 后重新计算九个 `rc9-v03` authority blob hashes，重写 C04
-   authority probe 的期望 hash，并从真实 CLI 重新运行 manifest fixtures 与
-   authority probe；旧 `7354d86...`/`9fb0c88...` 计划下产生的所有临时
-   verification JSON、hash、stdout capture 一律作废，不得进入
-   `commandResults[]`、E、CM、IR 或 seal。
+   `c085bb63a2cbce790e47859ec49ff05c58283c74`”，同时记录 review receipt JSON
+   SHA-256；Issue 后续只引用新 `plan_ref` 与该 receipt hash；
+4. 把该 Phase 0 migration commit cherry-pick 到
+   `codex/rc9-08r3-c04-implementation` 当前
+   `989781d39fca19b3c4383ef5e2e4160835378fba` 之后；此 cherry-pick 必须先于
+   compatibility implementation commit；
+5. cherry-pick 后先把 `CONTEXT.md`、`PLANS.md` 的 active plan/profile 入口更新为
+   v2，再依次更新测试运营合同/profile、isolation verifier、两份新版本 benign
+   golden/provenance、manifest fixtures 与 C04 authority probe；随后重新计算
+   entrypoint 与九个 authority blob hashes，再从上述唯一绝对 CLI binary 重新运行
+   fixtures/probe；
+6. `c085bb63...` plan_ref 下产生的所有临时 verification JSON、hash、stdout
+   capture 一律作废，不得进入 `commandResults[]`、E、CM、IR 或 seal。
 
 新 source 与 dependency integration 必须包含与新 `plan_ref` 相同的 amendment
-plan blob，以及重新绑定后的同一组九个 authority blobs；任一 hash 不同都不得
-构建 C04。
+plan/probe pair/review receipt pair blobs、v2 entrypoint blobs，以及重新绑定后的
+同一组九个 authority blobs；任一 hash 不同都不得构建 C04。
 
 ### 4.2 分支拓扑
 
@@ -595,6 +695,10 @@ plan blob，以及重新绑定后的同一组九个 authority blobs；任一 has
 | `CONTEXT.md` | 既有 Phase 0 plan reference 更新 |
 | `PLANS.md` | 既有 Phase 0 活跃计划入口更新 |
 | `docs/exec-plans/active/2026-07-29-gate1a-rc9-c04-recovery-plan.md` | 本 amendment authority |
+| `docs/exec-plans/evidence/2026-07-29-c04-cli-compatibility-probe.json` | version decision compatibility evidence |
+| `docs/exec-plans/evidence/2026-07-29-c04-cli-compatibility-probe.json.sha256` | compatibility evidence sidecar |
+| `docs/exec-plans/evidence/2026-07-29-c04-compatibility-amendment-review.json` | external compatibility review receipt |
+| `docs/exec-plans/evidence/2026-07-29-c04-compatibility-amendment-review.json.sha256` | external review receipt sidecar |
 | `docs/exec-plans/active/2026-07-27-gate1a-rc9-test-operations.md` | 冻结 standalone CLI isolation profile |
 | `prototype/package.json` | 仅 wiring 本计划命令 |
 | `prototype/scripts/candidate-manifest-contract.mjs` | versioned manifest 共享纯合同 |
@@ -611,8 +715,8 @@ plan blob，以及重新绑定后的同一组九个 authority blobs；任一 has
 | `prototype/tests/fixtures/isolation/aggregate-valid.json` | isolation aggregate contract fixture |
 | `prototype/tests/fixtures/isolation/fixture-matrix.json` | isolation 正反矩阵 |
 | `prototype/tests/fixtures/isolation/sample-valid.json` | isolation single-sample contract fixture |
-| `prototype/tests/fixtures/isolation/golden-codex-0.142.4-persisted-rollout.jsonl` | 脱敏真实 persisted rollout grammar golden |
-| `prototype/tests/fixtures/isolation/golden-codex-0.142.4-exec-events.jsonl` | 脱敏真实 `codex exec --json` grammar golden |
+| `prototype/tests/fixtures/isolation/golden-codex-0.146.0-alpha.3.1-persisted-rollout.jsonl` | 脱敏真实 persisted rollout grammar golden |
+| `prototype/tests/fixtures/isolation/golden-codex-0.146.0-alpha.3.1-exec-events.jsonl` | 脱敏真实 `codex exec --json` grammar golden |
 | `prototype/tests/fixtures/manifests/candidate-c01-rewrapped-by-cm02-rejected.json` | v0.2 history rejection fixture |
 | `prototype/tests/fixtures/manifests/candidate-c02-first-manifest-valid.json` | v0.2 manifest fixture |
 | `prototype/tests/fixtures/manifests/candidate-c02-reuses-c01-evidence-rejected.json` | v0.2 history rejection fixture |
@@ -632,7 +736,10 @@ plan blob，以及重新绑定后的同一组九个 authority blobs；任一 has
 | `prototype/tests/fixtures/manifests/candidate-valid.json` | v0.2 compatibility 正例 |
 | `prototype/tests/fixtures/manifests/candidate-zero-id-rejected.json` | manifest ID 反例 |
 
-- 除上表 39 个 exact path 外，source commit 修改任何其他路径都失败；
+- 除上表 43 个 exact path 外，source commit 修改任何其他路径都失败；
+- source scope audit/guard 必须把本计划、probe pair 与 review receipt pair 这五个
+  Phase 0 exact path 视为允许的只读 authority 输入，同时继续拒绝
+  `docs/exec-plans/evidence/**` 下任何其他新增、修改或替代路径；
 - 明确禁止修改 `prototype/src/**`、`prototype/scripts/playtest-host.mjs`、
   `prototype/scripts/management-ledger-contract.mjs`、Vite 配置、lockfile、
   玩法/数值 fixtures、capture ledger、玩家包或访谈；
@@ -911,7 +1018,7 @@ P07/P08 永久排除 Gate 1A 与 Gate 1H 正式分母。
 
 ## 7. D16–D20 与诊断门槛
 
-五场统一使用 `standalone-codex-cli-v1`，严格串行，且每场必须：
+五场统一使用 `standalone-codex-cli-v2`，严格串行，且每场必须：
 
 - 完成两周、`tick=2010`、两份 recap；
 - 同一 build、scenario、protocol、initial state 与 authority；
@@ -1045,7 +1152,7 @@ Issue 关闭前必须保存：
 `7354d86ecf5a38fc5797895d088f53acd1dca7bb` 现在仅是 superseded historical
 结论，历史 PASS 不得用于 #58、source commit、C04 admission 或 CM01。
 
-### 10.2 当前 amendment 审查
+### 10.2 前一 amendment 审查（version-bounded）
 
 本 amendment 的独立审查历史单独记录如下；前两轮均为 FAIL，第三轮由两位独立
 reviewer 复审通过：
@@ -1056,7 +1163,19 @@ reviewer 复审通过：
 | 2 | `FAIL` | M 的 Git-object 绑定、raw/sanitized grammar 边界、运营 authority 路径、外部 CLI 测试、golden provenance、JSON/sidecar 成组发布 |
 | 3 | `PASS` | `rc9_plan_adversarial`: `P0=0 / P1=0 / P2=0 / PLAN_AMENDMENT_PASS`；`gate1a_issue_corrections`: `P0=0 / P1=0 / P2=0 / REVIEW_PASS` |
 
-当前状态为 `AMENDMENT_REREVIEW_PASS / APPROVED_FOR_ISSUE / NOT_STARTED`。只允许
-按 §4.1 进入 plan-only commit、Issue migration 与后续 implementation 顺序；这不
-代表 C04、Gate 1A 或 Gate 1H 已通过，Gate 1H 仍为 `PENDING`，Gate 2 继续
+该第三轮 PASS 保持为历史事实，但只覆盖 `c085bb63...` 当时冻结的 CLI/version
+合同，不能覆盖之后现场证明的 model-server version drift，也不能授权
+`standalone-codex-cli-v2`。
+
+### 10.3 Compatibility amendment 审查
+
+| compatibility 轮次 | 结论 | 审查范围 |
+|---|---|---|
+| 1 | `FAIL` | compatibility artifact authority、六类 identity 反例、v2 entrypoint 迁移、真实 golden coverage matrix |
+| 2 | `FAIL` | outcome-neutral 计划、external receipt、五文件 Phase 0 与 probe argv 逐 token binding |
+| 3 | external receipt | outcome 仅由 exact review receipt pair 表达，计划不镜像审查结论 |
+
+当前状态固定为 `COMPATIBILITY_AMENDMENT_PROPOSED / NOT_STARTED`。valid external
+receipt 是 Phase 0 migration 的前置 authority，但 receipt outcome 不回写本计划；
+这不代表 C04、Gate 1A 或 Gate 1H 已通过，Gate 1H 仍为 `PENDING`，Gate 2 继续
 `LOCKED`。

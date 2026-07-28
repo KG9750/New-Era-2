@@ -1,0 +1,592 @@
+{
+  "schemaVersion": "c04-cli-compatibility-probe.v2",
+  "artifactId": "2026-07-29-c04-cli-compatibility-probe",
+  "generatedAtUtc": "2026-07-28T22:36:57Z",
+  "evidenceScope": {
+    "purpose": "C04 CLI compatibility profile and argv-template correction decision only",
+    "isGoldenEvidence": false,
+    "isDiagnosticEvidence": false,
+    "isGateEvidence": false
+  },
+  "acceptanceRule": {
+    "serverAccepted": "processExitCode == 0 && turnCompleted == true",
+    "decisionEligibility": "template.decisionEligible == true"
+  },
+  "prompt": {
+    "storage": "SHA256_ONLY",
+    "sha256": "18331b5b23c243a96947920d62865b1e311058ae44a1089ed2315216bdbbbb4f"
+  },
+  "invocationCommon": {
+    "environmentProjection": {
+      "PATH": "/opt/homebrew/opt/node@24/bin:/opt/homebrew/bin:/usr/bin:/bin"
+    },
+    "node": {
+      "binaryPath": "/opt/homebrew/opt/node@24/bin/node",
+      "version": "v24.18.0",
+      "binarySha256": "72c18e2eeda260f67a5b2b66e96fa9b5ad82864676ebb54925695d87120cae3f",
+      "binaryBytes": 50672
+    },
+    "stdin": {
+      "mode": "prompt-bytes",
+      "contentStored": false,
+      "commitmentField": "prompt.sha256"
+    },
+    "workspace": {
+      "argvPlaceholder": "<TEMP_WORKSPACE_ABSOLUTE_PATH>",
+      "creation": "mktemp isolated directory",
+      "initiallyEmpty": true
+    },
+    "binarySubstitution": {
+      "argvPlaceholder": "<CLI_BINARY_ABSOLUTE_PATH>",
+      "rule": "Replace only with the probe binaryPath; all remaining non-workspace argv tokens are invariant within one template."
+    }
+  },
+  "binaryIdentities": [
+    {
+      "binaryId": "homebrew-codex-0.142.4",
+      "binaryPath": "/opt/homebrew/bin/codex",
+      "cliVersion": "codex-cli 0.142.4",
+      "binarySha256": "d3be844c45c4fd89392536e56e1010963f94785592596b50cd0c45bb8a341406"
+    },
+    {
+      "binaryId": "chatgpt-app-codex-0.146.0-alpha.3.1",
+      "binaryPath": "/Applications/ChatGPT.app/Contents/Resources/codex",
+      "cliVersion": "codex-cli 0.146.0-alpha.3.1",
+      "binarySha256": "6d8be49e49751554df16572369e636cbe02c84b208cad3dc35528c846eeca223",
+      "codesign": {
+        "teamIdentifier": "2DC432GLL2",
+        "authorities": [
+          "Developer ID Application: OpenAI OpCo, LLC (2DC432GLL2)",
+          "Developer ID Certification Authority",
+          "Apple Root CA"
+        ],
+        "verification": {
+          "command": "codesign --verify --deep --strict --verbose=4 <CLI_BINARY_ABSOLUTE_PATH>",
+          "exitCode": 0,
+          "validOnDisk": true,
+          "satisfiesDesignatedRequirement": true,
+          "status": "PASS"
+        }
+      }
+    }
+  ],
+  "templates": [
+    {
+      "templateId": "narrow-v1",
+      "status": "SUPERSEDED",
+      "decisionEligible": false,
+      "supersededBy": "corrected-candidate-v1",
+      "argvTemplate": [
+        "<CLI_BINARY_ABSOLUTE_PATH>",
+        "exec",
+        "--json",
+        "--strict-config",
+        "--ignore-user-config",
+        "--skip-git-repo-check",
+        "--sandbox",
+        "read-only",
+        "--cd",
+        "<TEMP_WORKSPACE_ABSOLUTE_PATH>",
+        "--model",
+        "gpt-5.6-sol",
+        "--disable",
+        "memories",
+        "--disable",
+        "hooks",
+        "--ignore-rules",
+        "--config",
+        "model_reasoning_effort=\"xhigh\"",
+        "--config",
+        "approval_policy=\"never\"",
+        "--config",
+        "plugins.browser.enabled=false",
+        "--config",
+        "plugins.chrome.enabled=false",
+        "--config",
+        "plugins.computer-use.enabled=false",
+        "--config",
+        "mcp_servers.playwright.command=\"npx\"",
+        "--config",
+        "mcp_servers.playwright.args=[\"-y\",\"@playwright/mcp@0.0.76\"]",
+        "-"
+      ],
+      "configProjection": {
+        "model": "gpt-5.6-sol",
+        "modelReasoningEffort": "xhigh",
+        "approvalPolicy": "never",
+        "sandbox": "read-only",
+        "strictConfig": true,
+        "ignoreUserConfig": true,
+        "skipGitRepoCheck": true,
+        "ignoreRules": true,
+        "disabledFeatures": [
+          "memories",
+          "hooks"
+        ],
+        "disabledPlugins": [
+          "browser",
+          "chrome",
+          "computer-use"
+        ],
+        "configuredMcpServers": [
+          {
+            "name": "playwright",
+            "command": "npx",
+            "args": [
+              "-y",
+              "@playwright/mcp@0.0.76"
+            ]
+          }
+        ]
+      },
+      "probes": [
+        {
+          "binaryId": "homebrew-codex-0.142.4",
+          "binaryPath": "/opt/homebrew/bin/codex",
+          "cliVersion": "codex-cli 0.142.4",
+          "binarySha256": "d3be844c45c4fd89392536e56e1010963f94785592596b50cd0c45bb8a341406",
+          "processExitCode": 1,
+          "errorCode": "MODEL_REQUIRES_NEWER_CODEX",
+          "threadStarted": true,
+          "turnStarted": true,
+          "turnCompleted": false,
+          "serverAccepted": false,
+          "rawCommitments": {
+            "execEvents": {
+              "present": true,
+              "sha256": "a5ccde7a613969be5766722cd172b0d7c3a71378322c1f20aeeacf872b0fe438",
+              "bytes": 1082,
+              "lines": 6
+            },
+            "persistedRollout": {
+              "present": true,
+              "sha256": "6d8564ce4e11246461b66b66df6395f66e5ebd65d58b15cc10f1ee921d0f4733",
+              "bytes": 54306,
+              "lines": 8
+            },
+            "stderr": {
+              "present": true,
+              "sha256": "481afef950264ca5d6ac1dfb0cdbdf18ddf90140e483862340599b54d681f708",
+              "bytes": 4144,
+              "lines": 25
+            }
+          },
+          "cleanup": {
+            "temporaryRunDirectoryAbsent": true,
+            "persistedRolloutAbsent": true,
+            "status": "PASS"
+          }
+        },
+        {
+          "binaryId": "chatgpt-app-codex-0.146.0-alpha.3.1",
+          "binaryPath": "/Applications/ChatGPT.app/Contents/Resources/codex",
+          "cliVersion": "codex-cli 0.146.0-alpha.3.1",
+          "binarySha256": "6d8be49e49751554df16572369e636cbe02c84b208cad3dc35528c846eeca223",
+          "processExitCode": 0,
+          "errorCode": null,
+          "threadStarted": true,
+          "turnStarted": true,
+          "turnCompleted": true,
+          "serverAccepted": true,
+          "rawCommitments": {
+            "execEvents": {
+              "present": true,
+              "sha256": "0bb7493823ecd99ae1114dbcb4b7e25bcb1dcdefedcf29918d585303b30fe077",
+              "bytes": 356,
+              "lines": 4
+            },
+            "persistedRollout": {
+              "present": true,
+              "sha256": "a7a5f7476a491a994a8daccc1f6c9b167a11ad4f66857f1dcdde4781bc8a5348",
+              "bytes": 66173,
+              "lines": 14
+            },
+            "stderr": {
+              "present": true,
+              "sha256": "3d91b51b0352add46266638f80e645971c551968705e87055538104360cafb37",
+              "bytes": 138,
+              "lines": 1
+            }
+          },
+          "cleanup": {
+            "temporaryRunDirectoryAbsent": true,
+            "persistedRolloutAbsent": true,
+            "status": "PASS"
+          }
+        }
+      ]
+    },
+    {
+      "templateId": "plan-section-3.1-current",
+      "source": "docs/exec-plans/active/2026-07-29-gate1a-rc9-c04-recovery-plan.md section 3.1",
+      "status": "CONFIG_INVALID_TRANSPORT",
+      "decisionEligible": false,
+      "argvTemplate": [
+        "<CLI_BINARY_ABSOLUTE_PATH>",
+        "exec",
+        "--json",
+        "--strict-config",
+        "--ignore-user-config",
+        "--skip-git-repo-check",
+        "--sandbox",
+        "read-only",
+        "--cd",
+        "<TEMP_WORKSPACE_ABSOLUTE_PATH>",
+        "--model",
+        "gpt-5.6-sol",
+        "--disable",
+        "memories",
+        "--disable",
+        "hooks",
+        "--ignore-rules",
+        "-c",
+        "plugins.\"browser@openai-bundled\".enabled=false",
+        "-c",
+        "plugins.\"chrome@openai-bundled\".enabled=false",
+        "-c",
+        "plugins.\"computer-use@openai-bundled\".enabled=false",
+        "-c",
+        "mcp_servers.playwright.enabled=true",
+        "-c",
+        "mcp_servers.playwright.command=\"npx\"",
+        "-c",
+        "mcp_servers.playwright.args=[\"-y\",\"@playwright/mcp@0.0.76\"]",
+        "-c",
+        "mcp_servers.playwright.default_tools_approval_mode=\"auto\"",
+        "-c",
+        "mcp_servers.chrome-devtools.enabled=false",
+        "-c",
+        "mcp_servers.node_repl.enabled=false",
+        "-c",
+        "model_reasoning_effort=\"xhigh\"",
+        "-c",
+        "approval_policy=\"never\"",
+        "-"
+      ],
+      "configProjection": {
+        "model": "gpt-5.6-sol",
+        "modelReasoningEffort": "xhigh",
+        "approvalPolicy": "never",
+        "sandbox": "read-only",
+        "strictConfig": true,
+        "ignoreUserConfig": true,
+        "skipGitRepoCheck": true,
+        "ignoreRules": true,
+        "disabledFeatures": [
+          "memories",
+          "hooks"
+        ],
+        "disabledPlugins": [
+          "browser@openai-bundled",
+          "chrome@openai-bundled",
+          "computer-use@openai-bundled"
+        ],
+        "configuredMcpServers": [
+          {
+            "name": "playwright",
+            "enabled": true,
+            "command": "npx",
+            "args": [
+              "-y",
+              "@playwright/mcp@0.0.76"
+            ],
+            "defaultToolsApprovalMode": "auto"
+          },
+          {
+            "name": "chrome-devtools",
+            "enabled": false,
+            "transportConfigured": false
+          },
+          {
+            "name": "node_repl",
+            "enabled": false,
+            "transportConfigured": false
+          }
+        ]
+      },
+      "invalidConfigEntries": [
+        "mcp_servers.chrome-devtools.enabled=false",
+        "mcp_servers.node_repl.enabled=false"
+      ],
+      "probes": [
+        {
+          "binaryId": "homebrew-codex-0.142.4",
+          "binaryPath": "/opt/homebrew/bin/codex",
+          "cliVersion": "codex-cli 0.142.4",
+          "binarySha256": "d3be844c45c4fd89392536e56e1010963f94785592596b50cd0c45bb8a341406",
+          "processExitCode": 1,
+          "errorCode": "CONFIG_INVALID_TRANSPORT",
+          "errorStage": "LOCAL_STRICT_CONFIG",
+          "errorSubject": "mcp_servers.chrome-devtools",
+          "threadStarted": false,
+          "turnStarted": false,
+          "turnCompleted": false,
+          "serverAccepted": false,
+          "rawCommitments": {
+            "execEvents": {
+              "present": true,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "bytes": 0,
+              "lines": 0
+            },
+            "persistedRollout": {
+              "present": false,
+              "sha256": null,
+              "bytes": 0,
+              "lines": 0
+            },
+            "stderr": {
+              "present": true,
+              "sha256": "bb51b47c8e8f696698692488d58119b44b6401c91e84de332d58e8836080afcf",
+              "bytes": 79,
+              "lines": 3
+            }
+          },
+          "cleanup": {
+            "temporaryRunDirectoryAbsent": true,
+            "persistedRolloutAbsent": true,
+            "status": "PASS"
+          }
+        },
+        {
+          "binaryId": "chatgpt-app-codex-0.146.0-alpha.3.1",
+          "binaryPath": "/Applications/ChatGPT.app/Contents/Resources/codex",
+          "cliVersion": "codex-cli 0.146.0-alpha.3.1",
+          "binarySha256": "6d8be49e49751554df16572369e636cbe02c84b208cad3dc35528c846eeca223",
+          "processExitCode": 1,
+          "errorCode": "CONFIG_INVALID_TRANSPORT",
+          "errorStage": "LOCAL_STRICT_CONFIG",
+          "errorSubject": "mcp_servers.chrome-devtools",
+          "threadStarted": false,
+          "turnStarted": false,
+          "turnCompleted": false,
+          "serverAccepted": false,
+          "rawCommitments": {
+            "execEvents": {
+              "present": true,
+              "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+              "bytes": 0,
+              "lines": 0
+            },
+            "persistedRollout": {
+              "present": false,
+              "sha256": null,
+              "bytes": 0,
+              "lines": 0
+            },
+            "stderr": {
+              "present": true,
+              "sha256": "bb51b47c8e8f696698692488d58119b44b6401c91e84de332d58e8836080afcf",
+              "bytes": 79,
+              "lines": 3
+            }
+          },
+          "cleanup": {
+            "temporaryRunDirectoryAbsent": true,
+            "persistedRolloutAbsent": true,
+            "status": "PASS"
+          }
+        }
+      ]
+    },
+    {
+      "templateId": "corrected-candidate-v1",
+      "derivedFrom": "plan-section-3.1-current",
+      "status": "COMPATIBILITY_CANDIDATE_VALIDATED",
+      "decisionEligible": true,
+      "removedConfigEntries": [
+        "mcp_servers.chrome-devtools.enabled=false",
+        "mcp_servers.node_repl.enabled=false"
+      ],
+      "argvTemplate": [
+        "<CLI_BINARY_ABSOLUTE_PATH>",
+        "exec",
+        "--json",
+        "--strict-config",
+        "--ignore-user-config",
+        "--skip-git-repo-check",
+        "--sandbox",
+        "read-only",
+        "--cd",
+        "<TEMP_WORKSPACE_ABSOLUTE_PATH>",
+        "--model",
+        "gpt-5.6-sol",
+        "--disable",
+        "memories",
+        "--disable",
+        "hooks",
+        "--ignore-rules",
+        "-c",
+        "plugins.\"browser@openai-bundled\".enabled=false",
+        "-c",
+        "plugins.\"chrome@openai-bundled\".enabled=false",
+        "-c",
+        "plugins.\"computer-use@openai-bundled\".enabled=false",
+        "-c",
+        "mcp_servers.playwright.enabled=true",
+        "-c",
+        "mcp_servers.playwright.command=\"npx\"",
+        "-c",
+        "mcp_servers.playwright.args=[\"-y\",\"@playwright/mcp@0.0.76\"]",
+        "-c",
+        "mcp_servers.playwright.default_tools_approval_mode=\"auto\"",
+        "-c",
+        "model_reasoning_effort=\"xhigh\"",
+        "-c",
+        "approval_policy=\"never\"",
+        "-"
+      ],
+      "configProjection": {
+        "model": "gpt-5.6-sol",
+        "modelReasoningEffort": "xhigh",
+        "approvalPolicy": "never",
+        "sandbox": "read-only",
+        "strictConfig": true,
+        "ignoreUserConfig": true,
+        "skipGitRepoCheck": true,
+        "ignoreRules": true,
+        "disabledFeatures": [
+          "memories",
+          "hooks"
+        ],
+        "disabledPlugins": [
+          "browser@openai-bundled",
+          "chrome@openai-bundled",
+          "computer-use@openai-bundled"
+        ],
+        "configuredMcpServers": [
+          {
+            "name": "playwright",
+            "enabled": true,
+            "command": "npx",
+            "args": [
+              "-y",
+              "@playwright/mcp@0.0.76"
+            ],
+            "defaultToolsApprovalMode": "auto"
+          }
+        ],
+        "disabledMcpEntriesOmittedBecauseIgnoreUserConfig": [
+          "chrome-devtools",
+          "node_repl"
+        ]
+      },
+      "probes": [
+        {
+          "binaryId": "chatgpt-app-codex-0.146.0-alpha.3.1",
+          "binaryPath": "/Applications/ChatGPT.app/Contents/Resources/codex",
+          "cliVersion": "codex-cli 0.146.0-alpha.3.1",
+          "binarySha256": "6d8be49e49751554df16572369e636cbe02c84b208cad3dc35528c846eeca223",
+          "processExitCode": 0,
+          "errorCode": null,
+          "threadStarted": true,
+          "turnStarted": true,
+          "turnCompleted": true,
+          "serverAccepted": true,
+          "rawCommitments": {
+            "execEvents": {
+              "present": true,
+              "sha256": "bb8a6a2e6cfab4eede57487bc0322202b7d95f8dbf81b3e234424db226a92209",
+              "bytes": 356,
+              "lines": 4
+            },
+            "persistedRollout": {
+              "present": true,
+              "sha256": "f04ac141502ac157a68730c85babcda3828d955fd9af32a39afec1b6dd8c2801",
+              "bytes": 66194,
+              "lines": 14
+            },
+            "stderr": {
+              "present": true,
+              "sha256": "bda00a71635a268580f8c28d585c9cab07ea4e6a727a24cb2c2d68c41f6eb5d5",
+              "bytes": 138,
+              "lines": 1
+            }
+          },
+          "cleanup": {
+            "temporaryRunDirectoryAbsent": true,
+            "persistedRolloutAbsent": true,
+            "status": "PASS"
+          }
+        },
+        {
+          "binaryId": "homebrew-codex-0.142.4",
+          "binaryPath": "/opt/homebrew/bin/codex",
+          "cliVersion": "codex-cli 0.142.4",
+          "binarySha256": "d3be844c45c4fd89392536e56e1010963f94785592596b50cd0c45bb8a341406",
+          "processExitCode": 1,
+          "errorCode": "MODEL_REQUIRES_NEWER_CODEX",
+          "threadStarted": true,
+          "turnStarted": true,
+          "turnCompleted": false,
+          "serverAccepted": false,
+          "rawCommitments": {
+            "execEvents": {
+              "present": true,
+              "sha256": "35447ef4c593550a2508513523af583e168de7fb4e5679afd0a59c76b1f87443",
+              "bytes": 1082,
+              "lines": 6
+            },
+            "persistedRollout": {
+              "present": true,
+              "sha256": "bf51a5d659b90aefaa66e4b13a2589de8881c0e33dee9833e3f90975090ff8b0",
+              "bytes": 54321,
+              "lines": 8
+            },
+            "stderr": {
+              "present": true,
+              "sha256": "4533433f402ae1b8231f9674524a47732c141c632cb2e80dd1bcd67e05d8bb31",
+              "bytes": 3868,
+              "lines": 23
+            }
+          },
+          "cleanup": {
+            "temporaryRunDirectoryAbsent": true,
+            "persistedRolloutAbsent": true,
+            "status": "PASS"
+          }
+        }
+      ]
+    }
+  ],
+  "removedFromCompatibilityScope": [
+    {
+      "cliVersion": "codex-cli 0.143.0",
+      "status": "REMOVED_FROM_COMPATIBILITY_SCOPE"
+    }
+  ],
+  "decision": {
+    "status": "COMPATIBILITY_ACCEPTED_WITH_PLAN_CORRECTION_REQUIRED",
+    "selectedTemplateId": "corrected-candidate-v1",
+    "selectedBinaryPath": "/Applications/ChatGPT.app/Contents/Resources/codex",
+    "selectedCliVersion": "codex-cli 0.146.0-alpha.3.1",
+    "basis": {
+      "processExitCode": 0,
+      "turnCompleted": true,
+      "serverAccepted": true
+    },
+    "planCorrectionRequired": {
+      "status": "MUST_REMOVE_TWO_INVALID_CONFIG_ENTRIES",
+      "removeExactConfigEntries": [
+        "mcp_servers.chrome-devtools.enabled=false",
+        "mcp_servers.node_repl.enabled=false"
+      ],
+      "removeExactArgvTokenPairs": [
+        [
+          "-c",
+          "mcp_servers.chrome-devtools.enabled=false"
+        ],
+        [
+          "-c",
+          "mcp_servers.node_repl.enabled=false"
+        ]
+      ],
+      "replacementRule": "Do not add replacement disabled MCP entries; --ignore-user-config supplies their absence and the runtime tool inventory must verify the prohibition."
+    },
+    "limitations": [
+      "NOT_GOLDEN_EVIDENCE",
+      "NOT_DIAGNOSTIC_EVIDENCE",
+      "NOT_GATE_EVIDENCE"
+    ]
+  }
+}
