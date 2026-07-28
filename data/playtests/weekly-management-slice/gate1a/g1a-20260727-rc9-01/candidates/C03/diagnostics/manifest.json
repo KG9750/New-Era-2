@@ -1,0 +1,557 @@
+{
+  "schemaVersion": "gate1a-rc9-diagnostics-manifest-v1",
+  "cohortId": "g1a-20260727-rc9-01",
+  "candidateAttempt": "C03",
+  "issue": 57,
+  "status": "PASS",
+  "statusBoundary": "Diagnostic threshold pass only. This is not Gate 1A PASS, does not satisfy Gate 1H, and does not unlock Gate 2.",
+  "sourceSha": "cd2fc9716d98c160fe530c593347992f18bf96e4",
+  "sourceTree": "2533f76438dc6d3b584ba44629a28756ba675c66",
+  "sourcePrototypeTree": "5dea3df621fa7ddf782d235f30f08fd6ca2a4954",
+  "dependencyIntegrationSha": "2bfe859824093001be2f2452bec0d6706edad6e2",
+  "buildId": "g1-rc-20260727.rc9-c03",
+  "artifactHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+  "archiveHash": "68e1e68d94bbc2ea48ffb5fd048a19998955aed124f95d6053b2af25e394c886",
+  "candidateBuildManifestHash": "e134c52777b4515f81e2b98c0f4c6bf1c1d552512039b4f7a4f329a269ae7261",
+  "candidateCoreSha256": "640d3f807aa3d52bef7e7ecc4c9975c5bb714672c99a9895adb4b4bc4914ec95",
+  "scenarioId": "gate1-two-week-management",
+  "scenarioVersion": "0.5.1",
+  "protocolVersion": "weekly-management-slice-playtest-v0.3",
+  "playtestSchemaVersion": "gate1-playtest-v2",
+  "allocatedSampleIds": [
+    "TECH-RC9-D11",
+    "TECH-RC9-D12",
+    "TECH-RC9-D13",
+    "TECH-RC9-D14",
+    "TECH-RC9-D15"
+  ],
+  "strictSerialExecution": true,
+  "isolationSummary": {
+    "freshIndependentPlayers": 5,
+    "collaborationForkTurnsNoneSamples": [
+      "TECH-RC9-D11",
+      "TECH-RC9-D12",
+      "TECH-RC9-D13",
+      "TECH-RC9-D14"
+    ],
+    "standaloneCodexCliSamples": [
+      "TECH-RC9-D15"
+    ],
+    "uniformForkTurnsNone": false,
+    "standaloneCliFallbackUsed": true,
+    "standaloneCliFallbackDetail": "D15 used a new standalone Codex CLI process, new CLI session, new context, and an initially empty temporary workspace. It did not use or claim fork_turns=none.",
+    "contextContaminationDetected": false,
+    "concurrentPlayerSessionDetected": false,
+    "freshnessAcceptedByAdjudicator": true,
+    "mustBeRecheckedByIndependentFreezeReview": true
+  },
+  "samples": [
+    {
+      "sampleId": "TECH-RC9-D11",
+      "agentTask": "/root/c03_d11_player",
+      "status": "VALID_DIAGNOSTIC",
+      "captureKind": "complete",
+      "sessionId": "b8724483-d214-4f3d-b28b-1e29db0ddcec",
+      "rawSha256": "159cb208056139803a108e02e046f3f646502c065a0bba2ce217e779eccc23b1",
+      "rawBytes": 99106,
+      "browserDownloadMatchesRaw": true,
+      "legacyEffectiveEdits": {
+        "week1": 1,
+        "week2": 1
+      },
+      "effectiveManagementCommitmentsV2": {
+        "week1": 3,
+        "week2": 3
+      },
+      "c03TerminalCommitments": {
+        "week1": 1,
+        "week2": 1
+      },
+      "severityCounts": {
+        "P0": 0,
+        "P1": 0,
+        "P2": 1
+      },
+      "includedInDiagnosticMedian": true,
+      "includedInGate1ADenominator": false
+    },
+    {
+      "sampleId": "TECH-RC9-D12",
+      "agentTask": "/root/c03_d12_player",
+      "status": "VALID_DIAGNOSTIC",
+      "captureKind": "complete",
+      "sessionId": "6a2b6b5b-afdd-4950-b045-c8d1e31d4fb5",
+      "rawSha256": "79aef2ecb47d29321185dc7e7fdefc01e46e58b826eebba236571106dbf92661",
+      "rawBytes": 97436,
+      "browserDownloadMatchesRaw": true,
+      "legacyEffectiveEdits": {
+        "week1": 1,
+        "week2": 1
+      },
+      "effectiveManagementCommitmentsV2": {
+        "week1": 3,
+        "week2": 3
+      },
+      "c03TerminalCommitments": {
+        "week1": 1,
+        "week2": 1
+      },
+      "severityCounts": {
+        "P0": 0,
+        "P1": 0,
+        "P2": 1
+      },
+      "includedInDiagnosticMedian": true,
+      "includedInGate1ADenominator": false
+    },
+    {
+      "sampleId": "TECH-RC9-D13",
+      "agentTask": "/root/c03_d13_player",
+      "status": "VALID_DIAGNOSTIC",
+      "captureKind": "complete",
+      "sessionId": "bc1e4857-6155-40b4-b7d4-d7327a9be3ff",
+      "rawSha256": "f713b1662a8e52df0be4ea36937e29cf1fdcc59395b26c6b4b6a3527f69a2c65",
+      "rawBytes": 96700,
+      "browserDownloadMatchesRaw": true,
+      "legacyEffectiveEdits": {
+        "week1": 1,
+        "week2": 1
+      },
+      "effectiveManagementCommitmentsV2": {
+        "week1": 3,
+        "week2": 3
+      },
+      "c03TerminalCommitments": {
+        "week1": 1,
+        "week2": 1
+      },
+      "severityCounts": {
+        "P0": 0,
+        "P1": 0,
+        "P2": 2
+      },
+      "includedInDiagnosticMedian": true,
+      "includedInGate1ADenominator": false
+    },
+    {
+      "sampleId": "TECH-RC9-D14",
+      "agentTask": "/root/c03_d14_player",
+      "status": "VALID_DIAGNOSTIC",
+      "captureKind": "complete",
+      "sessionId": "7e1b245d-65a5-4f57-bb4e-e48dd15d419d",
+      "rawSha256": "1e24d27b2caa5843d18b56131d17da4b86e9cc8cc74bee3756ad8c5393068ad4",
+      "rawBytes": 97580,
+      "browserDownloadMatchesRaw": true,
+      "legacyEffectiveEdits": {
+        "week1": 1,
+        "week2": 0
+      },
+      "effectiveManagementCommitmentsV2": {
+        "week1": 4,
+        "week2": 2
+      },
+      "c03TerminalCommitments": {
+        "week1": 1,
+        "week2": 1
+      },
+      "severityCounts": {
+        "P0": 0,
+        "P1": 0,
+        "P2": 1
+      },
+      "includedInDiagnosticMedian": true,
+      "includedInGate1ADenominator": false
+    },
+    {
+      "sampleId": "TECH-RC9-D15",
+      "agentTask": null,
+      "agentProcess": "standalone-codex-cli",
+      "agentSessionId": "019fa9e9-6ac4-71f1-99aa-8b279cc044d3",
+      "agentModel": "gpt-5.6-sol",
+      "agentReasoningEffort": "xhigh",
+      "status": "VALID_DIAGNOSTIC",
+      "captureKind": "complete",
+      "sessionId": "5e309a64-dfde-400a-b66e-c011ead110aa",
+      "rawSha256": "55d6833d7d1c02cc2b3b55c80c4ef768362b2edc95d311d5e7b6253346cd253d",
+      "rawBytes": 96708,
+      "browserDownloadMatchesRaw": true,
+      "legacyEffectiveEdits": {
+        "week1": 1,
+        "week2": 1
+      },
+      "effectiveManagementCommitmentsV2": {
+        "week1": 4,
+        "week2": 2
+      },
+      "c03TerminalCommitments": {
+        "week1": 1,
+        "week2": 1
+      },
+      "severityCounts": {
+        "P0": 0,
+        "P1": 0,
+        "P2": 1
+      },
+      "includedInDiagnosticMedian": true,
+      "includedInGate1ADenominator": false
+    }
+  ],
+  "diagnosticAggregation": {
+    "requiredFreshCompleteSamples": 5,
+    "validFreshCompleteSamples": 5,
+    "invalidTechnicalSamples": 0,
+    "notStartedSamples": 0,
+    "week1LegacyValues": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "week2LegacyValues": [
+      1,
+      1,
+      1,
+      0,
+      1
+    ],
+    "week1LegacyMedian": 1,
+    "week2LegacyMedian": 1,
+    "week1V2Values": [
+      3,
+      3,
+      3,
+      4,
+      4
+    ],
+    "week2V2Values": [
+      3,
+      3,
+      3,
+      2,
+      2
+    ],
+    "week1V2Median": 3,
+    "week2V2Median": 3,
+    "week1C03TerminalValues": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "week2C03TerminalValues": [
+      1,
+      1,
+      1,
+      1,
+      1
+    ],
+    "week1C03TerminalMedian": 1,
+    "week2C03TerminalMedian": 1,
+    "requiredV2MedianRange": {
+      "minimum": 3,
+      "maximum": 5
+    },
+    "medianResult": "PASS_WITHIN_FROZEN_RANGE",
+    "antiPassRegressionObserved": false,
+    "P0Observed": false,
+    "P1Observed": false,
+    "P2Observed": 6,
+    "P2SampleCount": 5,
+    "mustClickAllCardsObserved": false,
+    "comparisonDefaultOrRecommendationObserved": false,
+    "sameIntentDuplicateInflationObserved": false,
+    "ctaOnlyInflationObserved": false,
+    "directEditCommitmentSupplementationObserved": false,
+    "candidateAcceptedForManifest": true,
+    "gate1APassed": false,
+    "gate1HSatisfied": false,
+    "gate2Unlocked": false
+  },
+  "antiInflationChecks": {
+    "prominentCtaCreatedAuthorityMutation": false,
+    "defaultSelectionCreatedCommitment": false,
+    "sameIntentSplitAcrossMultipleCounts": false,
+    "repeatedSubmitInflatedCount": false,
+    "directScheduleEditArtificiallySupplementedC03Count": false,
+    "mustClickAllCardsToRun": false,
+    "p05ProminentCtaAndRepeatSubmit": "PASS",
+    "p06MinimalInterventionAndInvalidConsequence": "PASS"
+  },
+  "strategyFingerprintDistribution": {
+    "recordedForDiagnostics": true,
+    "usedAsAcceptanceThreshold": false,
+    "fingerprints": [
+      {
+        "fingerprintId": "C03-STRATEGY-F01",
+        "sampleIds": [
+          "TECH-RC9-D11",
+          "TECH-RC9-D12",
+          "TECH-RC9-D13",
+          "TECH-RC9-D15"
+        ],
+        "outcomeCodes": [
+          "committed:accept-study",
+          "committed:allocate-repair-buffer",
+          "committed:schedule-preventive-maintenance",
+          "committed:schedule-repair",
+          "committed:south-shortcut",
+          "committed:use-fertilizer"
+        ]
+      },
+      {
+        "fingerprintId": "C03-STRATEGY-F02",
+        "sampleIds": [
+          "TECH-RC9-D14"
+        ],
+        "outcomeCodes": [
+          "committed:allocate-repair-buffer",
+          "committed:decline-study",
+          "committed:retain-rest-capacity",
+          "committed:schedule-repair",
+          "committed:south-shortcut",
+          "committed:use-fertilizer"
+        ]
+      }
+    ]
+  },
+  "rootCauseClusters": [
+    {
+      "clusterKey": "FOOD_TRADEOFF_CTA_NO_DISCERNIBLE_PANEL_CHANGE",
+      "severity": "P2",
+      "sampleIds": [
+        "TECH-RC9-D11"
+      ]
+    },
+    {
+      "clusterKey": "COMMITTED_RECOVERY_COMPARISON_STALE_PROJECTION",
+      "severity": "P2",
+      "sampleIds": [
+        "TECH-RC9-D12",
+        "TECH-RC9-D13"
+      ]
+    },
+    {
+      "clusterKey": "PRE_EVENT_TERMINAL_COPY_USES_POST_EVENT_TENSE",
+      "severity": "P2",
+      "sampleIds": [
+        "TECH-RC9-D13",
+        "TECH-RC9-D14"
+      ]
+    },
+    {
+      "clusterKey": "PLAYWRIGHT_REPORTED_UNINSPECTED_CONSOLE_ERROR",
+      "severity": "P2",
+      "verificationStatus": "UNVERIFIED_OBSERVATION",
+      "sampleIds": [
+        "TECH-RC9-D15"
+      ]
+    }
+  ],
+  "passDecision": {
+    "reasonCode": "FIVE_VALID_COMPLETE_SAMPLES_AND_V2_MEDIANS_WITHIN_FROZEN_RANGE",
+    "detail": "All five fresh blind diagnostics completed two weeks on the same C03 build and authority. Both week-level effectiveManagementCommitmentsV2 medians are 3, within the frozen 3-5 range; legacy edits are double-reported; every sample has one C03 terminal commitment per week; no P0/P1, blocking flow, CTA inflation, same-intent duplicate inflation, direct-edit supplementation or must-click-all behavior was observed.",
+    "nextPhase": "RC9-11_CANDIDATE_MANIFEST_AND_FREEZE_PREPARATION",
+    "independentReviewStillRequired": true,
+    "sealStillRequired": true
+  },
+  "evidenceInventory": [
+    {
+      "path": "TECH-RC9-D11/agent-verbatim-output.md",
+      "bytes": 12291,
+      "sha256": "ba79c42b284782280e06728735fcda49cd9d4da765d404563a8385fa8f7f6bdc"
+    },
+    {
+      "path": "TECH-RC9-D11/browser-download.json",
+      "bytes": 99106,
+      "sha256": "159cb208056139803a108e02e046f3f646502c065a0bba2ce217e779eccc23b1"
+    },
+    {
+      "path": "TECH-RC9-D11/captures/g1-rc-20260727.rc9-c03-TECH-RC9-D11-b8724483-d214-4f3d-b28b-1e29db0ddcec.json",
+      "bytes": 99106,
+      "sha256": "159cb208056139803a108e02e046f3f646502c065a0bba2ce217e779eccc23b1"
+    },
+    {
+      "path": "TECH-RC9-D11/captures/g1-rc-20260727.rc9-c03-TECH-RC9-D11-b8724483-d214-4f3d-b28b-1e29db0ddcec.json.receipt.json",
+      "bytes": 601,
+      "sha256": "b023f1c5a87c0316ef59fca7f7e0e29610148b713e553776f12e438ad9bf4431"
+    },
+    {
+      "path": "TECH-RC9-D11/captures/g1-rc-20260727.rc9-c03-TECH-RC9-D11-b8724483-d214-4f3d-b28b-1e29db0ddcec.json.sha256",
+      "bytes": 144,
+      "sha256": "d3fffb3121aec2cce7bc49a89851e4c0fe44c859ae927558d90b849594ac0a9c"
+    },
+    {
+      "path": "TECH-RC9-D11/sample-record.json",
+      "bytes": 13220,
+      "sha256": "4cb5a810137136c2310cf81ea635fa635bc032ac0b315733add0434df78ff070"
+    },
+    {
+      "path": "TECH-RC9-D11/validity-decision.md",
+      "bytes": 9008,
+      "sha256": "82aaaddf16f553e329b86fbdd9a56314c6ec0a34fdb214fa800607b1aac2aa62"
+    },
+    {
+      "path": "TECH-RC9-D12/agent-verbatim-output.md",
+      "bytes": 10798,
+      "sha256": "2c1dcf3c30374f55dff345acd249c764e15db6a5c080ccce5303075229363473"
+    },
+    {
+      "path": "TECH-RC9-D12/browser-download.json",
+      "bytes": 97436,
+      "sha256": "79aef2ecb47d29321185dc7e7fdefc01e46e58b826eebba236571106dbf92661"
+    },
+    {
+      "path": "TECH-RC9-D12/captures/g1-rc-20260727.rc9-c03-TECH-RC9-D12-6a2b6b5b-afdd-4950-b045-c8d1e31d4fb5.json",
+      "bytes": 97436,
+      "sha256": "79aef2ecb47d29321185dc7e7fdefc01e46e58b826eebba236571106dbf92661"
+    },
+    {
+      "path": "TECH-RC9-D12/captures/g1-rc-20260727.rc9-c03-TECH-RC9-D12-6a2b6b5b-afdd-4950-b045-c8d1e31d4fb5.json.receipt.json",
+      "bytes": 601,
+      "sha256": "fc402a7e603064bec36cf24c7d2911a1336398b2d607bbd1f8693d755f14efc5"
+    },
+    {
+      "path": "TECH-RC9-D12/captures/g1-rc-20260727.rc9-c03-TECH-RC9-D12-6a2b6b5b-afdd-4950-b045-c8d1e31d4fb5.json.sha256",
+      "bytes": 144,
+      "sha256": "03784a0e2c34d66240580a64b5fced36748ea231f979770c89c4c62820b5da5e"
+    },
+    {
+      "path": "TECH-RC9-D12/sample-record.json",
+      "bytes": 12660,
+      "sha256": "c10c6991c7f8a8c066795a1dcf9f8ce7e733f137a83d34bf4c295086a9364d10"
+    },
+    {
+      "path": "TECH-RC9-D12/validity-decision.md",
+      "bytes": 8208,
+      "sha256": "9077cb8780a945fe97929935cfd5e7554cc1cbfc85e5d618fab86914cdee6ce5"
+    },
+    {
+      "path": "TECH-RC9-D13/agent-verbatim-output.md",
+      "bytes": 9388,
+      "sha256": "1398a9439dbe8129c72afc0b9b1dfa22fc8801816e9e2a4c2743cc263b180aa9"
+    },
+    {
+      "path": "TECH-RC9-D13/browser-download.json",
+      "bytes": 96700,
+      "sha256": "f713b1662a8e52df0be4ea36937e29cf1fdcc59395b26c6b4b6a3527f69a2c65"
+    },
+    {
+      "path": "TECH-RC9-D13/captures/g1-rc-20260727.rc9-c03-TECH-RC9-D13-bc1e4857-6155-40b4-b7d4-d7327a9be3ff.json",
+      "bytes": 96700,
+      "sha256": "f713b1662a8e52df0be4ea36937e29cf1fdcc59395b26c6b4b6a3527f69a2c65"
+    },
+    {
+      "path": "TECH-RC9-D13/captures/g1-rc-20260727.rc9-c03-TECH-RC9-D13-bc1e4857-6155-40b4-b7d4-d7327a9be3ff.json.receipt.json",
+      "bytes": 601,
+      "sha256": "149a76b2aed76dd6e9304150c59c2d9396711f1bef5814778a8c410be2dea67f"
+    },
+    {
+      "path": "TECH-RC9-D13/captures/g1-rc-20260727.rc9-c03-TECH-RC9-D13-bc1e4857-6155-40b4-b7d4-d7327a9be3ff.json.sha256",
+      "bytes": 144,
+      "sha256": "3543b348e043f0b32f9a6efc45f6ce2fafca6ccf40360e24457a58e30d2f8010"
+    },
+    {
+      "path": "TECH-RC9-D13/sample-record.json",
+      "bytes": 12980,
+      "sha256": "76af8b626d464aff5e95ebfb873657eae80bbaba74d240bddc47555b60dd3318"
+    },
+    {
+      "path": "TECH-RC9-D13/validity-decision.md",
+      "bytes": 8557,
+      "sha256": "48f6df294a484df8a794d51ecc495b6f641569ce067cb4eff7bba918058a3e06"
+    },
+    {
+      "path": "TECH-RC9-D14/agent-verbatim-output.md",
+      "bytes": 11443,
+      "sha256": "50ed0cc7a05fb464dd5650de91161db6e7b3ffb6d891e9b6cf8d6c3daad115d1"
+    },
+    {
+      "path": "TECH-RC9-D14/browser-download.json",
+      "bytes": 97580,
+      "sha256": "1e24d27b2caa5843d18b56131d17da4b86e9cc8cc74bee3756ad8c5393068ad4"
+    },
+    {
+      "path": "TECH-RC9-D14/captures/g1-rc-20260727.rc9-c03-TECH-RC9-D14-7e1b245d-65a5-4f57-bb4e-e48dd15d419d.json",
+      "bytes": 97580,
+      "sha256": "1e24d27b2caa5843d18b56131d17da4b86e9cc8cc74bee3756ad8c5393068ad4"
+    },
+    {
+      "path": "TECH-RC9-D14/captures/g1-rc-20260727.rc9-c03-TECH-RC9-D14-7e1b245d-65a5-4f57-bb4e-e48dd15d419d.json.receipt.json",
+      "bytes": 601,
+      "sha256": "2badb524525ee3078ab726ff4ba7cdd6060b92614ef563590ff2cc48067a3d5f"
+    },
+    {
+      "path": "TECH-RC9-D14/captures/g1-rc-20260727.rc9-c03-TECH-RC9-D14-7e1b245d-65a5-4f57-bb4e-e48dd15d419d.json.sha256",
+      "bytes": 144,
+      "sha256": "91b4f0fe74c8857e62c29a9f1659035a1f920802d8d685e41c289560a847c86d"
+    },
+    {
+      "path": "TECH-RC9-D14/sample-record.json",
+      "bytes": 11998,
+      "sha256": "b6e6e6be60baec77419b08f5569752b9da04afc03a01ac1ad0bbe408274bb04d"
+    },
+    {
+      "path": "TECH-RC9-D14/validity-decision.md",
+      "bytes": 8059,
+      "sha256": "8202dc91d1af9b21f4ed1a3d245d33f289f08ed355264459a0450a37470fc758"
+    },
+    {
+      "path": "TECH-RC9-D15/agent-verbatim-output.md",
+      "bytes": 14580,
+      "sha256": "1feeb4e4980b4d7b70f3911cef9b5479c345f0ee1851fec6136e8449dc559304"
+    },
+    {
+      "path": "TECH-RC9-D15/browser-download.json",
+      "bytes": 96708,
+      "sha256": "55d6833d7d1c02cc2b3b55c80c4ef768362b2edc95d311d5e7b6253346cd253d"
+    },
+    {
+      "path": "TECH-RC9-D15/captures/g1-rc-20260727.rc9-c03-TECH-RC9-D15-5e309a64-dfde-400a-b66e-c011ead110aa.json",
+      "bytes": 96708,
+      "sha256": "55d6833d7d1c02cc2b3b55c80c4ef768362b2edc95d311d5e7b6253346cd253d"
+    },
+    {
+      "path": "TECH-RC9-D15/captures/g1-rc-20260727.rc9-c03-TECH-RC9-D15-5e309a64-dfde-400a-b66e-c011ead110aa.json.receipt.json",
+      "bytes": 601,
+      "sha256": "813ed8fb6e83ca2d60d70f3d8cfd304d02a10db7213e5116c614dc8724c6529c"
+    },
+    {
+      "path": "TECH-RC9-D15/captures/g1-rc-20260727.rc9-c03-TECH-RC9-D15-5e309a64-dfde-400a-b66e-c011ead110aa.json.sha256",
+      "bytes": 144,
+      "sha256": "209a812744908e523d7e8186a8fc1cde0bd2f97f7ef7ca3db93e856107c5dcce"
+    },
+    {
+      "path": "TECH-RC9-D15/sample-record.json",
+      "bytes": 11901,
+      "sha256": "1f06fd5a3e94e312fb9685c4ef73ecb5fbd62e7476f2b34de091f1f23ded7542"
+    },
+    {
+      "path": "TECH-RC9-D15/validity-decision.md",
+      "bytes": 9076,
+      "sha256": "eb904b130bab7e356566cad5a652401d3c8b0fafdac44dbddf2436cea4020545"
+    }
+  ],
+  "immutabilityGuards": {
+    "rc8Tree": "c5714f7ca7adb5e8fe052d4d00f27c545b988347",
+    "rc8InventorySha256": "e6990ddc8acd6ff4dbacfec975c06e4d0b9bbc7f6a2fc1324f5023caec1b96ee",
+    "c01Tree": "55f661518c7ed8a2cc99f0fc0f25fabecd24c286",
+    "c02Tree": "9b7dbae2c0c5d1bba45399e77dac65766911d3b3",
+    "candidateCoreGitObject": "f2f1018efe9e5ce4143c8b1f0628c6c584692a70",
+    "rcDistTree": "330b67df1e7e9771ca816bbf433d498f07f09ece",
+    "p05Tree": "b6691311e87113ba5448ce0502d262107c5a3d82",
+    "p06Tree": "599d02a21770c5ccbdf428cf1637fa68c4763bc6",
+    "d11Tree": "2a19954ad3aa2004ae1b9de7c2c1ce635c8b9164",
+    "d12Tree": "2b501eab138332634575e7b898ff8bf1d5cd31c0",
+    "d13Tree": "eeaec6fb6f81f1d7b858fb60d722ad939481b145",
+    "d14Tree": "7c08a62daa123521bb4071301052c4f5230bca48",
+    "d15Tree": "dd04f3ea8b938711c586b3a8bbb9e06b1d11bdec",
+    "workingTreeDiffOutsideNewManifest": 0
+  },
+  "trackLocks": {
+    "gate1A": "DIAGNOSTIC_PASS_ONLY_PENDING_CANDIDATE_MANIFEST",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED"
+  }
+}
