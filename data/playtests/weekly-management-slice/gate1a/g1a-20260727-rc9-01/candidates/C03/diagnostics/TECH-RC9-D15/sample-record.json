@@ -1,0 +1,284 @@
+{
+  "schemaVersion": "gate1a-rc9-diagnostic-sample-record-v1",
+  "sampleId": "TECH-RC9-D15",
+  "cohortId": "g1a-20260727-rc9-01",
+  "candidateAttempt": "C03",
+  "sampleKind": "blind-diagnostic",
+  "issue": 57,
+  "operator": "/root",
+  "adjudicator": "/root",
+  "sealedAtUtc": "2026-07-28T18:31:21Z",
+  "identityAndIsolation": {
+    "agentTask": null,
+    "agentTaskReason": "independent_standalone_codex_cli_not_a_collaboration_subagent",
+    "agentSessionId": "019fa9e9-6ac4-71f1-99aa-8b279cc044d3",
+    "agentRolloutPath": "/Users/leo/.codex/sessions/2026/07/29/rollout-2026-07-29T02-07-54-019fa9e9-6ac4-71f1-99aa-8b279cc044d3.jsonl",
+    "agentModel": "gpt-5.6-sol",
+    "agentReasoningEffort": "xhigh",
+    "agentCliVersion": "0.142.4",
+    "freshContextAttestation": true,
+    "freshContextMechanism": "one new standalone Codex CLI process, new CLI session, new context, and initially empty temporary workspace /tmp/new-era-c03-d15-player.kHfZZe",
+    "freshApplicationSession": true,
+    "freshApplicationSessionMechanism": "one new isolated browser/context/page and exactly one fixed-state application session",
+    "contextContaminationDetected": false,
+    "priorCandidateExposure": false,
+    "readOnlyAttestation": true,
+    "playerPacketReleasedBeforePlay": true,
+    "postSessionInterviewReleasedAfterPlayDownloadAndClear": true,
+    "concurrentRc9PlayerSessionDetected": false
+  },
+  "releaseCandidate": {
+    "buildId": "g1-rc-20260727.rc9-c03",
+    "gitSha": "cd2fc9716d98c160fe530c593347992f18bf96e4",
+    "sourceTree": "2533f76438dc6d3b584ba44629a28756ba675c66",
+    "sourcePrototypeTree": "5dea3df621fa7ddf782d235f30f08fd6ca2a4954",
+    "dependencyIntegrationSha": "2bfe859824093001be2f2452bec0d6706edad6e2",
+    "candidateCoreSha256": "640d3f807aa3d52bef7e7ecc4c9975c5bb714672c99a9895adb4b4bc4914ec95",
+    "artifactHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+    "archiveHash": "68e1e68d94bbc2ea48ffb5fd048a19998955aed124f95d6053b2af25e394c886",
+    "candidateBuildManifestHash": "e134c52777b4515f81e2b98c0f4c6bf1c1d552512039b4f7a4f329a269ae7261",
+    "scenarioId": "gate1-two-week-management",
+    "scenarioVersion": "0.5.1",
+    "protocolVersion": "weekly-management-slice-playtest-v0.3",
+    "playtestSchemaVersion": "gate1-playtest-v2",
+    "fixedSeed": 104729,
+    "initialStateHash": "fnv1a32-1f72f2d0",
+    "playerPacketHash": "ca01f407c0d2e7f0db9dc07699251190bcc55ef5c946b9a86bac17d8f24dd2ad",
+    "postSessionInterviewHash": "f10c6294edf5776dc426f90228e3030f328a80d823c23a65280d60721467c12c",
+    "captureHostHash": "94c40cee50eee231d8332d2c2f4d3ef5fe8326a238db7932ff878f2a436bf66c",
+    "viewport": "1200x1403",
+    "inputMode": "browser-pointer-keyboard"
+  },
+  "applicationSession": {
+    "sessionId": "5e309a64-dfde-400a-b66e-c011ead110aa",
+    "machineStartedAtEpochMs": 1785262153139,
+    "machineEndedAtEpochMs": 1785262751434,
+    "machineElapsedMs": 598292,
+    "week1RawDurationMs": 370962,
+    "week2RawDurationMs": 182335,
+    "captureKind": "complete",
+    "finalTick": 2010,
+    "finalStateHash": "fnv1a32-4b268b0a",
+    "twoWeeksCompleted": true,
+    "recapCount": 2,
+    "exportTriggered": true,
+    "exportReceiptObserved": true,
+    "clearCompleted": true,
+    "clearEvidence": "Agent returned CLEAR_CONFIRMED from the original browser/context/page after server raw, sidecar, receipt and browser download verification."
+  },
+  "machineEvidence": {
+    "exportFilePath": "captures/g1-rc-20260727.rc9-c03-TECH-RC9-D15-5e309a64-dfde-400a-b66e-c011ead110aa.json",
+    "exportFileSha256": "55d6833d7d1c02cc2b3b55c80c4ef768362b2edc95d311d5e7b6253346cd253d",
+    "exportFileSizeBytes": 96708,
+    "receiptPath": "captures/g1-rc-20260727.rc9-c03-TECH-RC9-D15-5e309a64-dfde-400a-b66e-c011ead110aa.json.receipt.json",
+    "receiptFileSha256": "813ed8fb6e83ca2d60d70f3d8cfd304d02a10db7213e5116c614dc8724c6529c",
+    "receiptDeclaredRawSha256": "55d6833d7d1c02cc2b3b55c80c4ef768362b2edc95d311d5e7b6253346cd253d",
+    "receiptDeclaredRawSizeBytes": 96708,
+    "sha256SidecarPath": "captures/g1-rc-20260727.rc9-c03-TECH-RC9-D15-5e309a64-dfde-400a-b66e-c011ead110aa.json.sha256",
+    "sha256SidecarFileSha256": "209a812744908e523d7e8186a8fc1cde0bd2f97f7ef7ca3db93e856107c5dcce",
+    "sidecarDeclaredRawSha256": "55d6833d7d1c02cc2b3b55c80c4ef768362b2edc95d311d5e7b6253346cd253d",
+    "browserDownloadPath": "browser-download.json",
+    "browserDownloadEventCompleted": true,
+    "browserDownloadSha256": "55d6833d7d1c02cc2b3b55c80c4ef768362b2edc95d311d5e7b6253346cd253d",
+    "browserDownloadSizeBytes": 96708,
+    "browserDownloadMatchesServerRaw": true,
+    "serverRawMatchesSidecarClaim": true,
+    "serverRawMatchesReceiptClaim": true,
+    "allClaimsMatchServerRaw": true,
+    "frozenCaptureHostValidatorPassed": true,
+    "canonicalManagementLedgerValidator": {
+      "ok": true,
+      "code": null,
+      "protocolVersion": "weekly-management-slice-playtest-v0.3",
+      "terminalCommitmentCount": 2,
+      "ownedEffectCount": 5
+    },
+    "authorityTupleConsistent": true,
+    "actions": 11,
+    "domainEvents": 14,
+    "telemetryEntries": 260,
+    "choiceSets": 6,
+    "machineWeek1LegacyCandidateCount": 1,
+    "machineWeek2LegacyCandidateCount": 1,
+    "machineWeek1V2CandidateCount": 4,
+    "machineWeek2V2CandidateCount": 2,
+    "machineWeek1C03TerminalCommitmentCount": 1,
+    "machineWeek2C03TerminalCommitmentCount": 1,
+    "managementChoiceOpportunitiesV03": 2,
+    "managementChoiceCommitmentsV03": 2,
+    "settledManagementOutcomesV03": 2,
+    "effectOwnershipEntriesV03": 5
+  },
+  "legacyEffectiveEditsAdjudication": {
+    "basis": "weekly-management-slice-playtest-v0.1 section 8.1 and V0.2 legacy whitelist",
+    "week1": {
+      "count": 1,
+      "acceptedGroups": [
+        {
+          "groupId": "legacy:w0:transport-route",
+          "actionIds": [
+            "action-0004"
+          ]
+        }
+      ]
+    },
+    "week2": {
+      "count": 1,
+      "acceptedGroups": [
+        {
+          "groupId": "legacy:w1:lin-he-study",
+          "actionIds": [
+            "action-0010"
+          ]
+        }
+      ]
+    },
+    "manualCandidateDifferenceCount": 0
+  },
+  "effectiveManagementCommitmentsV2Adjudication": {
+    "basis": "weekly-management-slice-playtest-v0.2 sections 1, 7, 8 and 9 plus V0.3 compatibility projection",
+    "week1": {
+      "count": 4,
+      "acceptedGroups": [
+        {
+          "decisionIntentId": "w0:repair-responsibility:pump-incident-day-3",
+          "choiceSetId": "choice:w0:pump-repair",
+          "actionIds": [
+            "action-0002"
+          ],
+          "finalOutcomeCode": "committed:schedule-repair"
+        },
+        {
+          "decisionIntentId": "w0:preventive-capacity:pump",
+          "choiceSetId": "choice:w0:preventive-capacity",
+          "actionIds": [
+            "action-0003"
+          ],
+          "finalOutcomeCode": "committed:schedule-preventive-maintenance"
+        },
+        {
+          "decisionIntentId": "w0:transport-route",
+          "choiceSetId": "choice:w0:transport-route",
+          "actionIds": [
+            "action-0004"
+          ],
+          "finalOutcomeCode": "committed:south-shortcut"
+        },
+        {
+          "decisionIntentId": "w0:asset-use:fertilizer",
+          "choiceSetId": "choice:w0:fertilizer",
+          "actionIds": [
+            "action-0005"
+          ],
+          "finalOutcomeCode": "committed:use-fertilizer"
+        }
+      ]
+    },
+    "week2": {
+      "count": 2,
+      "acceptedGroups": [
+        {
+          "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
+          "choiceSetId": "choice:w1:recovery-allocation",
+          "actionIds": [
+            "action-0009"
+          ],
+          "finalOutcomeCode": "committed:allocate-repair-buffer"
+        },
+        {
+          "decisionIntentId": "w1:character-request:lin-he-study",
+          "choiceSetId": "choice:w1:lin-he-study",
+          "actionIds": [
+            "action-0010"
+          ],
+          "finalOutcomeCode": "committed:accept-study"
+        }
+      ]
+    },
+    "rejectedGroups": [],
+    "manualCandidateDifferenceCount": 0,
+    "sameIntentDuplicateCount": 0,
+    "ctaOnlyCommitmentCount": 0
+  },
+  "effectiveManagementCommitmentsC03Adjudication": {
+    "basis": "weekly-management-slice-playtest-v0.3 sections 1 through 5 and gate1-c03-management-choice-authority",
+    "week1": {
+      "count": 1,
+      "acceptedCommitments": [
+        {
+          "decisionIntentId": "w0:preventive-capacity:pump",
+          "choiceSetId": "choice:w0:preventive-capacity",
+          "candidateId": "schedule-preventive-maintenance",
+          "actionId": "action-0003",
+          "terminalState": "schedule-preventive-maintenance",
+          "requiredConsequenceCount": 3,
+          "ownedEffectCount": 3,
+          "settledOutcomeConsequenceId": "consequence:w0:preventive-capacity:recovery-load"
+        }
+      ]
+    },
+    "week2": {
+      "count": 1,
+      "acceptedCommitments": [
+        {
+          "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
+          "choiceSetId": "choice:w1:recovery-allocation",
+          "candidateId": "allocate-repair-buffer",
+          "actionId": "action-0009",
+          "terminalState": "allocate-repair-buffer",
+          "requiredConsequenceCount": 2,
+          "ownedEffectCount": 2,
+          "settledOutcomeConsequenceId": "consequence:w1:recovery-allocation:ending-repair"
+        }
+      ]
+    },
+    "manualCandidateDifferenceCount": 0,
+    "sameIntentDuplicateCount": 0,
+    "ctaOnlyCommitmentCount": 0,
+    "directEditCommitmentCount": 0
+  },
+  "agentReportedEvidence": {
+    "initialObservation": "粮食期末预计仅剩3–11，水泵停机风险和北侧绕行损耗使缺口风险仍在；林禾周二B2的休息容量只能用于第二次预防检修或专项恢复；水泵维修责任尚未落实；南侧短通路可降低粮食运输损耗但消耗1点维修保障。若水泵检修和责任继续悬空，农田可能遭遇8单位停机损失且维修保障维持脆弱；若路线不调整，预计继续损耗6单位粮食。",
+    "completionSignal": "COMPLETE",
+    "predictionExplanationProvided": true,
+    "personAndDecisionImpactProvided": true,
+    "mapEnteredDecision": true,
+    "mapActionTaken": true,
+    "week2FullInspection": false,
+    "week2FullReplan": false,
+    "mustClickAllCardsObserved": false,
+    "comparisonBiasReported": false,
+    "verbatimOutputPath": "agent-verbatim-output.md"
+  },
+  "hostPrompts": [],
+  "technicalInterruptions": [],
+  "symptoms": [
+    {
+      "id": "D15-SYM-01",
+      "clusterKey": "PLAYWRIGHT_REPORTED_UNINSPECTED_CONSOLE_ERROR",
+      "description": "Playwright page metadata persistently reported one console error. The blind player did not inspect the developer console under the test constraints; no visible operation, save, download or clear step was blocked, and the root cause remains unverified.",
+      "source": "agent interview and Playwright page metadata",
+      "severitySuggestion": "P2",
+      "affectedCompletion": false
+    }
+  ],
+  "severityCounts": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 1
+  },
+  "subjectiveHumanFields": "not_applicable_agent_proxy",
+  "validityDecision": {
+    "status": "VALID_DIAGNOSTIC",
+    "reasonCode": "VALID_COMPLETE_CAPTURE_AND_PROTOCOL_COMPLIANCE",
+    "reason": "A fresh standalone Codex CLI process with a new session, context and initially empty temporary workspace completed both weeks in exactly one C03 application session; frozen host and ledger validators passed; raw, sidecar, receipt and browser download are byte-consistent; clear preceded the frozen interview; and no technical interruption affected the player or evidence chain.",
+    "includedInGate1ADenominator": false,
+    "sampleIdReusable": false,
+    "replacementRequired": false
+  },
+  "trackLocks": {
+    "gate1A": "PRE_DIAGNOSTIC",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED"
+  }
+}
