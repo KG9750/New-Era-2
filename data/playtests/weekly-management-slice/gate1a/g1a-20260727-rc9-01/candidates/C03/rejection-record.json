@@ -1,0 +1,154 @@
+{
+  "schemaVersion": "gate1a-rc9-candidate-rejection-record-v1",
+  "candidateAttempt": "C03",
+  "status": "REJECTED_FREEZE_PREPARATION",
+  "rejectedAtUtc": "2026-07-28T18:52:32Z",
+  "issue": 57,
+  "discoveredDuringIssue": 50,
+  "sourceSha": "cd2fc9716d98c160fe530c593347992f18bf96e4",
+  "sourceTree": "2533f76438dc6d3b584ba44629a28756ba675c66",
+  "sourcePrototypeTree": "5dea3df621fa7ddf782d235f30f08fd6ca2a4954",
+  "dependencyIntegrationSha": "2bfe859824093001be2f2452bec0d6706edad6e2",
+  "buildId": "g1-rc-20260727.rc9-c03",
+  "scenarioId": "gate1-two-week-management",
+  "scenarioVersion": "0.5.1",
+  "protocolVersion": "weekly-management-slice-playtest-v0.3",
+  "playtestSchemaVersion": "gate1-playtest-v2",
+  "artifactHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+  "archiveHash": "68e1e68d94bbc2ea48ffb5fd048a19998955aed124f95d6053b2af25e394c886",
+  "candidateCoreHash": "640d3f807aa3d52bef7e7ecc4c9975c5bb714672c99a9895adb4b4bc4914ec95",
+  "candidateBuildManifestHash": "e134c52777b4515f81e2b98c0f4c6bf1c1d552512039b4f7a4f329a269ae7261",
+  "diagnosticsManifestPath": "diagnostics/manifest.json",
+  "diagnosticsManifestHash": "670ebc0ea5fefa316f857b09cf5323f12f8f76b14f0e359ab2e77ccb16f033cc",
+  "candidateEvidenceTreeBeforeRejection": "37199ac549732bb39545ee1b2be563caab5fefa7",
+  "trigger": {
+    "reasonCode": "C03_CANDIDATE_MANIFEST_AUTHORITY_AND_DIAGNOSTIC_ISOLATION_CONTRACT_MISMATCH",
+    "description": "Freeze preparation found two independent admission blockers after the C03 diagnostic aggregation was sealed. The frozen candidate-manifest validators only accept the RC9 v0.2 authority profile and scenario 0.5.0, while C03 is frozen at protocol v0.3 and scenario 0.5.1. Separately, D15 used an independent standalone Codex CLI process instead of the frozen fork_turns=none mechanism; the written contract did not authorize equivalent-substitution adjudication.",
+    "discoveredPhase": "RC9-11_CANDIDATE_MANIFEST_AND_FREEZE_PREPARATION",
+    "candidateManifestCreated": false,
+    "candidateManifestIdAllocated": null,
+    "candidateManifestIdConsumed": false
+  },
+  "independentReadOnlyReview": {
+    "agentTask": "/root/rc9_plan_adversarial",
+    "result": "C03_TO_CM01_ADMISSION_FAIL",
+    "P0": 0,
+    "P1": 2,
+    "P2": 1,
+    "repositoryModified": false,
+    "gitOrIssueStateModified": false
+  },
+  "findings": [
+    {
+      "id": "C03-FREEZE-P1-01",
+      "severity": "P1",
+      "clusterKey": "CANDIDATE_MANIFEST_VERIFIER_AUTHORITY_VERSION_DRIFT",
+      "evidence": [
+        "candidate-core.json freezes scenarioVersion=0.5.1 and protocolVersion=weekly-management-slice-playtest-v0.3",
+        "prototype/scripts/verify-playtest-manifest.mjs requires the v0.2 protocol/design authority profile and scenarioVersion=0.5.0",
+        "prototype/scripts/check-playtest-fixtures.mjs contains the same v0.2 and 0.5.0 requirements",
+        "An honest C03 authority input returned CANDIDATE_MANIFEST_AUTHORITY",
+        "A projected legacy-authority input retaining scenarioVersion=0.5.1 returned CANDIDATE_MANIFEST_EVIDENCE"
+      ],
+      "falsePassProhibited": "Writing scenarioVersion=0.5.0 and v0.2 authority hashes into a C03 manifest would misrepresent the frozen candidate and is not an acceptable workaround."
+    },
+    {
+      "id": "C03-FREEZE-P1-02",
+      "severity": "P1",
+      "clusterKey": "UNAUTHORIZED_DIAGNOSTIC_ISOLATION_MECHANISM_SUBSTITUTION",
+      "sampleId": "TECH-RC9-D15",
+      "sampleRecordHash": "1f06fd5a3e94e312fb9685c4ef73ecb5fbd62e7476f2b34de091f1f23ded7542",
+      "evidence": [
+        "The frozen C03 diagnostic contract requires a fresh fork_turns=none agent for every sample.",
+        "D15 truthfully records a new standalone Codex CLI process and explicitly does not claim fork_turns=none.",
+        "The standalone process may provide strong practical isolation, but the frozen contract contains no pre-authorized equivalence rule and cannot be amended after the sample."
+      ],
+      "consequence": "D15 is procedurally invalid for candidate admission, leaving only four samples that satisfy the written execution mechanism."
+    },
+    {
+      "id": "C03-FREEZE-P2-01",
+      "severity": "P2",
+      "clusterKey": "MISSING_C03_CANDIDATE_MANIFEST_CONFORMANCE_FIXTURES",
+      "evidence": [
+        "The 120-case schema fixture suite passed without exercising an honest CM01+C03+0.5.1+v0.3 manifest.",
+        "No fixture rejects a C03 manifest projected onto the old v0.2 authority profile.",
+        "No cross-profile authority/scenario/protocol mismatch matrix exists for C03."
+      ]
+    }
+  ],
+  "diagnosticHistory": {
+    "originalAdjudicationStatus": "PASS",
+    "originalAdjudicationPreservedWithoutRewrite": true,
+    "validFreshCompleteSamplesClaimedByOriginalAdjudication": [
+      "TECH-RC9-D11",
+      "TECH-RC9-D12",
+      "TECH-RC9-D13",
+      "TECH-RC9-D14",
+      "TECH-RC9-D15"
+    ],
+    "week1V2Values": [
+      3,
+      3,
+      3,
+      4,
+      4
+    ],
+    "week2V2Values": [
+      3,
+      3,
+      3,
+      2,
+      2
+    ],
+    "week1V2Median": 3,
+    "week2V2Median": 3,
+    "week1LegacyMedian": 1,
+    "week2LegacyMedian": 1,
+    "P0ObservedInPlay": false,
+    "P1ObservedInPlay": false,
+    "P2ObservedInPlay": 6,
+    "admissionOverrideReason": "The later freeze-preparation review found a frozen-verifier mismatch and a procedural isolation-contract violation. These do not rewrite the recorded play results, but they invalidate C03 admission."
+  },
+  "immutability": {
+    "candidateCoreChangedAfterSeal": false,
+    "candidateCoreMayBeOverwritten": false,
+    "candidateBuildManifestMayBeOverwritten": false,
+    "existingAntiPassMayBeOverwritten": false,
+    "existingDiagnosticsMayBeOverwritten": false,
+    "diagnosticsManifestMayBeOverwritten": false,
+    "candidateAttemptReusable": false,
+    "allocatedAntiPassIdsReusable": false,
+    "allocatedDiagnosticIdsReusable": false
+  },
+  "nextAttempt": {
+    "candidateAttempt": "C04",
+    "candidateManifestIdAfterSuccessfulDiagnostics": "CM01",
+    "candidateManifestIdCurrentlyAllocated": false,
+    "buildIdMustChange": true,
+    "candidateCoreMustBeNew": true,
+    "antiPassIds": [
+      "TECH-RC9-P07",
+      "TECH-RC9-P08"
+    ],
+    "diagnosticIds": [
+      "TECH-RC9-D16",
+      "TECH-RC9-D17",
+      "TECH-RC9-D18",
+      "TECH-RC9-D19",
+      "TECH-RC9-D20"
+    ],
+    "sourceChangeRequiredByThisRejection": true,
+    "requiredSourceChanges": [
+      "Version the CLI candidate-manifest validator for the C03+ v0.3/0.5.1 authority profile while preserving v0.2/0.5.0 compatibility.",
+      "Version the fixture candidate-manifest validator with the same profile rules.",
+      "Add valid C03/C04 manifest fixtures and cross-profile rejection cases.",
+      "Update the frozen test-operations authority so future diagnostic isolation mechanisms are exact and pre-authorized; do not retrospectively authorize D15."
+    ],
+    "requiredRestart": "Create a new source SHA and C04 candidate core, rerun Phase 6, deterministic build/archive verification, anti-pass P07/P08 and five fresh diagnostics D16-D20. Do not reuse or overwrite C03, P05/P06 or D11-D15. Only after C04 passes may CM01 be allocated."
+  },
+  "trackLocks": {
+    "gate1A": "CANDIDATE_ATTEMPT_REJECTED_BEFORE_CM",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED"
+  }
+}
