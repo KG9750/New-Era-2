@@ -4,6 +4,8 @@ Execution-plan entrypoint for `Project-004-New Era 2`.
 
 ## Current Active Plan
 
+- `docs/exec-plans/active/2026-07-29-gate1a-rc9-c04-recovery-plan.md` — C03 在 freeze preparation 因 candidate-manifest verifier authority/version drift 与 D15 隔离机制未获合同授权而拒绝后的 C04 纵向恢复计划；固定 versioned authority profile 与 `standalone-codex-cli-v1`，分配 P07/P08、D16–D20，并在完整重跑后才允许 #50 分配 CM01。
+- `docs/exec-plans/active/2026-07-27-gate1a-rc9-c03-recovery-plan.md` — C03 历史纵向恢复计划；玩法、P05/P06 与 D11–D15 已完成，但最终在 RC9-11 freeze preparation 以 `REJECTED_FREEZE_PREPARATION` 收口，C03 及其全部证据永久只读。
 - `docs/exec-plans/active/2026-07-27-gate1a-rc9-remediation-plan.md` — RC8 `AGENT_PROXY_FAIL` 后的 RC9 责任承诺模型受控转向与复测计划；修复周结转、化肥生命周期、tick 1002 换周状态和 request 遥测分类，使用新协议/schema/scenario、两阶段封存与 A38–A44 全新七样本 cohort。
 - `docs/exec-plans/active/2026-07-26-v0.4-prototype-validation-plan.md` — V0.4 分阶段原型验证总控计划；Gate 0 已通过，下一步是 Gate 1 两周经营原型，不直接开发完整三个月。
 - `docs/exec-plans/active/2026-07-26-react-web-gate-1-2-development-plan.md` — Gate 1 React Web 灰盒的 D0 开工门与 15–18 个净开发工作日垂直切片计划；先执行 Gate 1A agent 代理验证，Gate 1H 真人验证暂缓。
