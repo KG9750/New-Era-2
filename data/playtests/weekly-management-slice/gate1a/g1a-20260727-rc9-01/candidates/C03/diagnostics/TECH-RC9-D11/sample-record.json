@@ -1,0 +1,315 @@
+{
+  "schemaVersion": "gate1a-rc9-diagnostic-sample-record-v1",
+  "sampleId": "TECH-RC9-D11",
+  "cohortId": "g1a-20260727-rc9-01",
+  "candidateAttempt": "C03",
+  "sampleKind": "blind-diagnostic",
+  "issue": 57,
+  "operator": "/root",
+  "adjudicator": "/root/c03_d11_seal",
+  "sealedAtUtc": "2026-07-28T15:54:46Z",
+  "identityAndIsolation": {
+    "agentTask": "/root/c03_d11_player",
+    "agentSessionId": null,
+    "agentSessionIdReason": "collaboration_tool_did_not_expose_session_uuid",
+    "freshContextAttestation": true,
+    "freshContextMechanism": "fork_turns=none",
+    "freshApplicationSession": true,
+    "freshApplicationSessionMechanism": "one new isolated browser/context/page and exactly one fixed-state application session",
+    "contextContaminationDetected": false,
+    "priorCandidateExposure": false,
+    "readOnlyAttestation": true,
+    "playerPacketReleasedBeforePlay": true,
+    "postSessionInterviewReleasedAfterPlayDownloadAndClear": true,
+    "concurrentRc9PlayerSessionDetected": false
+  },
+  "releaseCandidate": {
+    "buildId": "g1-rc-20260727.rc9-c03",
+    "gitSha": "cd2fc9716d98c160fe530c593347992f18bf96e4",
+    "sourceTree": "2533f76438dc6d3b584ba44629a28756ba675c66",
+    "sourcePrototypeTree": "5dea3df621fa7ddf782d235f30f08fd6ca2a4954",
+    "dependencyIntegrationSha": "2bfe859824093001be2f2452bec0d6706edad6e2",
+    "candidateCoreSha256": "640d3f807aa3d52bef7e7ecc4c9975c5bb714672c99a9895adb4b4bc4914ec95",
+    "artifactHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+    "archiveHash": "68e1e68d94bbc2ea48ffb5fd048a19998955aed124f95d6053b2af25e394c886",
+    "candidateBuildManifestHash": "e134c52777b4515f81e2b98c0f4c6bf1c1d552512039b4f7a4f329a269ae7261",
+    "scenarioId": "gate1-two-week-management",
+    "scenarioVersion": "0.5.1",
+    "protocolVersion": "weekly-management-slice-playtest-v0.3",
+    "playtestSchemaVersion": "gate1-playtest-v2",
+    "fixedSeed": 104729,
+    "initialStateHash": "fnv1a32-1f72f2d0",
+    "playerPacketHash": "ca01f407c0d2e7f0db9dc07699251190bcc55ef5c946b9a86bac17d8f24dd2ad",
+    "postSessionInterviewHash": "f10c6294edf5776dc426f90228e3030f328a80d823c23a65280d60721467c12c",
+    "captureHostHash": "94c40cee50eee231d8332d2c2f4d3ef5fe8326a238db7932ff878f2a436bf66c",
+    "viewport": "1696x1503",
+    "inputMode": "browser-pointer-keyboard"
+  },
+  "applicationSession": {
+    "sessionId": "b8724483-d214-4f3d-b28b-1e29db0ddcec",
+    "machineStartedAtEpochMs": 1785251993815,
+    "machineEndedAtEpochMs": 1785252534824,
+    "machineElapsedMs": 541005,
+    "week1RawDurationMs": 208110,
+    "week2RawDurationMs": 267428,
+    "captureKind": "complete",
+    "finalTick": 2010,
+    "finalStateHash": "fnv1a32-9030570a",
+    "twoWeeksCompleted": true,
+    "recapCount": 2,
+    "exportTriggered": true,
+    "exportReceiptObserved": true,
+    "clearCompleted": true,
+    "clearEvidence": "Agent returned CLEAR_CONFIRMED from the original browser/context/page after server raw, sidecar, receipt and browser download verification."
+  },
+  "machineEvidence": {
+    "exportFilePath": "captures/g1-rc-20260727.rc9-c03-TECH-RC9-D11-b8724483-d214-4f3d-b28b-1e29db0ddcec.json",
+    "exportFileSha256": "159cb208056139803a108e02e046f3f646502c065a0bba2ce217e779eccc23b1",
+    "exportFileSizeBytes": 99106,
+    "receiptPath": "captures/g1-rc-20260727.rc9-c03-TECH-RC9-D11-b8724483-d214-4f3d-b28b-1e29db0ddcec.json.receipt.json",
+    "receiptFileSha256": "b023f1c5a87c0316ef59fca7f7e0e29610148b713e553776f12e438ad9bf4431",
+    "receiptDeclaredRawSha256": "159cb208056139803a108e02e046f3f646502c065a0bba2ce217e779eccc23b1",
+    "receiptDeclaredRawSizeBytes": 99106,
+    "sha256SidecarPath": "captures/g1-rc-20260727.rc9-c03-TECH-RC9-D11-b8724483-d214-4f3d-b28b-1e29db0ddcec.json.sha256",
+    "sha256SidecarFileSha256": "d3fffb3121aec2cce7bc49a89851e4c0fe44c859ae927558d90b849594ac0a9c",
+    "sidecarDeclaredRawSha256": "159cb208056139803a108e02e046f3f646502c065a0bba2ce217e779eccc23b1",
+    "browserDownloadPath": "browser-download.json",
+    "browserDownloadEventCompleted": true,
+    "browserDownloadSha256": "159cb208056139803a108e02e046f3f646502c065a0bba2ce217e779eccc23b1",
+    "browserDownloadSizeBytes": 99106,
+    "browserDownloadMatchesServerRaw": true,
+    "serverRawMatchesSidecarClaim": true,
+    "serverRawMatchesReceiptClaim": true,
+    "allClaimsMatchServerRaw": true,
+    "frozenCaptureHostValidatorPassed": true,
+    "canonicalManagementLedgerValidator": {
+      "ok": true,
+      "code": null,
+      "protocolVersion": "weekly-management-slice-playtest-v0.3",
+      "terminalCommitmentCount": 2,
+      "ownedEffectCount": 5
+    },
+    "authorityTupleConsistent": true,
+    "actions": 16,
+    "domainEvents": 17,
+    "telemetryEntries": 263,
+    "choiceSets": 6,
+    "machineWeek1LegacyCandidateCount": 1,
+    "machineWeek2LegacyCandidateCount": 1,
+    "machineWeek1V2CandidateCount": 3,
+    "machineWeek2V2CandidateCount": 3,
+    "machineWeek1C03TerminalCommitmentCount": 1,
+    "machineWeek2C03TerminalCommitmentCount": 1,
+    "managementChoiceOpportunitiesV03": 2,
+    "managementChoiceCommitmentsV03": 2,
+    "settledManagementOutcomesV03": 2,
+    "effectOwnershipEntriesV03": 5
+  },
+  "legacyEffectiveEditsAdjudication": {
+    "basis": "weekly-management-slice-playtest-v0.1 section 8.1 and V0.2 legacy whitelist",
+    "week1": {
+      "count": 1,
+      "acceptedGroups": [
+        {
+          "groupId": "legacy:w0:transport-route",
+          "actionIds": [
+            "action-0004"
+          ]
+        }
+      ]
+    },
+    "week2": {
+      "count": 1,
+      "acceptedGroups": [
+        {
+          "groupId": "legacy:w1:lin-he-study",
+          "actionIds": [
+            "action-0009"
+          ]
+        }
+      ]
+    },
+    "manualCandidateDifferenceCount": 0
+  },
+  "effectiveManagementCommitmentsV2Adjudication": {
+    "basis": "weekly-management-slice-playtest-v0.2 sections 1, 7, 8 and 9 plus V0.3 compatibility projection",
+    "week1": {
+      "count": 3,
+      "acceptedGroups": [
+        {
+          "decisionIntentId": "w0:preventive-capacity:pump",
+          "choiceSetId": "choice:w0:preventive-capacity",
+          "actionIds": [
+            "action-0001"
+          ],
+          "finalOutcomeCode": "committed:schedule-preventive-maintenance"
+        },
+        {
+          "decisionIntentId": "w0:repair-responsibility:pump-incident-day-3",
+          "choiceSetId": "choice:w0:pump-repair",
+          "actionIds": [
+            "action-0003"
+          ],
+          "finalOutcomeCode": "committed:schedule-repair"
+        },
+        {
+          "decisionIntentId": "w0:transport-route",
+          "choiceSetId": "choice:w0:transport-route",
+          "actionIds": [
+            "action-0004"
+          ],
+          "finalOutcomeCode": "committed:south-shortcut"
+        }
+      ]
+    },
+    "week2": {
+      "count": 3,
+      "acceptedGroups": [
+        {
+          "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
+          "choiceSetId": "choice:w1:recovery-allocation",
+          "actionIds": [
+            "action-0008"
+          ],
+          "finalOutcomeCode": "committed:allocate-repair-buffer"
+        },
+        {
+          "decisionIntentId": "w1:character-request:lin-he-study",
+          "choiceSetId": "choice:w1:lin-he-study",
+          "actionIds": [
+            "action-0009"
+          ],
+          "finalOutcomeCode": "committed:accept-study"
+        },
+        {
+          "decisionIntentId": "w1:asset-use:fertilizer",
+          "choiceSetId": "choice:w1:fertilizer",
+          "actionIds": [
+            "action-0010"
+          ],
+          "finalOutcomeCode": "committed:use-fertilizer"
+        }
+      ]
+    },
+    "rejectedGroups": [
+      {
+        "actionIds": [
+          "action-0011:1",
+          "action-0011:2",
+          "action-0012:1",
+          "action-0012:2",
+          "action-0013"
+        ],
+        "reason": "The extra week-two repair edits and their undo chain have no exported independent candidate group or qualifying choice set; manual adjudication cannot add a group absent from raw."
+      }
+    ],
+    "manualCandidateDifferenceCount": 0,
+    "sameIntentDuplicateCount": 0,
+    "ctaOnlyCommitmentCount": 0
+  },
+  "effectiveManagementCommitmentsC03Adjudication": {
+    "basis": "weekly-management-slice-playtest-v0.3 sections 1 through 5 and gate1-c03-management-choice-authority",
+    "week1": {
+      "count": 1,
+      "acceptedCommitments": [
+        {
+          "decisionIntentId": "w0:preventive-capacity:pump",
+          "choiceSetId": "choice:w0:preventive-capacity",
+          "candidateId": "schedule-preventive-maintenance",
+          "actionId": "action-0001",
+          "terminalState": "schedule-preventive-maintenance",
+          "requiredConsequenceCount": 3,
+          "ownedEffectCount": 3,
+          "settledOutcomeConsequenceId": "consequence:w0:preventive-capacity:recovery-load"
+        }
+      ]
+    },
+    "week2": {
+      "count": 1,
+      "acceptedCommitments": [
+        {
+          "decisionIntentId": "w1:recovery-allocation:pump-vs-food",
+          "choiceSetId": "choice:w1:recovery-allocation",
+          "candidateId": "allocate-repair-buffer",
+          "actionId": "action-0008",
+          "terminalState": "allocate-repair-buffer",
+          "requiredConsequenceCount": 2,
+          "ownedEffectCount": 2,
+          "settledOutcomeConsequenceId": "consequence:w1:recovery-allocation:ending-repair"
+        }
+      ]
+    },
+    "manualCandidateDifferenceCount": 0,
+    "sameIntentDuplicateCount": 0,
+    "ctaOnlyCommitmentCount": 0,
+    "directEditCommitmentCount": 0
+  },
+  "agentReportedEvidence": {
+    "initialObservation": "我目前认为需优先处理三件事：粮食期末仅 3–11，水泵未检修会把农田下限再压低 8，且北侧绕行还损耗 6；林禾周二 B2 的休息格在第二次预防检修与专项保护性恢复之间存在容量冲突；水泵维修责任尚未落地，会影响维修保障、人物负荷和跨周欠账。若不处理水泵/粮食链条，本周很可能兑现轻度粮食缺口，并把风险带入第二周。",
+    "completionSignal": "PLAYTHROUGH_COMPLETE",
+    "predictionExplanationProvided": true,
+    "personAndDecisionImpactProvided": true,
+    "mapEnteredDecision": true,
+    "mapActionTaken": true,
+    "week2FullInspection": false,
+    "week2FullReplan": false,
+    "mustClickAllCardsObserved": false,
+    "comparisonBiasReported": false,
+    "verbatimOutputPath": "agent-verbatim-output.md"
+  },
+  "hostPrompts": [
+    {
+      "stage": "week2_start",
+      "kind": "technical_continuity_check",
+      "agentResponse": "CONTINUITY_OK",
+      "impact": "The operator requested only confirmation of the same browser and application session plus current progress; no strategy or choice guidance was provided."
+    },
+    {
+      "stage": "terminal_download",
+      "kind": "technical_continuity_check",
+      "agentResponse": null,
+      "agentResponseReason": "The prompt queued during an agent tool call; the next player message received by /root was SAVE_READY.",
+      "impact": "The operator requested only same-session and progress confirmation; no strategy or choice guidance was provided."
+    }
+  ],
+  "technicalInterruptions": [
+    {
+      "stage": "seal_preclear_verification",
+      "kind": "validator_import_started_default_host",
+      "actorTask": "/root/c03_d11_preclear_verify",
+      "impact": "Importing the validator accidentally started a short-lived host on 127.0.0.1:4186 and created an empty candidates/C03/captures directory. It made no session-authority call, created no application Session or capture, and had no UI or player overlap with the D11 host on 4197.",
+      "recovery": "The accidental host was stopped immediately; the exact empty directory was removed; 4186 was confirmed to have no listener.",
+      "affectedTechnicalValidity": false,
+      "validityReason": "No player interaction, application Session, capture, authority mutation, D11 evidence mutation or port overlap occurred."
+    }
+  ],
+  "symptoms": [
+    {
+      "id": "D11-SYM-01",
+      "clusterKey": "FOOD_TRADEOFF_CTA_NO_DISCERNIBLE_PANEL_CHANGE",
+      "description": "After clicking 查看粮食取舍, the agent did not perceive a distinct comparison panel; the control only located the existing food area.",
+      "source": "agent interview",
+      "severitySuggestion": "P2",
+      "affectedCompletion": false
+    }
+  ],
+  "severityCounts": {
+    "P0": 0,
+    "P1": 0,
+    "P2": 1
+  },
+  "subjectiveHumanFields": "not_applicable_agent_proxy",
+  "validityDecision": {
+    "status": "VALID_DIAGNOSTIC",
+    "reasonCode": "VALID_COMPLETE_CAPTURE_AND_PROTOCOL_COMPLIANCE",
+    "reason": "A fresh blind agent completed both weeks in exactly one C03 application session; frozen host and ledger validators passed; raw, sidecar, receipt and browser download are byte-consistent; clear preceded the frozen interview; and the isolated preclear verifier interruption did not touch the player, application session or evidence chain.",
+    "includedInGate1ADenominator": false,
+    "sampleIdReusable": false,
+    "replacementRequired": false
+  },
+  "trackLocks": {
+    "gate1A": "PRE_DIAGNOSTIC",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED"
+  }
+}
