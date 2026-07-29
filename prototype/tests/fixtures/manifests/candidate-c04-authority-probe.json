@@ -24,12 +24,12 @@
       {
         "role": "c04-recovery-plan",
         "path": "docs/exec-plans/active/2026-07-29-gate1a-rc9-c04-recovery-plan.md",
-        "sha256": "8629abc4545d6733fe2c5fb76e4c01c35999846b2c23428663bda6b676f7849e"
+        "sha256": "d9aa81c3250ee2d759bcaebfc1bcd69be234ebbb8718541865f21a888490ed63"
       },
       {
         "role": "operations",
         "path": "docs/exec-plans/active/2026-07-27-gate1a-rc9-test-operations.md",
-        "sha256": "d08547e20c6777ec778916702641cb863e3edb8106f64c4909c0b607bc58630b"
+        "sha256": "b327775b455e56cc826f5f3b1d0a0056899c08d4ebed76ac5a7bf0b3b90744d4"
       },
       {
         "role": "player-packet",

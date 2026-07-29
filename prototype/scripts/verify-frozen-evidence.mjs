@@ -19,6 +19,10 @@ import {
   resolve,
   sep,
 } from 'node:path'
+import {
+  phase6IdentityFromEnvironment,
+  reservedPhase6IdentityFromEnvironment,
+} from './candidate-manifest-contract.mjs'
 
 const SCHEMA_VERSION = 'gate1a-frozen-evidence-guard-v1'
 const SOURCE_BASELINE = 'cd2fc9716d98c160fe530c593347992f18bf96e4'
@@ -260,7 +264,7 @@ function repoLocation(path) {
 function outputAllowed(relativePath) {
   if (
     relativePath ===
-      `${C04_ROOT}/evidence/phase6-retry-01/frozen-evidence-guard.json` ||
+      `${C04_ROOT}/evidence/phase6-retry-02/frozen-evidence-guard.json` ||
     relativePath ===
       `${C04_ROOT}/evidence/freeze-audit/frozen-evidence-guard.json`
   ) {
@@ -649,6 +653,23 @@ let result = {
 try {
   options = parseOptions(argv)
   const mode = options['--mode']
+  let phase6Identity
+  try {
+    const reservedIdentity = reservedPhase6IdentityFromEnvironment(
+      canonicalRepoRoot,
+      resolveOutputPath(options['--output']),
+      'frozen-evidence-guard',
+      { integrationSha: options['--head'] },
+    )
+    phase6Identity =
+      reservedIdentity ??
+      phase6IdentityFromEnvironment('frozen-evidence-guard')
+  } catch {
+    throw new GuardFailure(
+      'C04_PHASE6_IDENTITY',
+      'reserved Phase 6 identity preflight failed',
+    )
+  }
   const outputDestination = validateOutput(options['--output'], mode)
   const baseline = resolveCommit(options['--baseline'], 'baseline')
   const head = resolveCommit(options['--head'], 'head')
@@ -703,6 +724,7 @@ try {
     result.status = 'PASS_EVIDENCE_LINEAGE'
   }
 
+  if (phase6Identity) result.phase6Identity = phase6Identity
   writeJsonGroup(
     options['--output'],
     result,

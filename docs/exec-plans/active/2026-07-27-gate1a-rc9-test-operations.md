@@ -9,7 +9,7 @@
 | 测试运营负责人 | 根 agent `/root` |
 | RC9 基线计划 authority | `2026-07-27-gate1a-rc9-remediation-plan.md` |
 | C04 当前计划 authority | `2026-07-29-gate1a-rc9-c04-recovery-plan.md` |
-| C04 当前 `plan_ref` | `05ca9bd0777280d2a455a12ddd4d6a5a46a0c086`，supersedes `f0ba061250d8633669eff625f7aa8809b789e682` |
+| C04 当前 `plan_ref` | `52eb452a5ffec167a3809d3f372e62b9d8524124`，supersedes `05ca9bd0777280d2a455a12ddd4d6a5a46a0c086` |
 | 协议 authority | `../../product-specs/weekly-management-slice-playtest-v0.2.md` |
 | 设计 authority | `../../design-docs/weekly-plan-production-forecast-slice-v0.2.md` |
 
@@ -412,10 +412,20 @@ RC9-01 失败时保持 RC9-02 阻塞，不得先写生产代码。
 - C03 继续由其已拒绝的 recovery contract 与 rejection record 解释；
 - C04 由已推送的
   `2026-07-29-gate1a-rc9-c04-recovery-plan.md`、当前
-  `plan_ref=05ca9bd0777280d2a455a12ddd4d6a5a46a0c086` 和本节共同解释；
+  `plan_ref=52eb452a5ffec167a3809d3f372e62b9d8524124` 和本节共同解释；
   `f0ba061250d8633669eff625f7aa8809b789e682` 只保留为 grammar/binary
   版本限定父权威，`31c05fee5130cd25f6273037468928d9196858f0` 只保留为 compatibility v2
   父权威，`c085bb63a2cbce790e47859ec49ff05c58283c74` 只保留为更早历史。
+
+A01 的 provisional I `3cc6de4f6c8458f51936a893b95ea08e62bb0883` 与
+preservation `bbda54826dc529ad3b93c55c4fd164463c842401` 永久排除。A02 在 failed I
+`b027ad8019d8fa46eaf7596c40eb28f470cc8c06` 的首项 lint 因 wrapper 解析到 Node
+25 而以 exit `134` 失败；preservation 为
+`6752c3b4f73a17fadcfc2420c9b9c6ededeeceb9`，失败评论为 `5119276886`，
+`phase6-retry-01/lint.txt` 固定为 `720` bytes / `3` lines / SHA-256
+`331c2275772bed740553fd3f886b533e537138d0a671f1cb1931bf2d9c12fd61`。A01/A02
+namespace 均永久只读；第二次 amendment 唯一新 integration root 为字面量
+`phase6-retry-02`，且不授权 P07/P08、D16–D20、CM01 或任何 Gate。
 
 ### 17.1 C04 authority
 
@@ -476,7 +486,7 @@ grammar review receipt 必须绑定其父 recovery plan blob 的内容 SHA-256
 `7b1b657c7c2bed5c8c8524b059149e52db9ba39bbecb7ffb91b4dfa706e4ef3e`
 且 `finalStatus=PASS`；该 receipt 不覆盖、不审查也不为当前 output amendment
 recovery plan blob
-`8629abc4545d6733fe2c5fb76e4c01c35999846b2c23428663bda6b676f7849e`
+`d9aa81c3250ee2d759bcaebfc1bcd69be234ebbb8718541865f21a888490ed63`
 背书。discovery 的
 `FAIL_INCOMPLETE_REQUIRED_COVERAGE` 只触发 amendment；recapture v3 才是
 exact grammar/native-type/correlation authority。三者都不是 golden、diagnostic、

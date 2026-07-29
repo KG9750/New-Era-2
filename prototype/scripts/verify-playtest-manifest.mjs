@@ -25,6 +25,7 @@ import {
   EVIDENCE_BASELINE,
   RC9_COHORT_ROOT,
   REJECTION_AUTHORITIES,
+  SOURCE_CHANGE_ALLOWLIST,
   antiPassEvidencePath,
   candidateBuildManifestPath,
   candidateManifestPath,
@@ -33,8 +34,11 @@ import {
   frozenEvidenceGuardPath,
   isRecord,
   isRepoRelativePath,
+  phase6IdentityFromEnvironment,
+  reservedPhase6IdentityFromEnvironment,
   validateCandidateAuthority,
   validateCandidateManifest,
+  validatePhase6Identity,
 } from './candidate-manifest-contract.mjs'
 
 const execFileAsync = promisify(execFile)
@@ -48,6 +52,15 @@ const CANONICAL_CM01_PATH = candidateManifestPath('CM01')
 const C04_ROOT = `${RC9_COHORT_ROOT}/candidates/C04`
 const HEX_64 = /^[a-f0-9]{64}$/
 const GIT_SHA = /^[a-f0-9]{40}$/
+const SOURCE_BASELINE = 'cd2fc9716d98c160fe530c593347992f18bf96e4'
+const PLAN_REF = '52eb452a5ffec167a3809d3f372e62b9d8524124'
+const REJECTED_SOURCE_SHA = 'a39c63387242b0aaea0c76c6e36cc5bdc4851909'
+const EXCLUDED_C04_ANCESTORS = Object.freeze([
+  '3cc6de4f6c8458f51936a893b95ea08e62bb0883',
+  'bbda54826dc529ad3b93c55c4fd164463c842401',
+  'b027ad8019d8fa46eaf7596c40eb28f470cc8c06',
+  '6752c3b4f73a17fadcfc2420c9b9c6ededeeceb9',
+])
 const ISOLATION_PROFILE = 'standalone-codex-cli-v2'
 const ISOLATION_CLI_BINARY =
   '/Applications/ChatGPT.app/Contents/Resources/codex'
@@ -314,6 +327,53 @@ function repoLocation(repoRoot, path) {
   }
 }
 
+async function validatePhase6ArchivePath(repoRoot, archivePath) {
+  if (
+    typeof archivePath !== 'string' ||
+    !isAbsolute(archivePath) ||
+    resolve(archivePath) !== archivePath
+  ) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_COMMAND',
+      'Phase 6 archivePath 必须是 canonical absolute path',
+    )
+  }
+  const targetStats = await lstatOutputPath(archivePath)
+  if (
+    targetStats &&
+    (targetStats.isSymbolicLink() || !targetStats.isFile())
+  ) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_COMMAND',
+      'Phase 6 archivePath 若已存在则必须是 non-symlink regular file',
+    )
+  }
+  let canonicalTarget
+  try {
+    canonicalTarget = await canonicalFreshTarget(archivePath)
+  } catch {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_COMMAND',
+      'Phase 6 archivePath existing ancestor 无法安全解析',
+    )
+  }
+  const lexicalLocation = repoLocation(repoRoot, archivePath)
+  const canonicalLocation = repoLocation(repoRoot, canonicalTarget)
+  if (
+    lexicalLocation.inside ||
+    canonicalLocation.inside ||
+    canonicalTarget !== archivePath
+  ) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_COMMAND',
+      'Phase 6 archivePath 必须位于 repo 外且 existing ancestor 不得为 symlink：' +
+        `archive=${archivePath} canonical=${canonicalTarget} ` +
+        `lexicalInside=${lexicalLocation.inside} ` +
+        `canonicalInside=${canonicalLocation.inside}`,
+    )
+  }
+}
+
 async function validateOutputDestination(path, repoRoot, mode) {
   const sidecarPath = `${path}.sha256`
   const outputExists = await pathExists(path)
@@ -354,9 +414,9 @@ async function validateOutputDestination(path, repoRoot, mode) {
   const { inside: insideRepo, relativePath } = canonicalLocation
   const fixedRelativePath = {
     fixtures:
-      `${C04_ROOT}/evidence/phase6-retry-01/manifest-fixtures.json`,
+      `${C04_ROOT}/evidence/phase6-retry-02/manifest-fixtures.json`,
     probe:
-      `${C04_ROOT}/evidence/phase6-retry-01/manifest-probe.json`,
+      `${C04_ROOT}/evidence/phase6-retry-02/manifest-probe.json`,
   }[mode]
   const validManifestPath =
     relativePath ===
@@ -530,6 +590,217 @@ async function assertAncestor(repoRoot, ancestor, descendant, label) {
       'CANDIDATE_MANIFEST_GIT_BINDING',
       `${label} 拓扑无效：${ancestor} 不是 ${descendant} 的祖先`,
     )
+  }
+}
+
+async function isAncestor(repoRoot, ancestor, descendant) {
+  try {
+    await execFileAsync(
+      'git',
+      ['merge-base', '--is-ancestor', ancestor, descendant],
+      { cwd: repoRoot },
+    )
+    return true
+  } catch (error) {
+    if (error?.code === 1) return false
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_GIT_BINDING',
+      `无法重放 Git ancestry：${ancestor} -> ${descendant}`,
+    )
+  }
+}
+
+function parseNulFields(bytes, label) {
+  if (bytes.length === 0) return []
+  if (bytes.at(-1) !== 0) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_GIT_BINDING',
+      `${label} 不是完整 NUL-delimited Git output`,
+    )
+  }
+  const fields = []
+  let start = 0
+  for (let index = 0; index < bytes.length; index += 1) {
+    if (bytes[index] !== 0) continue
+    if (index === start) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_GIT_BINDING',
+        `${label} 含空 Git field`,
+      )
+    }
+    const field = bytes.subarray(start, index)
+    const decoded = field.toString('utf8')
+    if (!Buffer.from(decoded, 'utf8').equals(field)) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_GIT_BINDING',
+        `${label} 含非 canonical UTF-8 field`,
+      )
+    }
+    fields.push(decoded)
+    start = index + 1
+  }
+  return fields
+}
+
+async function replayAllowlistRange(repoRoot, baseline, head, label) {
+  const diffOutput = await git(
+    repoRoot,
+    [
+      'diff',
+      '--name-status',
+      '-z',
+      '--no-renames',
+      baseline,
+      head,
+    ],
+    'buffer',
+  )
+  const fields = parseNulFields(
+    Buffer.isBuffer(diffOutput) ? diffOutput : Buffer.from(diffOutput),
+    `${label} diff`,
+  )
+  if (fields.length % 2 !== 0) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_GIT_BINDING',
+      `${label} diff field count 无效`,
+    )
+  }
+  const changes = []
+  const seen = new Set()
+  for (let index = 0; index < fields.length; index += 2) {
+    const status = fields[index]
+    const path = fields[index + 1]
+    if (
+      !['A', 'M'].includes(status) ||
+      !SOURCE_CHANGE_ALLOWLIST.includes(path) ||
+      seen.has(path)
+    ) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_GIT_BINDING',
+        `${label} 含非 exact-49 allowlist A/M change：${status} ${path}`,
+      )
+    }
+    seen.add(path)
+    changes.push({ status, path })
+  }
+  const treeOutput = await git(
+    repoRoot,
+    [
+      'ls-tree',
+      '-r',
+      '-z',
+      '--full-tree',
+      head,
+      '--',
+      ...SOURCE_CHANGE_ALLOWLIST,
+    ],
+    'buffer',
+  )
+  const records = parseNulFields(
+    Buffer.isBuffer(treeOutput) ? treeOutput : Buffer.from(treeOutput),
+    `${label} allowlist tree`,
+  )
+  const bindings = new Map()
+  for (const record of records) {
+    const match = record.match(
+      /^(100644|100755) blob ([a-f0-9]{40})\t(.+)$/,
+    )
+    if (
+      !match ||
+      !SOURCE_CHANGE_ALLOWLIST.includes(match[3]) ||
+      bindings.has(match[3])
+    ) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_GIT_BINDING',
+        `${label} allowlist tree 含非 ordinary/duplicate blob`,
+      )
+    }
+    bindings.set(match[3], {
+      mode: match[1],
+      blobId: match[2],
+    })
+  }
+  if (
+    SOURCE_CHANGE_ALLOWLIST.length !== 49 ||
+    new Set(SOURCE_CHANGE_ALLOWLIST).size !== 49 ||
+    bindings.size !== 49
+  ) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_GIT_BINDING',
+      `${label} 未绑定完整 49-path allowlist`,
+    )
+  }
+  return { changes, bindings }
+}
+
+async function replayC04Topology(repoRoot, input) {
+  if (input.sourceSha === REJECTED_SOURCE_SHA) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_GIT_BINDING',
+      'C04 source 不得复用 A02 source',
+    )
+  }
+  await assertAncestor(repoRoot, PLAN_REF, input.sourceSha, 'plan_ref -> S')
+  await assertAncestor(
+    repoRoot,
+    SOURCE_BASELINE,
+    input.sourceSha,
+    'source baseline -> S',
+  )
+  await assertAncestor(
+    repoRoot,
+    EVIDENCE_BASELINE,
+    input.dependencyIntegrationSha,
+    'evidence baseline -> I',
+  )
+  for (const excluded of EXCLUDED_C04_ANCESTORS) {
+    if (
+      (await isAncestor(repoRoot, excluded, input.sourceSha)) ||
+      (await isAncestor(
+        repoRoot,
+        excluded,
+        input.dependencyIntegrationSha,
+      ))
+    ) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_GIT_BINDING',
+        `失败尝试 commit 不得成为 S/I ancestor：${excluded}`,
+      )
+    }
+  }
+  const source = await replayAllowlistRange(
+    repoRoot,
+    SOURCE_BASELINE,
+    input.sourceSha,
+    'source baseline -> S',
+  )
+  const integration = await replayAllowlistRange(
+    repoRoot,
+    EVIDENCE_BASELINE,
+    input.dependencyIntegrationSha,
+    'evidence baseline -> I',
+  )
+  for (const path of SOURCE_CHANGE_ALLOWLIST) {
+    if (
+      !sameJson(
+        source.bindings.get(path),
+        integration.bindings.get(path),
+      )
+    ) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_GIT_BINDING',
+        `S/I allowlist mode/blob 不一致：${path}`,
+      )
+    }
+  }
+  return {
+    planRef: PLAN_REF,
+    sourceBaseline: SOURCE_BASELINE,
+    evidenceBaseline: EVIDENCE_BASELINE,
+    sourceChangedPaths: source.changes,
+    integrationChangedPaths: integration.changes,
+    allowlistCount: SOURCE_CHANGE_ALLOWLIST.length,
+    excludedAncestors: EXCLUDED_C04_ANCESTORS,
   }
 }
 
@@ -1950,16 +2221,108 @@ async function verifyFrozenEvidence(
   return observed
 }
 
-function parseCriticalCommand(
-  entry,
-  binding,
-  input,
-) {
+function parsePhase6Command(entry, binding, input) {
+  let identity
+  let content = binding.content
+  if (
+    ['manifest-fixtures', 'manifest-probe', 'runtime-equivalence'].includes(
+      entry.id,
+    )
+  ) {
+    const document = parseJsonBytes(
+      binding.content,
+      entry.outputPath,
+      'CANDIDATE_MANIFEST_COMMAND',
+    )
+    identity = document.phase6Identity
+  } else {
+    const lines = binding.content.toString('utf8').split('\n')
+    if (
+      lines[0] !== 'C04_PHASE6_IDENTITY_V1' ||
+      lines.length !== 3 ||
+      lines[2] !== ''
+    ) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_COMMAND',
+        `${entry.id} 缺少 Phase 6 identity header`,
+      )
+    }
+    try {
+      const record = JSON.parse(lines[1])
+      if (
+        !isRecord(record) ||
+        record.schemaVersion !== 'c04-phase6-text-record-v1' ||
+        !sameJson(
+          Object.keys(record).sort(),
+          [
+            'childExitCode',
+            'phase6Identity',
+            'schemaVersion',
+            'stderrBase64',
+            'stdoutBase64',
+          ],
+        ) ||
+        record.childExitCode !== 0 ||
+        typeof record.stdoutBase64 !== 'string' ||
+        typeof record.stderrBase64 !== 'string'
+      ) {
+        throw new Error('invalid text record')
+      }
+      const stdout = Buffer.from(record.stdoutBase64, 'base64')
+      const stderr = Buffer.from(record.stderrBase64, 'base64')
+      if (
+        stdout.toString('base64') !== record.stdoutBase64 ||
+        stderr.toString('base64') !== record.stderrBase64
+      ) {
+        throw new Error('invalid base64')
+      }
+      identity = record.phase6Identity
+      content = stdout
+    } catch {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_COMMAND',
+        `${entry.id} Phase 6 text record 无效或 child exit 非零`,
+      )
+    }
+  }
+  if (
+    !validatePhase6Identity(identity, entry.id) ||
+    identity.mode !== 'integration' ||
+    identity.integrationSha !== input.dependencyIntegrationSha ||
+    identity.artifactSourceSha !== input.sourceSha ||
+    identity.outputPath !== entry.outputPath
+  ) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_COMMAND',
+      `${entry.id} Phase 6 identity 与 manifest lineage 不一致`,
+    )
+  }
+  return { content, identity }
+}
+
+function parseCommandStdoutJson(content, path) {
+  const lines = content.toString('utf8').trim().split('\n')
+  for (let index = lines.length - 1; index >= 0; index -= 1) {
+    try {
+      const document = JSON.parse(lines[index])
+      if (isRecord(document)) return document
+    } catch {
+      continue
+    }
+  }
+  throw new VerificationError(
+    'CANDIDATE_MANIFEST_COMMAND',
+    `${path} stdout 缺少最终 JSON object`,
+  )
+}
+
+function parseCriticalCommand(entry, content, input, candidateBuild) {
   if (
     ![
       'manifest-fixtures',
       'manifest-probe',
       'runtime-equivalence',
+      'rc-archive',
       'rc-verify',
       'rc-verify-archive',
       'rc-repro',
@@ -1967,11 +2330,16 @@ function parseCriticalCommand(
   ) {
     return null
   }
-  const document = parseJsonBytes(
-    binding.content,
-    entry.outputPath,
-    'CANDIDATE_MANIFEST_COMMAND',
-  )
+  const document =
+    ['manifest-fixtures', 'manifest-probe', 'runtime-equivalence'].includes(
+      entry.id,
+    )
+      ? parseJsonBytes(
+          content,
+          entry.outputPath,
+          'CANDIDATE_MANIFEST_COMMAND',
+        )
+      : parseCommandStdoutJson(content, entry.outputPath)
   if (entry.id === 'manifest-fixtures') {
     assertEqual(document.schemaVersion, SCHEMA_VERSION, 'manifest-fixtures.schemaVersion')
     assertEqual(document.status, 'PASS_FIXTURES', 'manifest-fixtures.status')
@@ -2092,6 +2460,16 @@ function parseCriticalCommand(
       input.sourceSha,
       'runtime-equivalence.actualGitSha',
     )
+  } else if (entry.id === 'rc-archive') {
+    assertEqual(document.archiveFormat, 'ustar', 'rc-archive.archiveFormat')
+    assertEqual(document.archiveHash, input.archiveHash, 'rc-archive.archiveHash')
+    assertEqual(document.bytes, candidateBuild.archive?.bytes, 'rc-archive.bytes')
+    assertEqual(document.entryCount, candidateBuild.archive?.entryCount, 'rc-archive.entryCount')
+    assertEqual(
+      document.sourceDateEpoch,
+      candidateBuild.sourceDateEpoch,
+      'rc-archive.sourceDateEpoch',
+    )
   } else if (entry.id === 'rc-verify') {
     assertEqual(document.verified, true, 'rc-verify.verified')
     assertEqual(document.buildId, input.buildId, 'rc-verify.buildId')
@@ -2099,7 +2477,15 @@ function parseCriticalCommand(
     assertEqual(document.artifactHash, input.artifactHash, 'rc-verify.artifactHash')
   } else if (entry.id === 'rc-verify-archive') {
     assertEqual(document.verified, true, 'rc-verify-archive.verified')
+    assertEqual(document.archiveFormat, 'ustar', 'rc-verify-archive.archiveFormat')
     assertEqual(document.archiveHash, input.archiveHash, 'rc-verify-archive.archiveHash')
+    assertEqual(document.bytes, candidateBuild.archive?.bytes, 'rc-verify-archive.bytes')
+    assertEqual(document.entryCount, candidateBuild.archive?.entryCount, 'rc-verify-archive.entryCount')
+    assertEqual(
+      document.sourceDateEpoch,
+      candidateBuild.sourceDateEpoch,
+      'rc-verify-archive.sourceDateEpoch',
+    )
   } else if (entry.id === 'rc-repro') {
     assertEqual(document.reproducible, true, 'rc-repro.reproducible')
     assertEqual(document.buildId, input.buildId, 'rc-repro.buildId')
@@ -2109,6 +2495,17 @@ function parseCriticalCommand(
   return {
     schemaVersion: document.schemaVersion ?? null,
     status: document.status ?? null,
+    ...(entry.id === 'rc-archive' ||
+    entry.id === 'rc-verify-archive'
+      ? {
+          archive: document.archive,
+          archiveFormat: document.archiveFormat,
+          archiveHash: document.archiveHash,
+          bytes: document.bytes,
+          entryCount: document.entryCount,
+          sourceDateEpoch: document.sourceDateEpoch,
+        }
+      : {}),
   }
 }
 
@@ -2180,6 +2577,7 @@ async function runFullManifest(
   await resolveCommit(repoRoot, input.sourceSha)
   await resolveCommit(repoRoot, input.dependencyIntegrationSha)
   await resolveCommit(repoRoot, input.candidateEvidenceSnapshotSha)
+  const topology = await replayC04Topology(repoRoot, input)
   if (
     new Set([
       input.sourceSha,
@@ -2336,6 +2734,7 @@ async function runFullManifest(
   }
 
   const commandBindings = []
+  const commandBindingsById = new Map()
   for (const entry of input.commandResults) {
     const binding = await bindGitBlob(
       repoRoot,
@@ -2344,7 +2743,13 @@ async function runFullManifest(
       entry.outputHash,
       'CANDIDATE_MANIFEST_COMMAND',
     )
-    const parsed = parseCriticalCommand(entry, binding, input)
+    const phase6 = parsePhase6Command(entry, binding, input)
+    const parsed = parseCriticalCommand(
+      entry,
+      phase6.content,
+      input,
+      candidateBuild,
+    )
     const sidecar =
       ['manifest-fixtures', 'manifest-probe', 'runtime-equivalence'].includes(
         entry.id,
@@ -2359,8 +2764,38 @@ async function runFullManifest(
             ),
           )
         : null
-    commandBindings.push(
-      publicBinding(binding, { id: entry.id, parsed, sidecar }),
+    const commandBinding = publicBinding(binding, {
+      id: entry.id,
+      parsed,
+      phase6Identity: phase6.identity,
+      sidecar,
+    })
+    commandBindings.push(commandBinding)
+    commandBindingsById.set(entry.id, commandBinding)
+  }
+  const archiveCommand = commandBindingsById.get('rc-archive')
+  const archiveVerifyCommand =
+    commandBindingsById.get('rc-verify-archive')
+  if (archiveCommand) {
+    await validatePhase6ArchivePath(
+      repoRoot,
+      archiveCommand.phase6Identity.archivePath,
+    )
+  }
+  if (
+    !archiveCommand ||
+    !archiveVerifyCommand ||
+    archiveCommand.phase6Identity.archivePath !==
+      archiveVerifyCommand.phase6Identity.archivePath ||
+    archiveCommand.parsed.archive !==
+      archiveCommand.phase6Identity.archivePath ||
+    archiveVerifyCommand.parsed.archive !==
+      archiveVerifyCommand.phase6Identity.archivePath ||
+    !sameJson(archiveCommand.parsed, archiveVerifyCommand.parsed)
+  ) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_COMMAND',
+      'rc-archive 与 rc-verify-archive 的 path/format/hash/bytes/entryCount/epoch 未完整交叉绑定',
     )
   }
   const guardBinding = await bindGitBlob(
@@ -2375,6 +2810,23 @@ async function runFullManifest(
     input.frozenEvidenceGuard.path,
     'CANDIDATE_MANIFEST_EVIDENCE',
   )
+  if (
+    !validatePhase6Identity(
+      guardDocument.phase6Identity,
+      'frozen-evidence-guard',
+    ) ||
+    guardDocument.phase6Identity.mode !== 'integration' ||
+    guardDocument.phase6Identity.integrationSha !==
+      input.dependencyIntegrationSha ||
+    guardDocument.phase6Identity.artifactSourceSha !== input.sourceSha ||
+    guardDocument.phase6Identity.outputPath !==
+      input.frozenEvidenceGuard.path
+  ) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_COMMAND',
+      'frozen-evidence guard Phase 6 identity 与 manifest lineage 不一致',
+    )
+  }
   const guardSidecarBinding = await bindGitSidecar(
     repoRoot,
     input.candidateEvidenceSnapshotSha,
@@ -2404,6 +2856,7 @@ async function runFullManifest(
       sidecar: publicBinding(manifestSidecarBinding),
     },
     bindings: {
+      topology,
       authority: authorityBindings,
       candidateBuild: publicBinding(candidateBuildBinding),
       diagnosticManifest: publicBinding(diagnosticBinding),
@@ -2432,6 +2885,43 @@ try {
       : resolve(options['--repo-root']),
   )
   resolvedOutputPath = outputPath(options, repoRoot, mode)
+  const phase6CommandId =
+    mode === 'fixtures'
+      ? 'manifest-fixtures'
+      : mode === 'probe'
+        ? 'manifest-probe'
+        : null
+  const reservedPhase6Identity = phase6CommandId
+    ? reservedPhase6IdentityFromEnvironment(
+        repoRoot,
+        resolvedOutputPath,
+        phase6CommandId,
+      )
+    : null
+  if (reservedPhase6Identity) {
+    const head = String(
+      await git(repoRoot, [
+        'rev-parse',
+        '--verify',
+        'HEAD^{commit}',
+      ]),
+    ).trim()
+    if (head !== reservedPhase6Identity.integrationSha) {
+      throw new VerificationError(
+        'C04_PHASE6_IDENTITY',
+        'reserved Phase 6 identity does not match repository HEAD',
+      )
+    }
+    await replayC04Topology(repoRoot, {
+      sourceSha: reservedPhase6Identity.artifactSourceSha,
+      dependencyIntegrationSha:
+        reservedPhase6Identity.integrationSha,
+    })
+  }
+  const phase6Identity =
+    phase6CommandId && !reservedPhase6Identity
+      ? phase6IdentityFromEnvironment(phase6CommandId)
+      : reservedPhase6Identity
   const outputDestination = await validateOutputDestination(
     resolvedOutputPath,
     repoRoot,
@@ -2451,14 +2941,17 @@ try {
             options,
             resolvedOutputPath,
           )
+  const publishedResult = phase6Identity
+    ? { ...result, phase6Identity }
+    : result
   await writeExclusiveGroup(
     resolvedOutputPath,
-    result,
+    publishedResult,
     repoRoot,
     mode,
     outputDestination,
   )
-  process.stdout.write(`${JSON.stringify(result)}\n`)
+  process.stdout.write(`${JSON.stringify(publishedResult)}\n`)
 } catch (error) {
   const result = {
     schemaVersion: SCHEMA_VERSION,
@@ -2468,8 +2961,16 @@ try {
     errorCode:
       error instanceof VerificationError
         ? error.code
+        : error instanceof Error &&
+            error.message === 'C04_PHASE6_IDENTITY'
+          ? 'C04_PHASE6_IDENTITY'
         : 'CANDIDATE_MANIFEST_INTERNAL',
-    message: error instanceof Error ? error.message : String(error),
+    message:
+      error instanceof Error && error.message === 'C04_PHASE6_IDENTITY'
+        ? 'reserved Phase 6 identity preflight failed'
+        : error instanceof Error
+          ? error.message
+          : String(error),
   }
   process.stderr.write(`${JSON.stringify(result)}\n`)
   process.exitCode = 1

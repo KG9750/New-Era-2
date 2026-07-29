@@ -99,85 +99,85 @@
         "id": "lint",
         "status": "PASS",
         "outputHash": "0101010101010101010101010101010101010101010101010101010101010101",
-        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/lint.txt"
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/lint.txt"
       },
       {
         "id": "test",
         "status": "PASS",
         "outputHash": "0202020202020202020202020202020202020202020202020202020202020202",
-        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/test.txt"
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/test.txt"
       },
       {
         "id": "build",
         "status": "PASS",
         "outputHash": "0303030303030303030303030303030303030303030303030303030303030303",
-        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/build.txt"
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/build.txt"
       },
       {
         "id": "rc-build",
         "status": "PASS",
         "outputHash": "0404040404040404040404040404040404040404040404040404040404040404",
-        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/rc-build.txt"
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/rc-build.txt"
       },
       {
         "id": "rc-verify",
         "status": "PASS",
         "outputHash": "0505050505050505050505050505050505050505050505050505050505050505",
-        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/rc-verify.txt"
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/rc-verify.txt"
       },
       {
         "id": "e2e-rc",
         "status": "PASS",
         "outputHash": "0606060606060606060606060606060606060606060606060606060606060606",
-        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/e2e-rc.txt"
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/e2e-rc.txt"
       },
       {
         "id": "rc-archive",
         "status": "PASS",
         "outputHash": "0707070707070707070707070707070707070707070707070707070707070707",
-        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/rc-archive.txt"
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/rc-archive.txt"
       },
       {
         "id": "rc-verify-archive",
         "status": "PASS",
         "outputHash": "0808080808080808080808080808080808080808080808080808080808080808",
-        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/rc-verify-archive.txt"
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/rc-verify-archive.txt"
       },
       {
         "id": "schema-fixtures",
         "status": "PASS",
         "outputHash": "0909090909090909090909090909090909090909090909090909090909090909",
-        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/schema-fixtures.txt"
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/schema-fixtures.txt"
       },
       {
         "id": "guard-rc8",
         "status": "PASS",
         "outputHash": "1010101010101010101010101010101010101010101010101010101010101010",
-        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/guard-rc8.txt"
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/guard-rc8.txt"
       },
       {
         "id": "manifest-fixtures",
         "status": "PASS",
-        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/manifest-fixtures.json",
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/manifest-fixtures.json",
         "outputHash": "1111111111111111111111111111111111111111111111111111111111111111"
       },
       {
         "id": "manifest-probe",
         "status": "PASS",
-        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/manifest-probe.json",
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/manifest-probe.json",
         "outputHash": "1313131313131313131313131313131313131313131313131313131313131313"
       },
       {
         "id": "runtime-equivalence",
         "status": "PASS",
-        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/runtime-equivalence.json",
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/runtime-equivalence.json",
         "outputHash": "1414141414141414141414141414141414141414141414141414141414141414"
       },
       {
         "id": "rc-repro",
         "status": "PASS",
         "outputHash": "1212121212121212121212121212121212121212121212121212121212121212",
-        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/rc-repro.txt"
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/rc-repro.txt"
       }
     ],
     "priorManifests": [],
@@ -201,7 +201,7 @@
     "protocolVersion": "weekly-management-slice-playtest-v0.3",
     "candidateAttemptManifestPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/candidate-build-manifest.json",
     "frozenEvidenceGuard": {
-      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/frozen-evidence-guard.json",
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/frozen-evidence-guard.json",
       "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
       "baselineSha": "5b9438cc5123ba35d8a703f3507bbf463e90176d",
       "status": "PASS_EVIDENCE_LINEAGE"

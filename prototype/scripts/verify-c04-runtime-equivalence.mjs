@@ -22,6 +22,10 @@ import {
   resolve,
   sep,
 } from 'node:path'
+import {
+  phase6IdentityFromEnvironment,
+  reservedPhase6IdentityFromEnvironment,
+} from './candidate-manifest-contract.mjs'
 
 const SCHEMA_VERSION = 'gate1a-c04-runtime-equivalence-v1'
 const SOURCE_BASELINE = 'cd2fc9716d98c160fe530c593347992f18bf96e4'
@@ -265,7 +269,7 @@ function repoLocation(path) {
 function outputAllowed(relativePath) {
   if (
     relativePath ===
-      `${C04_ROOT}/evidence/phase6-retry-01/runtime-equivalence.json` ||
+      `${C04_ROOT}/evidence/phase6-retry-02/runtime-equivalence.json` ||
     relativePath ===
       `${C04_ROOT}/evidence/freeze-audit/runtime-equivalence.json`
   ) {
@@ -642,6 +646,26 @@ let result = {
 
 try {
   options = parseOptions(argv)
+  let phase6Identity
+  try {
+    const reservedIdentity = reservedPhase6IdentityFromEnvironment(
+      canonicalRepoRoot,
+      resolveFromRepo(options['--output']),
+      'runtime-equivalence',
+      {
+        integrationSha: options['--head'],
+        artifactSourceSha: options['--artifact-git-sha'],
+      },
+    )
+    phase6Identity =
+      reservedIdentity ??
+      phase6IdentityFromEnvironment('runtime-equivalence')
+  } catch {
+    throw new EquivalenceFailure(
+      'C04_PHASE6_IDENTITY',
+      'reserved Phase 6 identity preflight failed',
+    )
+  }
   const baseline = resolveCommit(
     options['--baseline'] ?? SOURCE_BASELINE,
     'baseline',
@@ -909,6 +933,7 @@ try {
   result.expectedArtifactManifestSha256 = EXPECTED_MANIFEST_HASH
   result.actualArtifactManifestSha256 = candidateManifestHash
   result.canonicalFiles = canonicalFiles
+  if (phase6Identity) result.phase6Identity = phase6Identity
   writeJsonGroup(
     options['--output'],
     result,

@@ -7,6 +7,7 @@ import {
   mkdirSync,
   mkdtempSync,
   readFileSync,
+  realpathSync,
   symlinkSync,
   unlinkSync,
   writeFileSync,
@@ -14,6 +15,11 @@ import {
 import { tmpdir } from 'node:os'
 import { dirname, join, resolve } from 'node:path'
 import { beforeAll, describe, expect, it } from 'vitest'
+import {
+  expectedPhase6Argv,
+  SOURCE_CHANGE_ALLOWLIST,
+  validateCandidateManifest,
+} from '../scripts/candidate-manifest-contract.mjs'
 
 const verifier = resolve('scripts', 'verify-playtest-manifest.mjs')
 const canonicalManifest =
@@ -30,6 +36,15 @@ const cohort =
 const c04Root = `${cohort}/candidates/C04`
 const evidenceBaseline = '5b9438cc5123ba35d8a703f3507bbf463e90176d'
 const sourceBaseline = 'cd2fc9716d98c160fe530c593347992f18bf96e4'
+const phase6PlanRef = '52eb452a5ffec167a3809d3f372e62b9d8524124'
+const phase6Path =
+  '/opt/homebrew/opt/node@24/bin:/opt/homebrew/bin:/usr/bin:/bin'
+const excludedC04Ancestors = [
+  ['A01 provisional I', 'source', '3cc6de4f6c8458f51936a893b95ea08e62bb0883'],
+  ['A01 preservation', 'integration', 'bbda54826dc529ad3b93c55c4fd164463c842401'],
+  ['A02 failed I', 'source', 'b027ad8019d8fa46eaf7596c40eb28f470cc8c06'],
+  ['A02 preservation', 'integration', '6752c3b4f73a17fadcfc2420c9b9c6ededeeceb9'],
+]
 const artifactManifestSha256 =
   'c336706bf7193c07a7f552dfbfe77cf02ec36259c72cc08b8f0c6ee8fc84cc37'
 const artifactHash =
@@ -198,6 +213,33 @@ function canonicalJson(value) {
       .join(',')}}`
   }
   return JSON.stringify(value)
+}
+
+function integrationPhase6Identity(
+  fixture,
+  commandId: string,
+  outputPath: string,
+) {
+  const identity = {
+    schemaVersion: 'c04-phase6-command-identity-v1',
+    commandId,
+    mode: 'integration',
+    environment: { PATH: phase6Path },
+    commandVNodePath: '/opt/homebrew/opt/node@24/bin/node',
+    resolvedNodeRealPath:
+      '/opt/homebrew/Cellar/node@24/24.18.0/bin/node',
+    nodeVersion: 'v24.18.0',
+    nodeBinarySha256:
+      '72c18e2eeda260f67a5b2b66e96fa9b5ad82864676ebb54925695d87120cae3f',
+    workingDirectory: 'prototype',
+    outputPath,
+    planRef: phase6PlanRef,
+    integrationSha: fixture.integrationSha,
+    artifactSourceSha: fixture.sourceSha,
+    argv: [],
+  }
+  identity.argv = expectedPhase6Argv(identity)
+  return identity
 }
 
 function writeRepoFile(repo: string, path: string, bytes: Buffer | string) {
@@ -466,20 +508,126 @@ function antiPassFixture(
   }
 }
 
-function createFullManifestRepository() {
+function createFullManifestRepository({
+  phase6Identities = true,
+  mismatchedPhase6Command = null,
+  mismatchedPhase6ArgvCommand = null,
+  frozenPhase6Identity = true,
+  textChildExitCommand = null,
+  textRecordMissingChildExitCommand = null,
+  textRecordSchemaMismatchCommand = null,
+  archivePathMismatch = false,
+  phase6ArchivePathFactory = null,
+  archiveEpochMismatch = false,
+  mismatchedFrozenPhase6Argv = false,
+  sourceTopologyMutation = null,
+  integrationTopologyMutation = null,
+  excludedAncestorTarget = null,
+  excludedAncestorSha = null,
+} = {}) {
   const sourceRepo = resolve('..')
   const repo = cloneRepository(
     sourceRepo,
     'new-era-full-manifest-authority-',
   )
+  git(
+    repo,
+    'checkout',
+    '--quiet',
+    sourceTopologyMutation === 'plan-ref-not-ancestor'
+      ? sourceBaseline
+      : phase6PlanRef,
+  )
+  git(repo, 'switch', '--quiet', '-c', 'full-manifest-source')
+  for (const path of SOURCE_CHANGE_ALLOWLIST) {
+    const target = join(repo, path)
+    mkdirSync(dirname(target), { recursive: true })
+    cpSync(join(sourceRepo, path), target)
+  }
+  git(repo, 'add', '--', ...SOURCE_CHANGE_ALLOWLIST)
+  git(repo, 'commit', '--quiet', '-m', 'fixture source implementation')
+  const deletedAllowlistPath =
+    sourceTopologyMutation === 'allowlist-deletion'
+      ? SOURCE_CHANGE_ALLOWLIST.at(-1)
+      : null
+  if (deletedAllowlistPath) {
+    unlinkSync(join(repo, deletedAllowlistPath))
+    git(repo, 'add', '--update', '--', deletedAllowlistPath)
+    git(repo, 'commit', '--quiet', '-m', 'fixture source deletion')
+  }
+  if (sourceTopologyMutation === 'non-allowlist-path') {
+    const unexpectedPath = 'c04-topology-outside-allowlist.txt'
+    writeRepoFile(repo, unexpectedPath, 'unexpected committed path\n')
+    git(repo, 'add', '--', unexpectedPath)
+    git(repo, 'commit', '--quiet', '-m', 'fixture non-allowlist source')
+  }
+  if (excludedAncestorTarget === 'source') {
+    git(
+      repo,
+      'merge',
+      '--quiet',
+      '--no-ff',
+      '--allow-unrelated-histories',
+      '-s',
+      'ours',
+      excludedAncestorSha,
+      '-m',
+      'fixture excluded source ancestor',
+    )
+  }
+  const sourceSha = git(repo, 'rev-parse', 'HEAD')
+
   git(repo, 'checkout', '--quiet', evidenceBaseline)
   git(repo, 'switch', '--quiet', '-c', 'full-manifest-fixture')
-  const sourceSha = git(sourceRepo, 'rev-parse', 'HEAD')
-  for (const [, path] of authorityPaths) {
-    writeRepoFile(repo, path, readFileSync(join(sourceRepo, path)))
+  git(
+    repo,
+    'checkout',
+    sourceSha,
+    '--',
+    ...SOURCE_CHANGE_ALLOWLIST.filter(
+      (path) => path !== deletedAllowlistPath,
+    ),
+  )
+  if (deletedAllowlistPath) {
+    git(repo, 'rm', '--quiet', '--ignore-unmatch', '--', deletedAllowlistPath)
   }
-  git(repo, 'add', ...authorityPaths.map(([, path]) => path))
+  git(
+    repo,
+    'add',
+    '--',
+    ...SOURCE_CHANGE_ALLOWLIST.filter(
+      (path) => path !== deletedAllowlistPath,
+    ),
+  )
   git(repo, 'commit', '--quiet', '-m', 'fixture integration authority')
+  if (integrationTopologyMutation === 'blob-mismatch') {
+    const mismatchedPath =
+      'prototype/scripts/check-playtest-fixtures.mjs'
+    writeRepoFile(
+      repo,
+      mismatchedPath,
+      Buffer.concat([
+        readFileSync(join(repo, mismatchedPath)),
+        Buffer.from('\n// integration blob mismatch\n'),
+      ]),
+    )
+    git(repo, 'add', '--', mismatchedPath)
+    git(repo, 'commit', '--quiet', '-m', 'fixture integration mismatch')
+  }
+  if (excludedAncestorTarget === 'integration') {
+    git(
+      repo,
+      'merge',
+      '--quiet',
+      '--no-ff',
+      '--allow-unrelated-histories',
+      '-s',
+      'ours',
+      excludedAncestorSha,
+      '-m',
+      'fixture excluded integration ancestor',
+    )
+  }
   const integrationSha = git(repo, 'rev-parse', 'HEAD')
   const authorityHashes = authorityPaths.map(([role, path]) => ({
     role,
@@ -610,10 +758,16 @@ function createFullManifestRepository() {
   const antiPass = antiPassIds.map((sampleId) =>
     antiPassFixture(repo, sampleId, sourceSha),
   )
+  const phase6ArchivePath = phase6ArchivePathFactory
+    ? phase6ArchivePathFactory(repo)
+    : join(
+        realpathSync(dirname(repo)),
+        'phase6-archive-output.tar',
+      )
 
   const commandResults = requiredCommandIds.map((id) => {
     const outputPath =
-      `${c04Root}/evidence/phase6-retry-01/` +
+      `${c04Root}/evidence/phase6-retry-02/` +
       ({
         'schema-fixtures': 'schema-fixtures.txt',
         'guard-rc8': 'guard-rc8.txt',
@@ -625,6 +779,43 @@ function createFullManifestRepository() {
         'rc-repro': 'rc-repro.txt',
       }[id] ?? `${id}.txt`)
     let value
+    const phase6Identity = {
+      schemaVersion: 'c04-phase6-command-identity-v1',
+      commandId: id,
+      mode: 'integration',
+      environment: {
+        PATH:
+          '/opt/homebrew/opt/node@24/bin:' +
+          '/opt/homebrew/bin:/usr/bin:/bin',
+      },
+      commandVNodePath: '/opt/homebrew/opt/node@24/bin/node',
+      resolvedNodeRealPath:
+        '/opt/homebrew/Cellar/node@24/24.18.0/bin/node',
+      nodeVersion: 'v24.18.0',
+      nodeBinarySha256:
+        '72c18e2eeda260f67a5b2b66e96fa9b5ad82864676ebb54925695d87120cae3f',
+      workingDirectory: 'prototype',
+      outputPath,
+      planRef: '52eb452a5ffec167a3809d3f372e62b9d8524124',
+      integrationSha,
+      artifactSourceSha: sourceSha,
+    }
+    if (['rc-archive', 'rc-verify-archive'].includes(id)) {
+      phase6Identity.archivePath =
+        archivePathMismatch && id === 'rc-verify-archive'
+          ? `${phase6ArchivePath}.mismatch`
+          : phase6ArchivePath
+    }
+    phase6Identity.argv = expectedPhase6Argv(phase6Identity)
+    if (id === mismatchedPhase6ArgvCommand) {
+      phase6Identity.argv = [
+        ...phase6Identity.argv,
+        '--unexpected-tail',
+      ]
+    }
+    if (id === mismatchedPhase6Command) {
+      phase6Identity.integrationSha = '9'.repeat(40)
+    }
     if (id === 'manifest-fixtures') {
       value = {
         schemaVersion: 'candidate-manifest-verification-v1',
@@ -680,6 +871,15 @@ function createFullManifestRepository() {
           },
         },
       }
+    } else if (id === 'rc-archive') {
+      value = {
+        archive: phase6Identity.archivePath,
+        archiveFormat: 'ustar',
+        archiveHash,
+        bytes: archiveBytes.length,
+        entryCount: 8,
+        sourceDateEpoch: 946684800,
+      }
     } else if (id === 'rc-verify') {
       value = {
         verified: true,
@@ -688,7 +888,17 @@ function createFullManifestRepository() {
         artifactHash,
       }
     } else if (id === 'rc-verify-archive') {
-      value = { verified: true, archiveHash }
+      value = {
+        verified: true,
+        archive: phase6Identity.archivePath,
+        archiveFormat: 'ustar',
+        archiveHash,
+        bytes: archiveBytes.length,
+        entryCount: 8,
+        sourceDateEpoch: archiveEpochMismatch
+          ? 946684801
+          : 946684800,
+      }
     } else if (id === 'rc-repro') {
       value = {
         reproducible: true,
@@ -697,27 +907,54 @@ function createFullManifestRepository() {
         archiveHash,
       }
     }
-    const binding =
-      value === undefined
-        ? (() => {
-            const bytes = Buffer.from(`PASS ${id}\n`)
-            writeRepoFile(repo, outputPath, bytes)
-            return { bytes, sha256: sha256(bytes) }
-          })()
-        : writeJson(repo, outputPath, value)
-    if (
-      ['manifest-fixtures', 'manifest-probe', 'runtime-equivalence'].includes(
-        id,
+    const jsonCommand = [
+      'manifest-fixtures',
+      'manifest-probe',
+      'runtime-equivalence',
+    ].includes(id)
+    let binding
+    if (jsonCommand) {
+      binding = writeJson(
+        repo,
+        outputPath,
+        phase6Identities
+          ? { ...value, phase6Identity }
+          : value,
       )
-    ) {
       writeSidecar(repo, outputPath, binding.sha256)
+    } else {
+      const childStdout =
+        value === undefined
+          ? `PASS ${id}\n`
+          : `${JSON.stringify(value)}\n`
+      const textRecord = {
+        schemaVersion: 'c04-phase6-text-record-v1',
+        phase6Identity,
+        childExitCode: id === textChildExitCommand ? 17 : 0,
+        stdoutBase64: Buffer.from(childStdout).toString('base64'),
+        stderrBase64: '',
+      }
+      if (id === textRecordMissingChildExitCommand) {
+        delete textRecord.childExitCode
+      }
+      if (id === textRecordSchemaMismatchCommand) {
+        textRecord.schemaVersion = 'c04-phase6-text-record-v0'
+      }
+      const bytes = Buffer.from(
+        phase6Identities
+          ? 'C04_PHASE6_IDENTITY_V1\n' +
+              `${JSON.stringify(textRecord)}\n`
+          : childStdout,
+      )
+      writeRepoFile(repo, outputPath, bytes)
+      binding = { bytes, sha256: sha256(bytes) }
     }
     return { id, status: 'PASS', outputPath, outputHash: binding.sha256 }
   })
 
   const guardPath =
-    `${c04Root}/evidence/phase6-retry-01/frozen-evidence-guard.json`
-  const guard = writeJson(repo, guardPath, {
+    `${c04Root}/evidence/phase6-retry-02/frozen-evidence-guard.json`
+  const guardDocument = {
     schemaVersion: 'gate1a-frozen-evidence-guard-v1',
     mode: 'evidence-lineage',
     status: 'PASS_EVIDENCE_LINEAGE',
@@ -736,7 +973,41 @@ function createFullManifestRepository() {
         inventorySha256: true,
       },
     })),
-  })
+    ...(frozenPhase6Identity
+      ? {
+          phase6Identity: {
+            schemaVersion: 'c04-phase6-command-identity-v1',
+            commandId: 'frozen-evidence-guard',
+            mode: 'integration',
+            environment: {
+              PATH:
+                '/opt/homebrew/opt/node@24/bin:' +
+                '/opt/homebrew/bin:/usr/bin:/bin',
+            },
+            commandVNodePath: '/opt/homebrew/opt/node@24/bin/node',
+            resolvedNodeRealPath:
+              '/opt/homebrew/Cellar/node@24/24.18.0/bin/node',
+            nodeVersion: 'v24.18.0',
+            nodeBinarySha256:
+              '72c18e2eeda260f67a5b2b66e96fa9b5ad82864676ebb54925695d87120cae3f',
+            workingDirectory: 'prototype',
+            outputPath: guardPath,
+            planRef: '52eb452a5ffec167a3809d3f372e62b9d8524124',
+            integrationSha,
+            artifactSourceSha: sourceSha,
+          },
+        }
+      : {}),
+  }
+  if (guardDocument.phase6Identity) {
+    guardDocument.phase6Identity.argv = expectedPhase6Argv(
+      guardDocument.phase6Identity,
+    )
+    if (mismatchedFrozenPhase6Argv) {
+      guardDocument.phase6Identity.argv.push('--unexpected-tail')
+    }
+  }
+  const guard = writeJson(repo, guardPath, guardDocument)
   writeSidecar(repo, guardPath, guard.sha256)
   git(repo, 'add', c04Root)
   git(repo, 'commit', '--quiet', '-m', 'fixture evidence snapshot')
@@ -861,6 +1132,35 @@ function expectFullFailurePreservesOutputs(
   expect(readFileSync(sidecar)).toEqual(sidecarSentinel)
 }
 
+describe('candidate playtest manifest shared contract', () => {
+  it('accepts only retry-02 command evidence for C04', () => {
+    const fixtureDocument = JSON.parse(
+      readFileSync(
+        resolve(
+          'tests',
+          'fixtures',
+          'manifests',
+          'candidate-c04-synthetic-valid.json',
+        ),
+        'utf8',
+      ),
+    )
+    const fixture = fixtureDocument.input
+
+    expect(validateCandidateManifest(fixture).accepted).toBe(true)
+    const archived = JSON.parse(
+      JSON.stringify(fixture).replaceAll(
+        'phase6-retry-02',
+        'phase6-retry-01',
+      ),
+    )
+    expect(validateCandidateManifest(archived)).toEqual({
+      accepted: false,
+      errorCode: 'CANDIDATE_MANIFEST_EVIDENCE',
+    })
+  })
+})
+
 describe('candidate playtest manifest production CLI', () => {
   let fullFixture
 
@@ -891,8 +1191,11 @@ describe('candidate playtest manifest production CLI', () => {
   })
 
   it('resolves a repo-relative fixtures output from repoRoot, not cwd', () => {
-    const root = temporaryDirectory('new-era-manifest-relative-output-')
-    const repo = join(root, 'repo')
+    const repo = cloneRepository(
+      fullFixture.repo,
+      'new-era-manifest-relative-output-',
+    )
+    git(repo, 'checkout', '--quiet', fullFixture.integrationSha)
     const prototype = join(repo, 'prototype')
     const script = join(
       prototype,
@@ -900,7 +1203,7 @@ describe('candidate playtest manifest production CLI', () => {
       'verify-playtest-manifest.mjs',
     )
     const output =
-      `${c04Root}/evidence/phase6-retry-01/manifest-fixtures.json`
+      `${c04Root}/evidence/phase6-retry-02/manifest-fixtures.json`
     mkdirSync(join(prototype, 'scripts'), { recursive: true })
     mkdirSync(dirname(join(repo, output)), { recursive: true })
     cpSync(verifier, script)
@@ -913,16 +1216,25 @@ describe('candidate playtest manifest production CLI', () => {
       join(prototype, 'tests', 'fixtures'),
       { recursive: true },
     )
-    for (const [, path] of authorityPaths) {
-      const target = join(repo, path)
-      mkdirSync(dirname(target), { recursive: true })
-      cpSync(resolve('..', path), target)
-    }
+    const fixturesIdentity = integrationPhase6Identity(
+      fullFixture,
+      'manifest-fixtures',
+      output,
+    )
 
     const result = spawnSync(
       process.execPath,
       [script, '--fixtures', '--output', output],
-      { cwd: prototype, encoding: 'utf8' },
+      {
+        cwd: prototype,
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          PATH: phase6Path,
+          C04_PHASE6_IDENTITY_V1:
+            JSON.stringify(fixturesIdentity),
+        },
+      },
     )
 
     expect(result.status, result.stderr).toBe(0)
@@ -931,7 +1243,12 @@ describe('candidate playtest manifest production CLI', () => {
     expectExactSidecar(join(repo, output), output)
 
     const probeOutput =
-      `${c04Root}/evidence/phase6-retry-01/manifest-probe.json`
+      `${c04Root}/evidence/phase6-retry-02/manifest-probe.json`
+    const probeIdentity = integrationPhase6Identity(
+      fullFixture,
+      'manifest-probe',
+      probeOutput,
+    )
     const probe = spawnSync(
       process.execPath,
       [
@@ -943,7 +1260,16 @@ describe('candidate playtest manifest production CLI', () => {
         '--output',
         probeOutput,
       ],
-      { cwd: prototype, encoding: 'utf8' },
+      {
+        cwd: prototype,
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          PATH: phase6Path,
+          C04_PHASE6_IDENTITY_V1:
+            JSON.stringify(probeIdentity),
+        },
+      },
     )
 
     expect(probe.status, probe.stderr).toBe(0)
@@ -958,7 +1284,7 @@ describe('candidate playtest manifest production CLI', () => {
       [
         '--fixtures',
         '--output',
-        `${c04Root}/evidence/phase6-retry-01/manifest-probe.json`,
+        `${c04Root}/evidence/phase6-retry-02/manifest-probe.json`,
       ],
     ],
     [
@@ -969,7 +1295,7 @@ describe('candidate playtest manifest production CLI', () => {
         '--repo-root',
         '..',
         '--output',
-        `${c04Root}/evidence/phase6-retry-01/manifest-fixtures.json`,
+        `${c04Root}/evidence/phase6-retry-02/manifest-fixtures.json`,
       ],
     ],
   ])(
@@ -981,6 +1307,49 @@ describe('candidate playtest manifest production CLI', () => {
       const output = join(fixture.repo, args.at(-1))
       mkdirSync(dirname(output), { recursive: true })
 
+      const result = spawnSync(
+        process.execPath,
+        [fixture.script, ...args],
+        { cwd: fixture.prototype, encoding: 'utf8' },
+      )
+
+      expect(result.status).toBe(1)
+      expect(parseLine(result.stderr).errorCode).toBe(
+        'CANDIDATE_MANIFEST_OUTPUT_PATH',
+      )
+      expect(existsSync(output)).toBe(false)
+      expect(existsSync(`${output}.sha256`)).toBe(false)
+    },
+  )
+
+  it.each([
+    [
+      'fixtures',
+      [
+        '--fixtures',
+        '--output',
+        `${c04Root}/evidence/phase6-retry-01/manifest-fixtures.json`,
+      ],
+    ],
+    [
+      'probe',
+      [
+        '--probe',
+        'tests/fixtures/manifests/candidate-c04-authority-probe.json',
+        '--repo-root',
+        '..',
+        '--output',
+        `${c04Root}/evidence/phase6-retry-01/manifest-probe.json`,
+      ],
+    ],
+  ])(
+    'rejects %s mode bound to the archived retry-01 namespace',
+    (_mode, args) => {
+      const fixture = materializeManifestVerifierRepository(
+        'new-era-manifest-archived-retry-',
+      )
+      const output = join(fixture.repo, args.at(-1))
+      mkdirSync(dirname(output), { recursive: true })
       const result = spawnSync(
         process.execPath,
         [fixture.script, ...args],
@@ -1088,6 +1457,299 @@ describe('candidate playtest manifest production CLI', () => {
     expectExactSidecar(output)
   })
 
+  it('rejects full mode when Phase 6 command identities are absent', () => {
+    const missingIdentityFixture = createFullManifestRepository({
+      phase6Identities: false,
+    })
+    const repo = cloneFullManifestRepository(missingIdentityFixture)
+    expectFullFailurePreservesOutputs(
+      repo,
+      fullArgs(repo, missingIdentityFixture.manifestSha),
+      'CANDIDATE_MANIFEST_COMMAND',
+    )
+  })
+
+  it('rejects a Phase 6 identity bound to a different integration SHA', () => {
+    const mismatchedIdentityFixture = createFullManifestRepository({
+      mismatchedPhase6Command: 'lint',
+    })
+    const repo = cloneFullManifestRepository(mismatchedIdentityFixture)
+    expectFullFailurePreservesOutputs(
+      repo,
+      fullArgs(repo, mismatchedIdentityFixture.manifestSha),
+      'CANDIDATE_MANIFEST_COMMAND',
+    )
+  })
+
+  it('rejects a Phase 6 identity with a trailing argv token', () => {
+    const mismatchedArgvFixture = createFullManifestRepository({
+      mismatchedPhase6ArgvCommand: 'test',
+    })
+    const repo = cloneFullManifestRepository(mismatchedArgvFixture)
+    expectFullFailurePreservesOutputs(
+      repo,
+      fullArgs(repo, mismatchedArgvFixture.manifestSha),
+      'CANDIDATE_MANIFEST_COMMAND',
+    )
+  })
+
+  it('rejects a Phase 6 text record with a nonzero child exit', () => {
+    const nonzeroChildFixture = createFullManifestRepository({
+      textChildExitCommand: 'lint',
+    })
+    const repo = cloneFullManifestRepository(nonzeroChildFixture)
+    expectFullFailurePreservesOutputs(
+      repo,
+      fullArgs(repo, nonzeroChildFixture.manifestSha),
+      'CANDIDATE_MANIFEST_COMMAND',
+    )
+  })
+
+  it.each([
+    ['missing childExitCode', { textRecordMissingChildExitCommand: 'lint' }],
+    ['wrong schema', { textRecordSchemaMismatchCommand: 'lint' }],
+  ])('rejects a Phase 6 text record with %s', (_label, options) => {
+    const invalidTextRecordFixture =
+      createFullManifestRepository(options)
+    const repo = cloneFullManifestRepository(invalidTextRecordFixture)
+    expectFullFailurePreservesOutputs(
+      repo,
+      fullArgs(repo, invalidTextRecordFixture.manifestSha),
+      'CANDIDATE_MANIFEST_COMMAND',
+    )
+  })
+
+  it('rejects archive commands bound to different absolute paths', () => {
+    const mismatchedArchiveFixture = createFullManifestRepository({
+      archivePathMismatch: true,
+    })
+    const repo = cloneFullManifestRepository(mismatchedArchiveFixture)
+    expectFullFailurePreservesOutputs(
+      repo,
+      fullArgs(repo, mismatchedArchiveFixture.manifestSha),
+      'CANDIDATE_MANIFEST_COMMAND',
+    )
+  })
+
+  it('rejects an archive identity whose absolute target is inside the verifier repository', () => {
+    const fixture = createFullManifestRepository({
+      phase6ArchivePathFactory: (repo) =>
+        join(realpathSync(repo), 'forbidden-phase6-archive.tar'),
+    })
+    mkdirSync(dirname(join(fixture.repo, fullOutput)), {
+      recursive: true,
+    })
+    expectFullFailurePreservesOutputs(
+      fixture.repo,
+      fullArgs(fixture.repo, fixture.manifestSha),
+      'CANDIDATE_MANIFEST_COMMAND',
+    )
+  })
+
+  it('rejects an archive identity with an existing symlink ancestor', () => {
+    const fixture = createFullManifestRepository({
+      phase6ArchivePathFactory: (repo) => {
+        const parent = realpathSync(dirname(repo))
+        const target = join(parent, 'archive-target')
+        const alias = join(parent, 'archive-alias')
+        mkdirSync(target)
+        symlinkSync(target, alias)
+        return join(alias, 'missing', 'phase6-archive.tar')
+      },
+    })
+    mkdirSync(dirname(join(fixture.repo, fullOutput)), {
+      recursive: true,
+    })
+    expectFullFailurePreservesOutputs(
+      fixture.repo,
+      fullArgs(fixture.repo, fixture.manifestSha),
+      'CANDIDATE_MANIFEST_COMMAND',
+    )
+  })
+
+  it('rejects a noncanonical absolute archive identity alias', () => {
+    const fixture = createFullManifestRepository({
+      phase6ArchivePathFactory: (repo) =>
+        `${realpathSync(dirname(repo))}/archive-alias/../phase6-archive.tar`,
+    })
+    mkdirSync(dirname(join(fixture.repo, fullOutput)), {
+      recursive: true,
+    })
+    expectFullFailurePreservesOutputs(
+      fixture.repo,
+      fullArgs(fixture.repo, fixture.manifestSha),
+      'CANDIDATE_MANIFEST_COMMAND',
+    )
+  })
+
+  it('rejects an existing repo-external directory as the archive target', () => {
+    const fixture = createFullManifestRepository({
+      phase6ArchivePathFactory: (repo) => {
+        const target = join(
+          realpathSync(dirname(repo)),
+          'existing-phase6-archive-directory',
+        )
+        mkdirSync(target)
+        return target
+      },
+    })
+    mkdirSync(dirname(join(fixture.repo, fullOutput)), {
+      recursive: true,
+    })
+    expectFullFailurePreservesOutputs(
+      fixture.repo,
+      fullArgs(fixture.repo, fixture.manifestSha),
+      'CANDIDATE_MANIFEST_COMMAND',
+    )
+  })
+
+  it('rejects an existing repo-external symlink as the archive target', () => {
+    const fixture = createFullManifestRepository({
+      phase6ArchivePathFactory: (repo) => {
+        const parent = realpathSync(dirname(repo))
+        const target = join(parent, 'existing-phase6-archive-file.tar')
+        const alias = join(parent, 'existing-phase6-archive-link.tar')
+        writeFileSync(target, 'existing archive\n')
+        symlinkSync(target, alias)
+        return alias
+      },
+    })
+    mkdirSync(dirname(join(fixture.repo, fullOutput)), {
+      recursive: true,
+    })
+    expectFullFailurePreservesOutputs(
+      fixture.repo,
+      fullArgs(fixture.repo, fixture.manifestSha),
+      'CANDIDATE_MANIFEST_COMMAND',
+    )
+  })
+
+  it('accepts an existing repo-external regular archive target', () => {
+    const fixture = createFullManifestRepository({
+      phase6ArchivePathFactory: (repo) => {
+        const target = join(
+          realpathSync(dirname(repo)),
+          'existing-phase6-archive-file.tar',
+        )
+        writeFileSync(target, 'existing archive\n')
+        return target
+      },
+    })
+    mkdirSync(dirname(join(fixture.repo, fullOutput)), {
+      recursive: true,
+    })
+    const result = run(fullArgs(fixture.repo, fixture.manifestSha))
+
+    expect(result.status, result.stderr).toBe(0)
+    expect(parseLine(result.stdout)).toMatchObject({
+      status: 'PASS_FULL_MANIFEST',
+      fullManifestVerified: true,
+    })
+  })
+
+  it('rejects archive verification with a mismatched epoch', () => {
+    const mismatchedArchiveFixture = createFullManifestRepository({
+      archiveEpochMismatch: true,
+    })
+    const repo = cloneFullManifestRepository(mismatchedArchiveFixture)
+    expectFullFailurePreservesOutputs(
+      repo,
+      fullArgs(repo, mismatchedArchiveFixture.manifestSha),
+      'CANDIDATE_MANIFEST_EVIDENCE',
+    )
+  })
+
+  it('rejects a frozen-evidence guard without its Phase 6 identity', () => {
+    const missingFrozenIdentityFixture = createFullManifestRepository({
+      frozenPhase6Identity: false,
+    })
+    const repo = cloneFullManifestRepository(missingFrozenIdentityFixture)
+    expectFullFailurePreservesOutputs(
+      repo,
+      fullArgs(repo, missingFrozenIdentityFixture.manifestSha),
+      'CANDIDATE_MANIFEST_COMMAND',
+    )
+  })
+
+  it('rejects a frozen-evidence guard with a trailing argv token', () => {
+    const mismatchedFrozenIdentityFixture =
+      createFullManifestRepository({
+        mismatchedFrozenPhase6Argv: true,
+      })
+    const repo = cloneFullManifestRepository(
+      mismatchedFrozenIdentityFixture,
+    )
+    expectFullFailurePreservesOutputs(
+      repo,
+      fullArgs(repo, mismatchedFrozenIdentityFixture.manifestSha),
+      'CANDIDATE_MANIFEST_COMMAND',
+    )
+  })
+
+  it('rejects S when plan_ref is not its ancestor', () => {
+    const fixture = createFullManifestRepository({
+      sourceTopologyMutation: 'plan-ref-not-ancestor',
+    })
+    const repo = cloneFullManifestRepository(fixture)
+    expectFullFailurePreservesOutputs(
+      repo,
+      fullArgs(repo, fixture.manifestSha),
+      'CANDIDATE_MANIFEST_GIT_BINDING',
+    )
+  })
+
+  it('rejects S when its source range deletes an allowlist path', () => {
+    const fixture = createFullManifestRepository({
+      sourceTopologyMutation: 'allowlist-deletion',
+    })
+    const repo = cloneFullManifestRepository(fixture)
+    expectFullFailurePreservesOutputs(
+      repo,
+      fullArgs(repo, fixture.manifestSha),
+      'CANDIDATE_MANIFEST_GIT_BINDING',
+    )
+  })
+
+  it('rejects S with a committed non-allowlist path', () => {
+    const fixture = createFullManifestRepository({
+      sourceTopologyMutation: 'non-allowlist-path',
+    })
+    const repo = cloneFullManifestRepository(fixture)
+    expectFullFailurePreservesOutputs(
+      repo,
+      fullArgs(repo, fixture.manifestSha),
+      'CANDIDATE_MANIFEST_GIT_BINDING',
+    )
+  })
+
+  it.each(excludedC04Ancestors)(
+    'rejects %s as a %s ancestor',
+    (_label, target, excludedAncestorSha) => {
+      const fixture = createFullManifestRepository({
+        excludedAncestorTarget: target,
+        excludedAncestorSha,
+      })
+      const repo = cloneFullManifestRepository(fixture)
+      expectFullFailurePreservesOutputs(
+        repo,
+        fullArgs(repo, fixture.manifestSha),
+        'CANDIDATE_MANIFEST_GIT_BINDING',
+      )
+    },
+  )
+
+  it('rejects an integration allowlist blob that differs from S', () => {
+    const fixture = createFullManifestRepository({
+      integrationTopologyMutation: 'blob-mismatch',
+    })
+    const repo = cloneFullManifestRepository(fixture)
+    expectFullFailurePreservesOutputs(
+      repo,
+      fullArgs(repo, fixture.manifestSha),
+      'CANDIDATE_MANIFEST_GIT_BINDING',
+    )
+  })
+
   it('runs full mode from M Git objects and publishes exact bound output', () => {
     const repo = cloneFullManifestRepository(fullFixture)
     const manifestPath = join(repo, canonicalManifest)
@@ -1143,8 +1805,8 @@ describe('candidate playtest manifest production CLI', () => {
   }, 15_000)
 
   it.each([
-    `${c04Root}/evidence/phase6-retry-01/manifest-fixtures.json`,
-    `${c04Root}/evidence/phase6-retry-01/manifest-probe.json`,
+    `${c04Root}/evidence/phase6-retry-02/manifest-fixtures.json`,
+    `${c04Root}/evidence/phase6-retry-02/manifest-probe.json`,
   ])(
     'rejects full mode bound to the Phase 6 output %s',
     (output) => {
