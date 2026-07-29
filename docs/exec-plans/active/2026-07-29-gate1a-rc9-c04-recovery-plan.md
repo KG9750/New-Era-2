@@ -1182,6 +1182,41 @@ IRxx -> Sxx seal record
 
 ## 5. Phase 6 验证
 
+以下公共命令清单只标识必须完成的 command ID；每项实际调用必须保留其在本计划、
+测试运营合同与当前 source/integration 身份下所需的完整 argv，不得把清单中的短名
+解释为省略必填参数的无参调用。
+
+source 与 dependency integration 的每一条 Phase 6 命令，以及
+`rc:repro`、clean clone 或其他子进程，都必须使用 process-local 的同一 exact
+环境，不得依赖调用 shell 的继承 PATH：
+
+```text
+PATH=/opt/homebrew/opt/node@24/bin:/opt/homebrew/bin:/usr/bin:/bin
+commandVNodePath=/opt/homebrew/opt/node@24/bin/node
+resolvedNodeRealPath=/opt/homebrew/Cellar/node@24/24.18.0/bin/node
+nodeVersion=v24.18.0
+nodeBinarySha256=72c18e2eeda260f67a5b2b66e96fa9b5ad82864676ebb54925695d87120cae3f
+```
+
+每个 source Phase 6 output，以及 integration 的
+`evidence/phase6-retry-02` 目录或其中任何文件，在创建前都必须先在内存中完成
+Node identity preflight。preflight 必须逐字验证并随后随该项成功结果保存：
+
+- exact PATH；
+- `command -v node` 的 exact path 与 resolved realpath；
+- Node version 与 binary SHA-256；
+- 本项完整 argv；
+- `plan_ref`；
+- source 模式的 source SHA，或 integration 模式的 I 与 artifact source SHA。
+
+任一 identity、PATH、argv 或 Git binding 漂移都必须在创建目录、JSON、TXT、
+sidecar、archive 或其他 Phase 6 output 前失败，保持零输出。通过 preflight 后，
+同一 process-local 环境必须传给该命令的全部 child process；TXT 结果保存 identity
+header，JSON 结果保存等价的结构化 identity。不得只在场次开头声明一次而让后续
+命令使用未验证环境。禁止通过 `brew install`、`brew link`、`brew unlink`、
+`brew reinstall`、修改 symlink 或修复 Node 25 来取得 PASS，也不得回退到 Node 25、
+系统 Node、alias、用户 PATH 或其他“等价”wrapper。
+
 source 与 dependency integration 都必须完成公共命令：
 
 ```text
@@ -1220,25 +1255,25 @@ npm run runtime:equivalence -- \
 ```
 
 dependency integration 另外执行，并把输出保存到 C04
-`evidence/phase6-retry-01/**`：
+`evidence/phase6-retry-02/**`：
 
 ```text
 npm run guard:frozen-evidence -- \
   --mode evidence-lineage \
   --baseline 5b9438cc5123ba35d8a703f3507bbf463e90176d \
   --head <integration-sha> \
-  --output data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/frozen-evidence-guard.json
+  --output data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/frozen-evidence-guard.json
 npm run manifest:verify -- \
   --fixtures \
-  --output data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/manifest-fixtures.json
+  --output data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/manifest-fixtures.json
 npm run manifest:verify -- \
   --probe tests/fixtures/manifests/candidate-c04-authority-probe.json \
   --repo-root .. \
-  --output data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/manifest-probe.json
+  --output data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/manifest-probe.json
 npm run runtime:equivalence -- \
   --head <integration-sha> \
   --artifact-git-sha <source-sha> \
-  --output data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/runtime-equivalence.json
+  --output data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/runtime-equivalence.json
 ```
 
 上述四个 integration Phase 6 JSON 是本轮新增 verifier no-clobber 的精确范围：
@@ -1246,22 +1281,25 @@ npm run runtime:equivalence -- \
 其 sidecar exact path 为：
 
 ```text
-data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/frozen-evidence-guard.json.sha256
-data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/manifest-fixtures.json.sha256
-data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/manifest-probe.json.sha256
-data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/runtime-equivalence.json.sha256
+data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/frozen-evidence-guard.json.sha256
+data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/manifest-fixtures.json.sha256
+data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/manifest-probe.json.sha256
+data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02/runtime-equivalence.json.sha256
 ```
 
 每个 JSON 必须同时以 create-new 方式生成上述 sidecar；
 sidecar 逐字保存 JSON SHA-256 与 repo-relative path，JSON 或 sidecar 任一已存在都
 必须在写入前失败。
 
-`phase6-retry-01` 是 C04 唯一有效的 Phase 6 command-results root。十四项
+字面量目录 `phase6-retry-02` 是 C04 唯一有效的 Phase 6 command-results root。
+十四项
 `commandResults[]` 的 JSON/TXT 都必须位于该目录；C01–C03 的既有
 `evidence/phase6/**` 路径不变。fixtures/probe 的非绝对 `--output` 必须以
 `repoRoot` 解析，不能以 `prototype` npm cwd 解析；外部 source preflight 仍只用
 绝对临时路径。回归测试必须从非 repo-root cwd 启动真实 production CLI，并证明
 repo-relative output 落到临时 repo root 下的 canonical path，未落到 cwd 下。
+`phase6-retry-02` 不得解释为 `phase6-retry-*` glob，也不授权
+`phase6-retry-03` 或任何未来 retry root。
 
 旧 `evidence/phase6/frozen-evidence-guard.json/.sha256` 是失败尝试 A01 的永久
 只读输出，绑定 provisional I
@@ -1274,8 +1312,29 @@ SHA-256 为
 `81fe9f0c287fe48ef4084efab8f7a93293cdafa572af13daa1d8f4301216d206`。
 最终 E、CM01、freeze audit、IR 与 seal 不得把 A01 pair 当作
 `frozenEvidenceGuard` 或 command result，也不得删除、覆盖、移动或重签 A01
-pair。最终 I 必须是 source 修复后的全新 integration SHA；所有有效 Phase 6
-证据只从 `phase6-retry-01` create-new。
+pair。
+
+旧 `evidence/phase6-retry-01/**` 是失败尝试 A02 的永久只读 namespace。A02
+绑定失败 I `b027ad8019d8fa46eaf7596c40eb28f470cc8c06`、source
+`a39c63387242b0aaea0c76c6e36cc5bdc4851909`、preservation commit
+`6752c3b4f73a17fadcfc2420c9b9c6ededeeceb9` 与 #58 failure comment
+`5119276886`。该 namespace 唯一生成文件为
+`evidence/phase6-retry-01/lint.txt`：`720` bytes、`3` lines、SHA-256
+`331c2275772bed740553fd3f886b533e537138d0a671f1cb1931bf2d9c12fd61`、
+exit `134`；其余十三项 command result 与四组 verifier JSON/sidecar pair 均未
+创建。失败由 wrapper 解析到
+`/opt/homebrew/Cellar/node/25.8.0/bin/node` 后发生 dyld library load error
+触发。A02 namespace 不得删除、覆盖、移动、补写、重签或复用。
+
+A01/A02 preservation commit、provisional/failed I
+`3cc6de4f6c8458f51936a893b95ea08e62bb0883` /
+`b027ad8019d8fa46eaf7596c40eb28f470cc8c06` 都不得成为新 I、E、M 或 F 的
+ancestor，也不得进入最终 `commandResults[]`、`frozenEvidenceGuard`、E、CM01、
+freeze audit、IR、seal 或 `output_ref`。必须从
+`a39c63387242b0aaea0c76c6e36cc5bdc4851909` 之后创建不同的新 source SHA，再从
+evidence baseline 创建不同于上述两个失败 I、且与新 source 的同一 49 blobs
+逐字相等的新 I。所有有效 integration Phase 6 证据只从此前完全不存在的
+`phase6-retry-02` create-new。
 
 freeze preparation 重新执行四类 verifier 时固定写入以下新路径，并由
 `freeze-preparation-audit.md` 只读引用：
@@ -1559,6 +1618,11 @@ Gate 1H 仍为 `PENDING`，Gate 2 继续 `LOCKED`。
 
 ### 10.5 Phase 6 repo-root output amendment
 
+本节是第一次一次性 amendment 的不可变历史，记录 A01 后对
+`phase6-retry-01` 的授权及其当时的执行顺序。A02 已消耗该 namespace；本节中把
+`phase6-retry-01` 称为有效 root 的规范性效果由 §10.6 supersede，但 A01、第一次
+owner authority、review、plan-only commit 与失败谱系事实全部保持不变。
+
 首次 dependency integration Phase 6 在 provisional I
 `3cc6de4f6c8458f51936a893b95ea08e62bb0883` 上暴露 output-resolution drift：
 `guard:frozen-evidence` 成功发布 A01 pair，但 `manifest:verify --fixtures`
@@ -1600,3 +1664,66 @@ output 修复、创建新 I 或运行 retry。
 
 除上述精确 supersede 范围外，其余 I/E/M/F 拓扑、no-clobber、source
 allowlist、authority、identity、P/D 编号和 Gate 边界全部不变。
+
+### 10.6 Phase 6 Node 24 wrapper recovery amendment
+
+第二次 owner pre-authority 是本计划之外的必要前置 authority。Owner 已明确授权
+“C04 第二次且仅一次的 Node 24 wrapper recovery amendment”；外部 authority
+必须逐字绑定本 proposed plan blob、当前
+`plan_ref=05ca9bd0777280d2a455a12ddd4d6a5a46a0c086`、source
+`a39c63387242b0aaea0c76c6e36cc5bdc4851909`、failed I
+`b027ad8019d8fa46eaf7596c40eb28f470cc8c06`、A02 preservation
+`6752c3b4f73a17fadcfc2420c9b9c6ededeeceb9` 与 failure comment
+`5119276886`。本节只记录该外部 authority 的最小范围，不能自我授权，也不能用
+计划作者、实现者或 reviewer 的声明替代 Owner binding。
+
+A02 在 integration `b027ad8...` 的 `phase6-retry-01/lint.txt` 首项暴露 wrapper
+未设置 Node 24 process-local PATH，实际解析 Node 25 并以 exit `134` 失败。本
+amendment 只允许恢复该 Node wrapper defect：
+
+1. A01 的旧 `evidence/phase6/**` pair 与 A02 的全部
+   `evidence/phase6-retry-01/**` 永久只读；两组 preservation 与两个旧 I 都按 §5
+   排除；
+2. source 与 integration 的每条 Phase 6 command 及 clean clone/repro child
+   必须逐项执行 §5 的 exact process-local PATH 与 Node identity preflight；漂移时
+   在任何 Phase 6 output 或 retry root 创建前零输出失败，不得安装、relink、修复
+   或切换 Node；
+3. C04 唯一新的有效 integration root 是字面量
+   `data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-02`；
+   它只容纳十四项 command results 与 §5 四组 verifier pair，不授权 glob、别名、
+   `retry-03` 或未来 namespace；
+4. source allowlist 仍是 §4.2 同一 49 个无重复 exact paths。plan-only 阶段只能
+   修改本计划；再次冻结后，implementation 只能在该既有 allowlist 内最小更新
+   entrypoint、package wiring、contracts、authority hashes、fixtures、fixture
+   oracle 与 tests，不得新增第 50 个 path，也不得再次修改本计划；
+5. 必须创建不同于 `a39c633...` 的新 source SHA，并完整重跑 source Phase 6；
+   三路独立 source review 全部
+   `P0=0 / P1=0 / P2=0 / PASS` 后，才能从 evidence baseline 创建不同于
+   `3cc6de4...`、`b027ad8...` 且包含与新 source 相同 49 blobs 的新 I；
+6. integration 前必须以不创建该目录的只读检查证明 `phase6-retry-02` 完全
+   不存在；Node identity preflight 通过后，才可从第一项开始 create-new 十四项
+   command results 与四组 verifier pair。不得迁移、复制或引用 A01/A02 output；
+7. integration Node identity preflight 一经启动，本次一次性 authority 即消耗，
+   即使它在创建 namespace 前以零输出失败也不允许自行重试。`phase6-retry-02`
+   任一 command、pair、partial group 或 identity preflight 失败都立即停止并永久
+   保留现场，不得自行创建 future retry。
+
+强制顺序不可重排：
+
+1. 外部 Owner pre-authority 绑定 proposed plan blob；
+2. 两名独立 reviewer 对同一 blob 分别得到
+   `P0=0 / P1=0 / P2=0 / PASS`；
+3. 创建只包含本计划文件的 plan-only commit，推送并登记新的 `plan_ref` 后再次
+   冻结；
+4. 在既有 49-path allowlist 内测试先行实现，创建新 source SHA；
+5. 新 source 完整 Phase 6 与三路独立 review 全部通过；
+6. 从 evidence baseline 创建新 I；
+7. 证明 `phase6-retry-02` 不存在后，按 §5 从第一项完整运行 integration
+   Phase 6；
+8. 新 integration Phase 6 独立复审通过前，不推送 final integration，不启动任何
+   后续阶段。
+
+本 amendment 不授权复用旧 source 或旧 I，不授权 `CM01`、P07/P08、D16–D20、
+C04 admission、Gate 1A、Gate 1H、Gate 2 或 final `output_ref`。当前状态继续为
+`C04=NOT_RELEASED`、`CM01=UNALLOCATED`、P07/P08 与 D16–D20=`NOT_STARTED`、
+Gate 1H=`PENDING`、Gate 2=`LOCKED`、`output_ref=UNSET`。
