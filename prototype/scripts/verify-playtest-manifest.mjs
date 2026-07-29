@@ -5,9 +5,11 @@ import {
   lstat,
   open,
   readFile,
+  realpath,
   unlink,
 } from 'node:fs/promises'
 import {
+  basename,
   dirname,
   isAbsolute,
   join,
@@ -244,8 +246,20 @@ function outputPath(options, repoRoot, mode) {
   return isAbsolute(value) ? value : repoPath(repoRoot, value)
 }
 
+async function lstatOutputPath(path) {
+  try {
+    return await lstat(path)
+  } catch (error) {
+    if (error?.code === 'ENOENT') return null
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_OUTPUT_PATH',
+      `无法检查 output path：${path}`,
+    )
+  }
+}
+
 async function pathExists(path) {
-  return (await lstat(path).catch(() => null)) !== null
+  return (await lstatOutputPath(path)) !== null
 }
 
 async function fsyncDirectory(path) {
@@ -264,7 +278,43 @@ function displayOutputPath(path, repoRoot) {
     : normalized.split(sep).join('/')
 }
 
-async function validateOutputDestination(path, repoRoot) {
+async function canonicalFreshTarget(path) {
+  const suffix = []
+  let cursor = path
+  while (true) {
+    const stats = await lstatOutputPath(cursor)
+    if (stats) {
+      try {
+        return resolve(await realpath(cursor), ...suffix)
+      } catch {
+        throw new VerificationError(
+          'CANDIDATE_MANIFEST_OUTPUT_PATH',
+          `无法解析 output 既有 ancestor：${cursor}`,
+        )
+      }
+    }
+    const parent = dirname(cursor)
+    if (parent === cursor) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_OUTPUT_PATH',
+        `无法定位 output 既有 ancestor：${path}`,
+      )
+    }
+    suffix.unshift(basename(cursor))
+    cursor = parent
+  }
+}
+
+function repoLocation(repoRoot, path) {
+  const normalized = relative(repoRoot, path)
+  return {
+    inside:
+      normalized !== '..' && !normalized.startsWith(`..${sep}`),
+    relativePath: normalized.split(sep).join('/'),
+  }
+}
+
+async function validateOutputDestination(path, repoRoot, mode) {
   const sidecarPath = `${path}.sha256`
   const outputExists = await pathExists(path)
   const sidecarExists = await pathExists(sidecarPath)
@@ -281,36 +331,84 @@ async function validateOutputDestination(path, repoRoot) {
     )
   }
   const parent = dirname(path)
-  const parentStat = await lstat(parent).catch(() => null)
+  const parentStat = await lstatOutputPath(parent)
   if (!parentStat?.isDirectory() || parentStat.isSymbolicLink()) {
     throw new VerificationError(
       'CANDIDATE_MANIFEST_OUTPUT_PATH',
       `output 父目录必须是既有普通目录：${parent}`,
     )
   }
-  const relativePath = relative(repoRoot, path).split(sep).join('/')
-  const insideRepo =
-    relativePath !== '..' && !relativePath.startsWith('../')
+  const canonicalTarget = await canonicalFreshTarget(path)
+  const lexicalLocation = repoLocation(repoRoot, path)
+  const canonicalLocation = repoLocation(repoRoot, canonicalTarget)
+  if (
+    (lexicalLocation.inside || canonicalLocation.inside) &&
+    (lexicalLocation.inside !== canonicalLocation.inside ||
+      lexicalLocation.relativePath !== canonicalLocation.relativePath)
+  ) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_OUTPUT_PATH',
+      `output symlink ancestor 改变 repo namespace：${displayOutputPath(path, repoRoot)}`,
+    )
+  }
+  const { inside: insideRepo, relativePath } = canonicalLocation
+  const fixedRelativePath = {
+    fixtures:
+      `${C04_ROOT}/evidence/phase6-retry-01/manifest-fixtures.json`,
+    probe:
+      `${C04_ROOT}/evidence/phase6-retry-01/manifest-probe.json`,
+  }[mode]
+  const validManifestPath =
+    relativePath ===
+      `${C04_ROOT}/evidence/freeze-audit/full-manifest-verification.json` ||
+    new RegExp(
+      `^${RC9_COHORT_ROOT}/(?:evidence/reviews/IR|seals/S)` +
+        '(?:0[1-9]|[1-9][0-9]+)/verifiers/' +
+        'full-manifest-verification\\.json$',
+    ).test(relativePath)
   if (
     insideRepo &&
-    ![
-      `${C04_ROOT}/evidence/phase6-retry-01/manifest-fixtures.json`,
-      `${C04_ROOT}/evidence/phase6-retry-01/manifest-probe.json`,
-      `${C04_ROOT}/evidence/freeze-audit/full-manifest-verification.json`,
-    ].includes(relativePath) &&
-    !new RegExp(
-      `^${RC9_COHORT_ROOT}/(?:evidence/reviews/IR[0-9]+|seals/S[0-9]+)/verifiers/full-manifest-verification\\.json$`,
-    ).test(relativePath)
+    (mode === 'manifest'
+      ? !validManifestPath
+      : relativePath !== fixedRelativePath)
   ) {
     throw new VerificationError(
       'CANDIDATE_MANIFEST_OUTPUT_PATH',
       `repo 内 output 不在固定 namespace：${relativePath}`,
     )
   }
+  return {
+    outputPath: path,
+    canonicalTarget,
+    insideRepo,
+    relativePath,
+  }
 }
 
-async function writeExclusiveGroup(path, result, repoRoot) {
-  await validateOutputDestination(path, repoRoot)
+async function writeExclusiveGroup(
+  path,
+  result,
+  repoRoot,
+  mode,
+  initialDestination,
+) {
+  const finalDestination = await validateOutputDestination(
+    path,
+    repoRoot,
+    mode,
+  )
+  if (
+    finalDestination.outputPath !== initialDestination.outputPath ||
+    finalDestination.canonicalTarget !==
+      initialDestination.canonicalTarget ||
+    finalDestination.insideRepo !== initialDestination.insideRepo ||
+    finalDestination.relativePath !== initialDestination.relativePath
+  ) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_OUTPUT_PATH',
+      `output destination 在写入前发生变化：${displayOutputPath(path, repoRoot)}`,
+    )
+  }
   const sidecarPath = `${path}.sha256`
   const jsonBytes = Buffer.from(`${JSON.stringify(result, null, 2)}\n`, 'utf8')
   const sidecarBytes = Buffer.from(
@@ -2328,12 +2426,17 @@ let resolvedOutputPath
 let repoRoot = defaultRepoRoot
 try {
   const { mode, options } = parseArguments(argv)
-  repoRoot =
+  repoRoot = await realpath(
     mode === 'fixtures'
       ? defaultRepoRoot
-      : resolve(options['--repo-root'])
+      : resolve(options['--repo-root']),
+  )
   resolvedOutputPath = outputPath(options, repoRoot, mode)
-  await validateOutputDestination(resolvedOutputPath, repoRoot)
+  const outputDestination = await validateOutputDestination(
+    resolvedOutputPath,
+    repoRoot,
+    mode,
+  )
   const result =
     mode === 'fixtures'
       ? await runFixtures()
@@ -2348,7 +2451,13 @@ try {
             options,
             resolvedOutputPath,
           )
-  await writeExclusiveGroup(resolvedOutputPath, result, repoRoot)
+  await writeExclusiveGroup(
+    resolvedOutputPath,
+    result,
+    repoRoot,
+    mode,
+    outputDestination,
+  )
   process.stdout.write(`${JSON.stringify(result)}\n`)
 } catch (error) {
   const result = {

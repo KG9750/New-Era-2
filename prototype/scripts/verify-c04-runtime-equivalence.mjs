@@ -8,11 +8,13 @@ import {
   lstatSync,
   openSync,
   readFileSync,
+  realpathSync,
   readdirSync,
   unlinkSync,
   writeFileSync,
 } from 'node:fs'
 import {
+  basename,
   dirname,
   isAbsolute,
   join,
@@ -99,6 +101,7 @@ const SOURCE_CHANGE_ALLOWLIST_SET = new Set(SOURCE_CHANGE_ALLOWLIST)
 
 const prototypeRoot = resolve(import.meta.dirname, '..')
 const repoRoot = resolve(prototypeRoot, '..')
+const canonicalRepoRoot = realpathSync(repoRoot)
 
 class EquivalenceFailure extends Error {
   constructor(code, message, details = {}) {
@@ -201,14 +204,62 @@ function resolveCommit(input, label) {
 }
 
 function resolveFromRepo(input) {
-  return isAbsolute(input) ? input : resolve(repoRoot, input)
+  return isAbsolute(input) ? resolve(input) : resolve(canonicalRepoRoot, input)
 }
 
 function displayPath(absolutePath, originalInput) {
-  const repoPrefix = `${repoRoot}${sep}`
+  const repoPrefix = `${canonicalRepoRoot}${sep}`
   return absolutePath.startsWith(repoPrefix)
-    ? relative(repoRoot, absolutePath).split(sep).join('/')
+    ? relative(canonicalRepoRoot, absolutePath).split(sep).join('/')
     : originalInput
+}
+
+function lstatOutputPath(path) {
+  try {
+    return lstatSync(path)
+  } catch (error) {
+    if (error?.code === 'ENOENT') return null
+    throw new EquivalenceFailure(
+      'C04_RUNTIME_OUTPUT_PATH',
+      `无法检查 output path：${path}`,
+    )
+  }
+}
+
+function canonicalFreshTarget(path) {
+  const suffix = []
+  let cursor = path
+  while (true) {
+    const stats = lstatOutputPath(cursor)
+    if (stats) {
+      try {
+        return resolve(realpathSync(cursor), ...suffix)
+      } catch {
+        throw new EquivalenceFailure(
+          'C04_RUNTIME_OUTPUT_PATH',
+          `无法解析 output 既有 ancestor：${cursor}`,
+        )
+      }
+    }
+    const parent = dirname(cursor)
+    if (parent === cursor) {
+      throw new EquivalenceFailure(
+        'C04_RUNTIME_OUTPUT_PATH',
+        `无法定位 output 既有 ancestor：${path}`,
+      )
+    }
+    suffix.unshift(basename(cursor))
+    cursor = parent
+  }
+}
+
+function repoLocation(path) {
+  const normalized = relative(canonicalRepoRoot, path)
+  return {
+    inside:
+      normalized !== '..' && !normalized.startsWith(`..${sep}`),
+    relativePath: normalized.split(sep).join('/'),
+  }
 }
 
 function outputAllowed(relativePath) {
@@ -221,50 +272,82 @@ function outputAllowed(relativePath) {
     return true
   }
   return new RegExp(
-    `^${COHORT_ROOT}/(?:evidence/reviews/IR[0-9]+|seals/S[0-9]+)/verifiers/runtime-equivalence\\.json$`,
+    `^${COHORT_ROOT}/(?:evidence/reviews/IR|seals/S)` +
+      '(?:0[1-9]|[1-9][0-9]+)/verifiers/' +
+      'runtime-equivalence\\.json$',
   ).test(relativePath)
 }
 
-function validateOutput(output) {
+function validateOutput(output, verificationMode) {
   const outputPath = resolveFromRepo(output)
-  const relativePath = relative(repoRoot, outputPath).split(sep).join('/')
-  const insideRepo =
-    relativePath !== '..' && !relativePath.startsWith('../')
-  if (insideRepo && !outputAllowed(relativePath)) {
+  const canonicalTarget = canonicalFreshTarget(outputPath)
+  const lexicalLocation = repoLocation(outputPath)
+  const canonicalLocation = repoLocation(canonicalTarget)
+  if (
+    (lexicalLocation.inside || canonicalLocation.inside) &&
+    (lexicalLocation.inside !== canonicalLocation.inside ||
+      lexicalLocation.relativePath !== canonicalLocation.relativePath)
+  ) {
     throw new EquivalenceFailure(
       'C04_RUNTIME_OUTPUT_PATH',
-      `repo 内 output 不在固定 namespace：${relativePath}`,
+      `output symlink ancestor 改变 repo namespace：${output}`,
     )
   }
-  const parentStat = lstatSync(dirname(outputPath), {
-    throwIfNoEntry: false,
-  })
+  const {
+    inside: insideRepo,
+    relativePath,
+  } = canonicalLocation
+  if (
+    (verificationMode === 'source' &&
+      (!isAbsolute(output) || insideRepo)) ||
+    (verificationMode === 'evidence-lineage-integration' &&
+      (!insideRepo || !outputAllowed(relativePath)))
+  ) {
+    throw new EquivalenceFailure(
+      'C04_RUNTIME_OUTPUT_PATH',
+      `output 与 ${verificationMode} mode 不匹配：${output}`,
+    )
+  }
+  const parentStat = lstatOutputPath(dirname(outputPath))
   if (!parentStat?.isDirectory() || parentStat.isSymbolicLink()) {
     throw new EquivalenceFailure(
       'C04_RUNTIME_OUTPUT_PATH',
       `output 父目录必须是既有普通目录：${dirname(outputPath)}`,
     )
   }
-  const outputExists = Boolean(
-    lstatSync(outputPath, { throwIfNoEntry: false }),
-  )
   const sidecarPath = `${outputPath}.sha256`
+  return {
+    outputPath,
+    sidecarPath,
+    relativePath,
+    insideRepo,
+    canonicalTarget,
+  }
+}
+
+function validateOutputGroup(destination, output) {
+  const outputExists = Boolean(
+    lstatOutputPath(destination.outputPath),
+  )
   const sidecarExists = Boolean(
-    lstatSync(sidecarPath, { throwIfNoEntry: false }),
+    lstatOutputPath(destination.sidecarPath),
   )
   if (outputExists !== sidecarExists) {
     throw new EquivalenceFailure(
       'PARTIAL_EVIDENCE_GROUP',
-      `JSON/sidecar 只存在一个成员：${displayPath(outputPath, output)}`,
+      `JSON/sidecar 只存在一个成员：${
+        displayPath(destination.outputPath, output)
+      }`,
     )
   }
   if (outputExists) {
     throw new EquivalenceFailure(
       'C04_RUNTIME_OUTPUT_EXISTS',
-      `output group 已存在：${displayPath(outputPath, output)}`,
+      `output group 已存在：${
+        displayPath(destination.outputPath, output)
+      }`,
     )
   }
-  return { outputPath, sidecarPath, relativePath, insideRepo }
 }
 
 function fsyncDirectorySync(path) {
@@ -276,13 +359,37 @@ function fsyncDirectorySync(path) {
   }
 }
 
-function writeJsonGroup(output, value) {
+function writeJsonGroup(
+  output,
+  value,
+  verificationMode,
+  initialDestination,
+) {
   const {
     outputPath,
     sidecarPath,
     relativePath,
     insideRepo,
-  } = validateOutput(output)
+    canonicalTarget,
+  } = validateOutput(output, verificationMode)
+  if (
+    outputPath !== initialDestination.outputPath ||
+    canonicalTarget !== initialDestination.canonicalTarget ||
+    relativePath !== initialDestination.relativePath ||
+    insideRepo !== initialDestination.insideRepo
+  ) {
+    throw new EquivalenceFailure(
+      'C04_RUNTIME_OUTPUT_PATH',
+      `output destination 在写入前发生变化：${output}`,
+    )
+  }
+  validateOutputGroup(
+    {
+      outputPath,
+      sidecarPath,
+    },
+    output,
+  )
   const temporaryPath =
     `${outputPath}.tmp-${process.pid}-${randomUUID()}`
   const temporarySidecarPath = `${temporaryPath}.sha256`
@@ -335,8 +442,8 @@ function writeJsonGroup(output, value) {
     try { unlinkSync(temporarySidecarPath) } catch {}
     try { fsyncDirectorySync(dirname(outputPath)) } catch {}
     if (
-      Boolean(lstatSync(outputPath, { throwIfNoEntry: false })) ||
-      Boolean(lstatSync(sidecarPath, { throwIfNoEntry: false }))
+      Boolean(lstatOutputPath(outputPath)) ||
+      Boolean(lstatOutputPath(sidecarPath))
     ) {
       throw new EquivalenceFailure(
         'PARTIAL_EVIDENCE_GROUP',
@@ -535,7 +642,6 @@ let result = {
 
 try {
   options = parseOptions(argv)
-  validateOutput(options['--output'])
   const baseline = resolveCommit(
     options['--baseline'] ?? SOURCE_BASELINE,
     'baseline',
@@ -546,6 +652,17 @@ try {
       `baseline 必须等于 ${SOURCE_BASELINE}`,
     )
   }
+  const head = resolveCommit(options['--head'], 'head')
+  const artifactGitSha = resolveCommit(
+    options['--artifact-git-sha'],
+    'artifact-git-sha',
+  )
+  const verificationMode =
+    head === artifactGitSha ? 'source' : 'evidence-lineage-integration'
+  const outputDestination = validateOutput(
+    options['--output'],
+    verificationMode,
+  )
 
   const artifactDirInput = options['--artifact-dir'] ?? 'prototype/dist'
   const artifactRoot = resolveFromRepo(artifactDirInput)
@@ -558,6 +675,27 @@ try {
       'C04 artifact-dir 必须是既有普通目录且不得为 symlink',
     )
   }
+  let canonicalArtifactRoot
+  try {
+    canonicalArtifactRoot = realpathSync(artifactRoot)
+  } catch {
+    throw new EquivalenceFailure(
+      'C04_RUNTIME_ARTIFACT_DIFF',
+      '无法解析 C04 artifact-dir',
+    )
+  }
+  if (
+    outputDestination.canonicalTarget === canonicalArtifactRoot ||
+    outputDestination.canonicalTarget.startsWith(
+      `${canonicalArtifactRoot}${sep}`,
+    )
+  ) {
+    throw new EquivalenceFailure(
+      'C04_RUNTIME_OUTPUT_PATH',
+      'runtime equivalence output 不得位于 artifact-dir 内',
+    )
+  }
+  validateOutputGroup(outputDestination, options['--output'])
   const candidateMetadataBytes = readFileSync(
     join(artifactRoot, 'rc-build.json'),
   )
@@ -575,11 +713,6 @@ try {
       'C04 rc-build.json 缺少完整 gitSha',
     )
   }
-  const head = resolveCommit(options['--head'], 'head')
-  const artifactGitSha = resolveCommit(
-    options['--artifact-git-sha'],
-    'artifact-git-sha',
-  )
   if (metadataHead !== artifactGitSha) {
     throw new EquivalenceFailure(
       'C04_RUNTIME_ARTIFACT_DIFF',
@@ -594,8 +727,6 @@ try {
     )
   }
   const sourceCommitScope = sourceScope(SOURCE_BASELINE, artifactGitSha)
-  const verificationMode =
-    head === artifactGitSha ? 'source' : 'evidence-lineage-integration'
   let headScope = sourceCommitScope
   let sourceBlobIdentityMismatches = []
   if (verificationMode === 'evidence-lineage-integration') {
@@ -778,7 +909,12 @@ try {
   result.expectedArtifactManifestSha256 = EXPECTED_MANIFEST_HASH
   result.actualArtifactManifestSha256 = candidateManifestHash
   result.canonicalFiles = canonicalFiles
-  writeJsonGroup(options['--output'], result)
+  writeJsonGroup(
+    options['--output'],
+    result,
+    verificationMode,
+    outputDestination,
+  )
   process.stdout.write(`${JSON.stringify(result)}\n`)
 } catch (error) {
   const failure =

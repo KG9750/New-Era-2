@@ -12,7 +12,7 @@ import {
   writeFileSync,
 } from 'node:fs'
 import { tmpdir } from 'node:os'
-import { dirname, join, resolve } from 'node:path'
+import { basename, dirname, join, resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 const node = process.execPath
@@ -90,8 +90,9 @@ function temporaryDirectory(prefix: string) {
   return realpathSync(mkdtempSync(join(tmpdir(), prefix)))
 }
 
-function run(script: string, args: string[]) {
+function run(script: string, args: string[], cwd = process.cwd()) {
   return spawnSync(node, [script, ...args], {
+    cwd,
     encoding: 'utf8',
     env: {
       ...process.env,
@@ -108,6 +109,13 @@ function parseLastJson(text: string) {
 
 function sha256(bytes: Buffer | string) {
   return createHash('sha256').update(bytes).digest('hex')
+}
+
+function expectExactSidecar(outputPath: string, label = outputPath) {
+  const outputBytes = readFileSync(outputPath)
+  expect(readFileSync(`${outputPath}.sha256`)).toEqual(
+    Buffer.from(`${sha256(outputBytes)}  ${label}\n`),
+  )
 }
 
 function expectSingleError(result, errorCode: string) {
@@ -200,6 +208,74 @@ function sourceImplementationCommitted() {
     { encoding: 'utf8' },
   )
   return result.status === 0 && result.stdout.trim() === ''
+}
+
+function materializeVerifierRepository(scriptPath: string) {
+  const root = temporaryDirectory('new-era-verifier-repo-')
+  const repo = join(root, 'repo')
+  const clone = spawnSync(
+    'git',
+    ['clone', '--quiet', '--shared', resolve('..'), repo],
+    { encoding: 'utf8' },
+  )
+  expect(clone.status, clone.stderr).toBe(0)
+  const copiedScript = join(
+    repo,
+    'prototype',
+    'scripts',
+    basename(scriptPath),
+  )
+  copyFileSync(scriptPath, copiedScript)
+  return { root, repo, script: copiedScript }
+}
+
+function gitIn(repo: string, ...args: string[]) {
+  const result = spawnSync('git', args, {
+    cwd: repo,
+    encoding: 'utf8',
+  })
+  expect(result.status, result.stderr).toBe(0)
+  return result.stdout.trim()
+}
+
+function materializeIntegrationVerifierRepository(scriptPath: string) {
+  const root = temporaryDirectory('new-era-integration-verifier-repo-')
+  const repo = join(root, 'repo')
+  const clone = spawnSync(
+    'git',
+    ['clone', '--quiet', '--shared', resolve('..'), repo],
+    { encoding: 'utf8' },
+  )
+  expect(clone.status, clone.stderr).toBe(0)
+  const sourceHead = currentSourceHead()
+  gitIn(repo, 'checkout', '--quiet', evidenceBaseline)
+  const changedPaths = gitIn(
+    repo,
+    'diff',
+    '--name-only',
+    sourceBaseline,
+    sourceHead,
+  ).split('\n').filter(Boolean)
+  gitIn(repo, 'checkout', sourceHead, '--', ...changedPaths)
+  gitIn(repo, 'config', 'user.name', 'C04 Test')
+  gitIn(repo, 'config', 'user.email', 'c04-test@example.invalid')
+  gitIn(repo, 'add', '--', ...changedPaths)
+  gitIn(repo, 'commit', '--quiet', '-m', 'materialize C04 integration')
+  const integrationSha = gitIn(repo, 'rev-parse', 'HEAD')
+  const copiedScript = join(
+    repo,
+    'prototype',
+    'scripts',
+    basename(scriptPath),
+  )
+  copyFileSync(scriptPath, copiedScript)
+  return {
+    root,
+    repo,
+    script: copiedScript,
+    sourceHead,
+    integrationSha,
+  }
 }
 
 function materializeIdentityCase(errorCode: keyof typeof identityMutations) {
@@ -423,6 +499,178 @@ describe('C04 diagnostic-isolation production CLI', () => {
     expect(existsSync(`${output}.sha256`)).toBe(false)
   })
 
+  it('rejects an output ancestor symlink into old C04 evidence', () => {
+    const fixture = materializeVerifierRepository(isolation)
+    const input = join(fixture.root, 'input.json')
+    const oldEvidence = join(fixture.repo, c04Root, 'evidence', 'phase6')
+    const targetParent = join(oldEvidence, 'ancestor-link-target')
+    const alias = join(fixture.root, 'phase6-alias')
+    const output = join(
+      alias,
+      'ancestor-link-target',
+      'diagnostic-isolation.json',
+    )
+    writeFileSync(input, '{}\n')
+    mkdirSync(targetParent, { recursive: true })
+    symlinkSync(oldEvidence, alias)
+
+    const result = run(fixture.script, [
+      '--input',
+      input,
+      '--output',
+      output,
+    ])
+
+    expectSingleError(result, 'DIAGNOSTIC_ISOLATION_OUTPUT_PATH')
+    expect(existsSync(output)).toBe(false)
+    expect(existsSync(`${output}.sha256`)).toBe(false)
+  })
+
+  it('rejects an arbitrary fresh repo-internal output namespace', () => {
+    const fixture = materializeVerifierRepository(isolation)
+    const input = join(fixture.root, 'input.json')
+    const output = join(
+      fixture.repo,
+      'fresh-diagnostic-output',
+      'diagnostic-isolation.json',
+    )
+    writeFileSync(input, '{}\n')
+    mkdirSync(dirname(output), { recursive: true })
+
+    const result = run(fixture.script, [
+      '--input',
+      input,
+      '--output',
+      output,
+    ])
+
+    expectSingleError(result, 'DIAGNOSTIC_ISOLATION_OUTPUT_PATH')
+    expect(existsSync(output)).toBe(false)
+    expect(existsSync(`${output}.sha256`)).toBe(false)
+  })
+
+  it('maps a non-directory diagnostic output ancestor to the output-path error', () => {
+    const fixture = materializeVerifierRepository(isolation)
+    const input = join(fixture.root, 'input.json')
+    const ancestor = join(fixture.root, 'ancestor-file')
+    const output = join(ancestor, 'diagnostic.json')
+    writeFileSync(input, '{}\n')
+    writeFileSync(ancestor, 'not-a-directory\n')
+    const result = run(fixture.script, [
+      '--input',
+      input,
+      '--output',
+      output,
+    ])
+
+    expectSingleError(result, 'DIAGNOSTIC_ISOLATION_OUTPUT_PATH')
+    expect(existsSync(output)).toBe(false)
+    expect(existsSync(`${output}.sha256`)).toBe(false)
+  })
+
+  it('rejects a relative diagnostic output escape', () => {
+    const fixture = materializeVerifierRepository(isolation)
+    const input = join(fixture.root, 'input.json')
+    const output = '../external-diagnostic.json'
+    const resolvedOutput = resolve(fixture.repo, output)
+    writeFileSync(input, '{}\n')
+    const result = run(fixture.script, [
+      '--input',
+      input,
+      '--output',
+      output,
+    ])
+
+    expectSingleError(result, 'DIAGNOSTIC_ISOLATION_OUTPUT_PATH')
+    expect(existsSync(resolvedOutput)).toBe(false)
+    expect(existsSync(`${resolvedOutput}.sha256`)).toBe(false)
+  })
+
+  it('rejects zero-valued diagnostic review and seal namespaces', () => {
+    const fixture = materializeVerifierRepository(isolation)
+    const input = join(fixture.root, 'input.json')
+    writeFileSync(input, '{}\n')
+    for (const output of [
+      'data/playtests/weekly-management-slice/gate1a/' +
+        'g1a-20260727-rc9-01/evidence/reviews/IR0/verifiers/' +
+        'diagnostic-isolation-aggregate.json',
+      'data/playtests/weekly-management-slice/gate1a/' +
+        'g1a-20260727-rc9-01/evidence/reviews/IR00/verifiers/' +
+        'diagnostic-isolation-aggregate.json',
+      'data/playtests/weekly-management-slice/gate1a/' +
+        'g1a-20260727-rc9-01/seals/S0/verifiers/' +
+        'diagnostic-isolation-aggregate.json',
+    ]) {
+      const outputPath = join(fixture.repo, output)
+      mkdirSync(dirname(outputPath), { recursive: true })
+      const result = run(fixture.script, [
+        '--input',
+        input,
+        '--output',
+        output,
+      ])
+
+      expectSingleError(result, 'DIAGNOSTIC_ISOLATION_OUTPUT_PATH')
+      expect(existsSync(outputPath)).toBe(false)
+      expect(existsSync(`${outputPath}.sha256`)).toBe(false)
+    }
+  })
+
+  it('allows IR01 and S01 aggregate namespaces past output validation', () => {
+    const fixture = materializeVerifierRepository(isolation)
+    const input = join(fixture.root, 'input.json')
+    writeFileSync(input, '{}\n')
+    for (const output of [
+      'data/playtests/weekly-management-slice/gate1a/' +
+        'g1a-20260727-rc9-01/evidence/reviews/IR01/verifiers/' +
+        'diagnostic-isolation-aggregate.json',
+      'data/playtests/weekly-management-slice/gate1a/' +
+        'g1a-20260727-rc9-01/seals/S01/verifiers/' +
+        'diagnostic-isolation-aggregate.json',
+    ]) {
+      const outputPath = join(fixture.repo, output)
+      mkdirSync(dirname(outputPath), { recursive: true })
+      const result = run(fixture.script, [
+        '--input',
+        input,
+        '--output',
+        output,
+      ])
+
+      expectSingleError(result, 'DIAGNOSTIC_ISOLATION_SHAPE')
+      expect(existsSync(outputPath)).toBe(false)
+      expect(existsSync(`${outputPath}.sha256`)).toBe(false)
+    }
+  })
+
+  it('resolves a repo-relative canonical output from prototype cwd', () => {
+    const fixture = materializeIdentityCase('C04_CLI_VERSION')
+    const result = spawnSync(
+      node,
+      [
+        fixture.script,
+        '--input',
+        fixture.inputPath,
+        '--output',
+        canonicalIdentityOutput,
+      ],
+      {
+        cwd: join(fixture.root, 'prototype'),
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          PATH:
+            '/opt/homebrew/opt/node@24/bin:' +
+            '/opt/homebrew/bin:/usr/bin:/bin',
+        },
+      },
+    )
+
+    expectSingleError(result, 'C04_CLI_VERSION')
+    expect(existsSync(fixture.outputPath)).toBe(false)
+    expect(existsSync(`${fixture.outputPath}.sha256`)).toBe(false)
+  })
+
   it('rejects partial and complete output groups without clobbering bytes', () => {
     const root = temporaryDirectory('new-era-isolation-output-')
     const input = join(root, 'input.json')
@@ -481,7 +729,7 @@ describe('C04 frozen-evidence production CLI', () => {
       commandArgv: args,
     })
     expect(existsSync(output)).toBe(true)
-    expect(existsSync(`${output}.sha256`)).toBe(true)
+    expectExactSidecar(output)
 
     const repeated = run(frozen, args)
     expectSingleError(repeated, 'FROZEN_EVIDENCE_OUTPUT_EXISTS')
@@ -506,6 +754,231 @@ describe('C04 frozen-evidence production CLI', () => {
     ])
     expectSingleError(result, 'PARTIAL_EVIDENCE_GROUP')
     expect(readFileSync(target, 'utf8')).toBe('sentinel\n')
+  })
+
+  it('rejects an output ancestor symlink into old C04 evidence', () => {
+    const fixture = materializeVerifierRepository(frozen)
+    const oldEvidence = join(fixture.repo, c04Root, 'evidence', 'phase6')
+    const targetParent = join(oldEvidence, 'ancestor-link-target')
+    const alias = join(fixture.root, 'phase6-alias')
+    const output = join(
+      alias,
+      'ancestor-link-target',
+      'frozen-evidence-guard.json',
+    )
+    mkdirSync(targetParent, { recursive: true })
+    symlinkSync(oldEvidence, alias)
+
+    const result = run(fixture.script, [
+      '--mode',
+      'source',
+      '--baseline',
+      sourceBaseline,
+      '--head',
+      currentHead(),
+      '--output',
+      output,
+    ])
+
+    expectSingleError(result, 'FROZEN_EVIDENCE_OUTPUT_PATH')
+    expect(existsSync(output)).toBe(false)
+    expect(existsSync(`${output}.sha256`)).toBe(false)
+  })
+
+  it('preserves a truly external absolute temp output', () => {
+    const fixture = materializeVerifierRepository(frozen)
+    const output = join(fixture.root, 'external', 'guard.json')
+    mkdirSync(dirname(output), { recursive: true })
+    const result = run(fixture.script, [
+      '--mode',
+      'source',
+      '--baseline',
+      sourceBaseline,
+      '--head',
+      currentHead(),
+      '--output',
+      output,
+    ])
+
+    expect(result.status, result.stderr).toBe(0)
+    expect(existsSync(output)).toBe(true)
+    expectExactSidecar(output)
+  })
+
+  it('rejects an evidence-lineage guard bound to an external output', () => {
+    const fixture = materializeIntegrationVerifierRepository(frozen)
+    const output = join(fixture.root, 'external', 'guard.json')
+    mkdirSync(dirname(output), { recursive: true })
+    const result = run(fixture.script, [
+      '--mode',
+      'evidence-lineage',
+      '--baseline',
+      evidenceBaseline,
+      '--head',
+      fixture.integrationSha,
+      '--output',
+      output,
+    ])
+
+    expectSingleError(result, 'FROZEN_EVIDENCE_OUTPUT_PATH')
+    expect(existsSync(output)).toBe(false)
+    expect(existsSync(`${output}.sha256`)).toBe(false)
+  })
+
+  it('rejects a relative escape even when it resolves outside the repo', () => {
+    const fixture = materializeVerifierRepository(frozen)
+    const output = '../external-source-guard.json'
+    const resolvedOutput = resolve(fixture.repo, output)
+    const result = run(fixture.script, [
+      '--mode',
+      'source',
+      '--baseline',
+      sourceBaseline,
+      '--head',
+      currentHead(),
+      '--output',
+      output,
+    ])
+
+    expectSingleError(result, 'FROZEN_EVIDENCE_OUTPUT_PATH')
+    expect(existsSync(resolvedOutput)).toBe(false)
+    expect(existsSync(`${resolvedOutput}.sha256`)).toBe(false)
+  })
+
+  it('rejects a source guard bound to the repo-internal retry namespace', () => {
+    const fixture = materializeVerifierRepository(frozen)
+    const output =
+      `${c04Root}/evidence/phase6-retry-01/` +
+      'frozen-evidence-guard.json'
+    mkdirSync(dirname(join(fixture.repo, output)), { recursive: true })
+    const result = run(
+      fixture.script,
+      [
+        '--mode',
+        'source',
+        '--baseline',
+        sourceBaseline,
+        '--head',
+        currentHead(),
+        '--output',
+        output,
+      ],
+      join(fixture.repo, 'prototype'),
+    )
+
+    expectSingleError(result, 'FROZEN_EVIDENCE_OUTPUT_PATH')
+    expect(existsSync(join(fixture.repo, output))).toBe(false)
+    expect(existsSync(`${join(fixture.repo, output)}.sha256`)).toBe(false)
+    expect(existsSync(join(fixture.repo, 'prototype', output))).toBe(false)
+  })
+
+  it('publishes an evidence-lineage guard to the repo-relative retry namespace', () => {
+    const fixture = materializeIntegrationVerifierRepository(frozen)
+    const output =
+      `${c04Root}/evidence/phase6-retry-01/` +
+      'frozen-evidence-guard.json'
+    const outputPath = join(fixture.repo, output)
+    mkdirSync(dirname(outputPath), { recursive: true })
+    const result = run(
+      fixture.script,
+      [
+        '--mode',
+        'evidence-lineage',
+        '--baseline',
+        evidenceBaseline,
+        '--head',
+        fixture.integrationSha,
+        '--output',
+        output,
+      ],
+      join(fixture.repo, 'prototype'),
+    )
+
+    expect(result.status, result.stderr).toBe(0)
+    expect(existsSync(outputPath)).toBe(true)
+    expect(existsSync(join(fixture.repo, 'prototype', output))).toBe(false)
+    expectExactSidecar(outputPath, output)
+  })
+
+  it('rejects zero-valued review and seal namespaces', () => {
+    const fixture = materializeIntegrationVerifierRepository(frozen)
+    for (const output of [
+      'data/playtests/weekly-management-slice/gate1a/' +
+        'g1a-20260727-rc9-01/evidence/reviews/IR0/verifiers/' +
+        'frozen-evidence-guard.json',
+      'data/playtests/weekly-management-slice/gate1a/' +
+        'g1a-20260727-rc9-01/evidence/reviews/IR00/verifiers/' +
+        'frozen-evidence-guard.json',
+      'data/playtests/weekly-management-slice/gate1a/' +
+        'g1a-20260727-rc9-01/seals/S0/verifiers/' +
+        'frozen-evidence-guard.json',
+    ]) {
+      const outputPath = join(fixture.repo, output)
+      mkdirSync(dirname(outputPath), { recursive: true })
+      const result = run(fixture.script, [
+        '--mode',
+        'evidence-lineage',
+        '--baseline',
+        evidenceBaseline,
+        '--head',
+        fixture.integrationSha,
+        '--output',
+        output,
+      ])
+
+      expectSingleError(result, 'FROZEN_EVIDENCE_OUTPUT_PATH')
+      expect(existsSync(outputPath)).toBe(false)
+      expect(existsSync(`${outputPath}.sha256`)).toBe(false)
+    }
+  })
+
+  it('accepts allocated IR01 and S01 evidence-lineage namespaces', () => {
+    const fixture = materializeIntegrationVerifierRepository(frozen)
+    for (const output of [
+      'data/playtests/weekly-management-slice/gate1a/' +
+        'g1a-20260727-rc9-01/evidence/reviews/IR01/verifiers/' +
+        'frozen-evidence-guard.json',
+      'data/playtests/weekly-management-slice/gate1a/' +
+        'g1a-20260727-rc9-01/seals/S01/verifiers/' +
+        'frozen-evidence-guard.json',
+    ]) {
+      const outputPath = join(fixture.repo, output)
+      mkdirSync(dirname(outputPath), { recursive: true })
+      const result = run(fixture.script, [
+        '--mode',
+        'evidence-lineage',
+        '--baseline',
+        evidenceBaseline,
+        '--head',
+        fixture.integrationSha,
+        '--output',
+        output,
+      ])
+
+      expect(result.status, result.stderr).toBe(0)
+      expectExactSidecar(outputPath, output)
+    }
+  })
+
+  it('maps a non-directory output ancestor to the output-path error', () => {
+    const fixture = materializeVerifierRepository(frozen)
+    const ancestor = join(fixture.root, 'ancestor-file')
+    const output = join(ancestor, 'guard.json')
+    writeFileSync(ancestor, 'not-a-directory\n')
+    const result = run(fixture.script, [
+      '--mode',
+      'source',
+      '--baseline',
+      sourceBaseline,
+      '--head',
+      currentHead(),
+      '--output',
+      output,
+    ])
+
+    expectSingleError(result, 'FROZEN_EVIDENCE_OUTPUT_PATH')
+    expect(existsSync(output)).toBe(false)
+    expect(existsSync(`${output}.sha256`)).toBe(false)
   })
 
   it('fails closed when source and mode baseline binding disagree', () => {
@@ -558,7 +1031,7 @@ describe('C04 runtime-equivalence production CLI', () => {
       artifactGitSha: context.sourceHead,
     })
     expect(existsSync(output)).toBe(true)
-    expect(existsSync(`${output}.sha256`)).toBe(true)
+    expectExactSidecar(output)
 
     const repeated = run(runtime, args)
     expectSingleError(repeated, 'C04_RUNTIME_OUTPUT_EXISTS')
@@ -587,6 +1060,326 @@ describe('C04 runtime-equivalence production CLI', () => {
     expect(existsSync(`${output}.sha256`)).toBe(false)
   })
 
+  it('rejects an output located inside the artifact directory', () => {
+    const context = currentVerificationContext()
+    const artifact = materializeC04Artifact(context.sourceHead)
+    const output = join(artifact, 'verification', 'runtime.json')
+    mkdirSync(dirname(output), { recursive: true })
+    const result = run(runtime, [
+      '--baseline',
+      sourceBaseline,
+      '--head',
+      context.sourceHead,
+      '--artifact-git-sha',
+      context.sourceHead,
+      '--artifact-dir',
+      artifact,
+      '--output',
+      output,
+    ])
+
+    expectSingleError(result, 'C04_RUNTIME_OUTPUT_PATH')
+    expect(existsSync(output)).toBe(false)
+    expect(existsSync(`${output}.sha256`)).toBe(false)
+  })
+
+  it('rejects the artifact directory itself as output before no-clobber checks', () => {
+    const context = currentVerificationContext()
+    const artifact = materializeC04Artifact(context.sourceHead)
+    const manifest = JSON.parse(
+      readFileSync(join(artifact, 'artifact-manifest.json'), 'utf8'),
+    )
+    const artifactFiles = [
+      ...manifest.files.map((entry) => entry.path),
+      'artifact-manifest.json',
+      'rc-build.json',
+    ]
+    const before = artifactFiles.map((path) => ({
+      path,
+      bytes: readFileSync(join(artifact, path)),
+    }))
+    expect(existsSync(`${artifact}.sha256`)).toBe(false)
+
+    const result = run(runtime, [
+      '--baseline',
+      sourceBaseline,
+      '--head',
+      context.sourceHead,
+      '--artifact-git-sha',
+      context.sourceHead,
+      '--artifact-dir',
+      artifact,
+      '--output',
+      artifact,
+    ])
+
+    expectSingleError(result, 'C04_RUNTIME_OUTPUT_PATH')
+    expect(existsSync(artifact)).toBe(true)
+    expect(existsSync(`${artifact}.sha256`)).toBe(false)
+    for (const entry of before) {
+      expect(readFileSync(join(artifact, entry.path))).toEqual(
+        entry.bytes,
+      )
+    }
+  })
+
+  it('rejects an output ancestor symlink into old C04 evidence', () => {
+    const fixture = materializeVerifierRepository(runtime)
+    const context = currentVerificationContext()
+    const artifact = materializeC04Artifact(context.sourceHead)
+    const oldEvidence = join(fixture.repo, c04Root, 'evidence', 'phase6')
+    const targetParent = join(oldEvidence, 'ancestor-link-target')
+    const alias = join(fixture.root, 'phase6-alias')
+    const output = join(
+      alias,
+      'ancestor-link-target',
+      'runtime-equivalence.json',
+    )
+    mkdirSync(targetParent, { recursive: true })
+    symlinkSync(oldEvidence, alias)
+
+    const result = run(fixture.script, [
+      '--baseline',
+      sourceBaseline,
+      '--head',
+      context.head,
+      '--artifact-git-sha',
+      context.sourceHead,
+      '--artifact-dir',
+      artifact,
+      '--output',
+      output,
+    ])
+
+    expectSingleError(result, 'C04_RUNTIME_OUTPUT_PATH')
+    expect(existsSync(output)).toBe(false)
+    expect(existsSync(`${output}.sha256`)).toBe(false)
+  })
+
+  it('preserves a truly external absolute temp output', () => {
+    const fixture = materializeVerifierRepository(runtime)
+    const context = currentVerificationContext()
+    const artifact = materializeC04Artifact(context.sourceHead)
+    const output = join(fixture.root, 'external', 'runtime.json')
+    mkdirSync(dirname(output), { recursive: true })
+    const result = run(fixture.script, [
+      '--baseline',
+      sourceBaseline,
+      '--head',
+      context.head,
+      '--artifact-git-sha',
+      context.sourceHead,
+      '--artifact-dir',
+      artifact,
+      '--output',
+      output,
+    ])
+
+    expect(result.status, result.stderr).toBe(0)
+    expect(existsSync(output)).toBe(true)
+    expectExactSidecar(output)
+  })
+
+  it('rejects an integration verification bound to an external output', () => {
+    const fixture = materializeIntegrationVerifierRepository(runtime)
+    const artifact = materializeC04Artifact(fixture.sourceHead)
+    const output = join(fixture.root, 'external', 'runtime.json')
+    mkdirSync(dirname(output), { recursive: true })
+    const result = run(fixture.script, [
+      '--baseline',
+      sourceBaseline,
+      '--head',
+      fixture.integrationSha,
+      '--artifact-git-sha',
+      fixture.sourceHead,
+      '--artifact-dir',
+      artifact,
+      '--output',
+      output,
+    ])
+
+    expectSingleError(result, 'C04_RUNTIME_OUTPUT_PATH')
+    expect(existsSync(output)).toBe(false)
+    expect(existsSync(`${output}.sha256`)).toBe(false)
+  })
+
+  it('rejects a relative output escape in source mode', () => {
+    const fixture = materializeVerifierRepository(runtime)
+    const context = currentVerificationContext()
+    const artifact = materializeC04Artifact(context.sourceHead)
+    const output = '../external-runtime.json'
+    const resolvedOutput = resolve(fixture.repo, output)
+    const result = run(fixture.script, [
+      '--baseline',
+      sourceBaseline,
+      '--head',
+      context.sourceHead,
+      '--artifact-git-sha',
+      context.sourceHead,
+      '--artifact-dir',
+      artifact,
+      '--output',
+      output,
+    ])
+
+    expectSingleError(result, 'C04_RUNTIME_OUTPUT_PATH')
+    expect(existsSync(resolvedOutput)).toBe(false)
+    expect(existsSync(`${resolvedOutput}.sha256`)).toBe(false)
+  })
+
+  it('rejects a source verification bound to the repo-internal retry namespace', () => {
+    const fixture = materializeVerifierRepository(runtime)
+    const context = currentVerificationContext()
+    const artifact = materializeC04Artifact(context.sourceHead)
+    const output =
+      `${c04Root}/evidence/phase6-retry-01/` +
+      'runtime-equivalence.json'
+    mkdirSync(dirname(join(fixture.repo, output)), { recursive: true })
+    const result = run(
+      fixture.script,
+      [
+        '--baseline',
+        sourceBaseline,
+        '--head',
+        context.head,
+        '--artifact-git-sha',
+        context.sourceHead,
+        '--artifact-dir',
+        artifact,
+        '--output',
+        output,
+      ],
+      join(fixture.repo, 'prototype'),
+    )
+
+    expectSingleError(result, 'C04_RUNTIME_OUTPUT_PATH')
+    expect(existsSync(join(fixture.repo, output))).toBe(false)
+    expect(existsSync(`${join(fixture.repo, output)}.sha256`)).toBe(false)
+    expect(existsSync(join(fixture.repo, 'prototype', output))).toBe(false)
+  })
+
+  it('publishes an integration verification to the repo-relative retry namespace', () => {
+    const fixture = materializeIntegrationVerifierRepository(runtime)
+    const artifact = materializeC04Artifact(fixture.sourceHead)
+    const output =
+      `${c04Root}/evidence/phase6-retry-01/` +
+      'runtime-equivalence.json'
+    const outputPath = join(fixture.repo, output)
+    mkdirSync(dirname(outputPath), { recursive: true })
+    const result = run(
+      fixture.script,
+      [
+        '--baseline',
+        sourceBaseline,
+        '--head',
+        fixture.integrationSha,
+        '--artifact-git-sha',
+        fixture.sourceHead,
+        '--artifact-dir',
+        artifact,
+        '--output',
+        output,
+      ],
+      join(fixture.repo, 'prototype'),
+    )
+
+    expect(result.status, result.stderr).toBe(0)
+    expect(existsSync(outputPath)).toBe(true)
+    expect(existsSync(join(fixture.repo, 'prototype', output))).toBe(false)
+    expectExactSidecar(outputPath, output)
+  })
+
+  it('rejects zero-valued runtime review and seal namespaces', () => {
+    const fixture = materializeIntegrationVerifierRepository(runtime)
+    const artifact = materializeC04Artifact(fixture.sourceHead)
+    for (const output of [
+      'data/playtests/weekly-management-slice/gate1a/' +
+        'g1a-20260727-rc9-01/evidence/reviews/IR0/verifiers/' +
+        'runtime-equivalence.json',
+      'data/playtests/weekly-management-slice/gate1a/' +
+        'g1a-20260727-rc9-01/evidence/reviews/IR00/verifiers/' +
+        'runtime-equivalence.json',
+      'data/playtests/weekly-management-slice/gate1a/' +
+        'g1a-20260727-rc9-01/seals/S0/verifiers/' +
+        'runtime-equivalence.json',
+    ]) {
+      const outputPath = join(fixture.repo, output)
+      mkdirSync(dirname(outputPath), { recursive: true })
+      const result = run(fixture.script, [
+        '--baseline',
+        sourceBaseline,
+        '--head',
+        fixture.integrationSha,
+        '--artifact-git-sha',
+        fixture.sourceHead,
+        '--artifact-dir',
+        artifact,
+        '--output',
+        output,
+      ])
+
+      expectSingleError(result, 'C04_RUNTIME_OUTPUT_PATH')
+      expect(existsSync(outputPath)).toBe(false)
+      expect(existsSync(`${outputPath}.sha256`)).toBe(false)
+    }
+  })
+
+  it('accepts allocated IR01 and S01 runtime namespaces', () => {
+    const fixture = materializeIntegrationVerifierRepository(runtime)
+    const artifact = materializeC04Artifact(fixture.sourceHead)
+    for (const output of [
+      'data/playtests/weekly-management-slice/gate1a/' +
+        'g1a-20260727-rc9-01/evidence/reviews/IR01/verifiers/' +
+        'runtime-equivalence.json',
+      'data/playtests/weekly-management-slice/gate1a/' +
+        'g1a-20260727-rc9-01/seals/S01/verifiers/' +
+        'runtime-equivalence.json',
+    ]) {
+      const outputPath = join(fixture.repo, output)
+      mkdirSync(dirname(outputPath), { recursive: true })
+      const result = run(fixture.script, [
+        '--baseline',
+        sourceBaseline,
+        '--head',
+        fixture.integrationSha,
+        '--artifact-git-sha',
+        fixture.sourceHead,
+        '--artifact-dir',
+        artifact,
+        '--output',
+        output,
+      ])
+
+      expect(result.status, result.stderr).toBe(0)
+      expectExactSidecar(outputPath, output)
+    }
+  })
+
+  it('maps a non-directory runtime output ancestor to the output-path error', () => {
+    const fixture = materializeVerifierRepository(runtime)
+    const context = currentVerificationContext()
+    const artifact = materializeC04Artifact(context.sourceHead)
+    const ancestor = join(fixture.root, 'ancestor-file')
+    const output = join(ancestor, 'runtime.json')
+    writeFileSync(ancestor, 'not-a-directory\n')
+    const result = run(fixture.script, [
+      '--baseline',
+      sourceBaseline,
+      '--head',
+      context.sourceHead,
+      '--artifact-git-sha',
+      context.sourceHead,
+      '--artifact-dir',
+      artifact,
+      '--output',
+      output,
+    ])
+
+    expectSingleError(result, 'C04_RUNTIME_OUTPUT_PATH')
+    expect(existsSync(output)).toBe(false)
+    expect(existsSync(`${output}.sha256`)).toBe(false)
+  })
+
   it('rejects artifact source identity mismatch without publishing failure output', () => {
     const root = temporaryDirectory('new-era-runtime-binding-')
     const context = currentVerificationContext()
@@ -594,7 +1387,7 @@ describe('C04 runtime-equivalence production CLI', () => {
     const output = join(root, 'runtime.json')
     const result = run(runtime, [
       '--head',
-      context.head,
+      sourceBaseline,
       '--artifact-git-sha',
       sourceBaseline,
       '--artifact-dir',

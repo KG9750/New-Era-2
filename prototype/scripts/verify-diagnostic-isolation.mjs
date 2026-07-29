@@ -9,6 +9,7 @@ import {
   mkdirSync,
   openSync,
   readFileSync,
+  realpathSync,
   unlinkSync,
   writeFileSync,
 } from 'node:fs'
@@ -2292,11 +2293,116 @@ function sidecarBytes(hash, label) {
   return Buffer.from(`${hash}  ${label}\n`)
 }
 
-function atomicWritePair(filePath, document, label) {
+function lstatOutputPath(path) {
+  try {
+    return lstatSync(path)
+  } catch (error) {
+    if (error?.code === 'ENOENT') return null
+    throwFailure(
+      'DIAGNOSTIC_ISOLATION_OUTPUT_PATH',
+      `无法检查 output path：${path}`,
+    )
+  }
+}
+
+function canonicalFreshTarget(path) {
+  const suffix = []
+  let cursor = path
+  while (true) {
+    const stats = lstatOutputPath(cursor)
+    if (stats) {
+      try {
+        return resolve(realpathSync(cursor), ...suffix)
+      } catch {
+        throwFailure('DIAGNOSTIC_ISOLATION_OUTPUT_PATH')
+      }
+    }
+    const parent = dirname(cursor)
+    if (parent === cursor) {
+      throwFailure('DIAGNOSTIC_ISOLATION_OUTPUT_PATH')
+    }
+    suffix.unshift(basename(cursor))
+    cursor = parent
+  }
+}
+
+function repoLocation(repoRoot, path) {
+  const normalized = relative(repoRoot, path)
+  return {
+    inside:
+      normalized !== '..' && !normalized.startsWith(`..${sep}`),
+    relativePath: normalized.split(sep).join('/'),
+  }
+}
+
+function outputNamespace(relativePath) {
+  if (
+    SAMPLE_IDS.some(
+      (sampleId) =>
+        relativePath === canonicalSamplePaths(sampleId).verificationPath,
+    )
+  ) {
+    return 'sample'
+  }
+  if (
+    relativePath ===
+      `data/playtests/weekly-management-slice/gate1a/${COHORT_ID}/` +
+        `candidates/${CANDIDATE_ATTEMPT}/evidence/freeze-audit/` +
+        'diagnostic-isolation-aggregate.json' ||
+    new RegExp(
+      `^data/playtests/weekly-management-slice/gate1a/${COHORT_ID}/` +
+        '(?:evidence/reviews/IR|seals/S)' +
+        '(?:0[1-9]|[1-9][0-9]+)/verifiers/' +
+        'diagnostic-isolation-aggregate\\.json$',
+    ).test(relativePath)
+  ) {
+    return 'aggregate'
+  }
+  return null
+}
+
+function validateOutputPath(repoRoot, output) {
+  const outputPath = isAbsolute(output)
+    ? resolve(output)
+    : resolve(repoRoot, output)
+  const canonicalTarget = canonicalFreshTarget(outputPath)
+  const lexicalLocation = repoLocation(repoRoot, outputPath)
+  const canonicalLocation = repoLocation(repoRoot, canonicalTarget)
+  if (!isAbsolute(output) && !canonicalLocation.inside) {
+    throwFailure('DIAGNOSTIC_ISOLATION_OUTPUT_PATH')
+  }
+  if (
+    (lexicalLocation.inside || canonicalLocation.inside) &&
+    (lexicalLocation.inside !== canonicalLocation.inside ||
+      lexicalLocation.relativePath !== canonicalLocation.relativePath)
+  ) {
+    throwFailure('DIAGNOSTIC_ISOLATION_OUTPUT_PATH')
+  }
+  const namespace = canonicalLocation.inside
+    ? outputNamespace(canonicalLocation.relativePath)
+    : null
+  if (canonicalLocation.inside && namespace === null) {
+    throwFailure('DIAGNOSTIC_ISOLATION_OUTPUT_PATH')
+  }
+  return {
+    outputPath,
+    location: canonicalLocation,
+    namespace,
+    canonicalTarget,
+  }
+}
+
+function atomicWritePair(
+  repoRoot,
+  filePath,
+  document,
+  label,
+  initialDestination,
+) {
   const outputPath = resolve(filePath)
   const sidecarPath = `${outputPath}.sha256`
-  const outputStats = lstatSync(outputPath, { throwIfNoEntry: false })
-  const sidecarStats = lstatSync(sidecarPath, { throwIfNoEntry: false })
+  const outputStats = lstatOutputPath(outputPath)
+  const sidecarStats = lstatOutputPath(sidecarPath)
   if (Boolean(outputStats) !== Boolean(sidecarStats)) {
     throwFailure('PARTIAL_EVIDENCE_GROUP')
   }
@@ -2305,6 +2411,32 @@ function atomicWritePair(filePath, document, label) {
   }
   const parent = dirname(outputPath)
   mkdirSync(parent, { recursive: true })
+  const finalDestination = validateOutputPath(repoRoot, outputPath)
+  const parentStats = lstatOutputPath(parent)
+  if (!parentStats?.isDirectory() || parentStats.isSymbolicLink()) {
+    throwFailure('DIAGNOSTIC_ISOLATION_OUTPUT_PATH')
+  }
+  const finalOutputStats = lstatOutputPath(outputPath)
+  const finalSidecarStats = lstatOutputPath(sidecarPath)
+  if (Boolean(finalOutputStats) !== Boolean(finalSidecarStats)) {
+    throwFailure('PARTIAL_EVIDENCE_GROUP')
+  }
+  if (finalOutputStats && finalSidecarStats) {
+    throwFailure('DIAGNOSTIC_ISOLATION_OUTPUT_EXISTS')
+  }
+  if (
+    finalDestination.outputPath !== initialDestination.outputPath ||
+    finalDestination.canonicalTarget !==
+      initialDestination.canonicalTarget ||
+    finalDestination.location.inside !==
+      initialDestination.location.inside ||
+    finalDestination.location.relativePath !==
+      initialDestination.location.relativePath ||
+    finalDestination.namespace !== initialDestination.namespace
+  ) {
+    throwFailure('DIAGNOSTIC_ISOLATION_OUTPUT_PATH')
+  }
+  // After this final binding check, the operational contract requires one writer.
   const nonce = `${process.pid}.${randomUUID()}`
   const temporaryPath = join(parent, `.${basename(outputPath)}.${nonce}.tmp`)
   const temporarySidecarPath = join(
@@ -2420,10 +2552,12 @@ function parseArguments(argv) {
 }
 
 function main() {
-  const repoRoot = resolve(
-    dirname(fileURLToPath(import.meta.url)),
-    '..',
-    '..',
+  const repoRoot = realpathSync(
+    resolve(
+      dirname(fileURLToPath(import.meta.url)),
+      '..',
+      '..',
+    ),
   )
   let verifiedInputSummary = {}
   try {
@@ -2445,11 +2579,17 @@ function main() {
       return
     }
     const inputPath = resolve(options['--input'])
-    const outputPath = resolve(options['--output'])
-    const outputStats = lstatSync(outputPath, { throwIfNoEntry: false })
-    const sidecarStats = lstatSync(`${outputPath}.sha256`, {
-      throwIfNoEntry: false,
-    })
+    const outputDestination = validateOutputPath(
+      repoRoot,
+      options['--output'],
+    )
+    const {
+      outputPath,
+      location: outputLocation,
+      namespace: outputKind,
+    } = outputDestination
+    const outputStats = lstatOutputPath(outputPath)
+    const sidecarStats = lstatOutputPath(`${outputPath}.sha256`)
     if (Boolean(outputStats) !== Boolean(sidecarStats)) {
       throwFailure('PARTIAL_EVIDENCE_GROUP')
     }
@@ -2460,11 +2600,7 @@ function main() {
       throwFailure('DIAGNOSTIC_ISOLATION_OUTPUT_EXISTS')
     }
     const outputGroupExists = Boolean(outputStats && sidecarStats)
-    const canonicalOutput = SAMPLE_IDS.some(
-      (sampleId) =>
-        relative(repoRoot, outputPath) ===
-        canonicalSamplePaths(sampleId).verificationPath,
-    )
+    const canonicalOutput = outputLocation.inside && outputKind !== null
     if (outputGroupExists && !canonicalOutput) {
       throwFailure('DIAGNOSTIC_ISOLATION_OUTPUT_EXISTS')
     }
@@ -2481,12 +2617,15 @@ function main() {
     const inputBytes = readFileSync(inputPath)
     const document = JSON.parse(inputBytes)
     let result
-    let outputLabel = relative(repoRoot, outputPath)
+    let outputLabel = outputLocation.inside
+      ? outputLocation.relativePath
+      : outputPath
     if (document.kind === 'sample') {
       const expected = canonicalSamplePaths(document.sampleId)
       if (
         relative(repoRoot, inputPath) !== expected.inputPath ||
-        relative(repoRoot, outputPath) !== expected.verificationPath
+        !outputLocation.inside ||
+        outputLocation.relativePath !== expected.verificationPath
       ) {
         throwFailure('DIAGNOSTIC_ISOLATION_INPUT_BINDING')
       }
@@ -2514,11 +2653,20 @@ function main() {
       )
       outputLabel = expected.verificationPath
     } else if (document.kind === 'aggregate') {
+      if (outputLocation.inside && outputKind !== 'aggregate') {
+        throwFailure('DIAGNOSTIC_ISOLATION_OUTPUT_PATH')
+      }
       result = validateOperationalAggregate(document, repoRoot)
     } else {
       throwFailure('DIAGNOSTIC_ISOLATION_SHAPE')
     }
-    atomicWritePair(outputPath, result, outputLabel)
+    atomicWritePair(
+      repoRoot,
+      outputPath,
+      result,
+      outputLabel,
+      outputDestination,
+    )
     process.stdout.write(`${JSON.stringify(result)}\n`)
   } catch (error) {
     const expectedFailure = error instanceof IsolationFailure

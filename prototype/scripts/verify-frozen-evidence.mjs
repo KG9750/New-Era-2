@@ -7,10 +7,18 @@ import {
   linkSync,
   lstatSync,
   openSync,
+  realpathSync,
   unlinkSync,
   writeFileSync,
 } from 'node:fs'
-import { dirname, isAbsolute, relative, resolve, sep } from 'node:path'
+import {
+  basename,
+  dirname,
+  isAbsolute,
+  relative,
+  resolve,
+  sep,
+} from 'node:path'
 
 const SCHEMA_VERSION = 'gate1a-frozen-evidence-guard-v1'
 const SOURCE_BASELINE = 'cd2fc9716d98c160fe530c593347992f18bf96e4'
@@ -107,6 +115,7 @@ const FROZEN_PATHS = [
 
 const prototypeRoot = resolve(import.meta.dirname, '..')
 const repoRoot = resolve(prototypeRoot, '..')
+const canonicalRepoRoot = realpathSync(repoRoot)
 
 class GuardFailure extends Error {
   constructor(code, message, details = {}) {
@@ -197,7 +206,55 @@ function resolveCommit(input, label) {
 }
 
 function resolveOutputPath(output) {
-  return isAbsolute(output) ? output : resolve(repoRoot, output)
+  return isAbsolute(output) ? resolve(output) : resolve(canonicalRepoRoot, output)
+}
+
+function lstatOutputPath(path) {
+  try {
+    return lstatSync(path)
+  } catch (error) {
+    if (error?.code === 'ENOENT') return null
+    throw new GuardFailure(
+      'FROZEN_EVIDENCE_OUTPUT_PATH',
+      `无法检查 output path：${path}`,
+    )
+  }
+}
+
+function canonicalFreshTarget(path) {
+  const suffix = []
+  let cursor = path
+  while (true) {
+    const stats = lstatOutputPath(cursor)
+    if (stats) {
+      try {
+        return resolve(realpathSync(cursor), ...suffix)
+      } catch {
+        throw new GuardFailure(
+          'FROZEN_EVIDENCE_OUTPUT_PATH',
+          `无法解析 output 既有 ancestor：${cursor}`,
+        )
+      }
+    }
+    const parent = dirname(cursor)
+    if (parent === cursor) {
+      throw new GuardFailure(
+        'FROZEN_EVIDENCE_OUTPUT_PATH',
+        `无法定位 output 既有 ancestor：${path}`,
+      )
+    }
+    suffix.unshift(basename(cursor))
+    cursor = parent
+  }
+}
+
+function repoLocation(path) {
+  const normalized = relative(canonicalRepoRoot, path)
+  return {
+    inside:
+      normalized !== '..' && !normalized.startsWith(`..${sep}`),
+    relativePath: normalized.split(sep).join('/'),
+  }
 }
 
 function outputAllowed(relativePath) {
@@ -210,24 +267,42 @@ function outputAllowed(relativePath) {
     return true
   }
   return new RegExp(
-    `^${COHORT_ROOT}/(?:evidence/reviews/IR[0-9]+|seals/S[0-9]+)/verifiers/frozen-evidence-guard\\.json$`,
+    `^${COHORT_ROOT}/(?:evidence/reviews/IR|seals/S)` +
+      '(?:0[1-9]|[1-9][0-9]+)/verifiers/' +
+      'frozen-evidence-guard\\.json$',
   ).test(relativePath)
 }
 
-function validateOutput(output) {
+function validateOutput(output, mode) {
   const outputPath = resolveOutputPath(output)
-  const relativePath = relative(repoRoot, outputPath).split(sep).join('/')
-  const insideRepo =
-    relativePath !== '..' && !relativePath.startsWith('../')
-  if (insideRepo && !outputAllowed(relativePath)) {
+  const canonicalTarget = canonicalFreshTarget(outputPath)
+  const lexicalLocation = repoLocation(outputPath)
+  const canonicalLocation = repoLocation(canonicalTarget)
+  if (
+    (lexicalLocation.inside || canonicalLocation.inside) &&
+    (lexicalLocation.inside !== canonicalLocation.inside ||
+      lexicalLocation.relativePath !== canonicalLocation.relativePath)
+  ) {
     throw new GuardFailure(
       'FROZEN_EVIDENCE_OUTPUT_PATH',
-      `repo 内 output 不在固定 namespace：${relativePath}`,
+      `output symlink ancestor 改变 repo namespace：${output}`,
     )
   }
-  const parentStat = lstatSync(dirname(outputPath), {
-    throwIfNoEntry: false,
-  })
+  const {
+    inside: insideRepo,
+    relativePath,
+  } = canonicalLocation
+  if (
+    (mode === 'source' && (!isAbsolute(output) || insideRepo)) ||
+    (mode === 'evidence-lineage' &&
+      (!insideRepo || !outputAllowed(relativePath)))
+  ) {
+    throw new GuardFailure(
+      'FROZEN_EVIDENCE_OUTPUT_PATH',
+      `output 与 ${mode} mode 不匹配：${output}`,
+    )
+  }
+  const parentStat = lstatOutputPath(dirname(outputPath))
   if (!parentStat?.isDirectory() || parentStat.isSymbolicLink()) {
     throw new GuardFailure(
       'FROZEN_EVIDENCE_OUTPUT_PATH',
@@ -235,12 +310,8 @@ function validateOutput(output) {
     )
   }
   const sidecarPath = `${outputPath}.sha256`
-  const outputExists = Boolean(
-    lstatSync(outputPath, { throwIfNoEntry: false }),
-  )
-  const sidecarExists = Boolean(
-    lstatSync(sidecarPath, { throwIfNoEntry: false }),
-  )
+  const outputExists = Boolean(lstatOutputPath(outputPath))
+  const sidecarExists = Boolean(lstatOutputPath(sidecarPath))
   if (outputExists !== sidecarExists) {
     throw new GuardFailure(
       'PARTIAL_EVIDENCE_GROUP',
@@ -253,7 +324,13 @@ function validateOutput(output) {
       `output group 已存在：${output}`,
     )
   }
-  return { outputPath, sidecarPath, relativePath, insideRepo }
+  return {
+    outputPath,
+    sidecarPath,
+    relativePath,
+    insideRepo,
+    canonicalTarget,
+  }
 }
 
 function fsyncDirectorySync(path) {
@@ -265,13 +342,25 @@ function fsyncDirectorySync(path) {
   }
 }
 
-function writeJsonGroup(output, value) {
+function writeJsonGroup(output, value, mode, initialDestination) {
   const {
     outputPath,
     sidecarPath,
     relativePath,
     insideRepo,
-  } = validateOutput(output)
+    canonicalTarget,
+  } = validateOutput(output, mode)
+  if (
+    outputPath !== initialDestination.outputPath ||
+    canonicalTarget !== initialDestination.canonicalTarget ||
+    relativePath !== initialDestination.relativePath ||
+    insideRepo !== initialDestination.insideRepo
+  ) {
+    throw new GuardFailure(
+      'FROZEN_EVIDENCE_OUTPUT_PATH',
+      `output destination 在写入前发生变化：${output}`,
+    )
+  }
   const temporaryPath =
     `${outputPath}.tmp-${process.pid}-${randomUUID()}`
   const temporarySidecarPath = `${temporaryPath}.sha256`
@@ -324,8 +413,8 @@ function writeJsonGroup(output, value) {
     try { unlinkSync(temporarySidecarPath) } catch {}
     try { fsyncDirectorySync(dirname(outputPath)) } catch {}
     if (
-      Boolean(lstatSync(outputPath, { throwIfNoEntry: false })) ||
-      Boolean(lstatSync(sidecarPath, { throwIfNoEntry: false }))
+      Boolean(lstatOutputPath(outputPath)) ||
+      Boolean(lstatOutputPath(sidecarPath))
     ) {
       throw new GuardFailure(
         'PARTIAL_EVIDENCE_GROUP',
@@ -559,8 +648,8 @@ let result = {
 
 try {
   options = parseOptions(argv)
-  validateOutput(options['--output'])
   const mode = options['--mode']
+  const outputDestination = validateOutput(options['--output'], mode)
   const baseline = resolveCommit(options['--baseline'], 'baseline')
   const head = resolveCommit(options['--head'], 'head')
   const requiredBaseline =
@@ -614,7 +703,12 @@ try {
     result.status = 'PASS_EVIDENCE_LINEAGE'
   }
 
-  writeJsonGroup(options['--output'], result)
+  writeJsonGroup(
+    options['--output'],
+    result,
+    mode,
+    outputDestination,
+  )
   process.stdout.write(`${JSON.stringify(result)}\n`)
 } catch (error) {
   const failure =
