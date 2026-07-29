@@ -713,12 +713,25 @@ export function validateCandidateManifest(input) {
   })
 }
 
+function phase6ProcessEnvironment() {
+  const environment = {
+    ...process.env,
+    PATH: PHASE6_PATH,
+  }
+  for (const key of Object.keys(environment)) {
+    if (key.startsWith('GIT_') && !key.startsWith('GIT_TRACE')) {
+      delete environment[key]
+    }
+  }
+  return environment
+}
+
 function phase6NodeIdentity() {
   try {
     if (process.env.PATH !== PHASE6_PATH) return false
     const commandV = spawnSync('/bin/sh', ['-c', 'command -v node'], {
       encoding: 'utf8',
-      env: { ...process.env, PATH: PHASE6_PATH },
+      env: phase6ProcessEnvironment(),
     })
     if (
       commandV.status !== 0 ||
@@ -730,7 +743,7 @@ function phase6NodeIdentity() {
     }
     const version = spawnSync(PHASE6_NODE_PATH, ['--version'], {
       encoding: 'utf8',
-      env: { ...process.env, PATH: PHASE6_PATH },
+      env: phase6ProcessEnvironment(),
     })
     if (
       version.status !== 0 ||
@@ -774,7 +787,7 @@ function phase6AllowlistTree(repoRoot, commit) {
     ],
     {
       encoding: 'buffer',
-      env: { ...process.env, PATH: PHASE6_PATH },
+      env: phase6ProcessEnvironment(),
     },
   )
   if (listing.status !== 0) return null
@@ -1107,7 +1120,7 @@ function phase6HeadTree(repoRoot) {
     ['-C', repoRoot, 'ls-tree', '-r', '-z', '--full-tree', 'HEAD'],
     {
       encoding: 'buffer',
-      env: { ...process.env, PATH: PHASE6_PATH },
+      env: phase6ProcessEnvironment(),
     },
   )
   if (listing.status !== 0) return false
@@ -1134,7 +1147,7 @@ function phase6IndexTree(repoRoot) {
     ['-C', repoRoot, 'ls-files', '-v', '-z', '--stage'],
     {
       encoding: 'buffer',
-      env: { ...process.env, PATH: PHASE6_PATH },
+      env: phase6ProcessEnvironment(),
     },
   )
   if (listing.status !== 0) return null
@@ -1175,7 +1188,7 @@ function phase6TrackedTreeBinding(repoRoot) {
       return false
     }
   }
-  const environment = { ...process.env, PATH: PHASE6_PATH }
+  const environment = phase6ProcessEnvironment()
   const indexDiff = spawnSync(
     'git',
     [
@@ -1219,7 +1232,7 @@ function phase6UntrackedPaths(repoRoot) {
     ],
     {
       encoding: 'buffer',
-      env: { ...process.env, PATH: PHASE6_PATH },
+      env: phase6ProcessEnvironment(),
     },
   )
   if (listing.status !== 0) return null
@@ -1242,7 +1255,7 @@ function phase6IsAncestor(repoRoot, ancestor, descendant) {
     ],
     {
       encoding: 'utf8',
-      env: { ...process.env, PATH: PHASE6_PATH },
+      env: phase6ProcessEnvironment(),
     },
   )
   return [0, 1].includes(result.status)
@@ -1265,7 +1278,7 @@ function phase6RangeMatchesAllowlist(repoRoot, baseline, head) {
     ],
     {
       encoding: 'buffer',
-      env: { ...process.env, PATH: PHASE6_PATH },
+      env: phase6ProcessEnvironment(),
     },
   )
   if (diff.status !== 0) return false
@@ -1345,16 +1358,25 @@ function phase6GitBinding(
 ) {
   const head = spawnSync(
     'git',
-    ['-C', repoRoot, 'rev-parse', '--verify', 'HEAD^{commit}'],
+    [
+      '-C',
+      repoRoot,
+      'rev-parse',
+      '--show-toplevel',
+      '--verify',
+      'HEAD^{commit}',
+    ],
     {
       encoding: 'utf8',
-      env: { ...process.env, PATH: PHASE6_PATH },
+      env: phase6ProcessEnvironment(),
     },
   )
+  const headLines = head.stdout.trim().split('\n')
   if (
     head.status !== 0 ||
-    head.stdout.trim() !==
-      (mode === 'source' ? sourceSha : integrationSha)
+    headLines.length !== 2 ||
+    realpathSync(headLines[0]) !== realpathSync(repoRoot) ||
+    headLines[1] !== (mode === 'source' ? sourceSha : integrationSha)
   ) {
     return false
   }
@@ -1663,10 +1685,7 @@ function runPhase6Command() {
     }
   }
   if (jsonOutput) mkdirSync(dirname(outputPath), { recursive: true })
-  const childEnvironment = {
-    ...process.env,
-    PATH: PHASE6_PATH,
-  }
+  const childEnvironment = phase6ProcessEnvironment()
   if (jsonOutput) {
     childEnvironment.C04_PHASE6_IDENTITY_V1 = JSON.stringify(identity)
   } else {

@@ -1134,7 +1134,7 @@ describe('C04 Phase 6 Node wrapper', () => {
     expect(existsSync(dirname(output))).toBe(false)
   })
 
-  it('rejects a source SHA that is not the wrapper repository HEAD', () => {
+  it('rejects source identity drift and Git repository redirection', () => {
     const fixture = materializePhase6NpmWrapper()
     const output = phase6WrapperOutput(fixture, 'lint', 'source')
     const marker = join(fixture.root, 'child-started.txt')
@@ -1167,6 +1167,77 @@ describe('C04 Phase 6 Node wrapper', () => {
     expect(existsSync(output)).toBe(false)
     expect(existsSync(dirname(output))).toBe(false)
     expect(existsSync(marker)).toBe(false)
+
+    const redirectedFixture = materializePhase6NpmWrapper()
+    const dirtyRepo = join(redirectedFixture.root, 'dirty-execution')
+    const clone = spawnSync(
+      'git',
+      [
+        'clone',
+        '--quiet',
+        '--no-local',
+        redirectedFixture.repo,
+        dirtyRepo,
+      ],
+      { encoding: 'utf8' },
+    )
+    expect(clone.status, clone.stderr).toBe(0)
+    const dirtyFixture = {
+      ...redirectedFixture,
+      repo: dirtyRepo,
+      prototype: join(dirtyRepo, 'prototype'),
+      script: join(
+        dirtyRepo,
+        'prototype',
+        'scripts',
+        'candidate-manifest-contract.mjs',
+      ),
+    }
+    const redirectedOutput = join(
+      redirectedFixture.root,
+      'git-environment-redirection',
+      'lint.txt',
+    )
+    const redirectedMarker = join(
+      redirectedFixture.root,
+      'redirected-child-started.txt',
+    )
+    const redirectedArgs = phase6WrapperArgv(
+      dirtyFixture,
+      'lint',
+      'source',
+      redirectedOutput,
+    )
+    writeFileSync(join(dirtyRepo, 'CONTEXT.md'), 'dirty worktree\n')
+    writeFileSync(
+      join(dirtyRepo, 'prototype', 'untracked-input.txt'),
+      'untracked input\n',
+    )
+
+    const redirectedResult = spawnSync(
+      node,
+      [
+        dirtyFixture.script,
+        '--phase6-run',
+        ...redirectedArgs,
+      ],
+      {
+        cwd: dirtyFixture.prototype,
+        encoding: 'utf8',
+        env: {
+          ...process.env,
+          PATH: phase6Path,
+          GIT_DIR: join(redirectedFixture.repo, '.git'),
+          GIT_WORK_TREE: redirectedFixture.repo,
+          PHASE6_TEST_SENTINEL: redirectedMarker,
+        },
+      },
+    )
+
+    expectSingleError(redirectedResult, 'C04_PHASE6_GIT_BINDING')
+    expect(existsSync(redirectedOutput)).toBe(false)
+    expect(existsSync(dirname(redirectedOutput))).toBe(false)
+    expect(existsSync(redirectedMarker)).toBe(false)
   })
 
   it('rejects a source head that does not descend from the frozen plan_ref', () => {
