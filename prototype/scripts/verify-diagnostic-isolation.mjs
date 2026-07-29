@@ -2599,9 +2599,7 @@ function main() {
     ) {
       throwFailure('DIAGNOSTIC_ISOLATION_OUTPUT_EXISTS')
     }
-    const outputGroupExists = Boolean(outputStats && sidecarStats)
-    const canonicalOutput = outputLocation.inside && outputKind !== null
-    if (outputGroupExists && !canonicalOutput) {
+    if (outputStats && sidecarStats) {
       throwFailure('DIAGNOSTIC_ISOLATION_OUTPUT_EXISTS')
     }
     const inputStats = lstatSync(inputPath)
@@ -2642,9 +2640,6 @@ function main() {
         toolInvocationCount: 0,
       }
       validatePreflight(document.preflight, document.sampleId, true)
-      if (outputGroupExists) {
-        throwFailure('DIAGNOSTIC_ISOLATION_OUTPUT_EXISTS')
-      }
       result = validateOperationalSample(
         document,
         repoRoot,
