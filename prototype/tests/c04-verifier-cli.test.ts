@@ -135,6 +135,56 @@ function currentHead() {
   return git('rev-parse', 'HEAD').toString('utf8').trim()
 }
 
+function resolvesCommit(ref: string) {
+  const result = spawnSync(
+    'git',
+    ['rev-parse', '--verify', `${ref}^{commit}`],
+    { encoding: 'utf8' },
+  )
+  return result.status === 0 ? result.stdout.trim() : null
+}
+
+function isAncestor(ancestor: string, descendant: string) {
+  return spawnSync(
+    'git',
+    ['merge-base', '--is-ancestor', ancestor, descendant],
+  ).status === 0
+}
+
+function currentSourceHead() {
+  const head = currentHead()
+  if (isAncestor(sourceBaseline, head)) return head
+  for (const ref of [
+    'refs/heads/codex/rc9-08r3-c04-implementation',
+    'refs/remotes/origin/codex/rc9-08r3-c04-implementation',
+  ]) {
+    const candidate = resolvesCommit(ref)
+    if (candidate && isAncestor(sourceBaseline, candidate)) {
+      return candidate
+    }
+  }
+  throw new Error('C04 source branch ref is unavailable')
+}
+
+function currentVerificationContext() {
+  const head = currentHead()
+  return isAncestor(sourceBaseline, head)
+    ? {
+        mode: 'source',
+        baseline: sourceBaseline,
+        head,
+        sourceHead: head,
+        expectedStatus: 'PASS_SOURCE_SCOPE',
+      }
+    : {
+        mode: 'evidence-lineage',
+        baseline: evidenceBaseline,
+        head,
+        sourceHead: currentSourceHead(),
+        expectedStatus: 'PASS_EVIDENCE_LINEAGE',
+      }
+}
+
 function sourceImplementationCommitted() {
   const result = spawnSync(
     'git',
@@ -408,25 +458,25 @@ describe('C04 diagnostic-isolation production CLI', () => {
 
 describe('C04 frozen-evidence production CLI', () => {
   postSourceCommitIt(
-    'accepts the exact source argv and publishes a no-clobber pair',
+    'accepts the exact source or integration argv and publishes a no-clobber pair',
     () => {
     const root = temporaryDirectory('new-era-frozen-pass-')
     const output = join(root, 'guard.json')
-    const head = currentHead()
+    const context = currentVerificationContext()
     const args = [
       '--mode',
-      'source',
+      context.mode,
       '--baseline',
-      sourceBaseline,
+      context.baseline,
       '--head',
-      head,
+      context.head,
       '--output',
       output,
     ]
     const result = run(frozen, args)
     expect(result.status, result.stderr).toBe(0)
     expect(parseLastJson(result.stdout)).toMatchObject({
-      status: 'PASS_SOURCE_SCOPE',
+      status: context.expectedStatus,
       errorCode: null,
       commandArgv: args,
     })
@@ -483,15 +533,15 @@ describe('C04 runtime-equivalence production CLI', () => {
     () => {
     const root = temporaryDirectory('new-era-runtime-pass-')
     const output = join(root, 'runtime.json')
-    const head = currentHead()
-    const artifact = materializeC04Artifact(head)
+    const context = currentVerificationContext()
+    const artifact = materializeC04Artifact(context.sourceHead)
     const args = [
       '--baseline',
       sourceBaseline,
       '--head',
-      head,
+      context.head,
       '--artifact-git-sha',
-      head,
+      context.sourceHead,
       '--artifact-dir',
       artifact,
       '--output',
@@ -504,6 +554,8 @@ describe('C04 runtime-equivalence production CLI', () => {
       errorCode: null,
       commandArgv: args,
       metadataIdentityOnly: true,
+      headSha: context.head,
+      artifactGitSha: context.sourceHead,
     })
     expect(existsSync(output)).toBe(true)
     expect(existsSync(`${output}.sha256`)).toBe(true)
@@ -515,15 +567,16 @@ describe('C04 runtime-equivalence production CLI', () => {
 
   it('rejects an artifact directory symlink without producing output', () => {
     const root = temporaryDirectory('new-era-runtime-link-')
-    const artifact = materializeC04Artifact(currentHead())
+    const context = currentVerificationContext()
+    const artifact = materializeC04Artifact(context.sourceHead)
     const artifactLink = join(root, 'artifact-link')
     const output = join(root, 'runtime.json')
     symlinkSync(artifact, artifactLink)
     const result = run(runtime, [
       '--head',
-      currentHead(),
+      context.head,
       '--artifact-git-sha',
-      currentHead(),
+      context.sourceHead,
       '--artifact-dir',
       artifactLink,
       '--output',
@@ -536,12 +589,12 @@ describe('C04 runtime-equivalence production CLI', () => {
 
   it('rejects artifact source identity mismatch without publishing failure output', () => {
     const root = temporaryDirectory('new-era-runtime-binding-')
-    const head = currentHead()
-    const artifact = materializeC04Artifact(head)
+    const context = currentVerificationContext()
+    const artifact = materializeC04Artifact(context.sourceHead)
     const output = join(root, 'runtime.json')
     const result = run(runtime, [
       '--head',
-      head,
+      context.head,
       '--artifact-git-sha',
       sourceBaseline,
       '--artifact-dir',
@@ -556,15 +609,15 @@ describe('C04 runtime-equivalence production CLI', () => {
 
   it('preserves a sentinel output on partial-group rejection', () => {
     const root = temporaryDirectory('new-era-runtime-sentinel-')
-    const head = currentHead()
-    const artifact = materializeC04Artifact(head)
+    const context = currentVerificationContext()
+    const artifact = materializeC04Artifact(context.sourceHead)
     const output = join(root, 'runtime.json')
     writeFileSync(output, 'sentinel\n')
     const result = run(runtime, [
       '--head',
-      head,
+      context.head,
       '--artifact-git-sha',
-      head,
+      context.sourceHead,
       '--artifact-dir',
       artifact,
       '--output',
