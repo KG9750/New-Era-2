@@ -1663,13 +1663,18 @@ function runPhase6Command() {
     }
   }
   if (jsonOutput) mkdirSync(dirname(outputPath), { recursive: true })
+  const childEnvironment = {
+    ...process.env,
+    PATH: PHASE6_PATH,
+  }
+  if (jsonOutput) {
+    childEnvironment.C04_PHASE6_IDENTITY_V1 = JSON.stringify(identity)
+  } else {
+    delete childEnvironment.C04_PHASE6_IDENTITY_V1
+  }
   const child = spawnSync(argv[0], argv.slice(1), {
     encoding: 'utf8',
-    env: {
-      ...process.env,
-      PATH: PHASE6_PATH,
-      C04_PHASE6_IDENTITY_V1: JSON.stringify(identity),
-    },
+    env: childEnvironment,
     cwd: prototypeRoot,
     maxBuffer: 128 * 1024 * 1024,
   })

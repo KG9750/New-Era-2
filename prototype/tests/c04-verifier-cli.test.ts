@@ -523,8 +523,33 @@ import { spawnSync } from 'node:child_process'
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { dirname, resolve } from 'node:path'
 
-const identity = JSON.parse(process.env.C04_PHASE6_IDENTITY_V1)
+const lifecycleCommandIds = {
+  lint: 'lint',
+  'test:run': 'test',
+  build: 'build',
+  'rc:build': 'rc-build',
+  'rc:verify': 'rc-verify',
+  'e2e:rc': 'e2e-rc',
+  'rc:archive': 'rc-archive',
+  'rc:verify-archive': 'rc-verify-archive',
+  'schema:fixtures': 'schema-fixtures',
+  'guard:rc8': 'guard-rc8',
+  'manifest:verify': 'manifest-fixtures',
+  'runtime:equivalence': 'runtime-equivalence',
+  'rc:repro': 'rc-repro',
+  'guard:frozen-evidence': 'frozen-evidence-guard',
+}
+const identity =
+  process.env.C04_PHASE6_IDENTITY_V1 === undefined
+    ? { commandId: lifecycleCommandIds[process.env.npm_lifecycle_event] }
+    : JSON.parse(process.env.C04_PHASE6_IDENTITY_V1)
 if (process.env.PATH !== ${JSON.stringify(phase6Path)}) process.exit(91)
+if (
+  process.env.PHASE6_TEST_REQUIRE_IDENTITY_ABSENT &&
+  process.env.C04_PHASE6_IDENTITY_V1 !== undefined
+) {
+  process.exit(92)
+}
 if (process.env.PHASE6_TEST_SENTINEL) {
   writeFileSync(process.env.PHASE6_TEST_SENTINEL, identity.commandId)
 }
@@ -540,7 +565,11 @@ if (identity.commandId === 'rc-archive') {
   writeFileSync(archive, 'controlled archive\\n', { flag: 'wx' })
 }
 if (identity.commandId === 'rc-archive' || identity.commandId === 'rc-verify-archive') {
-  const archive = identity.archivePath
+  const argv = process.argv.slice(2)
+  const archiveArgument =
+    identity.commandId === 'rc-archive' ? '--output' : '--archive'
+  const archive =
+    identity.archivePath ?? argv[argv.lastIndexOf(archiveArgument) + 1]
   const archiveBytes = readFileSync(archive)
   process.stdout.write(JSON.stringify({
     ...(identity.commandId === 'rc-verify-archive' ? { verified: true } : {}),
@@ -2251,7 +2280,7 @@ describe('C04 Phase 6 Node wrapper', () => {
     },
   )
 
-  it('passes the fixed Node environment to a child and records its full identity', () => {
+  it('passes the fixed Node environment to a text child without exposing the reserved identity', () => {
     const fixture = materializePhase6NpmWrapper()
     const output = join(fixture.root, 'missing', 'lint.txt')
     const result = spawnSync(
@@ -2272,6 +2301,7 @@ describe('C04 Phase 6 Node wrapper', () => {
         env: {
           ...process.env,
           PATH: phase6Path,
+          PHASE6_TEST_REQUIRE_IDENTITY_ABSENT: '1',
         },
       },
     )
