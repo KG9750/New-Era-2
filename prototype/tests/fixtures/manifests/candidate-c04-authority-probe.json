@@ -29,7 +29,7 @@
       {
         "role": "operations",
         "path": "docs/exec-plans/active/2026-07-27-gate1a-rc9-test-operations.md",
-        "sha256": "befa6982b881bbba0da5a5edd127c7587d027f39c53787721284faa7bc597526"
+        "sha256": "d08547e20c6777ec778916702641cb863e3edb8106f64c4909c0b607bc58630b"
       },
       {
         "role": "player-packet",

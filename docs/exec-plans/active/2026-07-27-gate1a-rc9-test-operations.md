@@ -472,9 +472,12 @@ isolation grammar 迁移只接受以下三组 artifact pair；必须复算每个
 | `docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-recapture.json` / `docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-recapture.json.sha256` | `70997d22e8a4d1c37bdd39aca49543527825d714e941c03f823822c19fdebbf7` | `dc04668fe7b1273e9321dfff9067caf8d925456de9210e87ed888758d8763e86` |
 | `docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-amendment-review.json` / `docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-amendment-review.json.sha256` | `0e8ac887fc5cf17c4e688ef345c58cf9677a618e92e0b175cf92ed4df845011f` | `c8e83b93c74254a9b0aa44b69b23aef23ffe590b28967cd7ff8c67ae4ae30c02` |
 
-grammar review receipt 必须绑定当前 recovery plan 内容 SHA-256
+grammar review receipt 必须绑定其父 recovery plan blob 的内容 SHA-256
 `7b1b657c7c2bed5c8c8524b059149e52db9ba39bbecb7ffb91b4dfa706e4ef3e`
-且 `finalStatus=PASS`。discovery 的
+且 `finalStatus=PASS`；该 receipt 不覆盖、不审查也不为当前 output amendment
+recovery plan blob
+`8629abc4545d6733fe2c5fb76e4c01c35999846b2c23428663bda6b676f7849e`
+背书。discovery 的
 `FAIL_INCOMPLETE_REQUIRED_COVERAGE` 只触发 amendment；recapture v3 才是
 exact grammar/native-type/correlation authority。三者都不是 golden、diagnostic、
 C04 admission 或 Gate PASS 证据。

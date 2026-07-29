@@ -114,6 +114,41 @@ function temporaryDirectory(prefix: string) {
   return mkdtempSync(join(tmpdir(), prefix))
 }
 
+function expectExactSidecar(outputPath: string, label = outputPath) {
+  const outputBytes = readFileSync(outputPath)
+  expect(readFileSync(`${outputPath}.sha256`)).toEqual(
+    Buffer.from(`${sha256(outputBytes)}  ${label}\n`),
+  )
+}
+
+function materializeManifestVerifierRepository(prefix: string) {
+  const root = temporaryDirectory(prefix)
+  const repo = join(root, 'repo')
+  const prototype = join(repo, 'prototype')
+  const script = join(
+    prototype,
+    'scripts',
+    'verify-playtest-manifest.mjs',
+  )
+  mkdirSync(join(prototype, 'scripts'), { recursive: true })
+  cpSync(verifier, script)
+  cpSync(
+    resolve('scripts', 'candidate-manifest-contract.mjs'),
+    join(prototype, 'scripts', 'candidate-manifest-contract.mjs'),
+  )
+  cpSync(
+    resolve('tests', 'fixtures'),
+    join(prototype, 'tests', 'fixtures'),
+    { recursive: true },
+  )
+  for (const [, path] of authorityPaths) {
+    const target = join(repo, path)
+    mkdirSync(dirname(target), { recursive: true })
+    cpSync(resolve('..', path), target)
+  }
+  return { prototype, repo, script }
+}
+
 function run(args: string[], cwd = process.cwd()) {
   return spawnSync(process.execPath, [verifier, ...args], {
     cwd,
@@ -845,8 +880,7 @@ describe('candidate playtest manifest production CLI', () => {
       fullManifestVerified: false,
     })
     const jsonBytes = readFileSync(output)
-    const sidecar = readFileSync(`${output}.sha256`, 'utf8')
-    expect(sidecar).toContain(`  ${output}\n`)
+    expectExactSidecar(output)
     expect(jsonBytes.length).toBeGreaterThan(0)
 
     const repeated = run(['--fixtures', '--output', output])
@@ -893,11 +927,8 @@ describe('candidate playtest manifest production CLI', () => {
 
     expect(result.status, result.stderr).toBe(0)
     expect(existsSync(join(repo, output))).toBe(true)
-    expect(existsSync(`${join(repo, output)}.sha256`)).toBe(true)
     expect(existsSync(join(prototype, output))).toBe(false)
-    expect(
-      readFileSync(`${join(repo, output)}.sha256`, 'utf8'),
-    ).toContain(`  ${output}\n`)
+    expectExactSidecar(join(repo, output), output)
 
     const probeOutput =
       `${c04Root}/evidence/phase6-retry-01/manifest-probe.json`
@@ -917,11 +948,115 @@ describe('candidate playtest manifest production CLI', () => {
 
     expect(probe.status, probe.stderr).toBe(0)
     expect(existsSync(join(repo, probeOutput))).toBe(true)
-    expect(existsSync(`${join(repo, probeOutput)}.sha256`)).toBe(true)
     expect(existsSync(join(prototype, probeOutput))).toBe(false)
-    expect(
-      readFileSync(`${join(repo, probeOutput)}.sha256`, 'utf8'),
-    ).toContain(`  ${probeOutput}\n`)
+    expectExactSidecar(join(repo, probeOutput), probeOutput)
+  })
+
+  it.each([
+    [
+      'fixtures',
+      [
+        '--fixtures',
+        '--output',
+        `${c04Root}/evidence/phase6-retry-01/manifest-probe.json`,
+      ],
+    ],
+    [
+      'probe',
+      [
+        '--probe',
+        'tests/fixtures/manifests/candidate-c04-authority-probe.json',
+        '--repo-root',
+        '..',
+        '--output',
+        `${c04Root}/evidence/phase6-retry-01/manifest-fixtures.json`,
+      ],
+    ],
+  ])(
+    'rejects %s mode bound to the other Phase 6 manifest filename',
+    (_mode, args) => {
+      const fixture = materializeManifestVerifierRepository(
+        'new-era-manifest-mode-output-',
+      )
+      const output = join(fixture.repo, args.at(-1))
+      mkdirSync(dirname(output), { recursive: true })
+
+      const result = spawnSync(
+        process.execPath,
+        [fixture.script, ...args],
+        { cwd: fixture.prototype, encoding: 'utf8' },
+      )
+
+      expect(result.status).toBe(1)
+      expect(parseLine(result.stderr).errorCode).toBe(
+        'CANDIDATE_MANIFEST_OUTPUT_PATH',
+      )
+      expect(existsSync(output)).toBe(false)
+      expect(existsSync(`${output}.sha256`)).toBe(false)
+    },
+  )
+
+  it('rejects an ancestor symlink into old C04 evidence without publishing', () => {
+    const root = temporaryDirectory('new-era-manifest-output-ancestor-link-')
+    const repo = join(root, 'repo')
+    const prototype = join(repo, 'prototype')
+    const script = join(
+      prototype,
+      'scripts',
+      'verify-playtest-manifest.mjs',
+    )
+    const oldEvidence = join(repo, c04Root, 'evidence', 'phase6')
+    const targetParent = join(oldEvidence, 'ancestor-link-target')
+    const alias = join(root, 'phase6-alias')
+    const output = join(
+      alias,
+      'ancestor-link-target',
+      'manifest-fixtures.json',
+    )
+    mkdirSync(join(prototype, 'scripts'), { recursive: true })
+    mkdirSync(targetParent, { recursive: true })
+    cpSync(verifier, script)
+    cpSync(
+      resolve('scripts', 'candidate-manifest-contract.mjs'),
+      join(prototype, 'scripts', 'candidate-manifest-contract.mjs'),
+    )
+    cpSync(
+      resolve('tests', 'fixtures'),
+      join(prototype, 'tests', 'fixtures'),
+      { recursive: true },
+    )
+    symlinkSync(oldEvidence, alias)
+
+    const result = spawnSync(
+      process.execPath,
+      [script, '--fixtures', '--output', output],
+      { cwd: prototype, encoding: 'utf8' },
+    )
+
+    expect(result.status).toBe(1)
+    expect(parseLine(result.stderr).errorCode).toBe(
+      'CANDIDATE_MANIFEST_OUTPUT_PATH',
+    )
+    expect(existsSync(output)).toBe(false)
+    expect(existsSync(`${output}.sha256`)).toBe(false)
+  })
+
+  it('maps a non-directory output ancestor to the manifest output-path error', () => {
+    const ancestor = join(
+      temporaryDirectory('new-era-manifest-output-file-'),
+      'ancestor-file',
+    )
+    const output = join(ancestor, 'manifest-fixtures.json')
+    writeFileSync(ancestor, 'not-a-directory\n')
+
+    const result = run(['--fixtures', '--output', output])
+
+    expect(result.status).toBe(1)
+    expect(parseLine(result.stderr).errorCode).toBe(
+      'CANDIDATE_MANIFEST_OUTPUT_PATH',
+    )
+    expect(existsSync(output)).toBe(false)
+    expect(existsSync(`${output}.sha256`)).toBe(false)
   })
 
   it('runs probe mode against the nine real authority files', () => {
@@ -950,9 +1085,7 @@ describe('candidate playtest manifest production CLI', () => {
       scenarioVersion: '0.5.1',
       protocolVersion: 'weekly-management-slice-playtest-v0.3',
     })
-    expect(readFileSync(`${output}.sha256`, 'utf8')).toContain(
-      `  ${output}\n`,
-    )
+    expectExactSidecar(output)
   })
 
   it('runs full mode from M Git objects and publishes exact bound output', () => {
@@ -1008,6 +1141,69 @@ describe('candidate playtest manifest production CLI', () => {
     expect(readFileSync(outputPath)).toEqual(beforeJson)
     expect(readFileSync(outputSidecarPath)).toEqual(beforeSidecar)
   }, 15_000)
+
+  it.each([
+    `${c04Root}/evidence/phase6-retry-01/manifest-fixtures.json`,
+    `${c04Root}/evidence/phase6-retry-01/manifest-probe.json`,
+  ])(
+    'rejects full mode bound to the Phase 6 output %s',
+    (output) => {
+      const repo = cloneFullManifestRepository(fullFixture)
+      mkdirSync(dirname(join(repo, output)), { recursive: true })
+      unlinkSync(join(repo, output))
+      unlinkSync(`${join(repo, output)}.sha256`)
+      const args = fullArgs(repo, fullFixture.manifestSha)
+      args[args.length - 1] = output
+
+      const result = run(args)
+
+      expect(result.status).toBe(1)
+      expect(parseLine(result.stderr).errorCode).toBe(
+        'CANDIDATE_MANIFEST_OUTPUT_PATH',
+      )
+      expect(existsSync(join(repo, output))).toBe(false)
+      expect(existsSync(`${join(repo, output)}.sha256`)).toBe(false)
+    },
+  )
+
+  it.each([
+    `${cohort}/evidence/reviews/IR0/verifiers/full-manifest-verification.json`,
+    `${cohort}/evidence/reviews/IR00/verifiers/full-manifest-verification.json`,
+    `${cohort}/seals/S0/verifiers/full-manifest-verification.json`,
+  ])('rejects a non-allocated review or seal output %s', (output) => {
+    const repo = cloneFullManifestRepository(fullFixture)
+    mkdirSync(dirname(join(repo, output)), { recursive: true })
+    const args = fullArgs(repo, fullFixture.manifestSha)
+    args[args.length - 1] = output
+
+    const result = run(args)
+
+    expect(result.status).toBe(1)
+    expect(parseLine(result.stderr).errorCode).toBe(
+      'CANDIDATE_MANIFEST_OUTPUT_PATH',
+    )
+    expect(existsSync(join(repo, output))).toBe(false)
+    expect(existsSync(`${join(repo, output)}.sha256`)).toBe(false)
+  })
+
+  it.each([
+    `${cohort}/evidence/reviews/IR01/verifiers/full-manifest-verification.json`,
+    `${cohort}/seals/S01/verifiers/full-manifest-verification.json`,
+  ])('accepts an allocated review or seal output %s', (output) => {
+    const repo = cloneFullManifestRepository(fullFixture)
+    mkdirSync(dirname(join(repo, output)), { recursive: true })
+    const args = fullArgs(repo, fullFixture.manifestSha)
+    args[args.length - 1] = output
+
+    const result = run(args)
+
+    expect(result.status, result.stderr).toBe(0)
+    const outputPath = join(repo, output)
+    const outputBytes = readFileSync(outputPath)
+    expect(readFileSync(`${outputPath}.sha256`)).toEqual(
+      Buffer.from(`${sha256(outputBytes)}  ${output}\n`),
+    )
+  })
 
   it('rejects full mode without --manifest-git-sha and preserves outputs', () => {
     const repo = cloneFullManifestRepository(fullFixture)
