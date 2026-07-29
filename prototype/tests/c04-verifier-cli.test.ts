@@ -4,6 +4,7 @@ import { spawnSync } from 'node:child_process'
 import {
   copyFileSync,
   existsSync,
+  lstatSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
@@ -33,6 +34,9 @@ const canonicalIdentityInput =
 const canonicalIdentityOutput =
   `${c04Root}/evidence/diagnostic-isolation/` +
   'TECH-RC9-D16-verification.json'
+const canonicalAggregateOutput =
+  `${c04Root}/evidence/freeze-audit/` +
+  'diagnostic-isolation-aggregate.json'
 
 const negativeCases = {
   G01: 'ISOLATION_GRAMMAR_EXACT_KEYS',
@@ -461,7 +465,10 @@ describe('C04 diagnostic-isolation production CLI', () => {
         '--output',
         fixture.outputPath,
       ])
-      expectSingleError(sentinelRun, errorCode)
+      expectSingleError(
+        sentinelRun,
+        'DIAGNOSTIC_ISOLATION_OUTPUT_EXISTS',
+      )
       expect(sha256(readFileSync(fixture.outputPath))).toBe(before)
       expect(
         sha256(readFileSync(`${fixture.outputPath}.sha256`)),
@@ -669,6 +676,69 @@ describe('C04 diagnostic-isolation production CLI', () => {
     expectSingleError(result, 'C04_CLI_VERSION')
     expect(existsSync(fixture.outputPath)).toBe(false)
     expect(existsSync(`${fixture.outputPath}.sha256`)).toBe(false)
+  })
+
+  it('rejects a complete canonical sample output group before opening a missing input', () => {
+    const fixture = materializeVerifierRepository(isolation)
+    const input = join(fixture.repo, canonicalIdentityInput)
+    const output = join(fixture.repo, canonicalIdentityOutput)
+    const outputBytes = Buffer.from('{"sentinel":"sample-output"}\n')
+    const sidecarBytes = Buffer.from(
+      `${sha256(outputBytes)}  ${canonicalIdentityOutput}\n`,
+    )
+    mkdirSync(dirname(output), { recursive: true })
+    writeFileSync(output, outputBytes, { mode: 0o640 })
+    writeFileSync(`${output}.sha256`, sidecarBytes, { mode: 0o600 })
+    const outputMode = lstatSync(output).mode
+    const sidecarMode = lstatSync(`${output}.sha256`).mode
+
+    const result = run(fixture.script, [
+      '--input',
+      input,
+      '--output',
+      output,
+    ])
+
+    expectSingleError(
+      result,
+      'DIAGNOSTIC_ISOLATION_OUTPUT_EXISTS',
+    )
+    expect(readFileSync(output)).toEqual(outputBytes)
+    expect(readFileSync(`${output}.sha256`)).toEqual(sidecarBytes)
+    expect(lstatSync(output).mode).toBe(outputMode)
+    expect(lstatSync(`${output}.sha256`).mode).toBe(sidecarMode)
+  })
+
+  it('rejects a complete canonical aggregate output group before parsing an invalid input', () => {
+    const fixture = materializeVerifierRepository(isolation)
+    const input = join(fixture.root, 'invalid-aggregate-input.json')
+    const output = join(fixture.repo, canonicalAggregateOutput)
+    const outputBytes = Buffer.from('{"sentinel":"aggregate-output"}\n')
+    const sidecarBytes = Buffer.from(
+      `${sha256(outputBytes)}  ${canonicalAggregateOutput}\n`,
+    )
+    writeFileSync(input, 'not-json\n')
+    mkdirSync(dirname(output), { recursive: true })
+    writeFileSync(output, outputBytes, { mode: 0o640 })
+    writeFileSync(`${output}.sha256`, sidecarBytes, { mode: 0o600 })
+    const outputMode = lstatSync(output).mode
+    const sidecarMode = lstatSync(`${output}.sha256`).mode
+
+    const result = run(fixture.script, [
+      '--input',
+      input,
+      '--output',
+      output,
+    ])
+
+    expectSingleError(
+      result,
+      'DIAGNOSTIC_ISOLATION_OUTPUT_EXISTS',
+    )
+    expect(readFileSync(output)).toEqual(outputBytes)
+    expect(readFileSync(`${output}.sha256`)).toEqual(sidecarBytes)
+    expect(lstatSync(output).mode).toBe(outputMode)
+    expect(lstatSync(`${output}.sha256`).mode).toBe(sidecarMode)
   })
 
   it('rejects partial and complete output groups without clobbering bytes', () => {
