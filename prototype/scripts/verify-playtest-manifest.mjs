@@ -9,6 +9,7 @@ import {
 } from 'node:fs/promises'
 import {
   dirname,
+  isAbsolute,
   join,
   posix,
   relative,
@@ -240,7 +241,7 @@ function outputPath(options, repoRoot, mode) {
   if (mode === 'manifest') {
     return repoPath(repoRoot, value)
   }
-  return resolve(value)
+  return isAbsolute(value) ? value : repoPath(repoRoot, value)
 }
 
 async function pathExists(path) {
@@ -293,8 +294,8 @@ async function validateOutputDestination(path, repoRoot) {
   if (
     insideRepo &&
     ![
-      `${C04_ROOT}/evidence/phase6/manifest-fixtures.json`,
-      `${C04_ROOT}/evidence/phase6/manifest-probe.json`,
+      `${C04_ROOT}/evidence/phase6-retry-01/manifest-fixtures.json`,
+      `${C04_ROOT}/evidence/phase6-retry-01/manifest-probe.json`,
       `${C04_ROOT}/evidence/freeze-audit/full-manifest-verification.json`,
     ].includes(relativePath) &&
     !new RegExp(

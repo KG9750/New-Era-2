@@ -203,7 +203,7 @@ function resolveOutputPath(output) {
 function outputAllowed(relativePath) {
   if (
     relativePath ===
-      `${C04_ROOT}/evidence/phase6/frozen-evidence-guard.json` ||
+      `${C04_ROOT}/evidence/phase6-retry-01/frozen-evidence-guard.json` ||
     relativePath ===
       `${C04_ROOT}/evidence/freeze-audit/frozen-evidence-guard.json`
   ) {
