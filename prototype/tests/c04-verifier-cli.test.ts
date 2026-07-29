@@ -2,10 +2,12 @@
 import { createHash } from 'node:crypto'
 import { spawnSync } from 'node:child_process'
 import {
+  copyFileSync,
   existsSync,
   mkdirSync,
   mkdtempSync,
   readFileSync,
+  realpathSync,
   symlinkSync,
   writeFileSync,
 } from 'node:fs'
@@ -22,6 +24,15 @@ const evidenceBaseline = '5b9438cc5123ba35d8a703f3507bbf463e90176d'
 const c03ArtifactRoot =
   'data/playtests/weekly-management-slice/gate1a/' +
   'g1a-20260727-rc9-01/candidates/C03/rc-dist'
+const c04Root =
+  'data/playtests/weekly-management-slice/gate1a/' +
+  'g1a-20260727-rc9-01/candidates/C04'
+const canonicalIdentityInput =
+  `${c04Root}/diagnostics/TECH-RC9-D16/` +
+  'diagnostic-isolation-input.json'
+const canonicalIdentityOutput =
+  `${c04Root}/evidence/diagnostic-isolation/` +
+  'TECH-RC9-D16-verification.json'
 
 const negativeCases = {
   G01: 'ISOLATION_GRAMMAR_EXACT_KEYS',
@@ -66,8 +77,17 @@ const identityCases = [
   'C04_NODE_IDENTITY',
 ] as const
 
+const identityMutations = {
+  C04_CLI_BINARY_PATH: ['cliBinaryPath', 'string'],
+  C04_CLI_VERSION: ['agentCliVersion', 'string'],
+  C04_CLI_BINARY_SHA256: ['cliBinarySha256', 'string'],
+  C04_CLI_TEAM_IDENTIFIER: ['cliTeamIdentifier', 'string'],
+  C04_CLI_AUTHORITY: ['cliAuthority', 'string'],
+  C04_NODE_IDENTITY: ['nodeBinarySha256', 'hash'],
+} as const
+
 function temporaryDirectory(prefix: string) {
-  return mkdtempSync(join(tmpdir(), prefix))
+  return realpathSync(mkdtempSync(join(tmpdir(), prefix)))
 }
 
 function run(script: string, args: string[]) {
@@ -130,6 +150,60 @@ function sourceImplementationCommitted() {
     { encoding: 'utf8' },
   )
   return result.status === 0 && result.stdout.trim() === ''
+}
+
+function materializeIdentityCase(errorCode: keyof typeof identityMutations) {
+  const root = temporaryDirectory('new-era-identity-production-')
+  const script = join(
+    root,
+    'prototype',
+    'scripts',
+    'verify-diagnostic-isolation.mjs',
+  )
+  const inputPath = join(root, canonicalIdentityInput)
+  const outputPath = join(root, canonicalIdentityOutput)
+  mkdirSync(dirname(script), { recursive: true })
+  mkdirSync(dirname(inputPath), { recursive: true })
+  mkdirSync(dirname(outputPath), { recursive: true })
+  copyFileSync(isolation, script)
+
+  const input = JSON.parse(
+    readFileSync(
+      resolve(
+        'tests',
+        'fixtures',
+        'isolation',
+        'sample-valid.json',
+      ),
+      'utf8',
+    ),
+  )
+  delete input.synthetic
+  const [field, mutation] = identityMutations[errorCode]
+  input.preflight[field] =
+    mutation === 'hash'
+      ? 'f'.repeat(64)
+      : `${input.preflight[field]}-drift`
+  const inputBytes = Buffer.from(
+    `${JSON.stringify(input, null, 2)}\n`,
+    'utf8',
+  )
+  const inputHash = sha256(inputBytes)
+  const sidecarBytes = Buffer.from(
+    `${inputHash}  diagnostic-isolation-input.json\n`,
+    'utf8',
+  )
+  writeFileSync(inputPath, inputBytes)
+  writeFileSync(`${inputPath}.sha256`, sidecarBytes)
+  return {
+    root,
+    script,
+    inputPath,
+    outputPath,
+    inputBytes,
+    inputHash,
+    sidecarBytes,
+  }
 }
 
 const postSourceCommitIt = sourceImplementationCommitted() ? it : it.skip
@@ -222,38 +296,64 @@ describe('C04 diagnostic-isolation production CLI', () => {
   )
 
   it.each(identityCases)(
-    '%s is independently rejected after canonical input rehash',
+    '%s is rejected through the normal canonical --input path',
     (errorCode) => {
-      const root = temporaryDirectory('new-era-identity-case-')
-      const output = join(root, 'identity.json')
-      const result = run(isolation, [
-        '--identity-case',
-        errorCode,
+      const fixture = materializeIdentityCase(errorCode)
+      const result = run(fixture.script, [
+        '--input',
+        fixture.inputPath,
         '--output',
-        output,
+        fixture.outputPath,
       ])
       const document = expectSingleError(result, errorCode)
       expect(document.summary.canonicalInputRehashed).toBe(true)
+      expect(document.summary.canonicalInputHash).toBe(fixture.inputHash)
       expect(document.summary.toolInvocationCount).toBe(0)
-      expect(existsSync(output)).toBe(false)
-      expect(existsSync(`${output}.sha256`)).toBe(false)
+      expect(readFileSync(fixture.inputPath)).toEqual(fixture.inputBytes)
+      expect(readFileSync(`${fixture.inputPath}.sha256`)).toEqual(
+        fixture.sidecarBytes,
+      )
+      expect(existsSync(fixture.outputPath)).toBe(false)
+      expect(existsSync(`${fixture.outputPath}.sha256`)).toBe(false)
 
-      const sentinel = join(root, 'identity-sentinel.json')
       const sentinelBytes = Buffer.from(`sentinel-${errorCode}\n`)
-      writeFileSync(sentinel, sentinelBytes)
-      const before = sha256(readFileSync(sentinel))
-      const sentinelRun = run(isolation, [
-        '--identity-case',
-        errorCode,
+      const sentinelSidecarBytes = Buffer.from(
+        `sentinel-sidecar-${errorCode}\n`,
+      )
+      writeFileSync(fixture.outputPath, sentinelBytes)
+      writeFileSync(
+        `${fixture.outputPath}.sha256`,
+        sentinelSidecarBytes,
+      )
+      const before = sha256(readFileSync(fixture.outputPath))
+      const sidecarBefore = sha256(
+        readFileSync(`${fixture.outputPath}.sha256`),
+      )
+      const sentinelRun = run(fixture.script, [
+        '--input',
+        fixture.inputPath,
         '--output',
-        sentinel,
+        fixture.outputPath,
       ])
       expectSingleError(sentinelRun, errorCode)
-      expect(sha256(readFileSync(sentinel))).toBe(before)
-      expect(readFileSync(sentinel)).toEqual(sentinelBytes)
-      expect(existsSync(`${sentinel}.sha256`)).toBe(false)
+      expect(sha256(readFileSync(fixture.outputPath))).toBe(before)
+      expect(
+        sha256(readFileSync(`${fixture.outputPath}.sha256`)),
+      ).toBe(sidecarBefore)
+      expect(readFileSync(fixture.outputPath)).toEqual(sentinelBytes)
+      expect(readFileSync(`${fixture.outputPath}.sha256`)).toEqual(
+        sentinelSidecarBytes,
+      )
     },
   )
+
+  it('does not expose an identity self-test or hidden bypass mode', () => {
+    const result = run(isolation, [
+      '--identity-case',
+      'C04_CLI_VERSION',
+    ])
+    expectSingleError(result, 'DIAGNOSTIC_ISOLATION_CLI')
+  })
 
   it('rejects an input symlink and leaves a fresh output absent', () => {
     const root = temporaryDirectory('new-era-isolation-input-link-')

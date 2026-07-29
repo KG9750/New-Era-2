@@ -2325,7 +2325,6 @@ async function runFullManifest(
 const argv = process.argv.slice(2)
 let resolvedOutputPath
 let repoRoot = defaultRepoRoot
-let outputValidated = false
 try {
   const { mode, options } = parseArguments(argv)
   repoRoot =
@@ -2334,7 +2333,6 @@ try {
       : resolve(options['--repo-root'])
   resolvedOutputPath = outputPath(options, repoRoot, mode)
   await validateOutputDestination(resolvedOutputPath, repoRoot)
-  outputValidated = true
   const result =
     mode === 'fixtures'
       ? await runFixtures()
@@ -2362,11 +2360,6 @@ try {
         ? error.code
         : 'CANDIDATE_MANIFEST_INTERNAL',
     message: error instanceof Error ? error.message : String(error),
-  }
-  if (resolvedOutputPath && outputValidated) {
-    await writeExclusiveGroup(resolvedOutputPath, result, repoRoot).catch(
-      () => {},
-    )
   }
   process.stderr.write(`${JSON.stringify(result)}\n`)
   process.exitCode = 1

@@ -201,15 +201,6 @@ const NEGATIVE_CASES = Object.freeze({
   U01: 'ISOLATION_TOOL_POLICY_LEAF',
 })
 
-const IDENTITY_CASES = Object.freeze({
-  C04_CLI_BINARY_PATH: 'cliBinaryPath',
-  C04_CLI_VERSION: 'agentCliVersion',
-  C04_CLI_BINARY_SHA256: 'cliBinarySha256',
-  C04_CLI_TEAM_IDENTIFIER: 'cliTeamIdentifier',
-  C04_CLI_AUTHORITY: 'cliAuthority',
-  C04_NODE_IDENTITY: 'nodeIdentity',
-})
-
 const PERSISTED_TOP_LEVEL = new Set([
   'session_meta',
   'event_msg',
@@ -1796,40 +1787,6 @@ function validateLiveIdentity() {
   }
 }
 
-function executeIdentityCase(repoRoot, errorCode) {
-  if (!Object.hasOwn(IDENTITY_CASES, errorCode)) {
-    return reject('DIAGNOSTIC_ISOLATION_FIXTURE_CASE')
-  }
-  const sample = JSON.parse(
-    readFileSync(
-      resolve(
-        repoRoot,
-        'prototype/tests/fixtures/isolation/sample-valid.json',
-      ),
-      'utf8',
-    ),
-  )
-  const preflight = clone(sample.preflight)
-  const field = IDENTITY_CASES[errorCode]
-  if (field === 'nodeIdentity') preflight.nodeBinarySha256 = 'f'.repeat(64)
-  else preflight[field] = `${preflight[field]}-drift`
-  try {
-    validatePreflight(preflight, sample.sampleId)
-    return reject('DIAGNOSTIC_ISOLATION_FIXTURE_MISMATCH')
-  } catch (error) {
-    if (!(error instanceof IsolationFailure) || error.code !== errorCode) {
-      return reject('DIAGNOSTIC_ISOLATION_FIXTURE_MISMATCH', {
-        expectedErrorCode: errorCode,
-        actualErrorCode: error?.code ?? null,
-      })
-    }
-    return reject(errorCode, {
-      canonicalInputRehashed: true,
-      toolInvocationCount: 0,
-    })
-  }
-}
-
 function canonicalSamplePaths(sampleId) {
   const inputPath =
     `data/playtests/weekly-management-slice/gate1a/${COHORT_ID}/` +
@@ -2415,7 +2372,6 @@ function parseArguments(argv) {
   const allowed = new Set([
     '--fixtures',
     '--fixture-case',
-    '--identity-case',
     '--input',
     '--output',
   ])
@@ -2439,7 +2395,6 @@ function parseArguments(argv) {
   const modes = [
     options['--fixtures'] ? 'fixtures' : null,
     options['--fixture-case'] ? 'fixture-case' : null,
-    options['--identity-case'] ? 'identity-case' : null,
     options['--input'] ? 'input' : null,
   ].filter(Boolean)
   if (modes.length !== 1) throwFailure('DIAGNOSTIC_ISOLATION_CLI')
@@ -2450,15 +2405,10 @@ function parseArguments(argv) {
     throwFailure('DIAGNOSTIC_ISOLATION_CLI')
   }
   if (
-    ['fixture-case', 'identity-case'].includes(modes[0]) &&
+    modes[0] === 'fixture-case' &&
     Object.keys(options).some(
       (key) =>
-        ![
-          modes[0] === 'fixture-case'
-            ? '--fixture-case'
-            : '--identity-case',
-          '--output',
-        ].includes(key),
+        !['--fixture-case', '--output'].includes(key),
     )
   ) {
     throwFailure('DIAGNOSTIC_ISOLATION_CLI')
@@ -2475,6 +2425,7 @@ function main() {
     '..',
     '..',
   )
+  let verifiedInputSummary = {}
   try {
     const { mode, options } = parseArguments(process.argv.slice(2))
     if (mode === 'fixtures') {
@@ -2484,11 +2435,11 @@ function main() {
       process.exitCode = result.accepted ? 0 : 1
       return
     }
-    if (mode === 'fixture-case' || mode === 'identity-case') {
-      const result =
-        mode === 'fixture-case'
-          ? executeNegativeCase(repoRoot, options['--fixture-case'])
-          : executeIdentityCase(repoRoot, options['--identity-case'])
+    if (mode === 'fixture-case') {
+      const result = executeNegativeCase(
+        repoRoot,
+        options['--fixture-case'],
+      )
       process.stderr.write(`${JSON.stringify(result)}\n`)
       process.exitCode = 1
       return
@@ -2502,7 +2453,19 @@ function main() {
     if (Boolean(outputStats) !== Boolean(sidecarStats)) {
       throwFailure('PARTIAL_EVIDENCE_GROUP')
     }
-    if (outputStats && sidecarStats) {
+    if (
+      outputStats?.isSymbolicLink() ||
+      sidecarStats?.isSymbolicLink()
+    ) {
+      throwFailure('DIAGNOSTIC_ISOLATION_OUTPUT_EXISTS')
+    }
+    const outputGroupExists = Boolean(outputStats && sidecarStats)
+    const canonicalOutput = SAMPLE_IDS.some(
+      (sampleId) =>
+        relative(repoRoot, outputPath) ===
+        canonicalSamplePaths(sampleId).verificationPath,
+    )
+    if (outputGroupExists && !canonicalOutput) {
       throwFailure('DIAGNOSTIC_ISOLATION_OUTPUT_EXISTS')
     }
     const inputStats = lstatSync(inputPath)
@@ -2534,6 +2497,15 @@ function main() {
       if (!pair || !pair.bytes.equals(inputBytes)) {
         throwFailure('DIAGNOSTIC_ISOLATION_INPUT_BINDING')
       }
+      verifiedInputSummary = {
+        canonicalInputRehashed: true,
+        canonicalInputHash: pair.hash,
+        toolInvocationCount: 0,
+      }
+      validatePreflight(document.preflight, document.sampleId, true)
+      if (outputGroupExists) {
+        throwFailure('DIAGNOSTIC_ISOLATION_OUTPUT_EXISTS')
+      }
       result = validateOperationalSample(
         document,
         repoRoot,
@@ -2555,8 +2527,9 @@ function main() {
         ? error.code
         : 'DIAGNOSTIC_ISOLATION_INTERNAL',
       expectedFailure
-        ? {}
+        ? verifiedInputSummary
         : {
+            ...verifiedInputSummary,
             message: error instanceof Error ? error.message : String(error),
           },
     )
