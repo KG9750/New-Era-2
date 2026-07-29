@@ -1,0 +1,32 @@
+{
+  "planPath": "docs/exec-plans/active/2026-07-29-gate1a-rc9-c04-recovery-plan.md",
+  "planBlobSha256": "7b1b657c7c2bed5c8c8524b059149e52db9ba39bbecb7ffb91b4dfa706e4ef3e",
+  "discoveryJsonPath": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-discovery.json",
+  "discoveryJsonSha256": "3e03c15d3af68430a885c19d37b30126de4b29d80608889a05570a7da228ac30",
+  "discoverySidecarPath": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-discovery.json.sha256",
+  "discoverySidecarSha256": "aa59eb2264d11d25825d4e3f2b961fb43c34b1d346785ca7e08812475a0742f3",
+  "recaptureJsonPath": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-recapture.json",
+  "recaptureJsonSha256": "70997d22e8a4d1c37bdd39aca49543527825d714e941c03f823822c19fdebbf7",
+  "recaptureSidecarPath": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-recapture.json.sha256",
+  "recaptureSidecarSha256": "dc04668fe7b1273e9321dfff9067caf8d925456de9210e87ed888758d8763e86",
+  "reviewers": [
+    {
+      "reviewerId": "gate1a_issue_corrections",
+      "P0": 0,
+      "P1": 0,
+      "P2": 0,
+      "outcome": "PASS"
+    },
+    {
+      "reviewerId": "rc9_plan_adversarial",
+      "P0": 0,
+      "P1": 0,
+      "P2": 0,
+      "outcome": "PASS"
+    }
+  ],
+  "issuerAgentId": "gate1a_a31_commit",
+  "createdAt": "2026-07-29T01:10:04Z",
+  "finalStatus": "PASS",
+  "noGateClaim": true
+}

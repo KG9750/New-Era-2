@@ -1,0 +1,28 @@
+{
+  "planPath": "docs/exec-plans/active/2026-07-29-gate1a-rc9-c04-recovery-plan.md",
+  "planBlobSha256": "21a16e823fcd17f57154486d6ce5e9cbee76223a68f5d21aa82a028cbfba93da",
+  "probeJsonPath": "docs/exec-plans/evidence/2026-07-29-c04-cli-compatibility-probe.json",
+  "probeJsonSha256": "c0b0d70dfe4695c4503343105fc5b7a1a5c3e8fdc92ee30860d8bfd68c5fa4a9",
+  "probeSidecarPath": "docs/exec-plans/evidence/2026-07-29-c04-cli-compatibility-probe.json.sha256",
+  "probeSidecarSha256": "d8260870ae6f8df68b327a0436ced5fa9d960f3caf11597df4fb72f6c51954f7",
+  "reviewers": [
+    {
+      "reviewerId": "rc9_plan_adversarial",
+      "P0": 0,
+      "P1": 0,
+      "P2": 0,
+      "outcome": "PASS"
+    },
+    {
+      "reviewerId": "gate1a_issue_corrections",
+      "P0": 0,
+      "P1": 0,
+      "P2": 0,
+      "outcome": "PASS"
+    }
+  ],
+  "issuerAgentId": "gate1a_a31_commit",
+  "createdAt": "2026-07-28T22:53:40Z",
+  "finalStatus": "PASS",
+  "noGateClaim": true
+}

@@ -532,6 +532,37 @@
       }
     },
     {
+      "file": "isolation/sample-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "sampleId": "TECH-RC9-D16"
+      }
+    },
+    {
+      "file": "isolation/aggregate-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "sampleIds": [
+          "TECH-RC9-D16",
+          "TECH-RC9-D17",
+          "TECH-RC9-D18",
+          "TECH-RC9-D19",
+          "TECH-RC9-D20"
+        ],
+        "serialExecution": true
+      }
+    },
+    {
+      "file": "isolation/fixture-matrix.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "fixtureCount": 31
+      }
+    },
+    {
       "file": "manifests/candidate-zero-id-rejected.json",
       "assertions": {
         "accepted": false,
@@ -568,6 +599,81 @@
       "assertions": {
         "accepted": false,
         "errorCode": "CANDIDATE_MANIFEST_HISTORY"
+      }
+    },
+    {
+      "file": "manifests/candidate-c04-synthetic-valid.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "candidateManifestId": "CM01",
+        "candidateAttempt": "C04"
+      }
+    },
+    {
+      "file": "manifests/candidate-missing-profile-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "CANDIDATE_MANIFEST_AUTHORITY_PROFILE"
+      }
+    },
+    {
+      "file": "manifests/candidate-unknown-profile-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "CANDIDATE_MANIFEST_AUTHORITY_PROFILE"
+      }
+    },
+    {
+      "file": "manifests/candidate-v03-scenario-mismatch-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "CANDIDATE_MANIFEST_AUTHORITY_VERSION"
+      }
+    },
+    {
+      "file": "manifests/candidate-v03-protocol-mismatch-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "CANDIDATE_MANIFEST_AUTHORITY_VERSION"
+      }
+    },
+    {
+      "file": "manifests/candidate-v03-role-mismatch-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "CANDIDATE_MANIFEST_AUTHORITY"
+      }
+    },
+    {
+      "file": "manifests/candidate-v03-path-mismatch-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "CANDIDATE_MANIFEST_AUTHORITY"
+      }
+    },
+    {
+      "file": "manifests/candidate-v03-extra-authority-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "CANDIDATE_MANIFEST_AUTHORITY"
+      }
+    },
+    {
+      "file": "manifests/candidate-c03-rejection-history-rejected.json",
+      "assertions": {
+        "accepted": false,
+        "errorCode": "CANDIDATE_MANIFEST_HISTORY"
+      }
+    },
+    {
+      "file": "manifests/candidate-c04-authority-probe.json",
+      "assertions": {
+        "accepted": true,
+        "errorCode": null,
+        "authorityProfile": "rc9-v03",
+        "scenarioVersion": "0.5.1",
+        "protocolVersion": "weekly-management-slice-playtest-v0.3"
       }
     },
     {
@@ -1202,5 +1308,730 @@
         "errorCode": "V03_RECAP_MISMATCH"
       }
     }
-  ]
+  ],
+  "isolationGoldenProvenance": {
+    "persistedRollout": {
+      "sourceGrammar": "codex-0.146.0-alpha.3.1-persisted-rollout-v2",
+      "codexCliVersion": "codex-cli 0.146.0-alpha.3.1",
+      "sourceSet": "recapture-v3-private-handoff-A-B-C-B_EXTENSION-B_SUCCESS_PROBE",
+      "fixtureSourceCaptures": [
+        {
+          "captureId": "A",
+          "ordinal": 1,
+          "sourceOpaqueObjectId": "sha256-9b8f40c2565e2db6e4830600204bcc47dc4f300b15f2feb2f01360826d390c72.jsonl",
+          "sourceOpaqueCommitment": "9b8f40c2565e2db6e4830600204bcc47dc4f300b15f2feb2f01360826d390c72",
+          "sourceLineCount": 14,
+          "eventOrder": [
+            {
+              "sourceLineOrdinal": 1,
+              "topLevelType": "session_meta",
+              "subtype": "session_meta"
+            },
+            {
+              "sourceLineOrdinal": 2,
+              "topLevelType": "event_msg",
+              "subtype": "task_started"
+            },
+            {
+              "sourceLineOrdinal": 3,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 4,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 5,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 6,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 7,
+              "topLevelType": "world_state",
+              "subtype": "world_state"
+            },
+            {
+              "sourceLineOrdinal": 8,
+              "topLevelType": "turn_context",
+              "subtype": "turn_context"
+            },
+            {
+              "sourceLineOrdinal": 9,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 10,
+              "topLevelType": "event_msg",
+              "subtype": "user_message"
+            },
+            {
+              "sourceLineOrdinal": 11,
+              "topLevelType": "event_msg",
+              "subtype": "agent_message"
+            },
+            {
+              "sourceLineOrdinal": 12,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 13,
+              "topLevelType": "event_msg",
+              "subtype": "token_count"
+            },
+            {
+              "sourceLineOrdinal": 14,
+              "topLevelType": "event_msg",
+              "subtype": "task_complete"
+            }
+          ]
+        },
+        {
+          "captureId": "B",
+          "ordinal": 2,
+          "sourceOpaqueObjectId": "sha256-2cc32921264eeb17772d2c1fa2c5cb798c1ee9526163220133044074d1d692f7.jsonl",
+          "sourceOpaqueCommitment": "2cc32921264eeb17772d2c1fa2c5cb798c1ee9526163220133044074d1d692f7",
+          "sourceLineCount": 24,
+          "eventOrder": [
+            {
+              "sourceLineOrdinal": 1,
+              "topLevelType": "session_meta",
+              "subtype": "session_meta"
+            },
+            {
+              "sourceLineOrdinal": 2,
+              "topLevelType": "event_msg",
+              "subtype": "task_started"
+            },
+            {
+              "sourceLineOrdinal": 3,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 4,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 5,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 6,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 7,
+              "topLevelType": "world_state",
+              "subtype": "world_state"
+            },
+            {
+              "sourceLineOrdinal": 8,
+              "topLevelType": "turn_context",
+              "subtype": "turn_context"
+            },
+            {
+              "sourceLineOrdinal": 9,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 10,
+              "topLevelType": "event_msg",
+              "subtype": "user_message"
+            },
+            {
+              "sourceLineOrdinal": 11,
+              "topLevelType": "response_item",
+              "subtype": "reasoning"
+            },
+            {
+              "sourceLineOrdinal": 12,
+              "topLevelType": "response_item",
+              "subtype": "reasoning"
+            },
+            {
+              "sourceLineOrdinal": 13,
+              "topLevelType": "response_item",
+              "subtype": "tool_search_call"
+            },
+            {
+              "sourceLineOrdinal": 14,
+              "topLevelType": "response_item",
+              "subtype": "tool_search_output"
+            },
+            {
+              "sourceLineOrdinal": 15,
+              "topLevelType": "event_msg",
+              "subtype": "token_count"
+            },
+            {
+              "sourceLineOrdinal": 16,
+              "topLevelType": "response_item",
+              "subtype": "function_call"
+            },
+            {
+              "sourceLineOrdinal": 17,
+              "topLevelType": "event_msg",
+              "subtype": "mcp_tool_call_end"
+            },
+            {
+              "sourceLineOrdinal": 18,
+              "topLevelType": "response_item",
+              "subtype": "function_call_output"
+            },
+            {
+              "sourceLineOrdinal": 19,
+              "topLevelType": "event_msg",
+              "subtype": "token_count"
+            },
+            {
+              "sourceLineOrdinal": 20,
+              "topLevelType": "response_item",
+              "subtype": "reasoning"
+            },
+            {
+              "sourceLineOrdinal": 21,
+              "topLevelType": "event_msg",
+              "subtype": "agent_message"
+            },
+            {
+              "sourceLineOrdinal": 22,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 23,
+              "topLevelType": "event_msg",
+              "subtype": "token_count"
+            },
+            {
+              "sourceLineOrdinal": 24,
+              "topLevelType": "event_msg",
+              "subtype": "task_complete"
+            }
+          ]
+        },
+        {
+          "captureId": "C",
+          "ordinal": 3,
+          "sourceOpaqueObjectId": "sha256-7d7e83405fd3e68219eb811c01c7eba65e11206ff5f770de4be5f7883f84b194.jsonl",
+          "sourceOpaqueCommitment": "7d7e83405fd3e68219eb811c01c7eba65e11206ff5f770de4be5f7883f84b194",
+          "sourceLineCount": 11,
+          "eventOrder": [
+            {
+              "sourceLineOrdinal": 1,
+              "topLevelType": "session_meta",
+              "subtype": "session_meta"
+            },
+            {
+              "sourceLineOrdinal": 2,
+              "topLevelType": "event_msg",
+              "subtype": "task_started"
+            },
+            {
+              "sourceLineOrdinal": 3,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 4,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 5,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 6,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 7,
+              "topLevelType": "world_state",
+              "subtype": "world_state"
+            },
+            {
+              "sourceLineOrdinal": 8,
+              "topLevelType": "turn_context",
+              "subtype": "turn_context"
+            },
+            {
+              "sourceLineOrdinal": 9,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 10,
+              "topLevelType": "event_msg",
+              "subtype": "user_message"
+            },
+            {
+              "sourceLineOrdinal": 11,
+              "topLevelType": "event_msg",
+              "subtype": "task_complete"
+            }
+          ]
+        },
+        {
+          "captureId": "B_EXTENSION",
+          "ordinal": 4,
+          "sourceOpaqueObjectId": "sha256-8842d864b0943e81ce72c0cc1c4f889aa88c609a212bbe55b4a04a4d5b39b6ff.jsonl",
+          "sourceOpaqueCommitment": "8842d864b0943e81ce72c0cc1c4f889aa88c609a212bbe55b4a04a4d5b39b6ff",
+          "sourceLineCount": 25,
+          "eventOrder": [
+            {
+              "sourceLineOrdinal": 1,
+              "topLevelType": "session_meta",
+              "subtype": "session_meta"
+            },
+            {
+              "sourceLineOrdinal": 2,
+              "topLevelType": "event_msg",
+              "subtype": "task_started"
+            },
+            {
+              "sourceLineOrdinal": 3,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 4,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 5,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 6,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 7,
+              "topLevelType": "world_state",
+              "subtype": "world_state"
+            },
+            {
+              "sourceLineOrdinal": 8,
+              "topLevelType": "turn_context",
+              "subtype": "turn_context"
+            },
+            {
+              "sourceLineOrdinal": 9,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 10,
+              "topLevelType": "event_msg",
+              "subtype": "user_message"
+            },
+            {
+              "sourceLineOrdinal": 11,
+              "topLevelType": "response_item",
+              "subtype": "reasoning"
+            },
+            {
+              "sourceLineOrdinal": 12,
+              "topLevelType": "event_msg",
+              "subtype": "agent_message"
+            },
+            {
+              "sourceLineOrdinal": 13,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 14,
+              "topLevelType": "response_item",
+              "subtype": "tool_search_call"
+            },
+            {
+              "sourceLineOrdinal": 15,
+              "topLevelType": "response_item",
+              "subtype": "tool_search_output"
+            },
+            {
+              "sourceLineOrdinal": 16,
+              "topLevelType": "event_msg",
+              "subtype": "token_count"
+            },
+            {
+              "sourceLineOrdinal": 17,
+              "topLevelType": "response_item",
+              "subtype": "function_call"
+            },
+            {
+              "sourceLineOrdinal": 18,
+              "topLevelType": "event_msg",
+              "subtype": "mcp_tool_call_end"
+            },
+            {
+              "sourceLineOrdinal": 19,
+              "topLevelType": "response_item",
+              "subtype": "function_call_output"
+            },
+            {
+              "sourceLineOrdinal": 20,
+              "topLevelType": "event_msg",
+              "subtype": "token_count"
+            },
+            {
+              "sourceLineOrdinal": 21,
+              "topLevelType": "response_item",
+              "subtype": "reasoning"
+            },
+            {
+              "sourceLineOrdinal": 22,
+              "topLevelType": "event_msg",
+              "subtype": "agent_message"
+            },
+            {
+              "sourceLineOrdinal": 23,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 24,
+              "topLevelType": "event_msg",
+              "subtype": "token_count"
+            },
+            {
+              "sourceLineOrdinal": 25,
+              "topLevelType": "event_msg",
+              "subtype": "task_complete"
+            }
+          ]
+        },
+        {
+          "captureId": "B_SUCCESS_PROBE",
+          "ordinal": 5,
+          "sourceOpaqueObjectId": "sha256-8e502dcf6c6310adda742eb39b16b59974dd7e1de077822e123a34424aecbb1c.jsonl",
+          "sourceOpaqueCommitment": "8e502dcf6c6310adda742eb39b16b59974dd7e1de077822e123a34424aecbb1c",
+          "sourceLineCount": 19,
+          "eventOrder": [
+            {
+              "sourceLineOrdinal": 1,
+              "topLevelType": "session_meta",
+              "subtype": "session_meta"
+            },
+            {
+              "sourceLineOrdinal": 2,
+              "topLevelType": "event_msg",
+              "subtype": "task_started"
+            },
+            {
+              "sourceLineOrdinal": 3,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 4,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 5,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 6,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 7,
+              "topLevelType": "world_state",
+              "subtype": "world_state"
+            },
+            {
+              "sourceLineOrdinal": 8,
+              "topLevelType": "turn_context",
+              "subtype": "turn_context"
+            },
+            {
+              "sourceLineOrdinal": 9,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 10,
+              "topLevelType": "event_msg",
+              "subtype": "user_message"
+            },
+            {
+              "sourceLineOrdinal": 11,
+              "topLevelType": "response_item",
+              "subtype": "reasoning"
+            },
+            {
+              "sourceLineOrdinal": 12,
+              "topLevelType": "response_item",
+              "subtype": "custom_tool_call"
+            },
+            {
+              "sourceLineOrdinal": 13,
+              "topLevelType": "event_msg",
+              "subtype": "mcp_tool_call_end"
+            },
+            {
+              "sourceLineOrdinal": 14,
+              "topLevelType": "response_item",
+              "subtype": "custom_tool_call_output"
+            },
+            {
+              "sourceLineOrdinal": 15,
+              "topLevelType": "event_msg",
+              "subtype": "token_count"
+            },
+            {
+              "sourceLineOrdinal": 16,
+              "topLevelType": "event_msg",
+              "subtype": "agent_message"
+            },
+            {
+              "sourceLineOrdinal": 17,
+              "topLevelType": "response_item",
+              "subtype": "message"
+            },
+            {
+              "sourceLineOrdinal": 18,
+              "topLevelType": "event_msg",
+              "subtype": "token_count"
+            },
+            {
+              "sourceLineOrdinal": 19,
+              "topLevelType": "event_msg",
+              "subtype": "task_complete"
+            }
+          ]
+        }
+      ],
+      "sanitizerVersion": "isolation-golden-sanitizer-v3.0.0",
+      "sanitizerRuleset": "recapture-v3-fixed-private-handoff-ruleset-v1",
+      "goldenPath": "prototype/tests/fixtures/isolation/golden-codex-0.146.0-alpha.3.1-persisted-rollout.jsonl",
+      "goldenSha256": "f0b513b802b62e3cdeb3e8540ac33cffa0ea46bd73f0369c27073674d0b76a87",
+      "goldenLineCount": 93,
+      "independentReadBackStatus": "PASS",
+      "privacyScanStatus": "PASS"
+    },
+    "execEvents": {
+      "sourceGrammar": "codex-0.146.0-alpha.3.1-exec-events-v2",
+      "codexCliVersion": "codex-cli 0.146.0-alpha.3.1",
+      "sourceSet": "recapture-v3-private-handoff-A-B-C-B_EXTENSION-B_SUCCESS_PROBE",
+      "fixtureSourceCaptures": [
+        {
+          "captureId": "A",
+          "ordinal": 1,
+          "sourceOpaqueObjectId": "sha256-5ba3e6d7a9029e5c76f37358313a5149f17e1b12398b257d8ea07bec0a52be41.jsonl",
+          "sourceOpaqueCommitment": "5ba3e6d7a9029e5c76f37358313a5149f17e1b12398b257d8ea07bec0a52be41",
+          "sourceLineCount": 5,
+          "eventOrder": [
+            {
+              "sourceLineOrdinal": 1,
+              "topLevelType": "thread.started",
+              "subtype": "thread.started"
+            },
+            {
+              "sourceLineOrdinal": 2,
+              "topLevelType": "turn.started",
+              "subtype": "turn.started"
+            },
+            {
+              "sourceLineOrdinal": 3,
+              "topLevelType": "item.completed",
+              "subtype": "error"
+            },
+            {
+              "sourceLineOrdinal": 4,
+              "topLevelType": "item.completed",
+              "subtype": "agent_message"
+            },
+            {
+              "sourceLineOrdinal": 5,
+              "topLevelType": "turn.completed",
+              "subtype": "turn.completed"
+            }
+          ]
+        },
+        {
+          "captureId": "B",
+          "ordinal": 2,
+          "sourceOpaqueObjectId": "sha256-f38f647a28c1fb04c60ee9d818acb5d47e9d62d293b0679b407e28a093bee352.jsonl",
+          "sourceOpaqueCommitment": "f38f647a28c1fb04c60ee9d818acb5d47e9d62d293b0679b407e28a093bee352",
+          "sourceLineCount": 6,
+          "eventOrder": [
+            {
+              "sourceLineOrdinal": 1,
+              "topLevelType": "thread.started",
+              "subtype": "thread.started"
+            },
+            {
+              "sourceLineOrdinal": 2,
+              "topLevelType": "turn.started",
+              "subtype": "turn.started"
+            },
+            {
+              "sourceLineOrdinal": 3,
+              "topLevelType": "item.started",
+              "subtype": "mcp_tool_call"
+            },
+            {
+              "sourceLineOrdinal": 4,
+              "topLevelType": "item.completed",
+              "subtype": "mcp_tool_call"
+            },
+            {
+              "sourceLineOrdinal": 5,
+              "topLevelType": "item.completed",
+              "subtype": "agent_message"
+            },
+            {
+              "sourceLineOrdinal": 6,
+              "topLevelType": "turn.completed",
+              "subtype": "turn.completed"
+            }
+          ]
+        },
+        {
+          "captureId": "C",
+          "ordinal": 3,
+          "sourceOpaqueObjectId": "sha256-616a636c099526e35d694db40423bfafe0bf2d3cc583e7d821f1bb8470d1d668.jsonl",
+          "sourceOpaqueCommitment": "616a636c099526e35d694db40423bfafe0bf2d3cc583e7d821f1bb8470d1d668",
+          "sourceLineCount": 4,
+          "eventOrder": [
+            {
+              "sourceLineOrdinal": 1,
+              "topLevelType": "thread.started",
+              "subtype": "thread.started"
+            },
+            {
+              "sourceLineOrdinal": 2,
+              "topLevelType": "turn.started",
+              "subtype": "turn.started"
+            },
+            {
+              "sourceLineOrdinal": 3,
+              "topLevelType": "error",
+              "subtype": "error"
+            },
+            {
+              "sourceLineOrdinal": 4,
+              "topLevelType": "turn.failed",
+              "subtype": "turn.failed"
+            }
+          ]
+        },
+        {
+          "captureId": "B_EXTENSION",
+          "ordinal": 4,
+          "sourceOpaqueObjectId": "sha256-cfd78f2a731aa7b0289c1f72bad75efb3c364bc71fa1e6965df554641759d979.jsonl",
+          "sourceOpaqueCommitment": "cfd78f2a731aa7b0289c1f72bad75efb3c364bc71fa1e6965df554641759d979",
+          "sourceLineCount": 7,
+          "eventOrder": [
+            {
+              "sourceLineOrdinal": 1,
+              "topLevelType": "thread.started",
+              "subtype": "thread.started"
+            },
+            {
+              "sourceLineOrdinal": 2,
+              "topLevelType": "turn.started",
+              "subtype": "turn.started"
+            },
+            {
+              "sourceLineOrdinal": 3,
+              "topLevelType": "item.completed",
+              "subtype": "agent_message"
+            },
+            {
+              "sourceLineOrdinal": 4,
+              "topLevelType": "item.started",
+              "subtype": "mcp_tool_call"
+            },
+            {
+              "sourceLineOrdinal": 5,
+              "topLevelType": "item.completed",
+              "subtype": "mcp_tool_call"
+            },
+            {
+              "sourceLineOrdinal": 6,
+              "topLevelType": "item.completed",
+              "subtype": "agent_message"
+            },
+            {
+              "sourceLineOrdinal": 7,
+              "topLevelType": "turn.completed",
+              "subtype": "turn.completed"
+            }
+          ]
+        },
+        {
+          "captureId": "B_SUCCESS_PROBE",
+          "ordinal": 5,
+          "sourceOpaqueObjectId": "sha256-da3e4736ce50171441908ae4dd4621fafb6803dba36986fe0e3facb2534edd43.jsonl",
+          "sourceOpaqueCommitment": "da3e4736ce50171441908ae4dd4621fafb6803dba36986fe0e3facb2534edd43",
+          "sourceLineCount": 6,
+          "eventOrder": [
+            {
+              "sourceLineOrdinal": 1,
+              "topLevelType": "thread.started",
+              "subtype": "thread.started"
+            },
+            {
+              "sourceLineOrdinal": 2,
+              "topLevelType": "turn.started",
+              "subtype": "turn.started"
+            },
+            {
+              "sourceLineOrdinal": 3,
+              "topLevelType": "item.started",
+              "subtype": "mcp_tool_call"
+            },
+            {
+              "sourceLineOrdinal": 4,
+              "topLevelType": "item.completed",
+              "subtype": "mcp_tool_call"
+            },
+            {
+              "sourceLineOrdinal": 5,
+              "topLevelType": "item.completed",
+              "subtype": "agent_message"
+            },
+            {
+              "sourceLineOrdinal": 6,
+              "topLevelType": "turn.completed",
+              "subtype": "turn.completed"
+            }
+          ]
+        }
+      ],
+      "sanitizerVersion": "isolation-golden-sanitizer-v3.0.0",
+      "sanitizerRuleset": "recapture-v3-fixed-private-handoff-ruleset-v1",
+      "goldenPath": "prototype/tests/fixtures/isolation/golden-codex-0.146.0-alpha.3.1-exec-events.jsonl",
+      "goldenSha256": "cb763b506f98693ffcea87252c03e2e63c0ef92df34ebf85eac5fb300971ec94",
+      "goldenLineCount": 28,
+      "independentReadBackStatus": "PASS",
+      "privacyScanStatus": "PASS"
+    }
+  }
 }

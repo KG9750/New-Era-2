@@ -1,10 +1,14 @@
-import { createHash } from 'node:crypto'
+import { createHash, randomBytes } from 'node:crypto'
 import {
+  closeSync,
+  fsyncSync,
+  linkSync,
   mkdirSync,
   lstatSync,
+  openSync,
   readFileSync,
   readdirSync,
-  renameSync,
+  unlinkSync,
   writeFileSync,
 } from 'node:fs'
 import { dirname, isAbsolute, join, relative, resolve, sep } from 'node:path'
@@ -51,6 +55,30 @@ function collectEntries(root, directory = root) {
       return [{ absolutePath, path, type: 'file' }]
     })
     .sort((left, right) => utf8Compare(left.path, right.path))
+}
+
+function fsyncDirectory(directory) {
+  const descriptor = openSync(directory, 'r')
+  try {
+    fsyncSync(descriptor)
+  } finally {
+    closeSync(descriptor)
+  }
+}
+
+function openTemporaryArchive(outputPath) {
+  for (let attempt = 0; attempt < 10; attempt += 1) {
+    const temporaryPath = `${outputPath}.tmp-${process.pid}-${randomBytes(8).toString('hex')}`
+    try {
+      return {
+        descriptor: openSync(temporaryPath, 'wx', 0o644),
+        temporaryPath,
+      }
+    } catch (error) {
+      if (error?.code !== 'EEXIST') throw error
+    }
+  }
+  fail('archive 无法分配唯一临时文件')
 }
 
 function writeString(header, offset, length, value, label) {
@@ -158,6 +186,9 @@ if (
 ) {
   fail('archive 输出不得位于输入目录内')
 }
+if (lstatSync(outputPath, { throwIfNoEntry: false })) {
+  fail(`RC_ARCHIVE_OUTPUT_EXISTS：${outputPath}`)
+}
 
 const sourceDateEpoch = Number(epochArgument)
 if (
@@ -189,9 +220,32 @@ const archive = Buffer.concat(blocks)
 const archiveHash = createHash('sha256').update(archive).digest('hex')
 
 mkdirSync(dirname(outputPath), { recursive: true })
-const temporaryPath = `${outputPath}.tmp`
-writeFileSync(temporaryPath, archive, { mode: 0o644 })
-renameSync(temporaryPath, outputPath)
+const outputDirectory = dirname(outputPath)
+const { descriptor, temporaryPath } = openTemporaryArchive(outputPath)
+let descriptorOpen = true
+try {
+  writeFileSync(descriptor, archive)
+  fsyncSync(descriptor)
+  closeSync(descriptor)
+  descriptorOpen = false
+  fsyncDirectory(outputDirectory)
+  linkSync(temporaryPath, outputPath)
+  fsyncDirectory(outputDirectory)
+  unlinkSync(temporaryPath)
+  fsyncDirectory(outputDirectory)
+} catch (error) {
+  if (descriptorOpen) closeSync(descriptor)
+  try {
+    unlinkSync(temporaryPath)
+    fsyncDirectory(outputDirectory)
+  } catch (cleanupError) {
+    if (cleanupError?.code !== 'ENOENT') throw cleanupError
+  }
+  if (error?.code === 'EEXIST') {
+    fail(`RC_ARCHIVE_OUTPUT_EXISTS：${outputPath}`)
+  }
+  throw error
+}
 
 process.stdout.write(
   `${JSON.stringify({
