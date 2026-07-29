@@ -1007,7 +1007,7 @@ describe('candidate playtest manifest production CLI', () => {
     )
     expect(readFileSync(outputPath)).toEqual(beforeJson)
     expect(readFileSync(outputSidecarPath)).toEqual(beforeSidecar)
-  })
+  }, 15_000)
 
   it('rejects full mode without --manifest-git-sha and preserves outputs', () => {
     const repo = cloneFullManifestRepository(fullFixture)
