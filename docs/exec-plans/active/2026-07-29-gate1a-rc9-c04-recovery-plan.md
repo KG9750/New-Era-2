@@ -2,7 +2,7 @@
 
 | 字段 | 内容 |
 |---|---|
-| 状态 | `COMPATIBILITY_AMENDMENT_PROPOSED / NOT_STARTED` |
+| 状态 | `ISOLATION_GRAMMAR_AMENDMENT_PROPOSED / NOT_STARTED` |
 | candidate attempt | `C04` |
 | anti-pass | `TECH-RC9-P07`、`TECH-RC9-P08` |
 | blind diagnostics | `TECH-RC9-D16`–`TECH-RC9-D20` |
@@ -301,6 +301,86 @@ create-new/no-clobber 成组发布规则生成 receipt；receipt 生成后不得
 “转为 PASS”。compatibility amendment 的 final seal 只验证 receipt pair 的
 schema、sidecar、三 agent 身份分离与全部 binding，不再把审查 outcome 写回计划。
 
+`31c05fee5130cd25f6273037468928d9196858f0` 中的 compatibility receipt 仍是
+binary identity、strict-config argv 与 `standalone-codex-cli-v2` 决策的有效
+历史 PASS receipt；它绑定的是当时的 plan blob，不覆盖随后发现的 isolation
+grammar drift，也不能替代本轮 grammar amendment review。
+
+isolation grammar authority 由以下两组 exact artifact pair 共同组成：
+
+```text
+docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-discovery.json
+docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-discovery.json.sha256
+docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-recapture.json
+docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-recapture.json.sha256
+```
+
+review 与实现必须逐字读取两个 JSON、复算两个 sidecar。旧 discovery 的
+`status` 与 `discovery.coverageStatus` 都是
+`FAIL_INCOMPLETE_REQUIRED_COVERAGE`：它证明旧预写 required matrix 与真实输出不
+一致，只触发本 amendment。它不是 golden、D16–D20 diagnostic、isolation
+verification、C04 admission 或 Gate PASS 证据，且
+`scope.authorizesGrammarChange=false`。
+
+recapture 的 `schemaVersion=3`，状态固定为
+`RECAPTURE_V3_PRIVATE_HANDOFF_COMPLETE_WITH_OBSERVED_GRAMMAR_DRIFT`，JSON
+SHA-256 固定为
+`70997d22e8a4d1c37bdd39aca49543527825d714e941c03f823822c19fdebbf7`，
+sidecar 文件 SHA-256 固定为
+`dc04668fe7b1273e9321dfff9067caf8d925456de9210e87ed888758d8763e86`。完整
+grammar source of truth 是
+`grammar.persisted.variants`、`grammar.exec.variants`、
+`supplementalGrammar.persisted.variants` 与
+`supplementalGrammar.exec.variants` 的逐 variant 去重 union；旧
+`discovery.sourceGrammarDiscovery` 仅作为历史 drift/coverage 触发证据，不得覆盖
+recapture 的 exact key、native type、lifecycle、correlation、
+`toolSearchControlPlaneObservation` 或 `privateSourceHandoff`。recapture 同样不是
+golden、diagnostic、C04 admission 或 Gate 证据；只有本计划经 external review
+后才授权变更 grammar 合同。
+
+recapture v3 已把五个 capture × 两个 stream 的十份 source raw 非破坏性复制到
+固定 owner-only content-addressed store；原临时 raw 与原 session rollout 均未
+删除。`privateSourceHandoff.status` 必须为 `COMPLETE`，
+`rootPolicyId` 必须为 `new-era-2-c04-private-evidence-v3`，expected/object count
+都必须为 10。公开 artifact 只保存
+`privateSourceHandoff.objectsByCapture.<captureId>.<stream>.opaqueObjectId`、
+commitment/bytes/lines/mode/immutable/read-back，不保存绝对 private path。
+resolver 的唯一固定 root 为
+`/Users/leo/.codex/private-evidence/new-era-2/c04-isolation-grammar-recapture-v3/objects`：
+opaque ID 必须匹配
+`^sha256-[0-9a-f]{64}\.jsonl$`，不得包含 slash、`..`、别名或调用方替代 root。
+root 与 objects directory 必须为 `0500 + uchg` 的 non-symlink directory，每个
+object 必须为 `0400 + uchg` 的 non-symlink regular file；从
+`/Users/leo/.codex/private-evidence/new-era-2` 到最终 object 的每级 component
+必须逐级 `lstat`。object ID 缺失、root escape、symlink、mode/flag/type 漂移返回
+`ISOLATION_GOLDEN_SOURCE_UNAVAILABLE`；已解析 regular object 的 hash、bytes 或
+lines 漂移返回 `ISOLATION_GOLDEN_SOURCE_COMMITMENT`。两者都不得退回 volatile
+temp raw、原 session rollout、projection 或手写副本。
+
+isolation grammar amendment 的 outcome 只由以下 exact receipt pair 表达，计划
+本身保持 outcome-neutral：
+
+```text
+docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-amendment-review.json
+docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-amendment-review.json.sha256
+```
+
+receipt schema 与 compatibility receipt 模式一致，并必须包含：
+
+- exact `planPath` 与本计划待审内容的 `planBlobSha256`；
+- discovery 与 recapture 两组 JSON/sidecar 的 exact path 与各自 SHA-256；
+- 恰好两名不同 reviewer 的 `reviewerId`、精确整数 `P0`/`P1`/`P2` 与
+  `outcome`；
+- 与两名 reviewer 均不同的 `issuerAgentId`、UTC `createdAt` 与
+  `finalStatus=PASS`；
+- 不得包含或声称任何 C04、Gate 1A、Gate 1H、Gate 2 或其他 Gate outcome。
+
+只有两名 reviewer 对同一 plan blob 与相同两组 authority pair 都得到
+`P0=0 / P1=0 / P2=0 / outcome=PASS` 后，第三名 agent 才能用
+create-new/no-clobber 成组发布 receipt。receipt 创建后不得再修改本计划；任何
+plan/discovery/recapture hash 变化都使该 grammar receipt 无效，必须另立
+amendment。
+
 在启动 D16 前，必须先把该 profile 写入 RC9 测试运营合同，并冻结：
 
 - 精确、无交互的 Codex CLI 启动命令模板（变量只能替换场次专属绝对路径）：
@@ -343,77 +423,296 @@ schema、sidecar、三 agent 身份分离与全部 binding，不再把审查 out
   path、version、hash、签名或 Node 24 identity 漂移都立即停止 C04，不允许临场
   更换 binary、版本或模型；
 - `prototype/scripts/verify-diagnostic-isolation.mjs` 及其正反 fixtures；
-- isolation fixture 必须冻结两套彼此独立、来自上述唯一 binary 真实 benign
-  capture 的脱敏 golden raw，不能以一套 grammar 兼容另一套：
+- isolation fixture 必须冻结两套彼此独立、来自上述唯一 binary 的脱敏 golden
+  raw，不能以一套 grammar 兼容另一套：
   - persisted rollout grammar ID 固定为
-    `codex-0.146.0-alpha.3.1-persisted-rollout-v1`；
+    `codex-0.146.0-alpha.3.1-persisted-rollout-v2`；
   - `codex exec --json` event grammar ID 固定为
-    `codex-0.146.0-alpha.3.1-exec-events-v1`；
-  - persisted coverage 至少包含 `session_meta`、`turn_context`、
-    `response_item` 的 `message`、`reasoning`、`function_call`、
-    `function_call_output`，以及 `event_msg`；
-  - exec coverage 至少包含 `thread.started`、`turn.started`，
-    `item.started`/`item.completed` 各自覆盖 `agent_message`、`reasoning`、
-    `mcp_tool_call`，以及 `turn.completed` 和受控 benign `turn.failed`；
-  - 两套完整 known grammar 的 event/type/key、envelope、arguments 类型、
-    projection 与来源内 timestamp 规则必须从新版本真实 benign 空工作区 raw 单向
-    提取、独立 read-back 后冻结。允许按 provenance 声明的顺序合并多次真实 benign
-    run，但每段必须保留 source commitment、capture ordinal、source-line ordinal
-    与段内事件顺序；不得复制、改名或手写旧 grammar/golden，也不得让一套来源补造
-    另一套字段；
-  - 若真实 benign capture 的任何 known type/key、arguments 类型或 projection 与
-    预写合同不一致，立即停止，先重新 amendment + independent review；禁止在实现
-    或 D16–D20 现场扩 grammar。D16–D20 出现 golden matrix 未覆盖的类型时，该场
-    技术拒绝并停止 C04；
+    `codex-0.146.0-alpha.3.1-exec-events-v2`；
+  - required coverage 严格等于 recapture
+    `grammar.*.variants + supplementalGrammar.*.variants` 的去重 union：
+    persisted 恰好五种顶层 envelope、17 种 payload subtype、19 个 payload
+    exact-key/native-type variant；exec 恰好七种顶层 envelope、三种 item
+    subtype。不得用旧 discovery 的 incomplete matrix 删除新 shape，也不得让
+    supplemental 覆盖 primary；
+  - 去重键必须同时包含 stream、container、subtype、exact key set 与完整
+    `fieldNativeTypes`。同 exact key set 的 nullable/union 不能做字段级笛卡尔积；
+    `mcp_tool_call` 必须按下文三个 lifecycle tuple 判定。
+
+persisted rollout 的完整 known grammar 固定如下：
+
+- 顶层 type 恰好为 `session_meta`、`event_msg`、`response_item`、
+  `world_state`、`turn_context`；
+- 五种顶层 envelope 的 exact keys 都恰好为 `payload,timestamp,type`，完整
+  native type 签名都恰好为
+  `payload:object,timestamp:string,type:string`；
+- 下表逐行是 19 个允许的 payload variant。逗号分隔 key 与 type 签名都按 exact
+  key order；除下表逐字段 native type 外不接受隐式 nullable、coercion 或
+  alternative：
+
+| payload subtype / variant | exact key set | exact field native types |
+|---|---|---|
+| `agent_message` | `memory_citation,message,phase,type` | `memory_citation:null,message:string,phase:string,type:string` |
+| `function_call_output` | `call_id,id,internal_chat_message_metadata_passthrough,output,type` | `call_id:string,id:string,internal_chat_message_metadata_passthrough:object,output:string,type:string` |
+| `function_call` | `arguments,call_id,id,internal_chat_message_metadata_passthrough,name,namespace,type` | `arguments:string,call_id:string,id:string,internal_chat_message_metadata_passthrough:object,name:string,namespace:string,type:string` |
+| `mcp_tool_call_end` | `call_id,duration,invocation,result,type` | `call_id:string,duration:object,invocation:object,result:object,type:string` |
+| `message / phase` | `content,id,internal_chat_message_metadata_passthrough,phase,role,type` | `content:array,id:string,internal_chat_message_metadata_passthrough:object,phase:string,role:string,type:string` |
+| `message / no-phase` | `content,id,internal_chat_message_metadata_passthrough,role,type` | `content:array,id:string,internal_chat_message_metadata_passthrough:object,role:string,type:string` |
+| `reasoning` | `encrypted_content,id,internal_chat_message_metadata_passthrough,summary,type` | `encrypted_content:string,id:string,internal_chat_message_metadata_passthrough:object,summary:array,type:string` |
+| `session_meta` | `base_instructions,cli_version,context_window,cwd,history_mode,id,model_provider,originator,session_id,source,thread_source,timestamp` | `base_instructions:object,cli_version:string,context_window:object,cwd:string,history_mode:string,id:string,model_provider:string,originator:string,session_id:string,source:string,thread_source:string,timestamp:string` |
+| `task_complete / failed` | `completed_at,duration_ms,error,last_agent_message,started_at,turn_id,type` | `completed_at:number,duration_ms:number,error:object,last_agent_message:null,started_at:number,turn_id:string,type:string` |
+| `task_complete / success` | `completed_at,duration_ms,last_agent_message,started_at,time_to_first_token_ms,turn_id,type` | `completed_at:number,duration_ms:number,last_agent_message:string,started_at:number,time_to_first_token_ms:number,turn_id:string,type:string` |
+| `task_started` | `collaboration_mode_kind,model_context_window,started_at,turn_id,type` | `collaboration_mode_kind:string,model_context_window:number,started_at:number,turn_id:string,type:string` |
+| `token_count` | `info,rate_limits,type` | `info:object,rate_limits:object,type:string` |
+| `tool_search_call` | `arguments,call_id,execution,id,internal_chat_message_metadata_passthrough,status,type` | `arguments:object,call_id:string,execution:string,id:string,internal_chat_message_metadata_passthrough:object,status:string,type:string` |
+| `tool_search_output` | `call_id,execution,id,internal_chat_message_metadata_passthrough,status,tools,type` | `call_id:string,execution:string,id:string,internal_chat_message_metadata_passthrough:object,status:string,tools:array,type:string` |
+| `turn_context` | `approval_policy,approvals_reviewer,collaboration_mode,comp_hash,current_date,cwd,effort,model,multi_agent_mode,multi_agent_version,permission_profile,personality,realtime_active,sandbox_policy,summary,timezone,turn_id,workspace_roots` | `approval_policy:string,approvals_reviewer:string,collaboration_mode:object,comp_hash:string,current_date:string,cwd:string,effort:string,model:string,multi_agent_mode:string,multi_agent_version:string,permission_profile:object,personality:string,realtime_active:boolean,sandbox_policy:object,summary:string,timezone:string,turn_id:string,workspace_roots:array` |
+| `user_message` | `audio,images,local_audio,local_images,message,text_elements,type` | `audio:array,images:array,local_audio:array,local_images:array,message:string,text_elements:array,type:string` |
+| `world_state` | `full,state` | `full:boolean,state:object` |
+| `custom_tool_call_output` | `call_id,id,internal_chat_message_metadata_passthrough,output,type` | `call_id:string,id:string,internal_chat_message_metadata_passthrough:object,output:array,type:string` |
+| `custom_tool_call` | `call_id,id,input,internal_chat_message_metadata_passthrough,name,status,type` | `call_id:string,id:string,input:string,internal_chat_message_metadata_passthrough:object,name:string,status:string,type:string` |
+
+`function_call.arguments` 必须先以 raw string 通过上表 grammar，再恰好 JSON
+parse 一次且结果必须为 object。`custom_tool_call.input` 的 grammar 合同只冻结
+opaque string，不要求其可 JSON parse；只有 D16–D20 tool-policy 已先确认
+`custom_tool_call.name` 是冻结 Playwright leaf allowlist 成员时，才额外要求该
+input 恰好 parse 一次为 object 并通过对应 leaf 参数合同。B_SUCCESS_PROBE 中的
+`custom_tool_call/name=exec` 只提供 custom-chain grammar/correlation 与 successful
+lifecycle coverage，不授权 D16–D20 使用 `exec`，其 input 只能 commitment 化。
+`tool_search_call.arguments` 已经是 object，不得再次 parse。
+`function_call_output.output` 必须为 string，`custom_tool_call_output.output`
+必须为 array，不得互相兼容。
+
+`codex exec --json` 的完整 known grammar 固定如下：
+
+| top-level type | exact envelope key set | exact field native types |
+|---|---|---|
+| `thread.started` | `thread_id,type` | `thread_id:string,type:string` |
+| `turn.started` | `type` | `type:string` |
+| `item.started` | `item,type` | `item:object,type:string` |
+| `item.completed` | `item,type` | `item:object,type:string` |
+| `turn.completed` | `type,usage` | `type:string,usage:object` |
+| `error` | `message,type` | `message:string,type:string` |
+| `turn.failed` | `error,type` | `error:object,type:string` |
+
+exec item 恰好允许三种 subtype：
+
+| envelope / item subtype | exact item key set | exact field native types |
+|---|---|---|
+| `item.completed / agent_message` | `id,text,type` | `id:string,text:string,type:string` |
+| `item.completed / error` | `id,message,type` | `id:string,message:string,type:string` |
+| `item.started 或 item.completed / mcp_tool_call` | `arguments,error,id,result,server,status,tool,type` | common：`arguments:object,id:string,server:string,status:string,tool:string,type:string`；`error/result` 只按下表 lifecycle tuple |
+
+`mcp_tool_call` 只接受以下三种不可拆分 tuple；禁止把
+`error:null|object` 与 `result:null|object` 做笛卡尔积：
+
+| lifecycle | top-level / status | `error` type | `result` type |
+|---|---|---|---|
+| `started` | `item.started / in_progress` | `null` | `null` |
+| `completed-failed` | `item.completed / failed` | `object` | `null` |
+| `completed-success` | `item.completed / completed` | `null` | `object` |
+
+grammar 与 correlation tests 还必须冻结 recapture v3 的以下合同：
+
+- 每个 A/B/C/B_EXTENSION/B_SUCCESS_PROBE capture 中，
+  `exec.thread.started.thread_id` = `persisted.session_meta.id` =
+  `persisted.session_meta.session_id`；三者都是非空 string。不得主张 artifact
+  没有观察到的其他跨 stream equality 或跨 stream order；
+- 每个 capture 中，`task_started.turn_id` = `turn_context.turn_id` =
+  `task_complete.turn_id`，且 persisted ordinal 严格满足
+  `task_started < turn_context < task_complete`；
+- B 与 B_EXTENSION 的 failed function chain 严格为
+  `function_call < mcp_tool_call_end < function_call_output`，且三者
+  `call_id` 全部相等；B_SUCCESS_PROBE 的 successful custom chain 严格为
+  `custom_tool_call < mcp_tool_call_end < custom_tool_call_output`，
+  call 与 output 的 `call_id` 相等，但 end 的 `call_id` 与二者不等；
+- 三个 MCP capture 的 exec `item.started.id = item.completed.id` 且 started
+  严格早于 completed；该 exec item ID 与 persisted chain ID/call_id 均不相等。
+  B/B_EXTENSION 必须匹配 `completed-failed` tuple，B_SUCCESS_PROBE 必须匹配
+  `completed-success` tuple；
+- B/B_EXTENSION 的 `tool_search_call < tool_search_output`，两者 `call_id`
+  相等，但两者 `id` 各自唯一且彼此、与该 call_id 都不相等；
+- 每场所有 persisted `response_item.id` 都是非空 string 且场内唯一。除上述
+  call_id equality 外，不推断其他 response-item equality。
+
+任一 exact key、逐字段 native type、lifecycle tuple、status literal、ID
+equality/inequality、strict order 或 uniqueness 被破坏的 fixture 都必须
+fail-closed；unknown 顶层 type、subtype、额外/缺失 key 同样拒绝。
+
+`prototype/tests/fixtures/isolation/fixture-matrix.json` 必须至少包含下表 31 个
+单字段/单关系 mutation；每项只能破坏所列一处，不能把多个错误合并后碰巧失败：
+
+| fixture ID | 唯一 mutation | 精确 error code |
+|---|---|---|
+| `G01` | 删除一个 required key | `ISOLATION_GRAMMAR_EXACT_KEYS` |
+| `G02` | 增加一个 unknown key | `ISOLATION_GRAMMAR_EXACT_KEYS` |
+| `G03` | 一个字段改为未允许 native type | `ISOLATION_GRAMMAR_NATIVE_TYPE` |
+| `G04` | unknown top-level type | `ISOLATION_GRAMMAR_TOP_LEVEL` |
+| `G05` | unknown payload/item subtype | `ISOLATION_GRAMMAR_SUBTYPE` |
+| `L01` | `started` tuple 的 `error` 改为 object | `ISOLATION_MCP_LIFECYCLE` |
+| `L02` | `completed-failed` tuple 的 `result` 改为 object | `ISOLATION_MCP_LIFECYCLE` |
+| `L03` | `completed-success` tuple 的 `error` 改为 object | `ISOLATION_MCP_LIFECYCLE` |
+| `L04` | MCP `status` 改为未允许 literal | `ISOLATION_MCP_STATUS` |
+| `C01` | thread/session 三者中一个 ID 不等 | `ISOLATION_CORRELATION_THREAD` |
+| `C02` | task/turn 三者中一个 ID 不等 | `ISOLATION_CORRELATION_TURN` |
+| `C03` | failed function chain 中一个 `call_id` 不等 | `ISOLATION_CORRELATION_FUNCTION` |
+| `C04` | successful custom call/output `call_id` 不等 | `ISOLATION_CORRELATION_CUSTOM_EQUALITY` |
+| `C05` | successful custom end `call_id` 被改成与 call 相等 | `ISOLATION_CORRELATION_CUSTOM_INEQUALITY` |
+| `C06` | exec MCP started/completed item ID 不等 | `ISOLATION_CORRELATION_MCP_EQUALITY` |
+| `C07` | exec MCP item ID 被改成与 persisted chain ID 相等 | `ISOLATION_CORRELATION_MCP_INEQUALITY` |
+| `O01` | persisted call/end/output 任意相邻次序倒置 | `ISOLATION_ORDER_PERSISTED_TOOL` |
+| `O02` | exec MCP completed 早于 started | `ISOLATION_ORDER_EXEC_MCP` |
+| `T01` | tool_search output 早于 call | `ISOLATION_ORDER_TOOL_SEARCH` |
+| `T02` | tool_search provider/leaf nested shape 或 literal 漂移 | `ISOLATION_TOOL_SEARCH_PROVIDER` |
+| `T03` | tool_search `execution/status` 漂移 | `ISOLATION_TOOL_SEARCH_STATUS` |
+| `T04` | tool_search `limit` 从 `1` 改为同类型 `2` | `ISOLATION_TOOL_SEARCH_ARGUMENTS` |
+| `T05` | tool_search query literal 单字符漂移 | `ISOLATION_TOOL_SEARCH_ARGUMENTS` |
+| `T06` | tool_search call/output `call_id` 不等 | `ISOLATION_CORRELATION_TOOL_SEARCH_EQUALITY` |
+| `T07` | tool_search call `id` 改成自己的 `call_id` | `ISOLATION_CORRELATION_TOOL_SEARCH_INEQUALITY` |
+| `T08` | tool_search output `id` 改成对应 `call_id` | `ISOLATION_CORRELATION_TOOL_SEARCH_INEQUALITY` |
+| `T09` | tool_search output `id` 改成 call `id` | `ISOLATION_CORRELATION_TOOL_SEARCH_INEQUALITY` |
+| `R01` | 同场两个 response item 复用 ID | `ISOLATION_RESPONSE_ID_UNIQUENESS` |
+| `S01` | fresh source object commitment/bytes/lines 任一不匹配 | `ISOLATION_GOLDEN_SOURCE_COMMITMENT` |
+| `S02` | fresh source opaque object ID 缺失、symlink 或非 regular | `ISOLATION_GOLDEN_SOURCE_UNAVAILABLE` |
+| `U01` | grammar-valid B_SUCCESS custom `name=exec` 进入 D16 mode | `ISOLATION_TOOL_POLICY_LEAF` |
+
+`prototype/tests/c04-verifier-cli.test.ts` 必须对每项以独立子进程调用 production
+isolation CLI，要求非零 exit、stderr/JSON 只出现该精确 error code、全新 output
+path 不产生文件；预置 output sentinel 时 bytes/hash 不变。fixture validator 的
+纯函数 PASS、多个 mutation 合并为一例、只断言“失败了”或产生 partial output
+均不计覆盖。`U01` 还必须证明 verifier 在尝试 parse opaque input 或调用工具前
+即以 `ISOLATION_TOOL_POLICY_LEAF` 拒绝，tool invocation count 为 0。matrix
+必须机械报告 `requiredNegativeCases=31`、`executedNegativeCases=31`、31 个
+fixture ID 唯一且逐项 PASS。
+
+`tool_search_call/tool_search_output` 只是 direct-tools 的 control-plane discovery：
+必须成对满足上述 call_id/order 合同，并逐项匹配 recapture v3
+`toolSearchControlPlaneObservation`：
+
+- call 与 output 的 `execution` 都恰好为 `client`，`status` 都恰好为
+  `completed`；
+- call arguments 的 nested exact keys/type/value 恰好为
+  `limit:number=1` 与
+  `query:string="Playwright MCP browser_navigate navigate to URL"`；
+- output `tools` 是长度 1 的 array，不是字符串 token。唯一 provider object 的
+  exact keys/type 必须为
+  `description:string,name:string,tools:array,type:string`，
+  `name="mcp__playwright"`、`type="namespace"`，nested tools 长度恰好为 1；
+- 唯一 leaf object 的 exact keys/type 必须为
+  `defer_loading:boolean,description:string,name:string,parameters:object,strict:boolean,type:string`，
+  `name="browser_navigate"`、`type="function"`、`defer_loading=true`、
+  `strict=false`；
+- leaf `parameters` exact keys/type 必须为
+  `additionalProperties:boolean,properties:object,required:array,type:string`，
+  `type="object"`、`additionalProperties=false`、`required=["url"]`；
+  `properties` 只含 `url`，其 exact keys/type 为
+  `description:string,type:string` 且 `type="string"`。三个 description 只冻结
+  string native type；recapture v3 不存明文、hash 或 value equality，sanitized
+  golden 必须把实际值 commitment 化。
+
+provider namespace 不是可执行 browser leaf tool；随后真正执行的 leaf tool仍只能
+属于冻结的
+`browser_navigate`、`browser_snapshot`、`browser_click`、
+`browser_fill_form`、`browser_wait_for`、`browser_run_code_unsafe` allowlist。
+tool_search 本身不计作玩家 browser action，不得增加浏览器动作计数、不得授权第二
+provider、第二 MCP server 或额外工具。
+
 - 两份 golden raw 固定为
   `prototype/tests/fixtures/isolation/golden-codex-0.146.0-alpha.3.1-persisted-rollout.jsonl`
   与
   `prototype/tests/fixtures/isolation/golden-codex-0.146.0-alpha.3.1-exec-events.jsonl`。
-  它们必须分别从真实 persisted rollout 与真实 `codex exec --json` stream 单向
-  脱敏取得，保留 envelope、字段类型与事件顺序；不得由 structural projection、
-  预期 verification 或手写目标对象反向生成；
+  它们必须分别从 recapture v3 fixed private handoff 中的 fresh
+  A、B、C、B_EXTENSION、B_SUCCESS_PROBE 五段 persisted/exec raw 逐段单向
+  sanitize 后，按该 source set 的 capture ordinal、source-line ordinal 合并；
+  每段只可由 recapture 的 opaque object ID 经上述固定 root resolver 读取，
+  volatile temp raw 与原 session rollout 只作保留副本，不是生成 fallback；
+  不得使用已删除的旧 discovery raw、旧 discovery commitment、structural
+  projection、预期 verification 或手写目标对象反向生成；
+- 生成前必须从 fixed private store 独立 read-back 五段 × 两 stream 的十个
+  objects，逐段匹配 recapture `privateSourceHandoff` 与 `raw` 中的 opaque object
+  ID、SHA-256、bytes、lines、mode、immutable flag，并逐行匹配 event order、
+  variant source namespace + ID、exact keys、完整 native types、lifecycle tuple
+  与上述 equality/order/uniqueness。任一 mismatch 必须停止，不得生成 golden；
 - 两份 golden 的 provenance 只写入
   `prototype/tests/fixtures/fixture-expectations.json.isolationGoldenProvenance`，
   schema 固定为恰好两个 key：`persistedRollout` 与 `execEvents`。每项必须恰好包含
-  `sourceGrammar`、`codexCliVersion`、`benignSourceCaptures`、
+  `sourceGrammar`、`codexCliVersion`、`sourceSet`、`fixtureSourceCaptures`、
   `sanitizerVersion`、`sanitizerRuleset`、`goldenPath`、`goldenSha256`、
   `goldenLineCount`、`independentReadBackStatus=PASS` 与
-  `privacyScanStatus=PASS`。`benignSourceCaptures` 必须是非空有序数组，每项恰好
-  包含正整数 `ordinal`、64 位小写十六进制 `sourceOpaqueCommitment`、正整数
-  `sourceLineCount` 与按 source 顺序列出的 `coveredTypes`；只承诺用于 fixture
-  制备的 benign 来源字节，不得写真实敏感内容、private evidence object ID 或任何
-  绝对 private path。两个 `sourceGrammar` 必须分别为冻结 grammar ID，
-  `codexCliVersion` 必须逐字等于 `codex-cli 0.146.0-alpha.3.1`，SHA 必须为 64 位
-  小写十六进制，version/ruleset 必须为非空 versioned ID，golden path 必须为上述
-  两个 exact path，line count 必须为正整数，两个 status 只接受 `PASS`；额外
-  provenance key、缺字段、ordinal/order 或 hash/line count 不匹配均失败；
-- sanitizer 必须从两份新版本 benign raw 的独立 read-back 结果，为上述两个新
-  grammar ID 各冻结一份 deterministic field allowlist；旧 0.142.4 手写 schema
-  或 projection 不得作为生成输入：
-  - sanitizer 在删除任何字段前，必须先按对应来源的完整 known grammar 校验 raw
-    输入。raw 中来源 schema 已知的 system/developer/user message、reasoning、
-    绝对路径及其他敏感字段允许存在，但只能删除或变成 commitment；未知顶层
-    event/type、未知 payload/item type、未知 key 或 arguments 类型错配必须按该
-    来源 grammar fail-closed，不能靠 sanitizer 丢弃未知结构后继续；
-  - persisted envelope 只保留 `timestamp?`、`type` 与 `payload`；`session_meta`
-    payload 只保留 session ID、source、model、reasoning effort、cwd commitment
-    与 workspace-roots commitment；`turn_context` payload 只保留 turn ID、
-    model、reasoning effort、cwd/workspace commitments、approval/sandbox
-    policy；四种 `response_item` 均保留 type/call/结构关联 ID，message/reasoning/
-    function-call-output 的内容删除或 commitment 化，只有 `function_call` 额外保留
-    `name`、`call_id` 与真实 grammar 规定的 arguments；`event_msg` payload 只保留
-    事件 subtype 与结构关联 ID；
-  - exec event envelope 只保留 `timestamp?`、`type`、thread/turn ID 与
-    allowlisted `item`；`agent_message`/`reasoning` 内容删除或 commitment 化，
-    `mcp_tool_call` item 保留 item ID、server、tool、真实 grammar 规定的
-    arguments、status 与结构关联 ID；
-  - 严格拒绝 allowlist 外字段只适用于 sanitized golden 与 structural projection
-    输出，不适用于完整 raw 的已知敏感字段。sanitized 输出必须递归扫描
-    secret/token/key、PII、system/developer/user message、reasoning 内容和本机
-    绝对路径；允许保留的 cwd/workspace 只能输出 commitment/hash，不能输出原
-    路径。输出必须在独立进程从磁盘 read-back，重新做 schema、hash/line count 与
-    forbidden-content scan 后才能成为 golden；generator 内存中的对象或
-    projection PASS 不能替代该 read-back；
+  `privacyScanStatus=PASS`。`sourceSet` 必须逐字为
+  `recapture-v3-private-handoff-A-B-C-B_EXTENSION-B_SUCCESS_PROBE`；
+  `fixtureSourceCaptures` 必须按
+  A、B、C、B_EXTENSION、B_SUCCESS_PROBE 的 capture ordinal 为有序数组，每项恰好
+  包含 `captureId`、正整数
+  `ordinal`、`sourceOpaqueObjectId`、64 位小写十六进制
+  `sourceOpaqueCommitment`、正整数 `sourceLineCount` 与有序
+  `eventOrder`；`sourceOpaqueObjectId` 必须逐字匹配 recapture 对应 stream 的
+  opaque object ID；`eventOrder` 每项恰好包含正整数
+  `sourceLineOrdinal`、`topLevelType` 与 `subtype`，并覆盖该 source 的每一原始行。
+  `sourceOpaqueCommitment` 只能逐字复制 recapture 当前 fresh source 对应 stream
+  的 raw SHA-256，不得写旧 discovery commitment、真实敏感内容或任何绝对
+  private path。两个 `sourceGrammar` 必须分别为冻结 grammar ID，
+  `codexCliVersion` 必须逐字等于
+  `codex-cli 0.146.0-alpha.3.1`，SHA 必须为 64 位小写十六进制，
+  version/ruleset 必须为非空 versioned ID，golden path 必须为上述两个 exact
+  path，line count 必须为正整数，两个 status 只接受 `PASS`；额外 provenance
+  key、缺字段、sourceSet、capture/source-line ordinal、event order、commitment
+  或 hash/line count 不匹配均失败；
+- sanitizer 必须从两份新版本 raw 的独立 read-back 结果，为上述两个 grammar ID
+  各冻结一份 deterministic field allowlist；旧 0.142.4 手写 schema、旧
+  incomplete matrix 或 projection 不得作为生成输入：
+  - sanitizer 在删除或 commitment 化任何字段前，必须先按上述完整 known grammar
+    校验 raw。已知的 system/developer/user message、reasoning、绝对路径及其他
+    敏感值允许存在于 private raw，但必须在公开输出中删除或 commitment 化；
+    未知顶层 type、未知 payload/item subtype、未知 key 或 native type 错配必须
+    fail-closed，不能靠 sanitizer 丢弃未知结构后继续；
+  - persisted sanitized golden 保留 exact
+    `payload,timestamp,type` envelope 与上表 payload keys；敏感字符串替换为同
+    native type commitment，敏感数组/对象替换为同 native type 的 commitment
+    容器。`world_state` 在 grammar golden 中仍保留 `full=boolean` 与
+    `state=object` 类型，但任何公开 structural projection 只输出整个 payload 的
+    SHA-256 commitment，不公开 `full` 或 `state` 内容；
+  - `function_call.arguments` 在 raw grammar 通过后恰好 parse 一次为 object，再
+    按 browser 工具参数 allowlist 生成公开投影；`custom_tool_call.input` 在
+    grammar golden 中只保留 opaque string native type 与 commitment。D16–D20
+    只有在 name 已通过 Playwright leaf allowlist 后才可 parse/投影 custom input；
+    B_SUCCESS_PROBE 的 `exec` input 不得 parse、执行或授权；
+    `function_call_output.output` 只保留 string native type 与 commitment，
+    `custom_tool_call_output.output` 只保留 array native type 与 commitment。
+    tool_search pair 只保留 control-plane correlation/order 和冻结工具集合；
+    `mcp_tool_call_end` 只保留 call correlation、`invocation/result` object
+    native type 与 commitment；
+  - exec sanitized golden 按上表 exact envelope/item keys 保存；
+    `agent_message.text` 删除或 commitment 化，`mcp_tool_call.arguments` 保持
+    object native type，并只投影 allowlisted 参数；
+  - sanitized 输出必须递归扫描 secret/token/key、PII、system/developer/user
+    message、reasoning 内容和本机绝对路径；允许保留的 cwd/workspace 只能输出
+    commitment/hash，不能输出原路径。输出必须在独立进程从磁盘 read-back，重新做
+    grammar、hash/line count、sourceSet/order、lifecycle/correlation 与
+    forbidden-content scan，全部 PASS 后才能成为 golden；generator 内存中的对象
+    或 projection PASS 不能替代该 read-back；
+- raw→golden/provenance→独立 read-back/privacy/hash/order 全部 PASS 后，golden
+  即可使用；该 PASS 只建立“允许清理”的前置条件，不自动授权删除。fixed private
+  handoff 的十个 `0400+uchg` objects、两个 `0500+uchg` directories、volatile
+  temp raw/workspace 或对应 original session rollout 的任何解锁、移动或删除，
+  仍必须先取得 Owner 对精确对象/路径的明确 cleanup 授权；未获授权时 fixed store
+  继续按 recapture v3 的 mode/flags/commitment 保留，volatile 副本继续以
+  `0600/0700` 保留，不得把“尚未清理”误报为 golden 失败。获明确授权并完成授权
+  范围内的全部清理后，必须
+  在 `fixture-expectations.json.isolationGoldenSourceCleanupAttestation` 写入
+  exact `sourceSet`、`status=PASS`、
+  `captureIds=["A","B","C","B_EXTENSION","B_SUCCESS_PROBE"]`、
+  `privateHandoffObjectsAbsent=true`、`volatileRawAbsent=true`、
+  `originalSessionRolloutsAbsent=true`、`temporaryWorkspacesAbsent=true` 与 UTC
+  `attestedAt`；再由独立进程验证 raw/rollout absence、golden/provenance 字节未变
+  和 attestation schema。attestation 只证明已授权 cleanup 的完成状态，不是
+  golden 使用前置，也不得伪造为 cleanup 授权。本条只清理 grammar fixture 制备的
+  五段 fresh source，不适用于 §3.2 要求保留到最终 review/seal 的 D16–D20
+  private raw；
+- D16–D20 private raw 出现上述 matrix 之外的新 type/subtype/key/native type
+  shape 时，当前样本技术拒绝并立即停止 C04；必须重新执行 discovery、amendment
+  与 external grammar review，禁止在实现、运行或 review/seal 阶段临场扩
+  grammar；
 - 唯一 provider 为 direct-tools Playwright MCP
   `@playwright/mcp@0.0.76`；preflight 必须保存已解析 package version、
   npm integrity、实际 server argv 与工具 inventory。`--ignore-user-config`、唯一
@@ -558,19 +857,37 @@ private evidence 解析必须从固定 root
 - `agent-rollout-structural-evidence.jsonl/.sha256`；
 - `cli-events-structural-evidence.jsonl/.sha256`。
 
-投影覆盖原文件每一行，保存 ordinal、来源内可选 timestamp、顶层 type、结构关联
-ID 与原始行 SHA-256。persisted projection 按 `session_meta`、`turn_context`、
-四种 `response_item` 与 `event_msg` coverage matrix 的独立 allowlist 输出；exec
-projection 按 thread/turn lifecycle、三种 item type 与受控 `turn.failed` matrix
-的独立 allowlist 输出。工具参数及 arguments 类型必须来自新 golden 对应的真实 raw
-grammar，只在 `function_call`/`mcp_tool_call` 投影保留 allowlisted 参数；并额外
-保存两次 unsafe 探针的成功状态、context/page ID、origin、pageCount 与下载
-metadata。删除其他 message、reasoning、system/developer/user 内容、绝对路径和
-无关 tool output。projection
+投影覆盖原文件每一行，保存 ordinal、persisted 来源的 timestamp、顶层 type、
+结构关联 ID 与原始行 SHA-256。persisted projection 按完整已观测矩阵分别处理：
+`session_meta`、`turn_context`、`world_state`；
+`response_item/message`、`response_item/reasoning`、
+`response_item/function_call`、`response_item/function_call_output`、
+`response_item/custom_tool_call`、`response_item/custom_tool_call_output`、
+`response_item/tool_search_call`、`response_item/tool_search_output`；以及
+`event_msg/task_started|user_message|agent_message|token_count|task_complete`
+与 `event_msg/mcp_tool_call_end`。其中 `world_state` 只输出整个 payload 的 SHA-256
+commitment，不输出 `full` 或 `state` 内容；`function_call.arguments` 恰好 parse
+一次为 object 后，才允许投影 allowlisted 工具参数。`custom_tool_call.input`
+默认只输出 opaque string commitment；仅 D16–D20 中 name 已通过 Playwright leaf
+allowlist 的 custom call 才可再 parse/投影，B_SUCCESS_PROBE 的 `exec` 永久只是
+fixture-source coverage。tool_search pair 只投影 control-plane correlation、
+order 与冻结工具名集合，不计 browser action；其他 output/invocation/result 只
+保留 native type、关联 ID 与 commitment。
+
+exec projection 只按
+`thread.started`、`turn.started`、`item.completed/agent_message`、
+`item.completed/error`、`item.started|item.completed/mcp_tool_call`、
+`turn.completed`、`error` 与 `turn.failed` 输出；不得生成未观测的 started
+agent message 或 reasoning item。
+`mcp_tool_call.arguments` 必须为 object，只投影 allowlisted 参数。投影另存两次
+unsafe 探针的成功状态、context/page ID、origin、pageCount 与下载 metadata；
+删除其他 message、reasoning、system/developer/user 内容、绝对路径和无关 tool
+output。projection
 只能由已验证 raw 单向生成 allowlisted 结构，不能作为 raw 输入、不能补造 raw
 字段，也不能反向生成 golden raw。raw 必须先通过对应来源的完整 known grammar；
-已知敏感字段随后删除或 commitment 化，未知 event/type/key 则在生成 projection
-前直接拒绝。投影输出自身再严格拒绝 projection allowlist 外字段。投影头保存原
+已知敏感字段随后删除或 commitment 化；未知顶层 type、subtype、key 或 native
+type 错配在生成 projection 前直接拒绝。投影输出自身再严格拒绝 projection
+allowlist 外字段。投影头保存原
 文件整体 SHA-256、line count 与逐行 commitment；真实 D16–D20 private raw 的每一
 行仍须现场重新计算 SHA-256，golden 或 projection 不能替代 private raw
 commitment。
@@ -654,34 +971,47 @@ mismatch、无法复算或 policy scan 失败，该样本技术无效并停止 C
 
 ## 4. C04 source 与证据谱系
 
-### 4.1 Compatibility amendment 迁移
+### 4.1 Isolation grammar amendment 迁移
 
-当前 `plan_ref=c085bb63a2cbce790e47859ec49ff05c58283c74` 的第三轮 PASS 只覆盖
-当时冻结的 CLI/version 合同，不覆盖本次现场 version drift。本计划始终保持
-`COMPATIBILITY_AMENDMENT_PROPOSED / NOT_STARTED`，不会因外部审查而修改自身；
-implementation 必须完成以下迁移后才可继续：
+当前 `plan_ref=31c05fee5130cd25f6273037468928d9196858f0` 已有效冻结
+compatibility v2/binary 决策，但不覆盖 discovery 揭示的 grammar drift。本计划
+始终保持 `ISOLATION_GRAMMAR_AMENDMENT_PROPOSED / NOT_STARTED`，不会因外部审查
+而修改自身。本 amendment 只替换 isolation grammar authority、coverage 与迁移
+binding；compatibility v2/binary、I/E/M/F 拓扑、Gate 边界、模型、MCP profile、
+P07/P08 与 D16–D20 编号及门槛均不变。implementation 必须按以下不可重排顺序完成
+迁移：
 
-1. 先验证上述 external review receipt pair 有效且逐字绑定当前 plan/probe；
-2. 在 evidence-plan 分支创建只包含本计划、probe pair 与 review receipt pair 的
-   五文件 Phase 0 migration commit，推送后以该 commit 作为新 `plan_ref`；
-3. 在 #58 明确记录“新 `plan_ref` supersedes
-   `c085bb63a2cbce790e47859ec49ff05c58283c74`”，同时记录 review receipt JSON
-   SHA-256；Issue 后续只引用新 `plan_ref` 与该 receipt hash；
-4. 把该 Phase 0 migration commit cherry-pick 到
+1. 两名 external reviewer 逐字审查当前 plan blob、discovery pair 与 recapture
+   pair，分别记录精确 `P0/P1/P2/outcome`；
+2. 第三名 issuer 验证两份 review 均为
+   `P0=0 / P1=0 / P2=0 / outcome=PASS` 后，以 create-new/no-clobber 生成并复算
+   isolation grammar amendment review receipt pair；receipt 创建后本计划冻结，
+   不得再修改；
+3. 在 evidence-plan 分支创建恰好七个变更文件的 Phase 0 migration commit：
+   本计划、discovery JSON/sidecar、recapture JSON/sidecar 与 grammar review
+   receipt JSON/sidecar。推送后以该 commit 作为新 `plan_ref`；compatibility
+   probe/receipt pair 已存在于父 `31c05fee...`，不得在该七文件 commit 中重写；
+4. 在 #58 明确记录“新 `plan_ref` supersedes
+   `31c05fee5130cd25f6273037468928d9196858f0`”，同时记录 discovery JSON、
+   recapture JSON 与 grammar review receipt JSON 的 SHA-256；Issue 后续只引用新
+   `plan_ref` 与这三个 hash；
+5. 把该 Phase 0 migration commit cherry-pick 到
    `codex/rc9-08r3-c04-implementation` 当前
-   `989781d39fca19b3c4383ef5e2e4160835378fba` 之后；此 cherry-pick 必须先于
-   compatibility implementation commit；
-5. cherry-pick 后先把 `CONTEXT.md`、`PLANS.md` 的 active plan/profile 入口更新为
-   v2，再依次更新测试运营合同/profile、isolation verifier、两份新版本 benign
-   golden/provenance、manifest fixtures 与 C04 authority probe；随后重新计算
-   entrypoint 与九个 authority blob hashes，再从上述唯一绝对 CLI binary 重新运行
-   fixtures/probe；
-6. `c085bb63...` plan_ref 下产生的所有临时 verification JSON、hash、stdout
-   capture 一律作废，不得进入 `commandResults[]`、E、CM、IR 或 seal。
+   `fc6237c21ac3e5a4ba839fdec73879aad92be923` 之后；此 cherry-pick 必须先于
+   isolation grammar implementation commit；
+6. cherry-pick 后先更新 `CONTEXT.md`、`PLANS.md` 的 active plan/profile
+   入口，再依次更新测试运营合同/profile、isolation verifier、两份新版本
+   fixture-source golden/provenance、manifest fixtures 与 C04 authority probe；
+   随后重新计算 entrypoint 与九个 authority blob hashes，再从上述唯一绝对 CLI
+   binary 重新运行 fixtures/probe；
+7. `31c05fee...` plan_ref 下针对旧 incomplete grammar 产生的所有临时
+   verification JSON、hash、golden、projection、stdout capture 一律作废，不得进入
+   `commandResults[]`、E、CM、IR 或 seal。
 
 新 source 与 dependency integration 必须包含与新 `plan_ref` 相同的 amendment
-plan/probe pair/review receipt pair blobs、v2 entrypoint blobs，以及重新绑定后的
-同一组九个 authority blobs；任一 hash 不同都不得构建 C04。
+plan/discovery pair/recapture pair/grammar review receipt pair blobs，以及既有
+compatibility probe/receipt pair、v2 entrypoint blobs 和重新绑定后的同一组九个
+authority blobs；任一 hash 不同都不得构建 C04。
 
 ### 4.2 分支拓扑
 
@@ -699,6 +1029,12 @@ plan/probe pair/review receipt pair blobs、v2 entrypoint blobs，以及重新�
 | `docs/exec-plans/evidence/2026-07-29-c04-cli-compatibility-probe.json.sha256` | compatibility evidence sidecar |
 | `docs/exec-plans/evidence/2026-07-29-c04-compatibility-amendment-review.json` | external compatibility review receipt |
 | `docs/exec-plans/evidence/2026-07-29-c04-compatibility-amendment-review.json.sha256` | external review receipt sidecar |
+| `docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-discovery.json` | observed source grammar discovery authority |
+| `docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-discovery.json.sha256` | grammar discovery sidecar |
+| `docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-recapture.json` | fresh recapture grammar/native-type/correlation authority |
+| `docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-recapture.json.sha256` | grammar recapture sidecar |
+| `docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-amendment-review.json` | outcome-neutral external grammar review receipt |
+| `docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-amendment-review.json.sha256` | grammar review receipt sidecar |
 | `docs/exec-plans/active/2026-07-27-gate1a-rc9-test-operations.md` | 冻结 standalone CLI isolation profile |
 | `prototype/package.json` | 仅 wiring 本计划命令 |
 | `prototype/scripts/candidate-manifest-contract.mjs` | versioned manifest 共享纯合同 |
@@ -736,9 +1072,11 @@ plan/probe pair/review receipt pair blobs、v2 entrypoint blobs，以及重新�
 | `prototype/tests/fixtures/manifests/candidate-valid.json` | v0.2 compatibility 正例 |
 | `prototype/tests/fixtures/manifests/candidate-zero-id-rejected.json` | manifest ID 反例 |
 
-- 除上表 43 个 exact path 外，source commit 修改任何其他路径都失败；
-- source scope audit/guard 必须把本计划、probe pair 与 review receipt pair 这五个
-  Phase 0 exact path 视为允许的只读 authority 输入，同时继续拒绝
+- 除上表 49 个无重复 exact path 外，source commit 修改任何其他路径都失败；
+- source scope audit/guard 必须把本计划、discovery pair、recapture pair 与
+  grammar review receipt pair 这七个本轮 Phase 0 exact path 视为允许的只读
+  authority 输入；既有 compatibility probe/receipt pair 继续作为父 plan_ref
+  已冻结的只读 authority，同时拒绝
   `docs/exec-plans/evidence/**` 下任何其他新增、修改或替代路径；
 - 明确禁止修改 `prototype/src/**`、`prototype/scripts/playtest-host.mjs`、
   `prototype/scripts/management-ledger-contract.mjs`、Vite 配置、lockfile、
@@ -1173,9 +1511,26 @@ reviewer 复审通过：
 |---|---|---|
 | 1 | `FAIL` | compatibility artifact authority、六类 identity 反例、v2 entrypoint 迁移、真实 golden coverage matrix |
 | 2 | `FAIL` | outcome-neutral 计划、external receipt、五文件 Phase 0 与 probe argv 逐 token binding |
-| 3 | external receipt | outcome 仅由 exact review receipt pair 表达，计划不镜像审查结论 |
+| 3 | valid external `PASS` receipt | outcome 只由 compatibility review receipt pair 表达；它继续有效地覆盖 binary/v2 决策 |
 
-当前状态固定为 `COMPATIBILITY_AMENDMENT_PROPOSED / NOT_STARTED`。valid external
-receipt 是 Phase 0 migration 的前置 authority，但 receipt outcome 不回写本计划；
-这不代表 C04、Gate 1A 或 Gate 1H 已通过，Gate 1H 仍为 `PENDING`，Gate 2 继续
-`LOCKED`。
+该 compatibility PASS receipt 是历史有效 authority，但只覆盖 binary identity、
+strict-config argv 与 `standalone-codex-cli-v2`；它不覆盖 discovery 后的 grammar
+drift，不能作为 isolation grammar amendment 的审查结果。
+
+### 10.4 Isolation grammar amendment 审查
+
+discovery artifact 的旧 matrix 结果为
+`FAIL_INCOMPLETE_REQUIRED_COVERAGE`，只触发本 amendment；不是 golden、
+diagnostic、C04 admission 或 Gate 结论。recapture 的
+`RECAPTURE_V3_PRIVATE_HANDOFF_COMPLETE_WITH_OBSERVED_GRAMMAR_DRIFT` 补足 fresh
+native-type、lifecycle、correlation、tool-search control-plane 与 fixed private
+handoff authority，但同样不是 golden、diagnostic 或 Gate 结论。本轮 grammar
+review outcome 只能由
+`2026-07-29-c04-isolation-grammar-amendment-review.json/.sha256` external receipt
+pair 表达；receipt 必须绑定 plan 与两组 authority pair，本计划不得镜像或预写
+PASS/FAIL。
+
+当前状态固定为 `ISOLATION_GRAMMAR_AMENDMENT_PROPOSED / NOT_STARTED`。valid
+grammar external receipt 是新七文件 Phase 0 migration 的前置 authority，但
+receipt outcome 不回写本计划；这不代表 C04、Gate 1A 或 Gate 1H 已通过，
+Gate 1H 仍为 `PENDING`，Gate 2 继续 `LOCKED`。
