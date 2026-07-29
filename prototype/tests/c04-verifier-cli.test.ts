@@ -596,7 +596,10 @@ if (jsonIds.has(identity.commandId)) {
       ? resolve(import.meta.dirname, '..', '..', output)
       : output
   const statuses = {
-    'frozen-evidence-guard': 'PASS_EVIDENCE_LINEAGE',
+    'frozen-evidence-guard':
+      identity.mode === 'source'
+        ? 'PASS_SOURCE_SCOPE'
+        : 'PASS_EVIDENCE_LINEAGE',
     'manifest-fixtures': 'PASS_FIXTURES',
     'manifest-probe': 'PASS_AUTHORITY_PREFLIGHT',
     'runtime-equivalence': 'PASS_RUNTIME_EQUIVALENCE',

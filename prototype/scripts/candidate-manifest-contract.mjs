@@ -1693,13 +1693,17 @@ function runPhase6Command() {
       const document = JSON.parse(outputBytes.toString('utf8'))
       const sidecar = readFileSync(`${outputPath}.sha256`, 'utf8')
       const outputLabel = mode === 'integration' ? output : outputPath
+      const expectedStatus =
+        commandId === 'frozen-evidence-guard' && mode === 'source'
+          ? 'PASS_SOURCE_SCOPE'
+          : PHASE6_JSON_SUCCESS_STATUS[commandId]
       const expectedSidecar =
         `${createHash('sha256').update(outputBytes).digest('hex')}` +
         `  ${outputLabel}\n`
       if (
         JSON.stringify(document.phase6Identity) !==
           JSON.stringify(identity) ||
-        document.status !== PHASE6_JSON_SUCCESS_STATUS[commandId] ||
+        document.status !== expectedStatus ||
         sidecar !== expectedSidecar
       ) {
         throw new Error('C04_PHASE6_IDENTITY')
