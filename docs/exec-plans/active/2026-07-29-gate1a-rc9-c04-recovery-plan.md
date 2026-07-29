@@ -1220,25 +1220,25 @@ npm run runtime:equivalence -- \
 ```
 
 dependency integration 另外执行，并把输出保存到 C04
-`evidence/phase6/**`：
+`evidence/phase6-retry-01/**`：
 
 ```text
 npm run guard:frozen-evidence -- \
   --mode evidence-lineage \
   --baseline 5b9438cc5123ba35d8a703f3507bbf463e90176d \
   --head <integration-sha> \
-  --output data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6/frozen-evidence-guard.json
+  --output data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/frozen-evidence-guard.json
 npm run manifest:verify -- \
   --fixtures \
-  --output data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6/manifest-fixtures.json
+  --output data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/manifest-fixtures.json
 npm run manifest:verify -- \
   --probe tests/fixtures/manifests/candidate-c04-authority-probe.json \
   --repo-root .. \
-  --output data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6/manifest-probe.json
+  --output data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/manifest-probe.json
 npm run runtime:equivalence -- \
   --head <integration-sha> \
   --artifact-git-sha <source-sha> \
-  --output data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6/runtime-equivalence.json
+  --output data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/runtime-equivalence.json
 ```
 
 上述四个 integration Phase 6 JSON 是本轮新增 verifier no-clobber 的精确范围：
@@ -1246,15 +1246,37 @@ npm run runtime:equivalence -- \
 其 sidecar exact path 为：
 
 ```text
-data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6/frozen-evidence-guard.json.sha256
-data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6/manifest-fixtures.json.sha256
-data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6/manifest-probe.json.sha256
-data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6/runtime-equivalence.json.sha256
+data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/frozen-evidence-guard.json.sha256
+data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/manifest-fixtures.json.sha256
+data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/manifest-probe.json.sha256
+data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-01/runtime-equivalence.json.sha256
 ```
 
 每个 JSON 必须同时以 create-new 方式生成上述 sidecar；
 sidecar 逐字保存 JSON SHA-256 与 repo-relative path，JSON 或 sidecar 任一已存在都
 必须在写入前失败。
+
+`phase6-retry-01` 是 C04 唯一有效的 Phase 6 command-results root。十四项
+`commandResults[]` 的 JSON/TXT 都必须位于该目录；C01–C03 的既有
+`evidence/phase6/**` 路径不变。fixtures/probe 的非绝对 `--output` 必须以
+`repoRoot` 解析，不能以 `prototype` npm cwd 解析；外部 source preflight 仍只用
+绝对临时路径。回归测试必须从非 repo-root cwd 启动真实 production CLI，并证明
+repo-relative output 落到临时 repo root 下的 canonical path，未落到 cwd 下。
+
+旧 `evidence/phase6/frozen-evidence-guard.json/.sha256` 是失败尝试 A01 的永久
+只读输出，绑定 provisional I
+`3cc6de4f6c8458f51936a893b95ea08e62bb0883`。其 JSON SHA-256 为
+`e4ff204cc1cc13c92806bacd33826bafa6e8a2a3dac9911495e0c79059981c50`，
+preservation commit 为
+`bbda54826dc529ad3b93c55c4fd164463c842401`。A01 随后的 fixtures 调用因
+`CANDIDATE_MANIFEST_OUTPUT_PATH` fail-closed，未发布 manifest pair；失败日志
+SHA-256 为
+`81fe9f0c287fe48ef4084efab8f7a93293cdafa572af13daa1d8f4301216d206`。
+最终 E、CM01、freeze audit、IR 与 seal 不得把 A01 pair 当作
+`frozenEvidenceGuard` 或 command result，也不得删除、覆盖、移动或重签 A01
+pair。最终 I 必须是 source 修复后的全新 integration SHA；所有有效 Phase 6
+证据只从 `phase6-retry-01` create-new。
+
 freeze preparation 重新执行四类 verifier 时固定写入以下新路径，并由
 `freeze-preparation-audit.md` 只读引用：
 
@@ -1534,3 +1556,47 @@ PASS/FAIL。
 grammar external receipt 是新七文件 Phase 0 migration 的前置 authority，但
 receipt outcome 不回写本计划；这不代表 C04、Gate 1A 或 Gate 1H 已通过，
 Gate 1H 仍为 `PENDING`，Gate 2 继续 `LOCKED`。
+
+### 10.5 Phase 6 repo-root output amendment
+
+首次 dependency integration Phase 6 在 provisional I
+`3cc6de4f6c8458f51936a893b95ea08e62bb0883` 上暴露 output-resolution drift：
+`guard:frozen-evidence` 成功发布 A01 pair，但 `manifest:verify --fixtures`
+把 repo-relative `data/**` 解析到了 `prototype/data/**`，以
+`CANDIDATE_MANIFEST_OUTPUT_PATH` fail-closed 且未发布 manifest pair。独立合同
+复核结论为 `P0=0 / P1=1 / P2=0 / REVIEW_FAIL`；使用绝对 output 绕过冻结 argv
+不被接受。
+
+本 amendment 只授权以下最小恢复，不授权 P07/P08、D16–D20、CM01 或 Gate：
+
+1. 保留 A01 pair 与 preservation commit，不把 provisional I 当作最终 I；
+2. fixtures/probe 的 repo-relative output 改为以 verifier 的 `repoRoot`
+   解析，绝对外部临时 output 语义保持不变；
+3. C04 的十四项有效 Phase 6 command results 与四组 verifier pair 改用唯一
+   create-new root `evidence/phase6-retry-01/**`；C01–C03 路径不变；
+4. source allowlist 仍是 §4.2 的同一 49 个 exact paths，不得增加第 50 个 source
+   path；更新 plan authority、C04 fixtures/probe 和 fixture oracle hash 后重跑
+   source Phase 6；
+5. 新 source 必须重新完成三路独立复审；随后从 evidence baseline 创建包含同一
+   49 blobs 的新 I，再从空的 `phase6-retry-01` 运行 integration Phase 6；
+6. 新 Phase 6 独立复审通过前，不推送 final integration，不启动 P07/P08 或
+   D16–D20。
+
+本节只为修复首次 integration Phase 6 暴露的 repo-root output defect，
+额外 supersede §4.1 中“receipt 创建后本计划不得再修改”的 plan-immutability
+约束，以及 §2.3、§4.4、§5 中仅与 C04 Phase 6 command-results root 和
+fixtures/probe 相对 output 解析冲突的旧文字。旧 grammar external receipt
+继续只覆盖其逐字绑定的旧 plan SHA-256
+`7b1b657c7c2bed5c8c8524b059149e52db9ba39bbecb7ffb91b4dfa706e4ef3e`
+及未改变的 grammar/binary 合同；它不覆盖、不审查也不为本 amendment 背书。
+
+本 amendment 必须先由两名独立 reviewer 对当前 plan blob 各自得到
+`P0=0 / P1=0 / P2=0 / PASS`，之后创建只包含本计划文件的 plan-only commit，
+推送并在 #58 记录该 commit 为新的 `plan_ref`、本 plan blob SHA-256、两份 review
+结论和 A01 preservation commit。新 `plan_ref` 生成后本计划再次冻结；其后只能
+在 §4.2 既有 49-path source allowlist 内更新 entrypoint、代码、测试、fixtures
+与 authority hashes，不得再次修改本计划。新 `plan_ref` 记录完成前不得实现
+output 修复、创建新 I 或运行 retry。
+
+除上述精确 supersede 范围外，其余 I/E/M/F 拓扑、no-clobber、source
+allowlist、authority、identity、P/D 编号和 Gate 边界全部不变。
