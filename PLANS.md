@@ -4,7 +4,7 @@ Execution-plan entrypoint for `Project-004-New Era 2`.
 
 ## Current Active Plan
 
-- `docs/exec-plans/active/2026-07-29-gate1a-rc9-c04-recovery-plan.md` — 当前 `plan_ref=f0ba061250d8633669eff625f7aa8809b789e682`（supersedes `31c05fee5130cd25f6273037468928d9196858f0`）的 C04 纵向恢复计划；在保持 `standalone-codex-cli-v2`、ChatGPT app absolute Codex binary 与 Node 24 identity 不变的前提下，冻结 isolation grammar v2 的 discovery、recapture v3 与 external review receipt，分配 P07/P08、D16–D20，并在完整重跑后才允许 #50 分配 CM01。
+- `docs/exec-plans/active/2026-07-29-gate1a-rc9-c04-recovery-plan.md` — 当前 `plan_ref=05ca9bd0777280d2a455a12ddd4d6a5a46a0c086`（supersedes `f0ba061250d8633669eff625f7aa8809b789e682`）的 C04 纵向恢复计划；A01 已 fail-closed 并永久保存，唯一有效 Phase 6 root 为 `phase6-retry-01`。在保持 `standalone-codex-cli-v2`、ChatGPT app absolute Codex binary 与 Node 24 identity 不变的前提下，只有完整重跑通过后才允许 #50 分配 CM01。
 - `docs/exec-plans/active/2026-07-27-gate1a-rc9-c03-recovery-plan.md` — C03 历史纵向恢复计划；玩法、P05/P06 与 D11–D15 已完成，但最终在 RC9-11 freeze preparation 以 `REJECTED_FREEZE_PREPARATION` 收口，C03 及其全部证据永久只读。
 - `docs/exec-plans/active/2026-07-27-gate1a-rc9-remediation-plan.md` — RC8 `AGENT_PROXY_FAIL` 后的 RC9 责任承诺模型受控转向与复测计划；修复周结转、化肥生命周期、tick 1002 换周状态和 request 遥测分类，使用新协议/schema/scenario、两阶段封存与 A38–A44 全新七样本 cohort。
 - `docs/exec-plans/active/2026-07-26-v0.4-prototype-validation-plan.md` — V0.4 分阶段原型验证总控计划；Gate 0 已通过，下一步是 Gate 1 两周经营原型，不直接开发完整三个月。

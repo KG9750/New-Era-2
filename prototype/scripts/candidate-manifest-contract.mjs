@@ -122,14 +122,20 @@ export function antiPassEvidencePath(candidateAttempt, sampleId) {
   return `${candidateRoot(candidateAttempt)}/anti-pass/${sampleId}/result.json`
 }
 
+function phase6EvidenceRoot(candidateAttempt) {
+  const directory =
+    candidateAttempt === 'C04' ? 'phase6-retry-01' : 'phase6'
+  return `${candidateRoot(candidateAttempt)}/evidence/${directory}`
+}
+
 export function frozenEvidenceGuardPath(candidateAttempt) {
-  return `${candidateRoot(candidateAttempt)}/evidence/phase6/frozen-evidence-guard.json`
+  return `${phase6EvidenceRoot(candidateAttempt)}/frozen-evidence-guard.json`
 }
 
 export function commandOutputPath(candidateAttempt, commandId) {
   const filename = COMMAND_OUTPUT_FILES[commandId]
   return filename
-    ? `${candidateRoot(candidateAttempt)}/evidence/phase6/${filename}`
+    ? `${phase6EvidenceRoot(candidateAttempt)}/${filename}`
     : null
 }
 

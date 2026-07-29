@@ -2,6 +2,7 @@
 import { spawnSync } from 'node:child_process'
 import { createHash } from 'node:crypto'
 import {
+  cpSync,
   existsSync,
   mkdirSync,
   mkdtempSync,
@@ -577,7 +578,7 @@ function createFullManifestRepository() {
 
   const commandResults = requiredCommandIds.map((id) => {
     const outputPath =
-      `${c04Root}/evidence/phase6/` +
+      `${c04Root}/evidence/phase6-retry-01/` +
       ({
         'schema-fixtures': 'schema-fixtures.txt',
         'guard-rc8': 'guard-rc8.txt',
@@ -679,7 +680,8 @@ function createFullManifestRepository() {
     return { id, status: 'PASS', outputPath, outputHash: binding.sha256 }
   })
 
-  const guardPath = `${c04Root}/evidence/phase6/frozen-evidence-guard.json`
+  const guardPath =
+    `${c04Root}/evidence/phase6-retry-01/frozen-evidence-guard.json`
   const guard = writeJson(repo, guardPath, {
     schemaVersion: 'gate1a-frozen-evidence-guard-v1',
     mode: 'evidence-lineage',
@@ -852,6 +854,74 @@ describe('candidate playtest manifest production CLI', () => {
     expect(parseLine(repeated.stderr).errorCode).toBe(
       'CANDIDATE_MANIFEST_OUTPUT_EXISTS',
     )
+  })
+
+  it('resolves a repo-relative fixtures output from repoRoot, not cwd', () => {
+    const root = temporaryDirectory('new-era-manifest-relative-output-')
+    const repo = join(root, 'repo')
+    const prototype = join(repo, 'prototype')
+    const script = join(
+      prototype,
+      'scripts',
+      'verify-playtest-manifest.mjs',
+    )
+    const output =
+      `${c04Root}/evidence/phase6-retry-01/manifest-fixtures.json`
+    mkdirSync(join(prototype, 'scripts'), { recursive: true })
+    mkdirSync(dirname(join(repo, output)), { recursive: true })
+    cpSync(verifier, script)
+    cpSync(
+      resolve('scripts', 'candidate-manifest-contract.mjs'),
+      join(prototype, 'scripts', 'candidate-manifest-contract.mjs'),
+    )
+    cpSync(
+      resolve('tests', 'fixtures'),
+      join(prototype, 'tests', 'fixtures'),
+      { recursive: true },
+    )
+    for (const [, path] of authorityPaths) {
+      const target = join(repo, path)
+      mkdirSync(dirname(target), { recursive: true })
+      cpSync(resolve('..', path), target)
+    }
+
+    const result = spawnSync(
+      process.execPath,
+      [script, '--fixtures', '--output', output],
+      { cwd: prototype, encoding: 'utf8' },
+    )
+
+    expect(result.status, result.stderr).toBe(0)
+    expect(existsSync(join(repo, output))).toBe(true)
+    expect(existsSync(`${join(repo, output)}.sha256`)).toBe(true)
+    expect(existsSync(join(prototype, output))).toBe(false)
+    expect(
+      readFileSync(`${join(repo, output)}.sha256`, 'utf8'),
+    ).toContain(`  ${output}\n`)
+
+    const probeOutput =
+      `${c04Root}/evidence/phase6-retry-01/manifest-probe.json`
+    const probe = spawnSync(
+      process.execPath,
+      [
+        script,
+        '--probe',
+        'tests/fixtures/manifests/candidate-c04-authority-probe.json',
+        '--repo-root',
+        '..',
+        '--output',
+        probeOutput,
+      ],
+      { cwd: prototype, encoding: 'utf8' },
+    )
+
+    expect(probe.status, probe.stderr).toBe(0)
+    expect(existsSync(join(repo, probeOutput))).toBe(true)
+    expect(existsSync(`${join(repo, probeOutput)}.sha256`)).toBe(true)
+    expect(existsSync(join(prototype, probeOutput))).toBe(false)
+    expect(
+      readFileSync(`${join(repo, probeOutput)}.sha256`, 'utf8'),
+    ).toContain(`  ${probeOutput}\n`)
   })
 
   it('runs probe mode against the nine real authority files', () => {

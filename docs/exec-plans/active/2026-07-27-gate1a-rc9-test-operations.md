@@ -9,7 +9,7 @@
 | 测试运营负责人 | 根 agent `/root` |
 | RC9 基线计划 authority | `2026-07-27-gate1a-rc9-remediation-plan.md` |
 | C04 当前计划 authority | `2026-07-29-gate1a-rc9-c04-recovery-plan.md` |
-| C04 当前 `plan_ref` | `f0ba061250d8633669eff625f7aa8809b789e682`，supersedes `31c05fee5130cd25f6273037468928d9196858f0` |
+| C04 当前 `plan_ref` | `05ca9bd0777280d2a455a12ddd4d6a5a46a0c086`，supersedes `f0ba061250d8633669eff625f7aa8809b789e682` |
 | 协议 authority | `../../product-specs/weekly-management-slice-playtest-v0.2.md` |
 | 设计 authority | `../../design-docs/weekly-plan-production-forecast-slice-v0.2.md` |
 
@@ -412,8 +412,9 @@ RC9-01 失败时保持 RC9-02 阻塞，不得先写生产代码。
 - C03 继续由其已拒绝的 recovery contract 与 rejection record 解释；
 - C04 由已推送的
   `2026-07-29-gate1a-rc9-c04-recovery-plan.md`、当前
-  `plan_ref=f0ba061250d8633669eff625f7aa8809b789e682` 和本节共同解释；
-  `31c05fee5130cd25f6273037468928d9196858f0` 只保留为 compatibility v2
+  `plan_ref=05ca9bd0777280d2a455a12ddd4d6a5a46a0c086` 和本节共同解释；
+  `f0ba061250d8633669eff625f7aa8809b789e682` 只保留为 grammar/binary
+  版本限定父权威，`31c05fee5130cd25f6273037468928d9196858f0` 只保留为 compatibility v2
   父权威，`c085bb63a2cbce790e47859ec49ff05c58283c74` 只保留为更早历史。
 
 ### 17.1 C04 authority
