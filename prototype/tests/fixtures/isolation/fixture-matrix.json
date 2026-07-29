@@ -1,0 +1,191 @@
+{
+  "schemaVersion": "new-era-diagnostic-isolation-fixture-matrix-v1",
+  "fixtures": [
+    {
+      "fixtureId": "G01",
+      "mutation": "删除 persisted envelope 的 required timestamp key",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_GRAMMAR_EXACT_KEYS"
+    },
+    {
+      "fixtureId": "G02",
+      "mutation": "给 persisted envelope 增加一个 unknown key",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_GRAMMAR_EXACT_KEYS"
+    },
+    {
+      "fixtureId": "G03",
+      "mutation": "把 persisted timestamp 从 string 改为 number",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_GRAMMAR_NATIVE_TYPE"
+    },
+    {
+      "fixtureId": "G04",
+      "mutation": "把 persisted 顶层 type 改为 unknown",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_GRAMMAR_TOP_LEVEL"
+    },
+    {
+      "fixtureId": "G05",
+      "mutation": "把一个 persisted payload subtype 改为 unknown",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_GRAMMAR_SUBTYPE"
+    },
+    {
+      "fixtureId": "L01",
+      "mutation": "把 started MCP tuple 的 error 从 null 改为 object",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_MCP_LIFECYCLE"
+    },
+    {
+      "fixtureId": "L02",
+      "mutation": "把 completed-failed MCP tuple 的 result 从 null 改为 object",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_MCP_LIFECYCLE"
+    },
+    {
+      "fixtureId": "L03",
+      "mutation": "把 completed-success MCP tuple 的 error 从 null 改为 object",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_MCP_LIFECYCLE"
+    },
+    {
+      "fixtureId": "L04",
+      "mutation": "把 MCP status 改为未允许 literal",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_MCP_STATUS"
+    },
+    {
+      "fixtureId": "C01",
+      "mutation": "使 exec thread id 与 persisted session id 不等",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_CORRELATION_THREAD"
+    },
+    {
+      "fixtureId": "C02",
+      "mutation": "使 task_complete turn id 与 task_started turn id 不等",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_CORRELATION_TURN"
+    },
+    {
+      "fixtureId": "C03",
+      "mutation": "使 failed function output call id 与 call/end 不等",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_CORRELATION_FUNCTION"
+    },
+    {
+      "fixtureId": "C04",
+      "mutation": "使 successful custom output call id 与 call 不等",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_CORRELATION_CUSTOM_EQUALITY"
+    },
+    {
+      "fixtureId": "C05",
+      "mutation": "使 successful custom end call id 与 call 相等",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_CORRELATION_CUSTOM_INEQUALITY"
+    },
+    {
+      "fixtureId": "C06",
+      "mutation": "使 exec MCP started 与 completed item id 不等",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_CORRELATION_MCP_EQUALITY"
+    },
+    {
+      "fixtureId": "C07",
+      "mutation": "使 exec MCP item id 与 persisted chain id 相等",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_CORRELATION_MCP_INEQUALITY"
+    },
+    {
+      "fixtureId": "O01",
+      "mutation": "倒置 persisted call 与 end 的相邻次序",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_ORDER_PERSISTED_TOOL"
+    },
+    {
+      "fixtureId": "O02",
+      "mutation": "使 exec MCP completed 早于 started",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_ORDER_EXEC_MCP"
+    },
+    {
+      "fixtureId": "T01",
+      "mutation": "使 tool search output 早于 call",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_ORDER_TOOL_SEARCH"
+    },
+    {
+      "fixtureId": "T02",
+      "mutation": "漂移 tool search provider name literal",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_TOOL_SEARCH_PROVIDER"
+    },
+    {
+      "fixtureId": "T03",
+      "mutation": "漂移 tool search execution literal",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_TOOL_SEARCH_STATUS"
+    },
+    {
+      "fixtureId": "T04",
+      "mutation": "把 tool search limit 从 1 改为 2",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_TOOL_SEARCH_ARGUMENTS"
+    },
+    {
+      "fixtureId": "T05",
+      "mutation": "对 tool search query 做单字符漂移",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_TOOL_SEARCH_ARGUMENTS"
+    },
+    {
+      "fixtureId": "T06",
+      "mutation": "使 tool search output call id 与 call 不等",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_CORRELATION_TOOL_SEARCH_EQUALITY"
+    },
+    {
+      "fixtureId": "T07",
+      "mutation": "使 tool search call id 字段等于自己的 call id",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_CORRELATION_TOOL_SEARCH_INEQUALITY"
+    },
+    {
+      "fixtureId": "T08",
+      "mutation": "使 tool search output id 等于对应 call id",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_CORRELATION_TOOL_SEARCH_INEQUALITY"
+    },
+    {
+      "fixtureId": "T09",
+      "mutation": "使 tool search output id 等于 call response id",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_CORRELATION_TOOL_SEARCH_INEQUALITY"
+    },
+    {
+      "fixtureId": "R01",
+      "mutation": "同场两个 persisted response item 复用 id",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_RESPONSE_ID_UNIQUENESS"
+    },
+    {
+      "fixtureId": "S01",
+      "mutation": "使 fresh source object commitment 与 bytes/lines 不匹配",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_GOLDEN_SOURCE_COMMITMENT"
+    },
+    {
+      "fixtureId": "S02",
+      "mutation": "使 fresh source opaque object 缺失",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_GOLDEN_SOURCE_UNAVAILABLE"
+    },
+    {
+      "fixtureId": "U01",
+      "mutation": "让 grammar-valid custom name exec 进入 D16 tool policy",
+      "expectedAccepted": false,
+      "expectedErrorCode": "ISOLATION_TOOL_POLICY_LEAF"
+    }
+  ]
+}

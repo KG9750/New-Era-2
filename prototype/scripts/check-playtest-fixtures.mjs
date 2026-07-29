@@ -2,11 +2,34 @@ import { readFile, readdir } from 'node:fs/promises'
 import { createHash } from 'node:crypto'
 import { dirname, join, relative, resolve } from 'node:path'
 import { fileURLToPath } from 'node:url'
+import {
+  validateCandidateAuthority,
+  validateCandidateManifest,
+} from './candidate-manifest-contract.mjs'
+import {
+  validateDiagnosticIsolation,
+  validateDiagnosticIsolationFixtureMatrix,
+} from './verify-diagnostic-isolation.mjs'
 import { validateCanonicalManagementLedger } from './management-ledger-contract.mjs'
 
 const prototypeRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
 const fixturesRoot = join(prototypeRoot, 'tests', 'fixtures')
 const expectationsPath = join(fixturesRoot, 'fixture-expectations.json')
+const isolationFixturesRoot = join(fixturesRoot, 'isolation')
+const isolationSourceDocuments = {
+  'sample-valid.json': JSON.parse(
+    await readFile(
+      join(isolationFixturesRoot, 'sample-valid.json'),
+      'utf8',
+    ),
+  ),
+  'aggregate-valid.json': JSON.parse(
+    await readFile(
+      join(isolationFixturesRoot, 'aggregate-valid.json'),
+      'utf8',
+    ),
+  ),
+}
 const legacyBranchMatrixBaselinePath = join(
   fixturesRoot,
   'legacy',
@@ -17,8 +40,6 @@ const GIT_SHA = /^[a-f0-9]{40}$/
 const SAMPLE_ID_V1 = /^(?:A\d{2,}|P\d{2,}|M-[ABC])$/
 const SAMPLE_ID_V2_AGENT = /^A(?:3[89]|[4-9]\d|[1-9]\d{2,})$/
 const SAMPLE_ID_V2_TECH = /^TECH-RC9-[DP](?:0[1-9]|[1-9]\d+)$/
-const CANDIDATE_ATTEMPT_ID = /^C(?:0[1-9]|[1-9]\d+)$/
-const CANDIDATE_MANIFEST_ID = /^CM(?:0[1-9]|[1-9]\d+)$/
 
 function isRecord(value) {
   return value !== null && typeof value === 'object' && !Array.isArray(value)
@@ -2245,200 +2266,6 @@ function validateDominanceCase(input) {
   return accept({ dominanceStatus: statuses })
 }
 
-function validateCandidateManifest(input) {
-  if (
-    !isRecord(input) ||
-    !CANDIDATE_MANIFEST_ID.test(input.candidateManifestId ?? '') ||
-    !CANDIDATE_ATTEMPT_ID.test(input.candidateAttempt ?? '') ||
-    input.status !== 'PENDING_INDEPENDENT_REVIEW' ||
-    !GIT_SHA.test(input.sourceSha ?? '') ||
-    !HEX_64.test(input.artifactHash ?? '') ||
-    !HEX_64.test(input.archiveHash ?? '') ||
-    !Array.isArray(input.authorityHashes) ||
-    !Array.isArray(input.rejectedAttempts) ||
-    !input.rejectedAttempts.every(
-      (attempt) =>
-        isRecord(attempt) &&
-        CANDIDATE_ATTEMPT_ID.test(attempt.candidateAttempt ?? '') &&
-        HEX_64.test(attempt.rejectionHash ?? ''),
-    )
-  ) {
-    return reject('CANDIDATE_MANIFEST_SHAPE')
-  }
-
-  const requiredAuthorityPaths = {
-    protocol:
-      'docs/product-specs/weekly-management-slice-playtest-v0.2.md',
-    design:
-      'docs/design-docs/weekly-plan-production-forecast-slice-v0.2.md',
-    operations:
-      'docs/exec-plans/active/2026-07-27-gate1a-rc9-test-operations.md',
-    'player-packet':
-      'data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/player-packet-v0.2.md',
-    interview:
-      'data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/post-session-interview-v0.2.md',
-    'fixture-oracle':
-      'prototype/tests/fixtures/fixture-expectations.json',
-    'capture-host': 'prototype/scripts/playtest-host.mjs',
-  }
-  const requiredAuthorityRoles = Object.keys(requiredAuthorityPaths)
-  const authorityRoles = input.authorityHashes.map((entry) => entry?.role)
-  const authorityPaths = input.authorityHashes.map((entry) => entry?.path)
-  if (
-    input.authorityHashes.length !== requiredAuthorityRoles.length ||
-    !input.authorityHashes.every(
-      (entry) =>
-        isRecord(entry) &&
-        requiredAuthorityRoles.includes(entry.role) &&
-        entry.path === requiredAuthorityPaths[entry.role] &&
-        HEX_64.test(entry.sha256 ?? ''),
-    ) ||
-    new Set(authorityRoles).size !== authorityRoles.length ||
-    new Set(authorityPaths).size !== authorityPaths.length ||
-    !requiredAuthorityRoles.every((role) => authorityRoles.includes(role))
-  ) {
-    return reject('CANDIDATE_MANIFEST_AUTHORITY')
-  }
-
-  const manifestNumber = Number(input.candidateManifestId.slice(2))
-  const attemptNumber = Number(input.candidateAttempt.slice(1))
-  const expectedPriorManifestIds = Array.from(
-    { length: manifestNumber - 1 },
-    (_, index) => `CM${String(index + 1).padStart(2, '0')}`,
-  )
-  if (
-    !Array.isArray(input.priorManifests) ||
-    !input.priorManifests.every(
-      (entry) =>
-        isRecord(entry) &&
-        CANDIDATE_MANIFEST_ID.test(entry.candidateManifestId ?? '') &&
-        CANDIDATE_ATTEMPT_ID.test(entry.candidateAttempt ?? '') &&
-        HEX_64.test(entry.manifestHash ?? '') &&
-        [
-          'REJECTED_INDEPENDENT_REVIEW',
-          'REJECTED_SEAL',
-        ].includes(entry.status),
-    ) ||
-    !sameJson(
-      input.priorManifests.map(
-        (entry) => entry.candidateManifestId,
-      ),
-      expectedPriorManifestIds,
-    )
-  ) {
-    return reject('CANDIDATE_MANIFEST_HISTORY')
-  }
-  const priorManifestAttemptIds = input.priorManifests.map(
-    (entry) => entry.candidateAttempt,
-  )
-  const rejectedAttemptIds = input.rejectedAttempts.map(
-    (entry) => entry.candidateAttempt,
-  )
-  const expectedPriorAttemptIds = Array.from(
-    { length: attemptNumber - 1 },
-    (_, index) => `C${String(index + 1).padStart(2, '0')}`,
-  )
-  if (
-    new Set(priorManifestAttemptIds).size !==
-      priorManifestAttemptIds.length ||
-    new Set(rejectedAttemptIds).size !== rejectedAttemptIds.length ||
-    priorManifestAttemptIds.includes(input.candidateAttempt) ||
-    priorManifestAttemptIds.some(
-      (candidateAttempt) =>
-        !rejectedAttemptIds.includes(candidateAttempt),
-    ) ||
-    !sameJson(
-      rejectedAttemptIds,
-      expectedPriorAttemptIds,
-    )
-  ) {
-    return reject('CANDIDATE_MANIFEST_HISTORY')
-  }
-
-  const requiredCommandIds = [
-    'lint',
-    'test',
-    'build',
-    'rc-build',
-    'rc-verify',
-    'e2e-rc',
-    'rc-archive',
-    'rc-verify-archive',
-    'schema-fixtures',
-    'guard-rc8',
-    'manifest-verify',
-    'rc-repro',
-  ]
-  const commandIds = input.commandResults?.map((entry) => entry?.id) ?? []
-  const expectedDiagnosticIds = Array.from(
-    { length: 5 },
-    (_, index) =>
-      `TECH-RC9-D${String((attemptNumber - 1) * 5 + index + 1).padStart(2, '0')}`,
-  )
-  const expectedAntiPassIds = Array.from(
-    { length: 2 },
-    (_, index) =>
-      `TECH-RC9-P${String((attemptNumber - 1) * 2 + index + 1).padStart(2, '0')}`,
-  )
-  const diagnosticIds = input.diagnosticManifest?.sampleIds ?? []
-  const antiPassIds = input.antiPass?.map((entry) => entry?.sampleId) ?? []
-  if (
-    !GIT_SHA.test(input.dependencyIntegrationSha ?? '') ||
-    !HEX_64.test(input.candidateAttemptManifestHash ?? '') ||
-    typeof input.buildId !== 'string' ||
-    input.buildId.length === 0 ||
-    input.scenarioId !== 'gate1-two-week-management' ||
-    input.scenarioVersion !== '0.5.0' ||
-    input.schemaVersion !== 'gate1-playtest-v2' ||
-    !isRecord(input.diagnosticManifest) ||
-    input.diagnosticManifest.status !== 'PASS' ||
-    input.diagnosticManifest.path !==
-      `candidates/${input.candidateAttempt}/diagnostics/manifest.json` ||
-    !HEX_64.test(input.diagnosticManifest.sha256 ?? '') ||
-    !Array.isArray(input.diagnosticManifest.sampleIds) ||
-    input.diagnosticManifest.sampleIds.length !== 5 ||
-    new Set(input.diagnosticManifest.sampleIds).size !== 5 ||
-    !sameJson(diagnosticIds, expectedDiagnosticIds) ||
-    !Array.isArray(input.antiPass) ||
-    input.antiPass.length !== 2 ||
-    !input.antiPass.every(
-      (entry) =>
-        isRecord(entry) &&
-        SAMPLE_ID_V2_TECH.test(entry.sampleId ?? '') &&
-        entry.status === 'PASS' &&
-        HEX_64.test(entry.evidenceHash ?? ''),
-    ) ||
-    new Set(input.antiPass.map((entry) => entry.sampleId)).size !== 2 ||
-    !sameJson(antiPassIds, expectedAntiPassIds) ||
-    !isRecord(input.rc8Guard) ||
-    !GIT_SHA.test(input.rc8Guard.baselineSha ?? '') ||
-    !GIT_SHA.test(input.rc8Guard.treeId ?? '') ||
-    !HEX_64.test(input.rc8Guard.inventorySha256 ?? '') ||
-    input.rc8Guard.status !== 'PASS' ||
-    !Array.isArray(input.commandResults) ||
-    input.commandResults.length !== requiredCommandIds.length ||
-    new Set(commandIds).size !== commandIds.length ||
-    !requiredCommandIds.every((id) => commandIds.includes(id)) ||
-    !input.commandResults.every(
-      (entry) =>
-        isRecord(entry) &&
-        requiredCommandIds.includes(entry.id) &&
-        entry.status === 'PASS' &&
-        HEX_64.test(entry.outputHash ?? ''),
-    ) ||
-    input.rejectedAttempts.some(
-      (entry) => entry.candidateAttempt === input.candidateAttempt,
-    )
-  ) {
-    return reject('CANDIDATE_MANIFEST_EVIDENCE')
-  }
-
-  return accept({
-    candidateManifestId: input.candidateManifestId,
-    candidateAttempt: input.candidateAttempt,
-  })
-}
-
 function validateDecisionHashCase(input) {
   if (
     !isRecord(input) ||
@@ -2624,6 +2451,21 @@ function validateOutcomeFingerprintCase(input) {
 }
 
 function validateFixture(fixture) {
+  if (
+    fixture?.kind === 'sample' ||
+    fixture?.kind === 'aggregate'
+  ) {
+    return validateDiagnosticIsolation(fixture)
+  }
+  if (
+    fixture?.schemaVersion ===
+    'new-era-diagnostic-isolation-fixture-matrix-v1'
+  ) {
+    return validateDiagnosticIsolationFixtureMatrix(
+      fixture,
+      isolationSourceDocuments,
+    )
+  }
   if (!isRecord(fixture) || typeof fixture.fixtureId !== 'string') {
     return reject('FIXTURE_SHAPE')
   }
@@ -2651,6 +2493,9 @@ function validateFixture(fixture) {
   }
   if (fixture.kind === 'candidate-manifest') {
     return validateCandidateManifest(fixture.input)
+  }
+  if (fixture.kind === 'candidate-authority-probe') {
+    return validateCandidateAuthority(fixture.input)
   }
   if (fixture.kind === 'decision-hash-case') {
     return validateDecisionHashCase(fixture.input)
@@ -2785,11 +2630,24 @@ const requiredFixtureFiles = [
   'playtest-v03/duplicate-action-id-rejected.json',
   'playtest-v03/duplicate-action-sequence-rejected.json',
   'playtest-v03/unsettled-recap-settled-field-rejected.json',
+  'isolation/sample-valid.json',
+  'isolation/aggregate-valid.json',
+  'isolation/fixture-matrix.json',
   'manifests/candidate-valid.json',
   'manifests/candidate-invalid-source-sha.json',
   'manifests/candidate-invalid-incomplete-authority.json',
   'manifests/candidate-zero-id-rejected.json',
   'manifests/candidate-c02-reuses-c01-evidence-rejected.json',
+  'manifests/candidate-c04-synthetic-valid.json',
+  'manifests/candidate-missing-profile-rejected.json',
+  'manifests/candidate-unknown-profile-rejected.json',
+  'manifests/candidate-v03-scenario-mismatch-rejected.json',
+  'manifests/candidate-v03-protocol-mismatch-rejected.json',
+  'manifests/candidate-v03-role-mismatch-rejected.json',
+  'manifests/candidate-v03-path-mismatch-rejected.json',
+  'manifests/candidate-v03-extra-authority-rejected.json',
+  'manifests/candidate-c03-rejection-history-rejected.json',
+  'manifests/candidate-c04-authority-probe.json',
 ]
 const REQUIRED_FIXTURE_OUTCOMES = new Map([
   ['playtest-v1/complete-valid.json', [true, null]],
@@ -2858,11 +2716,24 @@ const REQUIRED_FIXTURE_OUTCOMES = new Map([
   ['playtest-v03/duplicate-action-id-rejected.json', [false, 'V03_ACTION_MISMATCH']],
   ['playtest-v03/duplicate-action-sequence-rejected.json', [false, 'V03_ACTION_MISMATCH']],
   ['playtest-v03/unsettled-recap-settled-field-rejected.json', [false, 'V03_RECAP_MISMATCH']],
+  ['isolation/sample-valid.json', [true, null]],
+  ['isolation/aggregate-valid.json', [true, null]],
+  ['isolation/fixture-matrix.json', [true, null]],
   ['manifests/candidate-zero-id-rejected.json', [false, 'CANDIDATE_MANIFEST_SHAPE']],
   ['manifests/candidate-c02-reuses-c01-evidence-rejected.json', [false, 'CANDIDATE_MANIFEST_EVIDENCE']],
   ['manifests/candidate-c02-first-manifest-valid.json', [true, null]],
   ['manifests/candidate-c02-second-manifest-valid.json', [true, null]],
   ['manifests/candidate-c01-rewrapped-by-cm02-rejected.json', [false, 'CANDIDATE_MANIFEST_HISTORY']],
+  ['manifests/candidate-c04-synthetic-valid.json', [true, null]],
+  ['manifests/candidate-missing-profile-rejected.json', [false, 'CANDIDATE_MANIFEST_AUTHORITY_PROFILE']],
+  ['manifests/candidate-unknown-profile-rejected.json', [false, 'CANDIDATE_MANIFEST_AUTHORITY_PROFILE']],
+  ['manifests/candidate-v03-scenario-mismatch-rejected.json', [false, 'CANDIDATE_MANIFEST_AUTHORITY_VERSION']],
+  ['manifests/candidate-v03-protocol-mismatch-rejected.json', [false, 'CANDIDATE_MANIFEST_AUTHORITY_VERSION']],
+  ['manifests/candidate-v03-role-mismatch-rejected.json', [false, 'CANDIDATE_MANIFEST_AUTHORITY']],
+  ['manifests/candidate-v03-path-mismatch-rejected.json', [false, 'CANDIDATE_MANIFEST_AUTHORITY']],
+  ['manifests/candidate-v03-extra-authority-rejected.json', [false, 'CANDIDATE_MANIFEST_AUTHORITY']],
+  ['manifests/candidate-c03-rejection-history-rejected.json', [false, 'CANDIDATE_MANIFEST_HISTORY']],
+  ['manifests/candidate-c04-authority-probe.json', [true, null]],
   ['playtest-v2/food-shortfall-committed-valid.json', [true, null]],
   ['playtest-v2/repair-schedule-committed-valid.json', [true, null]],
   ['playtest-v2/repair-schedule-chen-committed-valid.json', [true, null]],
@@ -2979,13 +2850,29 @@ for (const expectation of expectations.fixtures) {
     continue
   }
   listedFiles.add(resolve(fixturePath))
-  if (fixtureIds.has(fixture.fixtureId)) {
-    failures.push(`重复 fixtureId：${fixture.fixtureId}`)
+  const fixtureIdentity =
+    typeof fixture.fixtureId === 'string'
+      ? fixture.fixtureId
+      : expectation.file
+  if (fixtureIds.has(fixtureIdentity)) {
+    failures.push(`重复 fixtureId：${fixtureIdentity}`)
     continue
   }
-  fixtureIds.add(fixture.fixtureId)
+  fixtureIds.add(fixtureIdentity)
   const requiredAssertionKeys = (() => {
     if (expectation.assertions.accepted !== true) return []
+    if (fixture.kind === 'sample') {
+      return ['sampleId']
+    }
+    if (fixture.kind === 'aggregate') {
+      return ['sampleIds', 'serialExecution']
+    }
+    if (
+      fixture.schemaVersion ===
+      'new-era-diagnostic-isolation-fixture-matrix-v1'
+    ) {
+      return ['fixtureCount']
+    }
     if (fixture.kind === 'playtest-export') {
       return [
         'schemaVersion',
@@ -3021,6 +2908,13 @@ for (const expectation of expectations.fixtures) {
     }
     if (fixture.kind === 'candidate-manifest') {
       return ['candidateManifestId', 'candidateAttempt']
+    }
+    if (fixture.kind === 'candidate-authority-probe') {
+      return [
+        'authorityProfile',
+        'scenarioVersion',
+        'protocolVersion',
+      ]
     }
     return []
   })()

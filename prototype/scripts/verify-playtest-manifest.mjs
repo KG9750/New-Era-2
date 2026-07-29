@@ -1,243 +1,2373 @@
-import { readFileSync } from 'node:fs'
-import { resolve } from 'node:path'
+import { createHash, randomUUID } from 'node:crypto'
+import { execFile } from 'node:child_process'
+import {
+  link,
+  lstat,
+  open,
+  readFile,
+  unlink,
+} from 'node:fs/promises'
+import {
+  dirname,
+  join,
+  posix,
+  relative,
+  resolve,
+  sep,
+} from 'node:path'
+import { promisify } from 'node:util'
+import { fileURLToPath } from 'node:url'
+import {
+  AUTHORITY_PROFILES,
+  EVIDENCE_BASELINE,
+  RC9_COHORT_ROOT,
+  REJECTION_AUTHORITIES,
+  antiPassEvidencePath,
+  candidateBuildManifestPath,
+  candidateManifestPath,
+  candidateRoot,
+  diagnosticManifestPath,
+  frozenEvidenceGuardPath,
+  isRecord,
+  isRepoRelativePath,
+  validateCandidateAuthority,
+  validateCandidateManifest,
+} from './candidate-manifest-contract.mjs'
 
+const execFileAsync = promisify(execFile)
+const SCHEMA_VERSION = 'candidate-manifest-verification-v1'
+const prototypeRoot = resolve(dirname(fileURLToPath(import.meta.url)), '..')
+const defaultRepoRoot = resolve(prototypeRoot, '..')
+const fixturesRoot = join(prototypeRoot, 'tests', 'fixtures')
+const manifestFixturesRoot = join(fixturesRoot, 'manifests')
+const expectationsPath = join(fixturesRoot, 'fixture-expectations.json')
+const CANONICAL_CM01_PATH = candidateManifestPath('CM01')
+const C04_ROOT = `${RC9_COHORT_ROOT}/candidates/C04`
 const HEX_64 = /^[a-f0-9]{64}$/
 const GIT_SHA = /^[a-f0-9]{40}$/
-const SAMPLE_ID_V2_TECH = /^TECH-RC9-[DP](?:0[1-9]|[1-9]\d+)$/
-const CANDIDATE_ATTEMPT_ID = /^C(?:0[1-9]|[1-9]\d+)$/
-const CANDIDATE_MANIFEST_ID = /^CM(?:0[1-9]|[1-9]\d+)$/
-const REQUIRED_AUTHORITY_PATHS = {
-  protocol:
-    'docs/product-specs/weekly-management-slice-playtest-v0.2.md',
-  design:
-    'docs/design-docs/weekly-plan-production-forecast-slice-v0.2.md',
-  operations:
-    'docs/exec-plans/active/2026-07-27-gate1a-rc9-test-operations.md',
-  'player-packet':
-    'data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/player-packet-v0.2.md',
-  interview:
-    'data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/post-session-interview-v0.2.md',
-  'fixture-oracle': 'prototype/tests/fixtures/fixture-expectations.json',
-  'capture-host': 'prototype/scripts/playtest-host.mjs',
+const ISOLATION_PROFILE = 'standalone-codex-cli-v2'
+const ISOLATION_CLI_BINARY =
+  '/Applications/ChatGPT.app/Contents/Resources/codex'
+const ISOLATION_CLI_VERSION = 'codex-cli 0.146.0-alpha.3.1'
+const ISOLATION_CLI_SHA256 =
+  '6d8be49e49751554df16572369e636cbe02c84b208cad3dc35528c846eeca223'
+const ISOLATION_CLI_TEAM_IDENTIFIER = '2DC432GLL2'
+const ISOLATION_CLI_AUTHORITY =
+  'Developer ID Application: OpenAI OpCo, LLC (2DC432GLL2)'
+const ISOLATION_NODE_EXECUTABLE = '/opt/homebrew/opt/node@24/bin/node'
+const ISOLATION_NODE_VERSION = 'v24.18.0'
+const ISOLATION_NODE_SHA256 =
+  '72c18e2eeda260f67a5b2b66e96fa9b5ad82864676ebb54925695d87120cae3f'
+const FROZEN_EVIDENCE = Object.freeze([
+  {
+    path: 'data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc8-01',
+    treeId: 'c5714f7ca7adb5e8fe052d4d00f27c545b988347',
+    fileCount: 67,
+    inventorySha256:
+      '3f55528ad8993aae8646a152489227eee76c280e0ae2c2d092b57dc2ec5398e2',
+  },
+  {
+    path: `${RC9_COHORT_ROOT}/candidates/C01`,
+    treeId: '55f661518c7ed8a2cc99f0fc0f25fabecd24c286',
+    fileCount: 41,
+    inventorySha256:
+      'fa7a926f64dfff08e2c86b1baa8f87217aecce5e99232154f534110538c2f5c6',
+  },
+  {
+    path: `${RC9_COHORT_ROOT}/candidates/C02`,
+    treeId: '9b7dbae2c0c5d1bba45399e77dac65766911d3b3',
+    fileCount: 62,
+    inventorySha256:
+      '250a9d82e0e2056af1622bd063e806d236178e72ee93b1a6f178708d056f4664',
+  },
+  {
+    path: `${RC9_COHORT_ROOT}/candidates/C03`,
+    treeId: '6c3e5bf9bf4808724534c7c1fb472fc487a4d350',
+    fileCount: 65,
+    inventorySha256:
+      '1c107b09ebdc4eacf0ac2bae388402aee2f12ad1dadbf081e547da66ac40462d',
+  },
+])
+
+class VerificationError extends Error {
+  constructor(code, message) {
+    super(message)
+    this.code = code
+  }
 }
 
-function argument(name) {
-  const index = process.argv.lastIndexOf(name)
-  return index >= 0 ? process.argv[index + 1] : undefined
-}
-
-function isRecord(value) {
-  return value !== null && typeof value === 'object' && !Array.isArray(value)
-}
-
-function reject(errorCode) {
-  return { accepted: false, errorCode }
+function sha256(value) {
+  return createHash('sha256').update(value).digest('hex')
 }
 
 function sameJson(left, right) {
   return JSON.stringify(left) === JSON.stringify(right)
 }
 
-function validateCandidateManifest(input) {
-  if (
-    !isRecord(input) ||
-    !CANDIDATE_MANIFEST_ID.test(input.candidateManifestId ?? '') ||
-    !CANDIDATE_ATTEMPT_ID.test(input.candidateAttempt ?? '') ||
-    input.status !== 'PENDING_INDEPENDENT_REVIEW' ||
-    !GIT_SHA.test(input.sourceSha ?? '') ||
-    !HEX_64.test(input.artifactHash ?? '') ||
-    !HEX_64.test(input.archiveHash ?? '') ||
-    !Array.isArray(input.authorityHashes) ||
-    !Array.isArray(input.rejectedAttempts) ||
-    !input.rejectedAttempts.every(
-      (attempt) =>
-        isRecord(attempt) &&
-        CANDIDATE_ATTEMPT_ID.test(attempt.candidateAttempt ?? '') &&
-        HEX_64.test(attempt.rejectionHash ?? ''),
-    )
-  ) {
-    return reject('CANDIDATE_MANIFEST_SHAPE')
+function canonicalJson(value) {
+  if (Array.isArray(value)) {
+    return `[${value.map((entry) => canonicalJson(entry)).join(',')}]`
   }
-
-  const requiredRoles = Object.keys(REQUIRED_AUTHORITY_PATHS)
-  const roles = input.authorityHashes.map((entry) => entry?.role)
-  const paths = input.authorityHashes.map((entry) => entry?.path)
-  if (
-    input.authorityHashes.length !== requiredRoles.length ||
-    !input.authorityHashes.every(
-      (entry) =>
-        isRecord(entry) &&
-        requiredRoles.includes(entry.role) &&
-        entry.path === REQUIRED_AUTHORITY_PATHS[entry.role] &&
-        HEX_64.test(entry.sha256 ?? ''),
-    ) ||
-    new Set(roles).size !== roles.length ||
-    new Set(paths).size !== paths.length ||
-    !requiredRoles.every((role) => roles.includes(role))
-  ) {
-    return reject('CANDIDATE_MANIFEST_AUTHORITY')
+  if (isRecord(value)) {
+    return `{${Object.keys(value)
+      .sort()
+      .map((key) => `${JSON.stringify(key)}:${canonicalJson(value[key])}`)
+      .join(',')}}`
   }
-
-  const manifestNumber = Number(input.candidateManifestId.slice(2))
-  const attemptNumber = Number(input.candidateAttempt.slice(1))
-  const expectedPriorManifestIds = Array.from(
-    { length: manifestNumber - 1 },
-    (_, index) => `CM${String(index + 1).padStart(2, '0')}`,
-  )
-  if (
-    !Array.isArray(input.priorManifests) ||
-    !input.priorManifests.every(
-      (entry) =>
-        isRecord(entry) &&
-        CANDIDATE_MANIFEST_ID.test(entry.candidateManifestId ?? '') &&
-        CANDIDATE_ATTEMPT_ID.test(entry.candidateAttempt ?? '') &&
-        HEX_64.test(entry.manifestHash ?? '') &&
-        [
-          'REJECTED_INDEPENDENT_REVIEW',
-          'REJECTED_SEAL',
-        ].includes(entry.status),
-    ) ||
-    !sameJson(
-      input.priorManifests.map((entry) => entry.candidateManifestId),
-      expectedPriorManifestIds,
-    )
-  ) {
-    return reject('CANDIDATE_MANIFEST_HISTORY')
-  }
-
-  const priorManifestAttemptIds = input.priorManifests.map(
-    (entry) => entry.candidateAttempt,
-  )
-  const rejectedAttemptIds = input.rejectedAttempts.map(
-    (entry) => entry.candidateAttempt,
-  )
-  const expectedPriorAttemptIds = Array.from(
-    { length: attemptNumber - 1 },
-    (_, index) => `C${String(index + 1).padStart(2, '0')}`,
-  )
-  if (
-    new Set(priorManifestAttemptIds).size !==
-      priorManifestAttemptIds.length ||
-    new Set(rejectedAttemptIds).size !== rejectedAttemptIds.length ||
-    priorManifestAttemptIds.includes(input.candidateAttempt) ||
-    priorManifestAttemptIds.some(
-      (candidateAttempt) =>
-        !rejectedAttemptIds.includes(candidateAttempt),
-    ) ||
-    !sameJson(rejectedAttemptIds, expectedPriorAttemptIds)
-  ) {
-    return reject('CANDIDATE_MANIFEST_HISTORY')
-  }
-
-  const requiredCommandIds = [
-    'lint',
-    'test',
-    'build',
-    'rc-build',
-    'rc-verify',
-    'e2e-rc',
-    'rc-archive',
-    'rc-verify-archive',
-    'schema-fixtures',
-    'guard-rc8',
-    'manifest-verify',
-    'rc-repro',
-  ]
-  const commandIds = input.commandResults?.map((entry) => entry?.id) ?? []
-  const expectedDiagnosticIds = Array.from(
-    { length: 5 },
-    (_, index) =>
-      `TECH-RC9-D${String((attemptNumber - 1) * 5 + index + 1).padStart(2, '0')}`,
-  )
-  const expectedAntiPassIds = Array.from(
-    { length: 2 },
-    (_, index) =>
-      `TECH-RC9-P${String((attemptNumber - 1) * 2 + index + 1).padStart(2, '0')}`,
-  )
-  const diagnosticIds = input.diagnosticManifest?.sampleIds ?? []
-  const antiPassIds = input.antiPass?.map((entry) => entry?.sampleId) ?? []
-  if (
-    !GIT_SHA.test(input.dependencyIntegrationSha ?? '') ||
-    !HEX_64.test(input.candidateAttemptManifestHash ?? '') ||
-    typeof input.buildId !== 'string' ||
-    input.buildId.length === 0 ||
-    input.scenarioId !== 'gate1-two-week-management' ||
-    input.scenarioVersion !== '0.5.0' ||
-    input.schemaVersion !== 'gate1-playtest-v2' ||
-    !isRecord(input.diagnosticManifest) ||
-    input.diagnosticManifest.status !== 'PASS' ||
-    input.diagnosticManifest.path !==
-      `candidates/${input.candidateAttempt}/diagnostics/manifest.json` ||
-    !HEX_64.test(input.diagnosticManifest.sha256 ?? '') ||
-    !Array.isArray(input.diagnosticManifest.sampleIds) ||
-    input.diagnosticManifest.sampleIds.length !== 5 ||
-    new Set(input.diagnosticManifest.sampleIds).size !== 5 ||
-    !sameJson(diagnosticIds, expectedDiagnosticIds) ||
-    !Array.isArray(input.antiPass) ||
-    input.antiPass.length !== 2 ||
-    !input.antiPass.every(
-      (entry) =>
-        isRecord(entry) &&
-        SAMPLE_ID_V2_TECH.test(entry.sampleId ?? '') &&
-        entry.status === 'PASS' &&
-        HEX_64.test(entry.evidenceHash ?? ''),
-    ) ||
-    new Set(input.antiPass.map((entry) => entry.sampleId)).size !== 2 ||
-    !sameJson(antiPassIds, expectedAntiPassIds) ||
-    !isRecord(input.rc8Guard) ||
-    !GIT_SHA.test(input.rc8Guard.baselineSha ?? '') ||
-    !GIT_SHA.test(input.rc8Guard.treeId ?? '') ||
-    !HEX_64.test(input.rc8Guard.inventorySha256 ?? '') ||
-    input.rc8Guard.status !== 'PASS' ||
-    !Array.isArray(input.commandResults) ||
-    input.commandResults.length !== requiredCommandIds.length ||
-    new Set(commandIds).size !== commandIds.length ||
-    !requiredCommandIds.every((id) => commandIds.includes(id)) ||
-    !input.commandResults.every(
-      (entry) =>
-        isRecord(entry) &&
-        requiredCommandIds.includes(entry.id) &&
-        entry.status === 'PASS' &&
-        HEX_64.test(entry.outputHash ?? ''),
-    ) ||
-    input.rejectedAttempts.some(
-      (entry) => entry.candidateAttempt === input.candidateAttempt,
-    )
-  ) {
-    return reject('CANDIDATE_MANIFEST_EVIDENCE')
-  }
-
-  return {
-    accepted: true,
-    candidateManifestId: input.candidateManifestId,
-    candidateAttempt: input.candidateAttempt,
-    errorCode: null,
-  }
+  return JSON.stringify(value)
 }
 
-const manifestArgument = argument('--manifest')
-if (!manifestArgument) {
-  process.stderr.write(
-    '用法：node scripts/verify-playtest-manifest.mjs --manifest <manifest.json>\n',
-  )
-  process.exit(1)
-}
-
-const manifestPath = resolve(manifestArgument)
-let document
-try {
-  document = JSON.parse(readFileSync(manifestPath, 'utf8'))
-} catch (error) {
-  process.stderr.write(
-    `candidate manifest 无法读取：${error instanceof Error ? error.message : error}\n`,
-  )
-  process.exit(1)
-}
-
-const input =
-  document?.kind === 'candidate-manifest' && isRecord(document.input)
+function unwrap(document, kind) {
+  return document?.kind === kind && isRecord(document.input)
     ? document.input
     : document
-const result = validateCandidateManifest(input)
-process.stdout.write(`${JSON.stringify(result)}\n`)
-if (!result.accepted) process.exitCode = 1
+}
+
+function parseArguments(argv) {
+  const modes = argv.filter((entry) =>
+    ['--fixtures', '--probe', '--manifest'].includes(entry),
+  )
+  if (modes.length !== 1) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_MODE',
+      '必须且只能指定 --fixtures、--probe 或 --manifest 之一',
+    )
+  }
+  const mode = modes[0].slice(2)
+  const valueOptions = new Set([
+    '--probe',
+    '--manifest',
+    '--manifest-git-sha',
+    '--repo-root',
+    '--output',
+  ])
+  const options = {}
+  for (let index = 0; index < argv.length; index += 1) {
+    const name = argv[index]
+    if (name === '--fixtures') {
+      if (Object.hasOwn(options, name)) {
+        throw new VerificationError(
+          'CANDIDATE_MANIFEST_MODE',
+          '重复 --fixtures',
+        )
+      }
+      options[name] = true
+      continue
+    }
+    if (!valueOptions.has(name)) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_MODE',
+        `未知参数：${name}`,
+      )
+    }
+    const value = argv[index + 1]
+    if (
+      typeof value !== 'string' ||
+      value.length === 0 ||
+      value.startsWith('--') ||
+      Object.hasOwn(options, name)
+    ) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_MODE',
+        `缺失、重复或无效参数：${name}`,
+      )
+    }
+    options[name] = value
+    index += 1
+  }
+  if (
+    (mode === 'probe' && !options['--probe']) ||
+    (mode === 'manifest' && !options['--manifest']) ||
+    (mode === 'manifest' && !options['--manifest-git-sha']) ||
+    (mode !== 'manifest' && options['--manifest-git-sha']) ||
+    ((mode === 'probe' || mode === 'manifest') &&
+      !options['--repo-root']) ||
+    !options['--output']
+  ) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_MODE',
+      `${mode} 模式缺少必需参数`,
+    )
+  }
+  const expectedOptionSets = {
+    fixtures: ['--fixtures', '--output'],
+    probe: ['--probe', '--repo-root', '--output'],
+    manifest: [
+      '--manifest',
+      '--manifest-git-sha',
+      '--repo-root',
+      '--output',
+    ],
+  }
+  if (
+    !sameJson(
+      Object.keys(options).sort(),
+      [...expectedOptionSets[mode]].sort(),
+    )
+  ) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_MODE',
+      `${mode} 模式参数集合不精确`,
+    )
+  }
+  return { mode, options }
+}
+
+function repoPath(repoRoot, path) {
+  if (!isRepoRelativePath(path)) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_PATH',
+      `不是 canonical repo-relative path：${path}`,
+    )
+  }
+  const absolute = resolve(repoRoot, path)
+  const normalized = relative(repoRoot, absolute)
+  if (
+    normalized === '..' ||
+    normalized.startsWith(`..${sep}`) ||
+    normalized.split(sep).join('/') !== path
+  ) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_PATH',
+      `路径越出或不规范：${path}`,
+    )
+  }
+  return absolute
+}
+
+function outputPath(options, repoRoot, mode) {
+  const value = options['--output']
+  if (mode === 'manifest') {
+    return repoPath(repoRoot, value)
+  }
+  return resolve(value)
+}
+
+async function pathExists(path) {
+  return (await lstat(path).catch(() => null)) !== null
+}
+
+async function fsyncDirectory(path) {
+  const handle = await open(path, 'r')
+  try {
+    await handle.sync()
+  } finally {
+    await handle.close()
+  }
+}
+
+function displayOutputPath(path, repoRoot) {
+  const normalized = relative(repoRoot, path)
+  return normalized === '..' || normalized.startsWith(`..${sep}`)
+    ? path
+    : normalized.split(sep).join('/')
+}
+
+async function validateOutputDestination(path, repoRoot) {
+  const sidecarPath = `${path}.sha256`
+  const outputExists = await pathExists(path)
+  const sidecarExists = await pathExists(sidecarPath)
+  if (outputExists !== sidecarExists) {
+    throw new VerificationError(
+      'PARTIAL_EVIDENCE_GROUP',
+      `JSON/sidecar 只存在一个成员：${displayOutputPath(path, repoRoot)}`,
+    )
+  }
+  if (outputExists) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_OUTPUT_EXISTS',
+      `output group 已存在：${displayOutputPath(path, repoRoot)}`,
+    )
+  }
+  const parent = dirname(path)
+  const parentStat = await lstat(parent).catch(() => null)
+  if (!parentStat?.isDirectory() || parentStat.isSymbolicLink()) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_OUTPUT_PATH',
+      `output 父目录必须是既有普通目录：${parent}`,
+    )
+  }
+  const relativePath = relative(repoRoot, path).split(sep).join('/')
+  const insideRepo =
+    relativePath !== '..' && !relativePath.startsWith('../')
+  if (
+    insideRepo &&
+    ![
+      `${C04_ROOT}/evidence/phase6/manifest-fixtures.json`,
+      `${C04_ROOT}/evidence/phase6/manifest-probe.json`,
+      `${C04_ROOT}/evidence/freeze-audit/full-manifest-verification.json`,
+    ].includes(relativePath) &&
+    !new RegExp(
+      `^${RC9_COHORT_ROOT}/(?:evidence/reviews/IR[0-9]+|seals/S[0-9]+)/verifiers/full-manifest-verification\\.json$`,
+    ).test(relativePath)
+  ) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_OUTPUT_PATH',
+      `repo 内 output 不在固定 namespace：${relativePath}`,
+    )
+  }
+}
+
+async function writeExclusiveGroup(path, result, repoRoot) {
+  await validateOutputDestination(path, repoRoot)
+  const sidecarPath = `${path}.sha256`
+  const jsonBytes = Buffer.from(`${JSON.stringify(result, null, 2)}\n`, 'utf8')
+  const sidecarBytes = Buffer.from(
+    `${sha256(jsonBytes)}  ${displayOutputPath(path, repoRoot)}\n`,
+    'utf8',
+  )
+  const temporaryPath = join(
+    dirname(path),
+    `.${posix.basename(path)}.${process.pid}.${randomUUID()}.tmp`,
+  )
+  const temporarySidecarPath = `${temporaryPath}.sha256`
+  let handle
+  let sidecarHandle
+  let jsonPublished = false
+  let sidecarPublished = false
+  try {
+    handle = await open(temporaryPath, 'wx', 0o600)
+    sidecarHandle = await open(temporarySidecarPath, 'wx', 0o600)
+    await handle.writeFile(jsonBytes)
+    await sidecarHandle.writeFile(sidecarBytes)
+    await handle.sync()
+    await sidecarHandle.sync()
+    await handle.close()
+    handle = undefined
+    await sidecarHandle.close()
+    sidecarHandle = undefined
+    await fsyncDirectory(dirname(path))
+    await link(temporaryPath, path)
+    jsonPublished = true
+    await link(temporarySidecarPath, sidecarPath)
+    sidecarPublished = true
+    await fsyncDirectory(dirname(path))
+  } catch (error) {
+    if (jsonPublished) await unlink(path).catch(() => {})
+    if (sidecarPublished) await unlink(sidecarPath).catch(() => {})
+    await unlink(temporaryPath).catch(() => {})
+    await unlink(temporarySidecarPath).catch(() => {})
+    await fsyncDirectory(dirname(path)).catch(() => {})
+    const jsonRemains = await pathExists(path)
+    const sidecarRemains = await pathExists(sidecarPath)
+    if (jsonRemains !== sidecarRemains || jsonRemains || sidecarRemains) {
+      throw new VerificationError(
+        'PARTIAL_EVIDENCE_GROUP',
+        `JSON/sidecar group 发布失败且有成员残留：${displayOutputPath(path, repoRoot)}`,
+      )
+    }
+    if (error?.code === 'EEXIST') {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_OUTPUT_EXISTS',
+        `output group 已存在：${displayOutputPath(path, repoRoot)}`,
+      )
+    }
+    throw error
+  } finally {
+    if (handle) await handle.close()
+    if (sidecarHandle) await sidecarHandle.close()
+    await unlink(temporaryPath).catch(() => {})
+    await unlink(temporarySidecarPath).catch(() => {})
+    await fsyncDirectory(dirname(path)).catch(() => {})
+  }
+}
+
+async function readJsonFile(path, code) {
+  try {
+    return JSON.parse(await readFile(path, 'utf8'))
+  } catch (error) {
+    throw new VerificationError(
+      code,
+      `${path} 无法读取或解析：${error instanceof Error ? error.message : error}`,
+    )
+  }
+}
+
+function parseJsonBytes(bytes, label, code) {
+  try {
+    return JSON.parse(bytes.toString('utf8'))
+  } catch {
+    throw new VerificationError(code, `${label} 不是有效 JSON`)
+  }
+}
+
+async function git(repoRoot, args, encoding = 'utf8') {
+  try {
+    const { stdout } = await execFileAsync('git', args, {
+      cwd: repoRoot,
+      encoding,
+      maxBuffer: 128 * 1024 * 1024,
+    })
+    return stdout
+  } catch (error) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_GIT_BINDING',
+      `git ${args.join(' ')} 失败：${error instanceof Error ? error.message : error}`,
+    )
+  }
+}
+
+async function resolveCommit(repoRoot, commit) {
+  const observed = String(
+    await git(repoRoot, ['rev-parse', '--verify', `${commit}^{commit}`]),
+  ).trim()
+  if (observed !== commit) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_GIT_BINDING',
+      `Git SHA 不是精确 commit：${commit}`,
+    )
+  }
+}
+
+async function assertAncestor(repoRoot, ancestor, descendant, label) {
+  try {
+    await execFileAsync(
+      'git',
+      ['merge-base', '--is-ancestor', ancestor, descendant],
+      { cwd: repoRoot },
+    )
+  } catch {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_GIT_BINDING',
+      `${label} 拓扑无效：${ancestor} 不是 ${descendant} 的祖先`,
+    )
+  }
+}
+
+async function gitBlob(repoRoot, commit, path) {
+  if (!isRepoRelativePath(path)) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_PATH',
+      `Git binding path 不规范：${path}`,
+    )
+  }
+  const listing = String(
+    await git(repoRoot, ['ls-tree', commit, '--', path]),
+  ).trim()
+  const match = listing.match(
+    /^(100644|100755) blob [a-f0-9]{40}\t(.+)$/,
+  )
+  if (!match || match[2] !== path) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_GIT_BINDING',
+      `${commit}:${path} 不是唯一普通 Git blob`,
+    )
+  }
+  const stdout = await git(
+    repoRoot,
+    ['show', `${commit}:${path}`],
+    'buffer',
+  )
+  return Buffer.isBuffer(stdout) ? stdout : Buffer.from(stdout)
+}
+
+async function bindGitBlob(
+  repoRoot,
+  commit,
+  path,
+  expectedHash,
+  code,
+) {
+  const bytes = await gitBlob(repoRoot, commit, path)
+  const observedHash = sha256(bytes)
+  if (observedHash !== expectedHash) {
+    throw new VerificationError(
+      code,
+      `${path} hash mismatch expected=${expectedHash} observed=${observedHash}`,
+    )
+  }
+  return {
+    path,
+    sha256: observedHash,
+    bytes: bytes.length,
+    content: bytes,
+  }
+}
+
+async function bindGitSidecar(
+  repoRoot,
+  commit,
+  targetPath,
+  targetHash,
+  code,
+) {
+  const sidecarPath = `${targetPath}.sha256`
+  const expectedBytes = Buffer.from(
+    `${targetHash}  ${targetPath}\n`,
+    'utf8',
+  )
+  const binding = await bindGitBlob(
+    repoRoot,
+    commit,
+    sidecarPath,
+    sha256(expectedBytes),
+    code,
+  )
+  if (!binding.content.equals(expectedBytes)) {
+    throw new VerificationError(
+      code,
+      `${sidecarPath} 内容与 target hash/path 不一致`,
+    )
+  }
+  return binding
+}
+
+async function bindWorktreeFile(repoRoot, path, expectedHash, code) {
+  const absolutePath = repoPath(repoRoot, path)
+  const stat = await lstat(absolutePath).catch(() => null)
+  if (!stat?.isFile() || stat.isSymbolicLink()) {
+    throw new VerificationError(
+      code,
+      `${path} 必须是工作树普通文件且不得为 symlink`,
+    )
+  }
+  const bytes = await readFile(absolutePath).catch((error) => {
+    throw new VerificationError(
+      code,
+      `${path} 无法读取：${error instanceof Error ? error.message : error}`,
+    )
+  })
+  const observedHash = sha256(bytes)
+  if (observedHash !== expectedHash) {
+    throw new VerificationError(
+      code,
+      `${path} hash mismatch expected=${expectedHash} observed=${observedHash}`,
+    )
+  }
+  return {
+    path,
+    sha256: observedHash,
+    bytes: bytes.length,
+  }
+}
+
+function publicBinding(binding, extra = {}) {
+  return {
+    ...extra,
+    path: binding.path,
+    sha256: binding.sha256,
+    bytes: binding.bytes,
+  }
+}
+
+function assertEqual(actual, expected, label, code = 'CANDIDATE_MANIFEST_EVIDENCE') {
+  if (actual !== expected) {
+    throw new VerificationError(
+      code,
+      `${label} mismatch expected=${expected} observed=${actual}`,
+    )
+  }
+}
+
+function assertBuildIdentity(document, input, label) {
+  assertEqual(document.candidateAttempt, input.candidateAttempt, `${label}.candidateAttempt`)
+  assertEqual(document.sourceSha, input.sourceSha, `${label}.sourceSha`)
+  assertEqual(
+    document.dependencyIntegrationSha,
+    input.dependencyIntegrationSha,
+    `${label}.dependencyIntegrationSha`,
+  )
+  assertEqual(document.buildId, input.buildId, `${label}.buildId`)
+  assertEqual(document.scenarioId, input.scenarioId, `${label}.scenarioId`)
+  assertEqual(
+    document.scenarioVersion,
+    input.scenarioVersion,
+    `${label}.scenarioVersion`,
+  )
+  assertEqual(
+    document.protocolVersion,
+    input.protocolVersion,
+    `${label}.protocolVersion`,
+  )
+  assertEqual(
+    document.playtestSchemaVersion ?? document.schemaVersion,
+    input.schemaVersion,
+    `${label}.playtestSchemaVersion`,
+  )
+}
+
+async function runFixtures() {
+  const expectations = await readJsonFile(
+    expectationsPath,
+    'CANDIDATE_MANIFEST_FIXTURES',
+  )
+  const rows = []
+  const failures = []
+  for (const expectation of expectations.fixtures ?? []) {
+    if (!expectation.file?.startsWith('manifests/')) continue
+    const fixture = await readJsonFile(
+      join(fixturesRoot, expectation.file),
+      'CANDIDATE_MANIFEST_FIXTURES',
+    )
+    if (
+      !['candidate-manifest', 'candidate-authority-probe'].includes(
+        fixture.kind,
+      )
+    ) {
+      continue
+    }
+    const validation =
+      fixture.kind === 'candidate-manifest'
+        ? validateCandidateManifest(fixture.input)
+        : validateCandidateAuthority(fixture.input)
+    const actual = {
+      accepted: validation.accepted,
+      errorCode: validation.errorCode,
+    }
+    const expected = {
+      accepted: expectation.assertions.accepted,
+      errorCode: expectation.assertions.errorCode,
+    }
+    rows.push({ file: expectation.file, ...actual })
+    if (!sameJson(actual, expected)) {
+      failures.push({ file: expectation.file, expected, actual })
+    }
+  }
+  if (failures.length > 0) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_FIXTURES',
+      JSON.stringify(failures),
+    )
+  }
+  return {
+    schemaVersion: SCHEMA_VERSION,
+    status: 'PASS_FIXTURES',
+    accepted: true,
+    fullManifestVerified: false,
+    fixtureCount: rows.length,
+    fixtures: rows,
+  }
+}
+
+async function verifyAuthorityWorktree(input, repoRoot) {
+  const validation = validateCandidateAuthority(input)
+  if (!validation.accepted) {
+    throw new VerificationError(
+      validation.errorCode,
+      'authority profile contract rejected input',
+    )
+  }
+  const bindings = []
+  for (const entry of input.authorityHashes) {
+    const binding = await bindWorktreeFile(
+      repoRoot,
+      entry.path,
+      entry.sha256,
+      'CANDIDATE_MANIFEST_AUTHORITY',
+    )
+    bindings.push(publicBinding(binding, { role: entry.role }))
+  }
+  return { validation, bindings }
+}
+
+async function verifyAuthorityGit(input, repoRoot) {
+  const validation = validateCandidateAuthority(input)
+  if (!validation.accepted) {
+    throw new VerificationError(
+      validation.errorCode,
+      'authority profile contract rejected input',
+    )
+  }
+  const bindings = []
+  for (const entry of input.authorityHashes) {
+    const integrationBinding = await bindGitBlob(
+      repoRoot,
+      input.dependencyIntegrationSha,
+      entry.path,
+      entry.sha256,
+      'CANDIDATE_MANIFEST_AUTHORITY',
+    )
+    const binding = await bindGitBlob(
+      repoRoot,
+      input.candidateEvidenceSnapshotSha,
+      entry.path,
+      entry.sha256,
+      'CANDIDATE_MANIFEST_AUTHORITY',
+    )
+    if (!binding.content.equals(integrationBinding.content)) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_AUTHORITY',
+        `${entry.role} authority 在 I/E 之间发生变化`,
+      )
+    }
+    bindings.push(
+      publicBinding(binding, {
+        role: entry.role,
+        integrationSha: input.dependencyIntegrationSha,
+        evidenceSnapshotSha: input.candidateEvidenceSnapshotSha,
+      }),
+    )
+  }
+  return { validation, bindings }
+}
+
+async function runProbe(repoRoot, options, resolvedOutputPath) {
+  const probePath = resolve(options['--probe'])
+  const probeStat = await lstat(probePath).catch(() => null)
+  if (!probeStat?.isFile() || probeStat.isSymbolicLink()) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_PROBE',
+      'probe input 必须是普通文件且不得为 symlink',
+    )
+  }
+  const outputRelativeToInputDirectory = relative(
+    dirname(probePath),
+    resolvedOutputPath,
+  )
+  if (
+    probePath === resolvedOutputPath ||
+    outputRelativeToInputDirectory === '' ||
+    (!outputRelativeToInputDirectory.startsWith(`..${sep}`) &&
+      outputRelativeToInputDirectory !== '..')
+  ) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_SELF_REFERENCE',
+      'probe output 不得等于 input 或位于 input 目录',
+    )
+  }
+  const document = await readJsonFile(
+    probePath,
+    'CANDIDATE_MANIFEST_PROBE',
+  )
+  const input = unwrap(document, 'candidate-authority-probe')
+  const { validation, bindings } = await verifyAuthorityWorktree(
+    input,
+    repoRoot,
+  )
+  for (const entry of input.authorityHashes) {
+    if (repoPath(repoRoot, entry.path) === resolvedOutputPath) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_SELF_REFERENCE',
+        `probe output alias authority：${entry.role}`,
+      )
+    }
+  }
+  return {
+    schemaVersion: SCHEMA_VERSION,
+    status: 'PASS_AUTHORITY_PREFLIGHT',
+    accepted: true,
+    fullManifestVerified: false,
+    ...validation.summary,
+    authorityBindings: bindings,
+  }
+}
+
+function evidenceInventoryHash(diagnosticManifest, relativePath) {
+  const entries = diagnosticManifest.evidenceInventory ?? []
+  const match = entries.filter((entry) => entry.path === relativePath)
+  if (
+    match.length !== 1 ||
+    !HEX_64.test(match[0].sha256 ?? '')
+  ) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_DIAGNOSTIC',
+      `diagnostics evidenceInventory 缺失或重复：${relativePath}`,
+    )
+  }
+  return match[0].sha256
+}
+
+async function verifyDiagnosticSamples(
+  repoRoot,
+  input,
+  diagnosticManifest,
+  inputAliases,
+) {
+  const diagnosticRoot = posix.dirname(input.diagnosticManifest.path)
+  const evidenceSha = input.candidateEvidenceSnapshotSha
+  const bindings = []
+  for (const sampleId of input.diagnosticManifest.sampleIds) {
+    const sampleSummary = diagnosticManifest.samples?.find(
+      (entry) => entry.sampleId === sampleId,
+    )
+    if (
+      !isRecord(sampleSummary) ||
+      sampleSummary.status !== 'VALID_DIAGNOSTIC' ||
+      sampleSummary.includedInDiagnosticMedian !== true ||
+      sampleSummary.includedInGate1ADenominator !== false
+    ) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_DIAGNOSTIC',
+        `${sampleId} diagnostics summary 无效`,
+      )
+    }
+    const sampleRelativePath = `${sampleId}/sample-record.json`
+    const samplePath = `${diagnosticRoot}/${sampleRelativePath}`
+    const expectedSampleHash = evidenceInventoryHash(
+      diagnosticManifest,
+      sampleRelativePath,
+    )
+    const sampleBinding = await bindGitBlob(
+      repoRoot,
+      evidenceSha,
+      samplePath,
+      expectedSampleHash,
+      'CANDIDATE_MANIFEST_DIAGNOSTIC',
+    )
+    inputAliases.add(samplePath)
+    const sampleRecord = parseJsonBytes(
+      sampleBinding.content,
+      samplePath,
+      'CANDIDATE_MANIFEST_DIAGNOSTIC',
+    )
+    assertEqual(sampleRecord.sampleId, sampleId, `${sampleId}.sampleId`)
+    assertEqual(
+      sampleRecord.candidateAttempt,
+      input.candidateAttempt,
+      `${sampleId}.candidateAttempt`,
+    )
+    assertEqual(
+      sampleRecord.validityDecision?.status,
+      'VALID_DIAGNOSTIC',
+      `${sampleId}.validityDecision.status`,
+    )
+    assertEqual(
+      sampleRecord.validityDecision?.includedInGate1ADenominator,
+      false,
+      `${sampleId}.includedInGate1ADenominator`,
+    )
+    const release = sampleRecord.releaseCandidate
+    assertEqual(release?.buildId, input.buildId, `${sampleId}.buildId`)
+    assertEqual(release?.gitSha, input.sourceSha, `${sampleId}.sourceSha`)
+    assertEqual(
+      release?.dependencyIntegrationSha,
+      input.dependencyIntegrationSha,
+      `${sampleId}.dependencyIntegrationSha`,
+    )
+    assertEqual(
+      release?.candidateBuildManifestHash,
+      input.candidateAttemptManifestHash,
+      `${sampleId}.candidateBuildManifestHash`,
+    )
+    assertEqual(release?.artifactHash, input.artifactHash, `${sampleId}.artifactHash`)
+    assertEqual(release?.archiveHash, input.archiveHash, `${sampleId}.archiveHash`)
+    assertEqual(release?.scenarioId, input.scenarioId, `${sampleId}.scenarioId`)
+    assertEqual(
+      release?.scenarioVersion,
+      input.scenarioVersion,
+      `${sampleId}.scenarioVersion`,
+    )
+    assertEqual(
+      release?.protocolVersion,
+      input.protocolVersion,
+      `${sampleId}.protocolVersion`,
+    )
+
+    const identity = sampleRecord.identityAndIsolation
+    if (
+      !isRecord(identity) ||
+      identity.diagnosticIsolationProfile !== ISOLATION_PROFILE ||
+      identity.agentCliBinaryPath !== ISOLATION_CLI_BINARY ||
+      identity.agentCliVersion !== ISOLATION_CLI_VERSION ||
+      identity.agentCliBinarySha256 !== ISOLATION_CLI_SHA256 ||
+      identity.agentCliTeamIdentifier !==
+        ISOLATION_CLI_TEAM_IDENTIFIER ||
+      identity.agentCliAuthority !== ISOLATION_CLI_AUTHORITY ||
+      !HEX_64.test(identity.isolationPreflightHash ?? '') ||
+      !HEX_64.test(identity.isolationVerificationHash ?? '') ||
+      !HEX_64.test(identity.canonicalInputHash ?? '')
+    ) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_DIAGNOSTIC',
+        `${sampleId} isolation identity binding 无效`,
+      )
+    }
+    const canonicalInputPath =
+      `${diagnosticRoot}/${sampleId}/diagnostic-isolation-input.json`
+    const canonicalInputSidecarPath = `${canonicalInputPath}.sha256`
+    const verificationPath =
+      `${candidateRoot(input.candidateAttempt)}/evidence/diagnostic-isolation/${sampleId}-verification.json`
+    const verificationSidecarPath = `${verificationPath}.sha256`
+    assertEqual(
+      identity.canonicalInputPath,
+      canonicalInputPath,
+      `${sampleId}.canonicalInputPath`,
+    )
+    const canonicalInputBinding = await bindGitBlob(
+      repoRoot,
+      evidenceSha,
+      canonicalInputPath,
+      identity.canonicalInputHash,
+      'CANDIDATE_MANIFEST_DIAGNOSTIC',
+    )
+    const verificationBinding = await bindGitBlob(
+      repoRoot,
+      evidenceSha,
+      verificationPath,
+      identity.isolationVerificationHash,
+      'CANDIDATE_MANIFEST_DIAGNOSTIC',
+    )
+    const canonicalInputSidecarBytes = Buffer.from(
+      `${identity.canonicalInputHash}  ${canonicalInputPath}\n`,
+      'utf8',
+    )
+    const verificationSidecarBytes = Buffer.from(
+      `${identity.isolationVerificationHash}  ${verificationPath}\n`,
+      'utf8',
+    )
+    const canonicalInputSidecarBinding = await bindGitBlob(
+      repoRoot,
+      evidenceSha,
+      canonicalInputSidecarPath,
+      sha256(canonicalInputSidecarBytes),
+      'CANDIDATE_MANIFEST_DIAGNOSTIC',
+    )
+    const verificationSidecarBinding = await bindGitBlob(
+      repoRoot,
+      evidenceSha,
+      verificationSidecarPath,
+      sha256(verificationSidecarBytes),
+      'CANDIDATE_MANIFEST_DIAGNOSTIC',
+    )
+    if (
+      !canonicalInputSidecarBinding.content.equals(
+        canonicalInputSidecarBytes,
+      ) ||
+      !verificationSidecarBinding.content.equals(verificationSidecarBytes)
+    ) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_DIAGNOSTIC',
+        `${sampleId} isolation sidecar 内容无效`,
+      )
+    }
+    inputAliases.add(canonicalInputPath)
+    inputAliases.add(canonicalInputSidecarPath)
+    inputAliases.add(verificationPath)
+    inputAliases.add(verificationSidecarPath)
+    const canonicalInput = parseJsonBytes(
+      canonicalInputBinding.content,
+      canonicalInputPath,
+      'CANDIDATE_MANIFEST_DIAGNOSTIC',
+    )
+    assertEqual(canonicalInput.sampleId, sampleId, `${sampleId}.input.sampleId`)
+    assertEqual(
+      canonicalInput.preflight?.diagnosticIsolationProfile,
+      ISOLATION_PROFILE,
+      `${sampleId}.input.profile`,
+    )
+    assertEqual(
+      canonicalInput.preflight?.cliBinaryPath,
+      ISOLATION_CLI_BINARY,
+      `${sampleId}.input.cliBinaryPath`,
+    )
+    assertEqual(
+      canonicalInput.preflight?.agentCliVersion,
+      ISOLATION_CLI_VERSION,
+      `${sampleId}.input.agentCliVersion`,
+    )
+    assertEqual(
+      canonicalInput.preflight?.cliBinarySha256,
+      ISOLATION_CLI_SHA256,
+      `${sampleId}.input.cliBinarySha256`,
+    )
+    assertEqual(
+      canonicalInput.preflight?.cliTeamIdentifier,
+      ISOLATION_CLI_TEAM_IDENTIFIER,
+      `${sampleId}.input.cliTeamIdentifier`,
+    )
+    assertEqual(
+      canonicalInput.preflight?.cliAuthority,
+      ISOLATION_CLI_AUTHORITY,
+      `${sampleId}.input.cliAuthority`,
+    )
+    assertEqual(
+      canonicalInput.preflight?.nodeExecutable,
+      ISOLATION_NODE_EXECUTABLE,
+      `${sampleId}.input.nodeExecutable`,
+    )
+    assertEqual(
+      canonicalInput.preflight?.nodeVersion,
+      ISOLATION_NODE_VERSION,
+      `${sampleId}.input.nodeVersion`,
+    )
+    assertEqual(
+      canonicalInput.preflight?.nodeBinarySha256,
+      ISOLATION_NODE_SHA256,
+      `${sampleId}.input.nodeBinarySha256`,
+    )
+    assertEqual(
+      canonicalInput.identityAndIsolation?.agentSessionId,
+      identity.agentSessionId,
+      `${sampleId}.input.agentSessionId`,
+    )
+    assertEqual(
+      sha256(canonicalJson(canonicalInput.preflight)),
+      identity.isolationPreflightHash,
+      `${sampleId}.isolationPreflightHash`,
+    )
+    assertEqual(
+      verificationBinding.sha256,
+      identity.isolationVerificationHash,
+      `${sampleId}.isolationVerificationHash`,
+    )
+    const verification = parseJsonBytes(
+      verificationBinding.content,
+      verificationPath,
+      'CANDIDATE_MANIFEST_DIAGNOSTIC',
+    )
+    assertEqual(
+      verification.schemaVersion,
+      'new-era-diagnostic-isolation-result-v2',
+      `${sampleId}.isolation schema`,
+    )
+    assertEqual(verification.accepted, true, `${sampleId}.isolation accepted`)
+    assertEqual(
+      verification.status,
+      'PASS_DIAGNOSTIC_ISOLATION',
+      `${sampleId}.isolation status`,
+    )
+    assertEqual(
+      verification.summary?.sampleId,
+      sampleId,
+      `${sampleId}.isolation sampleId`,
+    )
+    assertEqual(
+      verification.summary?.canonicalInputPath,
+      canonicalInputPath,
+      `${sampleId}.verification.canonicalInputPath`,
+    )
+    assertEqual(
+      verification.summary?.canonicalInputHash,
+      identity.canonicalInputHash,
+      `${sampleId}.verification.canonicalInputHash`,
+    )
+    for (const field of [
+      'agentSessionId',
+      'privateRolloutObjectId',
+      'privateCliEventObjectId',
+      'agentRolloutSha256',
+      'agentRolloutStructuralEvidencePath',
+      'agentRolloutStructuralEvidenceHash',
+      'cliEventStructuralEvidencePath',
+      'cliEventStructuralEvidenceHash',
+      'browserContextId',
+      'browserPageId',
+      'isolationPreflightHash',
+      'agentCliBinaryPath',
+      'agentCliVersion',
+      'agentCliBinarySha256',
+      'agentCliTeamIdentifier',
+      'agentCliAuthority',
+    ]) {
+      assertEqual(
+        verification.summary?.[field],
+        identity[field],
+        `${sampleId}.identity.${field}`,
+      )
+    }
+    const structuralBindings = []
+    for (const [pathField, hashField] of [
+      [
+        'agentRolloutStructuralEvidencePath',
+        'agentRolloutStructuralEvidenceHash',
+      ],
+      [
+        'cliEventStructuralEvidencePath',
+        'cliEventStructuralEvidenceHash',
+      ],
+    ]) {
+      const structuralPath = identity[pathField]
+      if (
+        !isRepoRelativePath(structuralPath) ||
+        !structuralPath.startsWith(`${diagnosticRoot}/${sampleId}/`)
+      ) {
+        throw new VerificationError(
+          'CANDIDATE_MANIFEST_DIAGNOSTIC',
+          `${sampleId}.${pathField} 不是 canonical sample path`,
+        )
+      }
+      const structuralBinding = await bindGitBlob(
+        repoRoot,
+        evidenceSha,
+        structuralPath,
+        identity[hashField],
+        'CANDIDATE_MANIFEST_DIAGNOSTIC',
+      )
+      inputAliases.add(structuralPath)
+      structuralBindings.push(publicBinding(structuralBinding))
+    }
+    const validityRelativePath = `${sampleId}/validity-decision.md`
+    const validityPath = `${diagnosticRoot}/${validityRelativePath}`
+    const validityBinding = await bindGitBlob(
+      repoRoot,
+      evidenceSha,
+      validityPath,
+      evidenceInventoryHash(diagnosticManifest, validityRelativePath),
+      'CANDIDATE_MANIFEST_DIAGNOSTIC',
+    )
+    inputAliases.add(validityPath)
+    bindings.push({
+      sampleId,
+      sampleRecord: publicBinding(sampleBinding),
+      canonicalInput: publicBinding(canonicalInputBinding),
+      canonicalInputSidecar: publicBinding(canonicalInputSidecarBinding),
+      isolationVerification: publicBinding(verificationBinding),
+      isolationVerificationSidecar: publicBinding(
+        verificationSidecarBinding,
+      ),
+      structuralEvidence: structuralBindings,
+      validityDecision: publicBinding(validityBinding),
+    })
+  }
+  return bindings
+}
+
+async function verifyAntiPass(
+  repoRoot,
+  input,
+  inputAliases,
+) {
+  const bindings = []
+  const evidenceSha = input.candidateEvidenceSnapshotSha
+  for (const entry of input.antiPass) {
+    const binding = await bindGitBlob(
+      repoRoot,
+      evidenceSha,
+      entry.evidencePath,
+      entry.evidenceHash,
+      'CANDIDATE_MANIFEST_ANTI_PASS',
+    )
+    inputAliases.add(entry.evidencePath)
+    const evidence = parseJsonBytes(
+      binding.content,
+      entry.evidencePath,
+      'CANDIDATE_MANIFEST_ANTI_PASS',
+    )
+    assertEqual(evidence.sampleId, entry.sampleId, `${entry.sampleId}.sampleId`)
+    assertEqual(
+      evidence.schemaVersion,
+      'gate1-rc9-anti-pass-result-v1',
+      `${entry.sampleId}.schemaVersion`,
+    )
+    assertEqual(evidence.status, 'PASS', `${entry.sampleId}.status`)
+    assertEqual(
+      evidence.candidateAttempt,
+      input.candidateAttempt,
+      `${entry.sampleId}.candidateAttempt`,
+    )
+    assertEqual(evidence.buildId, input.buildId, `${entry.sampleId}.buildId`)
+    assertEqual(evidence.sourceSha, input.sourceSha, `${entry.sampleId}.sourceSha`)
+    assertEqual(
+      evidence.artifactHash,
+      input.artifactHash,
+      `${entry.sampleId}.artifactHash`,
+    )
+    assertEqual(
+      evidence.sessionAuthority?.diagnosisId,
+      entry.sampleId,
+      `${entry.sampleId}.sessionAuthority`,
+    )
+    assertEqual(
+      evidence.sessionAuthority?.candidateBuildAuthorityHash,
+      input.artifactHash,
+      `${entry.sampleId}.candidateBuildAuthorityHash`,
+    )
+    assertEqual(
+      evidence.sessionAuthority?.applicationSessionCount,
+      1,
+      `${entry.sampleId}.applicationSessionCount`,
+    )
+    const machine = evidence.machineEvidence
+    if (!isRecord(machine)) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_ANTI_PASS',
+        `${entry.sampleId}.machineEvidence 缺失`,
+      )
+    }
+    const evidenceRoot = posix.dirname(entry.evidencePath)
+    const paths = {
+      raw: `${evidenceRoot}/${machine.serverRawPath}`,
+      sidecar: `${evidenceRoot}/${machine.sha256SidecarPath}`,
+      receipt: `${evidenceRoot}/${machine.receiptPath}`,
+      browser: `${evidenceRoot}/${machine.browserDownloadPath}`,
+    }
+    if (
+      Object.values(paths).some(
+        (path) =>
+          !isRepoRelativePath(path) ||
+          !path.startsWith(`${evidenceRoot}/`),
+      )
+    ) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_ANTI_PASS',
+        `${entry.sampleId} machine evidence path 不规范`,
+      )
+    }
+    const raw = await bindGitBlob(
+      repoRoot,
+      evidenceSha,
+      paths.raw,
+      machine.serverRawSha256,
+      'CANDIDATE_MANIFEST_ANTI_PASS',
+    )
+    const sidecar = await bindGitBlob(
+      repoRoot,
+      evidenceSha,
+      paths.sidecar,
+      machine.sha256SidecarSha256,
+      'CANDIDATE_MANIFEST_ANTI_PASS',
+    )
+    const receipt = await bindGitBlob(
+      repoRoot,
+      evidenceSha,
+      paths.receipt,
+      machine.receiptSha256,
+      'CANDIDATE_MANIFEST_ANTI_PASS',
+    )
+    const browser = await bindGitBlob(
+      repoRoot,
+      evidenceSha,
+      paths.browser,
+      machine.browserDownloadSha256,
+      'CANDIDATE_MANIFEST_ANTI_PASS',
+    )
+    Object.values(paths).forEach((path) => inputAliases.add(path))
+    assertEqual(raw.bytes, machine.serverRawBytes, `${entry.sampleId}.raw bytes`)
+    assertEqual(browser.bytes, machine.browserDownloadBytes, `${entry.sampleId}.download bytes`)
+    if (!raw.content.equals(browser.content)) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_ANTI_PASS',
+        `${entry.sampleId} raw/download 不一致`,
+      )
+    }
+    const sidecarHash = sidecar.content
+      .toString('utf8')
+      .trim()
+      .split(/\s+/)[0]
+    assertEqual(sidecarHash, raw.sha256, `${entry.sampleId}.sidecar claim`)
+    const receiptDocument = parseJsonBytes(
+      receipt.content,
+      paths.receipt,
+      'CANDIDATE_MANIFEST_ANTI_PASS',
+    )
+    assertEqual(receiptDocument.sha256, raw.sha256, `${entry.sampleId}.receipt hash`)
+    assertEqual(receiptDocument.bytes, raw.bytes, `${entry.sampleId}.receipt bytes`)
+    assertEqual(receiptDocument.sampleId, entry.sampleId, `${entry.sampleId}.receipt sample`)
+    assertEqual(receiptDocument.buildId, input.buildId, `${entry.sampleId}.receipt build`)
+    assertEqual(receiptDocument.gitSha, input.sourceSha, `${entry.sampleId}.receipt source`)
+    assertEqual(receiptDocument.artifactHash, input.artifactHash, `${entry.sampleId}.receipt artifact`)
+    if (
+      machine.allClaimsMatchServerRaw !== true ||
+      machine.browserDownloadSha256 !== raw.sha256
+    ) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_ANTI_PASS',
+        `${entry.sampleId} 四方一致性声明无效`,
+      )
+    }
+    const rawDocument = parseJsonBytes(
+      raw.content,
+      paths.raw,
+      'CANDIDATE_MANIFEST_ANTI_PASS',
+    )
+    assertEqual(rawDocument.schemaVersion, input.schemaVersion, `${entry.sampleId}.raw schema`)
+    assertEqual(rawDocument.meta?.sampleId, entry.sampleId, `${entry.sampleId}.raw sampleId`)
+    assertEqual(rawDocument.meta?.diagnosisId, entry.sampleId, `${entry.sampleId}.raw diagnosisId`)
+    assertEqual(rawDocument.meta?.buildId, input.buildId, `${entry.sampleId}.raw buildId`)
+    assertEqual(rawDocument.meta?.gitSha, input.sourceSha, `${entry.sampleId}.raw sourceSha`)
+    assertEqual(rawDocument.meta?.artifactHash, input.artifactHash, `${entry.sampleId}.raw artifactHash`)
+    assertEqual(rawDocument.meta?.scenarioId, input.scenarioId, `${entry.sampleId}.raw scenarioId`)
+    assertEqual(rawDocument.meta?.scenarioVersion, input.scenarioVersion, `${entry.sampleId}.raw scenarioVersion`)
+    assertEqual(rawDocument.meta?.protocolVersion, input.protocolVersion, `${entry.sampleId}.raw protocolVersion`)
+    assertEqual(rawDocument.finalTick, 2010, `${entry.sampleId}.raw finalTick`)
+    const expectedPathKind =
+      entry.sampleId === 'TECH-RC9-P07'
+        ? 'prominent-cta-and-repeat-submit'
+        : 'minimal-intervention-and-invalid-consequence'
+    const expectedCounts =
+      entry.sampleId === 'TECH-RC9-P07' ? [1, 1] : [0, 0]
+    assertEqual(evidence.pathKind, expectedPathKind, `${entry.sampleId}.pathKind`)
+    const actions = rawDocument.actions
+    const commitments = rawDocument.managementChoiceCommitmentsV03
+    const opportunities = rawDocument.managementChoiceOpportunitiesV03
+    if (
+      !Array.isArray(actions) ||
+      !Array.isArray(commitments) ||
+      !Array.isArray(opportunities) ||
+      opportunities.length !== 2
+    ) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_ANTI_PASS',
+        `${entry.sampleId} raw canonical ledger 缺失`,
+      )
+    }
+    const commitmentActions = actions.filter(
+      (action) => action?.type === 'COMMIT_MANAGEMENT_CHOICE',
+    )
+    const actionIds = commitmentActions.map((action) => action.id)
+    const commitmentIds = commitments.map((commitment) => commitment.actionId)
+    if (
+      new Set(actionIds).size !== actionIds.length ||
+      new Set(commitmentIds).size !== commitmentIds.length ||
+      !sameJson([...actionIds].sort(), [...commitmentIds].sort()) ||
+      commitments.some(
+        (commitment) =>
+          ![0, 1].includes(commitment?.week) ||
+          commitment.commitCause !== 'explicit-candidate-action' ||
+          commitment.diagnosisId !== entry.sampleId ||
+          commitment.sessionId !== rawDocument.meta?.sessionId ||
+          commitment.candidateBuildAuthorityHash !== input.artifactHash ||
+          typeof commitment.idempotencyKey !== 'string',
+      ) ||
+      new Set(commitments.map((commitment) => commitment.idempotencyKey))
+        .size !== commitments.length
+    ) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_ANTI_PASS',
+        `${entry.sampleId} raw actions 与 canonical ledger 不一致或重复补计`,
+      )
+    }
+    const observedCounts = [0, 1].map(
+      (week) =>
+        commitments.filter((commitment) => commitment.week === week).length,
+    )
+    if (!sameJson(observedCounts, expectedCounts)) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_ANTI_PASS',
+        `${entry.sampleId} terminal count mismatch expected=${expectedCounts.join('/')} observed=${observedCounts.join('/')}`,
+      )
+    }
+    for (const week of [0, 1]) {
+      const opportunity = opportunities.find(
+        (candidate) => candidate?.week === week,
+      )
+      if (
+        !opportunity ||
+        (expectedCounts[week] === 0 &&
+          (opportunity.terminalState !== 'omitted' ||
+            opportunity.committedAtSequence !== null)) ||
+        (expectedCounts[week] === 1 &&
+          (opportunity.terminalState === 'omitted' ||
+            !Number.isSafeInteger(opportunity.committedAtSequence)))
+      ) {
+        throw new VerificationError(
+          'CANDIDATE_MANIFEST_ANTI_PASS',
+          `${entry.sampleId} W${week + 1} terminal 与重算计数不一致`,
+        )
+      }
+    }
+    const assertions = evidence.assertions
+    const assertedCounts =
+      entry.sampleId === 'TECH-RC9-P07'
+        ? [
+            assertions?.w1ExplicitCommitmentCount,
+            assertions?.w2ExplicitCommitmentCount,
+          ]
+        : [
+            assertions?.w1C03TerminalCommitmentCount,
+            assertions?.w2C03TerminalCommitmentCount,
+          ]
+    if (
+      !sameJson(assertedCounts, expectedCounts) ||
+      assertions?.canonicalTerminalCommitmentCount !==
+        expectedCounts[0] + expectedCounts[1] ||
+      assertions?.finalTick !== 2010 ||
+      assertions?.twoWeeksCompleted !== true ||
+      assertions?.recapCount !== 2
+    ) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_ANTI_PASS',
+        `${entry.sampleId} assertions 与 raw 重算不一致`,
+      )
+    }
+    if (
+      entry.sampleId === 'TECH-RC9-P07' &&
+      [
+        assertions.summaryCtaCommitmentDelta,
+        assertions.openCloseLocateExpandCommitmentDelta,
+        assertions.containerEnterSpaceCommitmentDelta,
+        assertions.continueCommitmentDelta,
+        assertions.w1RepeatCommitmentDelta,
+        assertions.w2RepeatCommitmentDelta,
+        assertions.reloadCommitmentDelta,
+        assertions.identicalExportRetryCommitmentDelta,
+        evidence.runtimeAntiPass?.directScheduleEdits?.w1Count,
+        evidence.runtimeAntiPass?.directScheduleEdits?.w2CountAtDeadline,
+      ].some((value) => value !== 0)
+    ) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_ANTI_PASS',
+        `${entry.sampleId} 非显式路线发生补计`,
+      )
+    }
+    if (
+      !Array.isArray(evidence.validationCommands) ||
+      evidence.validationCommands.some((command) => command?.status !== 'PASS') ||
+      !evidence.validationCommands.some(
+        (command) =>
+          String(command.id).includes('ledger-validator') &&
+          command.terminalCommitmentCount ===
+            expectedCounts[0] + expectedCounts[1],
+      ) ||
+      evidence.hostStopped !== true ||
+      evidence.sessionCleared !== true
+    ) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_ANTI_PASS',
+        `${entry.sampleId} host/ledger validator 合同不完整`,
+      )
+    }
+    bindings.push({
+      sampleId: entry.sampleId,
+      result: publicBinding(binding),
+      raw: publicBinding(raw),
+      sidecar: publicBinding(sidecar),
+      receipt: publicBinding(receipt),
+      browserDownload: publicBinding(browser),
+    })
+  }
+  return bindings
+}
+
+function parseTarArchive(bytes, expectedEpoch) {
+  if (bytes.length === 0 || bytes.length % 512 !== 0) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_ARCHIVE',
+      'archive 长度不是完整的 512-byte blocks',
+    )
+  }
+  const entries = []
+  const seenPaths = new Set()
+  let offset = 0
+  let zeroBlocks = 0
+  while (offset + 512 <= bytes.length) {
+    const header = bytes.subarray(offset, offset + 512)
+    if (header.every((value) => value === 0)) {
+      zeroBlocks += 1
+      offset += 512
+      if (zeroBlocks === 2) break
+      continue
+    }
+    zeroBlocks = 0
+    const text = (start, length) =>
+      header
+        .subarray(start, start + length)
+        .toString('utf8')
+        .replace(/\0.*$/s, '')
+    const name = text(0, 100)
+    const prefix = text(345, 155)
+    const path = prefix ? `${prefix}/${name}` : name
+    const sizeField = header.subarray(124, 136).toString('ascii')
+    const mtimeField = header.subarray(136, 148).toString('ascii')
+    const modeField = header.subarray(100, 108).toString('ascii')
+    const uidField = header.subarray(108, 116).toString('ascii')
+    const gidField = header.subarray(116, 124).toString('ascii')
+    const sizeText = sizeField.replace(/\0$/, '')
+    const size = Number.parseInt(sizeText || '0', 8)
+    const mtime = Number.parseInt(mtimeField.replace(/\0$/, '') || '0', 8)
+    const mode = Number.parseInt(modeField.replace(/\0$/, '') || '0', 8)
+    const uid = Number.parseInt(uidField.replace(/\0$/, '') || '0', 8)
+    const gid = Number.parseInt(gidField.replace(/\0$/, '') || '0', 8)
+    const type = String.fromCharCode(header[156])
+    const checksumField = header.subarray(148, 156).toString('ascii')
+    const checksumText = checksumField.slice(0, 6)
+    const expectedChecksum = Number.parseInt(checksumText || '0', 8)
+    const checksumHeader = Buffer.from(header)
+    checksumHeader.fill(32, 148, 156)
+    const actualChecksum = checksumHeader.reduce(
+      (sum, value) => sum + value,
+      0,
+    )
+    if (
+      !/^[0-7]{7}\0$/.test(modeField) ||
+      !/^[0-7]{7}\0$/.test(uidField) ||
+      !/^[0-7]{7}\0$/.test(gidField) ||
+      !/^[0-7]{11}\0$/.test(sizeField) ||
+      !/^[0-7]{11}\0$/.test(mtimeField) ||
+      !/^[0-7]{6}\0 $/.test(checksumField) ||
+      header.subarray(257, 263).toString('binary') !== 'ustar\0' ||
+      header.subarray(263, 265).toString('ascii') !== '00' ||
+      text(265, 32) !== 'root' ||
+      text(297, 32) !== 'root' ||
+      Number.parseInt(text(329, 8) || '0', 8) !== 0 ||
+      Number.parseInt(text(337, 8) || '0', 8) !== 0 ||
+      !isRepoRelativePath(type === '5' ? path.replace(/\/$/, '') : path) ||
+      seenPaths.has(path) ||
+      !Number.isSafeInteger(size) ||
+      size < 0 ||
+      mtime !== expectedEpoch ||
+      uid !== 0 ||
+      gid !== 0 ||
+      expectedChecksum !== actualChecksum ||
+      !['0', '5'].includes(type) ||
+      (type === '5' && (size !== 0 || !path.endsWith('/') || mode !== 0o755)) ||
+      (type === '0' && (path.endsWith('/') || mode !== 0o644))
+    ) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_ARCHIVE',
+        `archive header 无效：${path}`,
+      )
+    }
+    seenPaths.add(path)
+    const contentStart = offset + 512
+    const contentEnd = contentStart + size
+    if (contentEnd > bytes.length) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_ARCHIVE',
+        `archive entry 越界：${path}`,
+      )
+    }
+    const paddedEnd =
+      contentStart + Math.ceil(size / 512) * 512
+    if (
+      paddedEnd > bytes.length ||
+      bytes
+        .subarray(contentEnd, paddedEnd)
+        .some((value) => value !== 0)
+    ) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_ARCHIVE',
+        `archive entry padding 无效：${path}`,
+      )
+    }
+    entries.push({
+      path,
+      type: type === '5' ? 'directory' : 'file',
+      bytes: size,
+      sha256:
+        type === '5'
+          ? null
+          : sha256(bytes.subarray(contentStart, contentEnd)),
+    })
+    offset = paddedEnd
+  }
+  if (zeroBlocks < 2 || offset !== bytes.length) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_ARCHIVE',
+      'archive 缺少精确终止双零块或含 trailing data',
+    )
+  }
+  const paths = entries.map((entry) => entry.path)
+  const canonicalOrder = [...paths].sort((left, right) =>
+    Buffer.from(left).compare(Buffer.from(right)),
+  )
+  if (!sameJson(paths, canonicalOrder)) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_ARCHIVE',
+      'archive entry 顺序不是 canonical byte order',
+    )
+  }
+  return entries
+}
+
+async function verifyArtifactAndArchive(
+  repoRoot,
+  input,
+  candidateBuild,
+  inputAliases,
+) {
+  const root = candidateRoot(input.candidateAttempt)
+  const artifactRoot = `${root}/rc-dist`
+  const expectedManifestPath = `${artifactRoot}/artifact-manifest.json`
+  const expectedMetadataPath = `${artifactRoot}/rc-build.json`
+  const expectedArchivePath = `${root}/rc-dist.tar`
+  const evidenceSha = input.candidateEvidenceSnapshotSha
+  if (
+    candidateBuild.archive?.format !== 'ustar' ||
+    !Number.isSafeInteger(candidateBuild.sourceDateEpoch) ||
+    candidateBuild.sourceDateEpoch < 0
+  ) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_ARCHIVE',
+      'candidateBuild archive format/SOURCE_DATE_EPOCH 无效',
+    )
+  }
+  assertEqual(
+    candidateBuild.artifact?.artifactManifestPath,
+    expectedManifestPath,
+    'candidateBuild.artifactManifestPath',
+  )
+  assertEqual(
+    candidateBuild.artifact?.rcBuildMetadataPath,
+    expectedMetadataPath,
+    'candidateBuild.rcBuildMetadataPath',
+  )
+  assertEqual(
+    candidateBuild.archive?.path,
+    expectedArchivePath,
+    'candidateBuild.archive.path',
+  )
+  const artifactManifest = await bindGitBlob(
+    repoRoot,
+    evidenceSha,
+    expectedManifestPath,
+    candidateBuild.artifact.artifactManifestHash,
+    'CANDIDATE_MANIFEST_ARTIFACT',
+  )
+  const metadata = await bindGitBlob(
+    repoRoot,
+    evidenceSha,
+    expectedMetadataPath,
+    candidateBuild.artifact.rcBuildMetadataHash,
+    'CANDIDATE_MANIFEST_ARTIFACT',
+  )
+  const archive = await bindGitBlob(
+    repoRoot,
+    evidenceSha,
+    expectedArchivePath,
+    input.archiveHash,
+    'CANDIDATE_MANIFEST_ARCHIVE',
+  )
+  inputAliases.add(expectedManifestPath)
+  inputAliases.add(expectedMetadataPath)
+  inputAliases.add(expectedArchivePath)
+  const manifestDocument = parseJsonBytes(
+    artifactManifest.content,
+    expectedManifestPath,
+    'CANDIDATE_MANIFEST_ARTIFACT',
+  )
+  const metadataDocument = parseJsonBytes(
+    metadata.content,
+    expectedMetadataPath,
+    'CANDIDATE_MANIFEST_ARTIFACT',
+  )
+  if (
+    manifestDocument.schemaVersion !== 'gate1-artifact-manifest-v1' ||
+    !Array.isArray(manifestDocument.files) ||
+    manifestDocument.files.length === 0 ||
+    sha256(Buffer.from(JSON.stringify(manifestDocument.files), 'utf8')) !==
+      input.artifactHash
+  ) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_ARTIFACT',
+      'artifact manifest 内容或 canonical artifact hash 无效',
+    )
+  }
+  assertEqual(metadataDocument.buildId, input.buildId, 'rc-build.buildId')
+  assertEqual(metadataDocument.gitSha, input.sourceSha, 'rc-build.gitSha')
+  assertEqual(metadataDocument.artifactHash, input.artifactHash, 'rc-build.artifactHash')
+  const artifactFiles = []
+  const seenPaths = new Set()
+  for (const entry of manifestDocument.files) {
+    if (
+      !isRecord(entry) ||
+      !isRepoRelativePath(entry.path) ||
+      seenPaths.has(entry.path) ||
+      !Number.isSafeInteger(entry.size) ||
+      entry.size < 0 ||
+      !HEX_64.test(entry.sha256 ?? '')
+    ) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_ARTIFACT',
+        'artifact manifest file entry 无效',
+      )
+    }
+    seenPaths.add(entry.path)
+    const path = `${artifactRoot}/${entry.path}`
+    const binding = await bindGitBlob(
+      repoRoot,
+      evidenceSha,
+      path,
+      entry.sha256,
+      'CANDIDATE_MANIFEST_ARTIFACT',
+    )
+    assertEqual(binding.bytes, entry.size, `${entry.path}.size`)
+    inputAliases.add(path)
+    artifactFiles.push(publicBinding(binding))
+  }
+  const archiveEntries = parseTarArchive(
+    archive.content,
+    candidateBuild.sourceDateEpoch,
+  )
+  const archiveFiles = archiveEntries
+    .filter((entry) => entry.type === 'file')
+    .map(({ path, bytes, sha256: entrySha256 }) => ({
+      path,
+      bytes,
+      sha256: entrySha256,
+    }))
+    .sort((left, right) => left.path.localeCompare(right.path))
+  const expectedArchiveFiles = [
+    ...artifactFiles.map((entry) => ({
+      path: entry.path.slice(`${artifactRoot}/`.length),
+      bytes: entry.bytes,
+      sha256: entry.sha256,
+    })),
+    {
+      path: 'artifact-manifest.json',
+      bytes: artifactManifest.bytes,
+      sha256: artifactManifest.sha256,
+    },
+    {
+      path: 'rc-build.json',
+      bytes: metadata.bytes,
+      sha256: metadata.sha256,
+    },
+  ].sort((left, right) => left.path.localeCompare(right.path))
+  if (!sameJson(archiveFiles, expectedArchiveFiles)) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_ARCHIVE',
+      'archive regular-file inventory 与 artifact authority 不一致',
+    )
+  }
+  const expectedArchivePaths = new Set(
+    expectedArchiveFiles.map((entry) => entry.path),
+  )
+  for (const filePath of [...expectedArchivePaths]) {
+    const parts = filePath.split('/')
+    for (let index = 1; index < parts.length; index += 1) {
+      expectedArchivePaths.add(`${parts.slice(0, index).join('/')}/`)
+    }
+  }
+  const orderedExpectedPaths = [...expectedArchivePaths].sort(
+    (left, right) => Buffer.from(left).compare(Buffer.from(right)),
+  )
+  if (
+    !sameJson(
+      archiveEntries.map((entry) => entry.path),
+      orderedExpectedPaths,
+    )
+  ) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_ARCHIVE',
+      'archive 完整 entry inventory 与 artifact authority 不一致',
+    )
+  }
+  assertEqual(
+    candidateBuild.archive.bytes,
+    archive.bytes,
+    'candidateBuild.archive.bytes',
+  )
+  assertEqual(
+    candidateBuild.archive.entryCount,
+    archiveEntries.length,
+    'candidateBuild.archive.entryCount',
+  )
+  return {
+    artifactManifest: publicBinding(artifactManifest),
+    rcBuildMetadata: publicBinding(metadata),
+    artifactFiles,
+    archive: {
+      ...publicBinding(archive),
+      entryCount: archiveEntries.length,
+      entries: archiveEntries,
+    },
+  }
+}
+
+async function verifyFrozenEvidence(
+  repoRoot,
+  input,
+  guardDocument,
+) {
+  assertEqual(
+    guardDocument.schemaVersion,
+    'gate1a-frozen-evidence-guard-v1',
+    'frozenEvidenceGuard.schemaVersion',
+  )
+  assertEqual(guardDocument.mode, 'evidence-lineage', 'frozenEvidenceGuard.mode')
+  assertEqual(
+    guardDocument.status,
+    'PASS_EVIDENCE_LINEAGE',
+    'frozenEvidenceGuard.status',
+  )
+  assertEqual(
+    guardDocument.baselineSha,
+    EVIDENCE_BASELINE,
+    'frozenEvidenceGuard.baselineSha',
+  )
+  assertEqual(
+    guardDocument.headSha,
+    input.dependencyIntegrationSha,
+    'frozenEvidenceGuard.headSha',
+  )
+  const observed = []
+  for (const frozen of FROZEN_EVIDENCE) {
+    const treeId = String(
+      await git(
+        repoRoot,
+        ['rev-parse', `${input.dependencyIntegrationSha}:${frozen.path}`],
+      ),
+    ).trim()
+    assertEqual(treeId, frozen.treeId, `${frozen.path}.treeId`)
+    const listing = String(
+      await git(repoRoot, [
+        'ls-tree',
+        '-r',
+        '-l',
+        input.dependencyIntegrationSha,
+        '--',
+        frozen.path,
+      ]),
+    )
+      .trim()
+      .split('\n')
+      .filter(Boolean)
+    const inventoryLines = []
+    for (const line of listing) {
+      const match = line.match(
+        /^(\d+) blob ([a-f0-9]{40})\s+(\d+)\t(.+)$/,
+      )
+      if (!match || !match[4].startsWith(`${frozen.path}/`)) {
+        throw new VerificationError(
+          'CANDIDATE_MANIFEST_EVIDENCE',
+          `无法解析 frozen tree：${line}`,
+        )
+      }
+      const content = await git(
+        repoRoot,
+        ['cat-file', 'blob', match[2]],
+        'buffer',
+      )
+      const bytes = Buffer.isBuffer(content)
+        ? content
+        : Buffer.from(content)
+      assertEqual(bytes.length, Number(match[3]), `${match[4]}.bytes`)
+      inventoryLines.push(
+        `${sha256(bytes)}  ${bytes.length}  ${match[4].slice(frozen.path.length + 1)}\n`,
+      )
+    }
+    const inventorySha256 = sha256(inventoryLines.join(''))
+    assertEqual(listing.length, frozen.fileCount, `${frozen.path}.fileCount`)
+    assertEqual(
+      inventorySha256,
+      frozen.inventorySha256,
+      `${frozen.path}.inventorySha256`,
+    )
+    const guardObservation = guardDocument.observations?.find(
+      (entry) => entry.path === frozen.path,
+    )
+    if (
+      !isRecord(guardObservation) ||
+      guardObservation.actual?.treeId !== treeId ||
+      guardObservation.actual?.fileCount !== listing.length ||
+      guardObservation.actual?.inventorySha256 !== inventorySha256 ||
+      !Object.values(guardObservation.matches ?? {}).every(
+        (value) => value === true,
+      )
+    ) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_EVIDENCE',
+        `${frozen.path} guard output 与独立复算不一致`,
+      )
+    }
+    observed.push({
+      path: frozen.path,
+      treeId,
+      fileCount: listing.length,
+      inventorySha256,
+    })
+  }
+  return observed
+}
+
+function parseCriticalCommand(
+  entry,
+  binding,
+  input,
+) {
+  if (
+    ![
+      'manifest-fixtures',
+      'manifest-probe',
+      'runtime-equivalence',
+      'rc-verify',
+      'rc-verify-archive',
+      'rc-repro',
+    ].includes(entry.id)
+  ) {
+    return null
+  }
+  const document = parseJsonBytes(
+    binding.content,
+    entry.outputPath,
+    'CANDIDATE_MANIFEST_COMMAND',
+  )
+  if (entry.id === 'manifest-fixtures') {
+    assertEqual(document.schemaVersion, SCHEMA_VERSION, 'manifest-fixtures.schemaVersion')
+    assertEqual(document.status, 'PASS_FIXTURES', 'manifest-fixtures.status')
+    assertEqual(document.fullManifestVerified, false, 'manifest-fixtures.fullManifestVerified')
+  } else if (entry.id === 'manifest-probe') {
+    assertEqual(document.schemaVersion, SCHEMA_VERSION, 'manifest-probe.schemaVersion')
+    assertEqual(document.status, 'PASS_AUTHORITY_PREFLIGHT', 'manifest-probe.status')
+    assertEqual(document.fullManifestVerified, false, 'manifest-probe.fullManifestVerified')
+    assertEqual(document.authorityProfile, input.authorityProfile, 'manifest-probe.authorityProfile')
+    assertEqual(document.scenarioVersion, input.scenarioVersion, 'manifest-probe.scenarioVersion')
+    assertEqual(document.protocolVersion, input.protocolVersion, 'manifest-probe.protocolVersion')
+  } else if (entry.id === 'runtime-equivalence') {
+    assertEqual(
+      document.schemaVersion,
+      'gate1a-c04-runtime-equivalence-v1',
+      'runtime-equivalence.schemaVersion',
+    )
+    assertEqual(document.status, 'PASS_RUNTIME_EQUIVALENCE', 'runtime-equivalence.status')
+    assertEqual(document.errorCode, null, 'runtime-equivalence.errorCode')
+    assertEqual(
+      document.verificationInputSha,
+      input.dependencyIntegrationSha,
+      'runtime-equivalence.verificationInputSha',
+    )
+    assertEqual(
+      document.headSha,
+      input.dependencyIntegrationSha,
+      'runtime-equivalence.headSha',
+    )
+    assertEqual(
+      document.artifactGitSha,
+      input.sourceSha,
+      'runtime-equivalence.artifactGitSha',
+    )
+    assertEqual(
+      document.sourceBaselineSha,
+      'cd2fc9716d98c160fe530c593347992f18bf96e4',
+      'runtime-equivalence.sourceBaselineSha',
+    )
+    if (!sameJson(document.changedForbiddenPaths, [])) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_COMMAND',
+        'runtime-equivalence.changedForbiddenPaths 必须为空',
+      )
+    }
+    assertEqual(document.canonicalFileCount, 5, 'runtime-equivalence.canonicalFileCount')
+    assertEqual(document.artifactManifestBytesEqual, true, 'runtime-equivalence.artifactManifestBytesEqual')
+    assertEqual(document.artifactInventoryEqual, true, 'runtime-equivalence.artifactInventoryEqual')
+    assertEqual(document.metadataIdentityOnly, true, 'runtime-equivalence.metadataIdentityOnly')
+    assertEqual(
+      document.expectedArtifactHash,
+      '9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65',
+      'runtime-equivalence.expectedArtifactHash',
+    )
+    assertEqual(document.actualArtifactHash, input.artifactHash, 'runtime-equivalence.actualArtifactHash')
+    assertEqual(
+      document.expectedArtifactManifestSha256,
+      'c336706bf7193c07a7f552dfbfe77cf02ec36259c72cc08b8f0c6ee8fc84cc37',
+      'runtime-equivalence.expectedManifestHash',
+    )
+    assertEqual(
+      document.actualArtifactManifestSha256,
+      'c336706bf7193c07a7f552dfbfe77cf02ec36259c72cc08b8f0c6ee8fc84cc37',
+      'runtime-equivalence.actualManifestHash',
+    )
+    if (
+      !Array.isArray(document.canonicalFiles) ||
+      document.canonicalFiles.length !== 5 ||
+      document.canonicalFiles.some(
+        (file) =>
+          !isRecord(file) ||
+          !isRepoRelativePath(file.path) ||
+          !Number.isSafeInteger(file.expectedBytes) ||
+          file.expectedBytes !== file.actualBytes ||
+          !HEX_64.test(file.expectedSha256 ?? '') ||
+          file.expectedSha256 !== file.actualSha256 ||
+          file.bytesEqual !== true,
+      )
+    ) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_COMMAND',
+        'runtime-equivalence canonicalFiles 合同不完整',
+      )
+    }
+    assertEqual(
+      document.source?.baselineSha,
+      'cd2fc9716d98c160fe530c593347992f18bf96e4',
+      'runtime-equivalence.baselineSha',
+    )
+    assertEqual(
+      document.source?.headSha,
+      input.dependencyIntegrationSha,
+      'runtime-equivalence.headSha',
+    )
+    if (!sameJson(document.source?.changedForbiddenPaths, [])) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_COMMAND',
+        'runtime-equivalence.source.changedForbiddenPaths 必须为空',
+      )
+    }
+    assertEqual(
+      document.artifact?.artifactDir,
+      `${candidateRoot(input.candidateAttempt)}/rc-dist`,
+      'runtime-equivalence.artifactDir',
+    )
+    assertEqual(
+      document.artifact?.actualArtifactHash,
+      input.artifactHash,
+      'runtime-equivalence.artifactHash',
+    )
+    assertEqual(
+      document.artifact?.metadataIdentity?.expectedGitSha,
+      input.sourceSha,
+      'runtime-equivalence.expectedGitSha',
+    )
+    assertEqual(
+      document.artifact?.metadataIdentity?.actualGitSha,
+      input.sourceSha,
+      'runtime-equivalence.actualGitSha',
+    )
+  } else if (entry.id === 'rc-verify') {
+    assertEqual(document.verified, true, 'rc-verify.verified')
+    assertEqual(document.buildId, input.buildId, 'rc-verify.buildId')
+    assertEqual(document.gitSha, input.sourceSha, 'rc-verify.gitSha')
+    assertEqual(document.artifactHash, input.artifactHash, 'rc-verify.artifactHash')
+  } else if (entry.id === 'rc-verify-archive') {
+    assertEqual(document.verified, true, 'rc-verify-archive.verified')
+    assertEqual(document.archiveHash, input.archiveHash, 'rc-verify-archive.archiveHash')
+  } else if (entry.id === 'rc-repro') {
+    assertEqual(document.reproducible, true, 'rc-repro.reproducible')
+    assertEqual(document.buildId, input.buildId, 'rc-repro.buildId')
+    assertEqual(document.gitSha, input.sourceSha, 'rc-repro.gitSha')
+    assertEqual(document.archiveHash, input.archiveHash, 'rc-repro.archiveHash')
+  }
+  return {
+    schemaVersion: document.schemaVersion ?? null,
+    status: document.status ?? null,
+  }
+}
+
+function assertNoOutputAlias(repoRoot, output, aliases) {
+  for (const path of aliases) {
+    if (repoPath(repoRoot, path) === output) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_SELF_REFERENCE',
+        `manifest verification output alias input：${path}`,
+      )
+    }
+  }
+}
+
+async function runFullManifest(
+  repoRoot,
+  options,
+  resolvedOutputPath,
+) {
+  const manifestArgument = options['--manifest']
+  if (!isRepoRelativePath(manifestArgument)) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_PATH',
+      '--manifest 必须是 canonical repo-relative path',
+    )
+  }
+  assertEqual(
+    manifestArgument,
+    CANONICAL_CM01_PATH,
+    'candidate manifest canonical path',
+    'CANDIDATE_MANIFEST_PATH',
+  )
+  const manifestGitSha = options['--manifest-git-sha']
+  await resolveCommit(repoRoot, manifestGitSha)
+  const manifestBytes = await gitBlob(
+    repoRoot,
+    manifestGitSha,
+    manifestArgument,
+  )
+  const manifestHash = sha256(manifestBytes)
+  const manifestSidecarBinding = await bindGitSidecar(
+    repoRoot,
+    manifestGitSha,
+    manifestArgument,
+    manifestHash,
+    'CANDIDATE_MANIFEST_GIT_BINDING',
+  )
+  const document = parseJsonBytes(
+    manifestBytes,
+    manifestArgument,
+    'CANDIDATE_MANIFEST_JSON',
+  )
+  const input = unwrap(document, 'candidate-manifest')
+  const validation = validateCandidateManifest(input)
+  if (!validation.accepted) {
+    throw new VerificationError(
+      validation.errorCode,
+      'candidate manifest contract rejected input',
+    )
+  }
+  assertEqual(input.candidateManifestId, 'CM01', 'candidateManifestId')
+  assertEqual(input.candidateAttempt, 'C04', 'candidateAttempt')
+  assertEqual(
+    manifestArgument,
+    candidateManifestPath(input.candidateManifestId),
+    'candidate manifest canonical path',
+    'CANDIDATE_MANIFEST_PATH',
+  )
+  await resolveCommit(repoRoot, input.sourceSha)
+  await resolveCommit(repoRoot, input.dependencyIntegrationSha)
+  await resolveCommit(repoRoot, input.candidateEvidenceSnapshotSha)
+  if (
+    new Set([
+      input.sourceSha,
+      input.dependencyIntegrationSha,
+      input.candidateEvidenceSnapshotSha,
+      manifestGitSha,
+    ]).size !== 4
+  ) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_GIT_BINDING',
+      'source/I/E/M 必须是四个不同的 commit',
+    )
+  }
+  await assertAncestor(
+    repoRoot,
+    input.dependencyIntegrationSha,
+    input.candidateEvidenceSnapshotSha,
+    'I -> E',
+  )
+  await assertAncestor(
+    repoRoot,
+    input.candidateEvidenceSnapshotSha,
+    manifestGitSha,
+    'E -> M',
+  )
+  const inputAliases = new Set([
+    manifestArgument,
+    input.candidateAttemptManifestPath,
+    input.diagnosticManifest.path,
+    input.frozenEvidenceGuard.path,
+    ...input.authorityHashes.map((entry) => entry.path),
+    ...input.antiPass.map((entry) => entry.evidencePath),
+    ...input.rejectedAttempts.map((entry) => entry.rejectionPath),
+    ...input.commandResults.map((entry) => entry.outputPath),
+  ])
+  assertNoOutputAlias(repoRoot, resolvedOutputPath, inputAliases)
+
+  const { bindings: authorityBindings } = await verifyAuthorityGit(
+    input,
+    repoRoot,
+  )
+  const candidateBuildBinding = await bindGitBlob(
+    repoRoot,
+    input.candidateEvidenceSnapshotSha,
+    input.candidateAttemptManifestPath,
+    input.candidateAttemptManifestHash,
+    'CANDIDATE_MANIFEST_EVIDENCE',
+  )
+  const candidateBuild = parseJsonBytes(
+    candidateBuildBinding.content,
+    input.candidateAttemptManifestPath,
+    'CANDIDATE_MANIFEST_EVIDENCE',
+  )
+  assertBuildIdentity(candidateBuild, input, 'candidateBuild')
+  assertEqual(
+    candidateBuild.artifact?.artifactHash,
+    input.artifactHash,
+    'candidateBuild.artifactHash',
+  )
+  assertEqual(
+    candidateBuild.archive?.sha256,
+    input.archiveHash,
+    'candidateBuild.archiveHash',
+  )
+  if (!sameJson(candidateBuild.authorityHashes, input.authorityHashes)) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_AUTHORITY',
+      'candidate-build authorityHashes 与 CM 不一致',
+    )
+  }
+
+  const diagnosticBinding = await bindGitBlob(
+    repoRoot,
+    input.candidateEvidenceSnapshotSha,
+    input.diagnosticManifest.path,
+    input.diagnosticManifest.sha256,
+    'CANDIDATE_MANIFEST_DIAGNOSTIC',
+  )
+  const diagnosticManifest = parseJsonBytes(
+    diagnosticBinding.content,
+    input.diagnosticManifest.path,
+    'CANDIDATE_MANIFEST_DIAGNOSTIC',
+  )
+  assertBuildIdentity(diagnosticManifest, input, 'diagnosticManifest')
+  assertEqual(diagnosticManifest.status, 'PASS', 'diagnosticManifest.status')
+  assertEqual(
+    diagnosticManifest.candidateBuildManifestHash,
+    input.candidateAttemptManifestHash,
+    'diagnosticManifest.candidateBuildManifestHash',
+  )
+  assertEqual(diagnosticManifest.artifactHash, input.artifactHash, 'diagnosticManifest.artifactHash')
+  assertEqual(diagnosticManifest.archiveHash, input.archiveHash, 'diagnosticManifest.archiveHash')
+  const diagnosticIds =
+    diagnosticManifest.allocatedSampleIds ??
+    diagnosticManifest.samples?.map((entry) => entry.sampleId)
+  if (!sameJson(diagnosticIds, input.diagnosticManifest.sampleIds)) {
+    throw new VerificationError(
+      'CANDIDATE_MANIFEST_DIAGNOSTIC',
+      'diagnostic sample ID set mismatch',
+    )
+  }
+  const sampleBindings = await verifyDiagnosticSamples(
+    repoRoot,
+    input,
+    diagnosticManifest,
+    inputAliases,
+  )
+  const antiPassBindings = await verifyAntiPass(
+    repoRoot,
+    input,
+    inputAliases,
+  )
+  const artifactBindings = await verifyArtifactAndArchive(
+    repoRoot,
+    input,
+    candidateBuild,
+    inputAliases,
+  )
+
+  const rejectionBindings = []
+  for (const entry of input.rejectedAttempts) {
+    const authority = REJECTION_AUTHORITIES[entry.candidateAttempt]
+    assertEqual(entry.rejectionPath, authority.path, `${entry.candidateAttempt}.rejectionPath`)
+    assertEqual(entry.rejectionHash, authority.sha256, `${entry.candidateAttempt}.rejectionHash`)
+    const binding = await bindGitBlob(
+      repoRoot,
+      input.candidateEvidenceSnapshotSha,
+      entry.rejectionPath,
+      entry.rejectionHash,
+      'CANDIDATE_MANIFEST_HISTORY',
+    )
+    const rejection = parseJsonBytes(
+      binding.content,
+      entry.rejectionPath,
+      'CANDIDATE_MANIFEST_HISTORY',
+    )
+    assertEqual(
+      rejection.candidateAttempt,
+      entry.candidateAttempt,
+      `${entry.candidateAttempt}.rejection.candidateAttempt`,
+    )
+    if (!String(rejection.status).startsWith('REJECTED_')) {
+      throw new VerificationError(
+        'CANDIDATE_MANIFEST_HISTORY',
+        `${entry.candidateAttempt} rejection status 无效`,
+      )
+    }
+    rejectionBindings.push(
+      publicBinding(binding, {
+        candidateAttempt: entry.candidateAttempt,
+        status: rejection.status,
+      }),
+    )
+  }
+
+  const commandBindings = []
+  for (const entry of input.commandResults) {
+    const binding = await bindGitBlob(
+      repoRoot,
+      input.candidateEvidenceSnapshotSha,
+      entry.outputPath,
+      entry.outputHash,
+      'CANDIDATE_MANIFEST_COMMAND',
+    )
+    const parsed = parseCriticalCommand(entry, binding, input)
+    const sidecar =
+      ['manifest-fixtures', 'manifest-probe', 'runtime-equivalence'].includes(
+        entry.id,
+      )
+        ? publicBinding(
+            await bindGitSidecar(
+              repoRoot,
+              input.candidateEvidenceSnapshotSha,
+              entry.outputPath,
+              entry.outputHash,
+              'CANDIDATE_MANIFEST_COMMAND',
+            ),
+          )
+        : null
+    commandBindings.push(
+      publicBinding(binding, { id: entry.id, parsed, sidecar }),
+    )
+  }
+  const guardBinding = await bindGitBlob(
+    repoRoot,
+    input.candidateEvidenceSnapshotSha,
+    input.frozenEvidenceGuard.path,
+    input.frozenEvidenceGuard.sha256,
+    'CANDIDATE_MANIFEST_EVIDENCE',
+  )
+  const guardDocument = parseJsonBytes(
+    guardBinding.content,
+    input.frozenEvidenceGuard.path,
+    'CANDIDATE_MANIFEST_EVIDENCE',
+  )
+  const guardSidecarBinding = await bindGitSidecar(
+    repoRoot,
+    input.candidateEvidenceSnapshotSha,
+    input.frozenEvidenceGuard.path,
+    input.frozenEvidenceGuard.sha256,
+    'CANDIDATE_MANIFEST_EVIDENCE',
+  )
+  const frozenObservations = await verifyFrozenEvidence(
+    repoRoot,
+    input,
+    guardDocument,
+  )
+  assertNoOutputAlias(repoRoot, resolvedOutputPath, inputAliases)
+
+  return {
+    schemaVersion: SCHEMA_VERSION,
+    status: 'PASS_FULL_MANIFEST',
+    accepted: true,
+    fullManifestVerified: true,
+    manifestGitSha,
+    candidateEvidenceSnapshotSha: input.candidateEvidenceSnapshotSha,
+    ...validation.summary,
+    manifest: {
+      path: manifestArgument,
+      sha256: manifestHash,
+      bytes: manifestBytes.length,
+      sidecar: publicBinding(manifestSidecarBinding),
+    },
+    bindings: {
+      authority: authorityBindings,
+      candidateBuild: publicBinding(candidateBuildBinding),
+      diagnosticManifest: publicBinding(diagnosticBinding),
+      sampleRecords: sampleBindings,
+      antiPass: antiPassBindings,
+      artifact: artifactBindings,
+      rejectedAttempts: rejectionBindings,
+      commandResults: commandBindings,
+      frozenEvidenceGuard: {
+        ...publicBinding(guardBinding),
+        sidecar: publicBinding(guardSidecarBinding),
+        observedTrees: frozenObservations,
+      },
+    },
+  }
+}
+
+const argv = process.argv.slice(2)
+let resolvedOutputPath
+let repoRoot = defaultRepoRoot
+let outputValidated = false
+try {
+  const { mode, options } = parseArguments(argv)
+  repoRoot =
+    mode === 'fixtures'
+      ? defaultRepoRoot
+      : resolve(options['--repo-root'])
+  resolvedOutputPath = outputPath(options, repoRoot, mode)
+  await validateOutputDestination(resolvedOutputPath, repoRoot)
+  outputValidated = true
+  const result =
+    mode === 'fixtures'
+      ? await runFixtures()
+      : mode === 'probe'
+        ? await runProbe(
+            repoRoot,
+            options,
+            resolvedOutputPath,
+          )
+        : await runFullManifest(
+            repoRoot,
+            options,
+            resolvedOutputPath,
+          )
+  await writeExclusiveGroup(resolvedOutputPath, result, repoRoot)
+  process.stdout.write(`${JSON.stringify(result)}\n`)
+} catch (error) {
+  const result = {
+    schemaVersion: SCHEMA_VERSION,
+    status: 'FAIL',
+    accepted: false,
+    fullManifestVerified: false,
+    errorCode:
+      error instanceof VerificationError
+        ? error.code
+        : 'CANDIDATE_MANIFEST_INTERNAL',
+    message: error instanceof Error ? error.message : String(error),
+  }
+  if (resolvedOutputPath && outputValidated) {
+    await writeExclusiveGroup(resolvedOutputPath, result, repoRoot).catch(
+      () => {},
+    )
+  }
+  process.stderr.write(`${JSON.stringify(result)}\n`)
+  process.exitCode = 1
+}

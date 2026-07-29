@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "new-era-diagnostic-isolation-input-v1",
+  "kind": "aggregate",
+  "synthetic": true,
+  "cohortId": "g1a-20260727-rc9-01",
+  "candidateAttempt": "C04",
+  "samples": [
+    {
+      "sampleId": "TECH-RC9-D16",
+      "inputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/diagnostics/TECH-RC9-D16/diagnostic-isolation-input.json",
+      "inputSidecarPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/diagnostics/TECH-RC9-D16/diagnostic-isolation-input.json.sha256",
+      "verificationPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/diagnostic-isolation/TECH-RC9-D16-verification.json",
+      "verificationSidecarPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/diagnostic-isolation/TECH-RC9-D16-verification.json.sha256"
+    },
+    {
+      "sampleId": "TECH-RC9-D17",
+      "inputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/diagnostics/TECH-RC9-D17/diagnostic-isolation-input.json",
+      "inputSidecarPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/diagnostics/TECH-RC9-D17/diagnostic-isolation-input.json.sha256",
+      "verificationPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/diagnostic-isolation/TECH-RC9-D17-verification.json",
+      "verificationSidecarPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/diagnostic-isolation/TECH-RC9-D17-verification.json.sha256"
+    },
+    {
+      "sampleId": "TECH-RC9-D18",
+      "inputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/diagnostics/TECH-RC9-D18/diagnostic-isolation-input.json",
+      "inputSidecarPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/diagnostics/TECH-RC9-D18/diagnostic-isolation-input.json.sha256",
+      "verificationPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/diagnostic-isolation/TECH-RC9-D18-verification.json",
+      "verificationSidecarPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/diagnostic-isolation/TECH-RC9-D18-verification.json.sha256"
+    },
+    {
+      "sampleId": "TECH-RC9-D19",
+      "inputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/diagnostics/TECH-RC9-D19/diagnostic-isolation-input.json",
+      "inputSidecarPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/diagnostics/TECH-RC9-D19/diagnostic-isolation-input.json.sha256",
+      "verificationPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/diagnostic-isolation/TECH-RC9-D19-verification.json",
+      "verificationSidecarPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/diagnostic-isolation/TECH-RC9-D19-verification.json.sha256"
+    },
+    {
+      "sampleId": "TECH-RC9-D20",
+      "inputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/diagnostics/TECH-RC9-D20/diagnostic-isolation-input.json",
+      "inputSidecarPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/diagnostics/TECH-RC9-D20/diagnostic-isolation-input.json.sha256",
+      "verificationPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/diagnostic-isolation/TECH-RC9-D20-verification.json",
+      "verificationSidecarPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/diagnostic-isolation/TECH-RC9-D20-verification.json.sha256"
+    }
+  ]
+}
