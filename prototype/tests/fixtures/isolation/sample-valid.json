@@ -1,0 +1,209 @@
+{
+  "schemaVersion": "new-era-diagnostic-isolation-input-v1",
+  "kind": "sample",
+  "synthetic": true,
+  "sampleId": "TECH-RC9-D16",
+  "preflight": {
+    "schemaVersion": "new-era-diagnostic-isolation-preflight-v1",
+    "sampleId": "TECH-RC9-D16",
+    "diagnosticIsolationProfile": "standalone-codex-cli-v2",
+    "environment": {
+      "PATH": "/opt/homebrew/opt/node@24/bin:/opt/homebrew/bin:/usr/bin:/bin"
+    },
+    "commandArgv": [
+      "/Applications/ChatGPT.app/Contents/Resources/codex",
+      "exec",
+      "--json",
+      "--strict-config",
+      "--ignore-user-config",
+      "--skip-git-repo-check",
+      "--sandbox",
+      "read-only",
+      "--cd",
+      "/private/tmp/new-era-c04-d16.workspace",
+      "--model",
+      "gpt-5.6-sol",
+      "--disable",
+      "memories",
+      "--disable",
+      "hooks",
+      "--ignore-rules",
+      "-c",
+      "plugins.\"browser@openai-bundled\".enabled=false",
+      "-c",
+      "plugins.\"chrome@openai-bundled\".enabled=false",
+      "-c",
+      "plugins.\"computer-use@openai-bundled\".enabled=false",
+      "-c",
+      "mcp_servers.playwright.enabled=true",
+      "-c",
+      "mcp_servers.playwright.command=\"npx\"",
+      "-c",
+      "mcp_servers.playwright.args=[\"-y\",\"@playwright/mcp@0.0.76\"]",
+      "-c",
+      "mcp_servers.playwright.default_tools_approval_mode=\"auto\"",
+      "-c",
+      "model_reasoning_effort=\"xhigh\"",
+      "-c",
+      "approval_policy=\"never\"",
+      "-"
+    ],
+    "stdinPromptPath": "/private/tmp/new-era-c04-d16.neutral-player-prompt.md",
+    "cliEventStreamPath": "/private/tmp/new-era-c04-d16.cli-events.jsonl",
+    "rolloutPath": "/private/tmp/new-era-c04-d16.rollout.jsonl",
+    "promptHash": "3333333333333333333333333333333333333333333333333333333333333333",
+    "cliBinaryPath": "/Applications/ChatGPT.app/Contents/Resources/codex",
+    "agentCliVersion": "codex-cli 0.146.0-alpha.3.1",
+    "cliBinarySha256": "6d8be49e49751554df16572369e636cbe02c84b208cad3dc35528c846eeca223",
+    "cliTeamIdentifier": "2DC432GLL2",
+    "cliAuthority": "Developer ID Application: OpenAI OpCo, LLC (2DC432GLL2)",
+    "nodeVersion": "v24.18.0",
+    "nodeExecutable": "/opt/homebrew/opt/node@24/bin/node",
+    "nodeBinarySha256": "72c18e2eeda260f67a5b2b66e96fa9b5ad82864676ebb54925695d87120cae3f",
+    "agentModel": "gpt-5.6-sol",
+    "agentReasoningEffort": "xhigh",
+    "origin": "http://127.0.0.1:4202",
+    "temporaryWorkspace": "/private/tmp/new-era-c04-d16.workspace",
+    "temporaryWorkspaceInitiallyEmpty": true,
+    "playwrightMcp": {
+      "provider": "direct-tools-playwright-mcp",
+      "packageVersion": "0.0.76",
+      "npmIntegrity": "sha512-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+      "serverArgv": [
+        "npx",
+        "-y",
+        "@playwright/mcp@0.0.76"
+      ],
+      "expectedToolInventory": [
+        "browser_click",
+        "browser_fill_form",
+        "browser_navigate",
+        "browser_run_code_unsafe",
+        "browser_snapshot",
+        "browser_wait_for"
+      ]
+    },
+    "unsafeCodeHashes": {
+      "contextPageProbe": "6174c979389f91fedab255eb0eda79009c802b977f1d4edcc55bfb778d7b9530",
+      "downloadProbe": "b058da8fe0f8d4542e2434022b493428e84ab96aebc5fef161df0b03dd898888"
+    }
+  },
+  "privateEvidence": {
+    "rollout": {
+      "objectId": "1111111111111111111111111111111111111111111111111111111111111111",
+      "sha256": "1111111111111111111111111111111111111111111111111111111111111111",
+      "bytes": 9000,
+      "lineCount": 11,
+      "available": false,
+      "hashVerified": false,
+      "contentAddressed": false,
+      "fileMode": "777",
+      "directoryMode": "777",
+      "flags": []
+    },
+    "cliEvents": {
+      "objectId": "2222222222222222222222222222222222222222222222222222222222222222",
+      "sha256": "2222222222222222222222222222222222222222222222222222222222222222",
+      "bytes": 3000,
+      "lineCount": 17,
+      "available": false,
+      "hashVerified": false,
+      "contentAddressed": false,
+      "fileMode": "777",
+      "directoryMode": "777",
+      "flags": []
+    }
+  },
+  "structuralEvidence": {
+    "agentRollout": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/diagnostics/TECH-RC9-D16/agent-rollout-structural-evidence.jsonl",
+      "sha256": "3364c1a945b9616c2feec822063a12c5e7b903f86aace322bae27ea127e3339c"
+    },
+    "cliEvents": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/diagnostics/TECH-RC9-D16/cli-events-structural-evidence.jsonl",
+      "sha256": "e08728535f78b48701afaf397c9b195a839f328d4362fb5e61fb672245f7e21b"
+    }
+  },
+  "identityAndIsolation": {
+    "diagnosticIsolationProfile": "standalone-codex-cli-v2",
+    "cliProcessId": 16016,
+    "agentSessionId": "10000000-0000-4000-8000-000000000016",
+    "privateRolloutObjectId": "1111111111111111111111111111111111111111111111111111111111111111",
+    "privateCliEventObjectId": "2222222222222222222222222222222222222222222222222222222222222222",
+    "agentRolloutSha256": "1111111111111111111111111111111111111111111111111111111111111111",
+    "agentRolloutStructuralEvidencePath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/diagnostics/TECH-RC9-D16/agent-rollout-structural-evidence.jsonl",
+    "agentRolloutStructuralEvidenceHash": "3364c1a945b9616c2feec822063a12c5e7b903f86aace322bae27ea127e3339c",
+    "cliEventStructuralEvidencePath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/diagnostics/TECH-RC9-D16/cli-events-structural-evidence.jsonl",
+    "cliEventStructuralEvidenceHash": "e08728535f78b48701afaf397c9b195a839f328d4362fb5e61fb672245f7e21b",
+    "agentModel": "gpt-5.6-sol",
+    "agentReasoningEffort": "xhigh",
+    "agentCliBinaryPath": "/Applications/ChatGPT.app/Contents/Resources/codex",
+    "agentCliVersion": "codex-cli 0.146.0-alpha.3.1",
+    "agentCliBinarySha256": "6d8be49e49751554df16572369e636cbe02c84b208cad3dc35528c846eeca223",
+    "agentCliTeamIdentifier": "2DC432GLL2",
+    "agentCliAuthority": "Developer ID Application: OpenAI OpCo, LLC (2DC432GLL2)",
+    "temporaryWorkspace": "/private/tmp/new-era-c04-d16.workspace",
+    "temporaryWorkspaceInitiallyEmpty": true,
+    "workspaceRoots": [
+      "/private/tmp/new-era-c04-d16.workspace"
+    ],
+    "firstSessionMetaSummary": {
+      "id": "10000000-0000-4000-8000-000000000016",
+      "source": "cli",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "xhigh",
+      "cliVersion": "codex-cli 0.146.0-alpha.3.1",
+      "rolloutCommitment": "rollout-TECH-RC9-D16-0001",
+      "cwdCommitment": "194bc3dc7a8220eaf7b91ae5afb8d0ac7ddc8800a22042b2208e622ccc05db2d",
+      "workspaceRootsCommitment": "35243c1ba19aab7c7a864c42c5bbfb770815ee0c984636dccc63e19330d606c9"
+    },
+    "firstTurnContextSummary": {
+      "turnId": "turn-TECH-RC9-D16-1",
+      "model": "gpt-5.6-sol",
+      "reasoningEffort": "xhigh",
+      "cwdCommitment": "194bc3dc7a8220eaf7b91ae5afb8d0ac7ddc8800a22042b2208e622ccc05db2d",
+      "workspaceRootsCommitment": "35243c1ba19aab7c7a864c42c5bbfb770815ee0c984636dccc63e19330d606c9",
+      "approvalPolicy": "never",
+      "sandbox": "read-only"
+    },
+    "toolCallPolicyScan": {
+      "status": "PASS",
+      "toolCallCount": 7,
+      "navigateCount": 1,
+      "anonymousFillCount": 1,
+      "unsafeCallCount": 2,
+      "unsafeCodeHashes": [
+        "6174c979389f91fedab255eb0eda79009c802b977f1d4edcc55bfb778d7b9530",
+        "b058da8fe0f8d4542e2434022b493428e84ab96aebc5fef161df0b03dd898888"
+      ]
+    },
+    "browserProvider": "direct-tools-playwright-mcp",
+    "playwrightMcpVersion": "0.0.76",
+    "playwrightMcpIntegrity": "sha512-AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+    "browserContextId": "20000000-0000-4000-8000-000000000016",
+    "browserPageId": "30000000-0000-4000-8000-000000000016",
+    "isolationPreflightHash": "87565dd95395e2abcd339d1a7507d137f98636d2fe59f1a0883001b5d267d5aa",
+    "applicationSession": {
+      "ids": [
+        "40000000-0000-4000-8000-000000000016"
+      ],
+      "fixedInitialState": true,
+      "refreshCount": 0,
+      "reopenCount": 0,
+      "resetCount": 0,
+      "savedAtUtc": "2026-07-29T01:40:00.000Z",
+      "browserDownloadAtUtc": "2026-07-29T01:41:00.000Z",
+      "fourWayVerifiedAtUtc": "2026-07-29T01:42:00.000Z",
+      "clearedAtUtc": "2026-07-29T01:43:00.000Z",
+      "interviewReleasedAtUtc": "2026-07-29T01:44:00.000Z"
+    }
+  },
+  "lifecycle": {
+    "startedAtUtc": "2026-07-29T01:00:00.000Z",
+    "completedAtUtc": "2026-07-29T01:50:00.000Z",
+    "sevenEvidenceClassesComplete": true,
+    "adjudicated": true,
+    "evidenceCommittedAtUtc": "2026-07-29T01:55:00.000Z",
+    "evidencePushedAtUtc": "2026-07-29T02:00:00.000Z"
+  }
+}

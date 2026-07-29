@@ -1,0 +1,1335 @@
+{
+  "schemaVersion": "c04-isolation-grammar-discovery.v1",
+  "artifactId": "2026-07-29-c04-isolation-grammar-discovery",
+  "generatedAtUtc": "2026-07-28T23:26:25.345Z",
+  "status": "FAIL_INCOMPLETE_REQUIRED_COVERAGE",
+  "scope": {
+    "isGrammarDiscoveryOnly": true,
+    "isGoldenEvidence": false,
+    "isDiagnosticEvidence": false,
+    "isGateEvidence": false,
+    "authorizesGrammarChange": false
+  },
+  "binary": {
+    "path": "/Applications/ChatGPT.app/Contents/Resources/codex",
+    "version": "codex-cli 0.146.0-alpha.3.1",
+    "sha256": "6d8be49e49751554df16572369e636cbe02c84b208cad3dc35528c846eeca223"
+  },
+  "node": {
+    "path": "/opt/homebrew/opt/node@24/bin/node",
+    "version": "v24.18.0",
+    "sha256": "72c18e2eeda260f67a5b2b66e96fa9b5ad82864676ebb54925695d87120cae3f"
+  },
+  "invocation": {
+    "environment": {
+      "PATH": "/opt/homebrew/opt/node@24/bin:/opt/homebrew/bin:/usr/bin:/bin"
+    },
+    "argvTokenCount": 36,
+    "argvTemplate": [
+      "/Applications/ChatGPT.app/Contents/Resources/codex",
+      "exec",
+      "--json",
+      "--strict-config",
+      "--ignore-user-config",
+      "--skip-git-repo-check",
+      "--sandbox",
+      "read-only",
+      "--cd",
+      "<TEMP_WORKSPACE_ABSOLUTE_PATH>",
+      "--model",
+      "gpt-5.6-sol",
+      "--disable",
+      "memories",
+      "--disable",
+      "hooks",
+      "--ignore-rules",
+      "-c",
+      "plugins.\"browser@openai-bundled\".enabled=false",
+      "-c",
+      "plugins.\"chrome@openai-bundled\".enabled=false",
+      "-c",
+      "plugins.\"computer-use@openai-bundled\".enabled=false",
+      "-c",
+      "mcp_servers.playwright.enabled=true",
+      "-c",
+      "mcp_servers.playwright.command=\"npx\"",
+      "-c",
+      "mcp_servers.playwright.args=[\"-y\",\"@playwright/mcp@0.0.76\"]",
+      "-c",
+      "mcp_servers.playwright.default_tools_approval_mode=\"auto\"",
+      "-c",
+      "model_reasoning_effort=\"xhigh\"",
+      "-c",
+      "approval_policy=\"never\"",
+      "-"
+    ]
+  },
+  "staticHost": {
+    "binding": "http://127.0.0.1:4202/",
+    "usedByCaptureId": "B",
+    "started": true,
+    "stopped": true,
+    "listenerAbsentAfterStop": true,
+    "status": "PASS"
+  },
+  "contentPolicy": {
+    "messageValuesStored": false,
+    "reasoningValuesStored": false,
+    "argumentsValuesStored": false,
+    "absoluteTemporaryPathsStored": false,
+    "sessionOrThreadIdValuesStored": false,
+    "privacyScanStatus": "PASS"
+  },
+  "cleanup": {
+    "rawExecEventsAbsent": true,
+    "rawPersistedRolloutsAbsent": true,
+    "temporaryWorkspacesAbsent": true,
+    "hostStopped": true,
+    "status": "PASS"
+  },
+  "discovery": {
+    "captures": [
+      {
+        "captureId": "A",
+        "classification": "NO_TOOL_SUCCESS",
+        "startedAtUtc": "2026-07-28T23:09:56.149Z",
+        "completedAtUtc": "2026-07-28T23:10:02.741Z",
+        "processExitCode": 0,
+        "argvDelta": [],
+        "sources": {
+          "execEvents": {
+            "rawCommitment": {
+              "sha256": "d76919564dcbc5a95c567605ee302df95107c4ef3a20f13ed9294e2ec15427a2",
+              "bytes": 343,
+              "lines": 4
+            },
+            "ordinalRange": {
+              "first": 1,
+              "last": 4
+            },
+            "eventOrder": [
+              {
+                "ordinal": 1,
+                "topLevelType": "thread.started",
+                "subtype": "thread.started"
+              },
+              {
+                "ordinal": 2,
+                "topLevelType": "turn.started",
+                "subtype": "turn.started"
+              },
+              {
+                "ordinal": 3,
+                "topLevelType": "item.completed",
+                "subtype": "agent_message"
+              },
+              {
+                "ordinal": 4,
+                "topLevelType": "turn.completed",
+                "subtype": "turn.completed"
+              }
+            ]
+          },
+          "persistedRollout": {
+            "rawCommitment": {
+              "sha256": "fa5d37eced2dcd09144078818035cf365cedc6a51430465c4c3b35f9466a4d5f",
+              "bytes": 66197,
+              "lines": 14
+            },
+            "ordinalRange": {
+              "first": 1,
+              "last": 14
+            },
+            "eventOrder": [
+              {
+                "ordinal": 1,
+                "topLevelType": "session_meta",
+                "subtype": "session_meta"
+              },
+              {
+                "ordinal": 2,
+                "topLevelType": "event_msg",
+                "subtype": "task_started"
+              },
+              {
+                "ordinal": 3,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 4,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 5,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 6,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 7,
+                "topLevelType": "world_state",
+                "subtype": "world_state"
+              },
+              {
+                "ordinal": 8,
+                "topLevelType": "turn_context",
+                "subtype": "turn_context"
+              },
+              {
+                "ordinal": 9,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 10,
+                "topLevelType": "event_msg",
+                "subtype": "user_message"
+              },
+              {
+                "ordinal": 11,
+                "topLevelType": "event_msg",
+                "subtype": "agent_message"
+              },
+              {
+                "ordinal": 12,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 13,
+                "topLevelType": "event_msg",
+                "subtype": "token_count"
+              },
+              {
+                "ordinal": 14,
+                "topLevelType": "event_msg",
+                "subtype": "task_complete"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "captureId": "B",
+        "classification": "PLAYWRIGHT_MCP_SINGLE_NAVIGATE",
+        "attemptOrdinal": 1,
+        "maxAttempts": 2,
+        "startedAtUtc": "2026-07-28T23:10:43.118Z",
+        "completedAtUtc": "2026-07-28T23:11:08.442Z",
+        "processExitCode": 0,
+        "argvDelta": [],
+        "sources": {
+          "execEvents": {
+            "rawCommitment": {
+              "sha256": "dc7ee3331fbf0779e5778bf3d5be8415b23d4d04fa39323ac9252d368b1c1de3",
+              "bytes": 812,
+              "lines": 6
+            },
+            "ordinalRange": {
+              "first": 1,
+              "last": 6
+            },
+            "eventOrder": [
+              {
+                "ordinal": 1,
+                "topLevelType": "thread.started",
+                "subtype": "thread.started"
+              },
+              {
+                "ordinal": 2,
+                "topLevelType": "turn.started",
+                "subtype": "turn.started"
+              },
+              {
+                "ordinal": 3,
+                "topLevelType": "item.started",
+                "subtype": "mcp_tool_call"
+              },
+              {
+                "ordinal": 4,
+                "topLevelType": "item.completed",
+                "subtype": "mcp_tool_call"
+              },
+              {
+                "ordinal": 5,
+                "topLevelType": "item.completed",
+                "subtype": "agent_message"
+              },
+              {
+                "ordinal": 6,
+                "topLevelType": "turn.completed",
+                "subtype": "turn.completed"
+              }
+            ]
+          },
+          "persistedRollout": {
+            "rawCommitment": {
+              "sha256": "eca35271dff609a1bfd66f81ce865c2d89543caef4ce3eae2f0ea514559cf4fb",
+              "bytes": 75690,
+              "lines": 20
+            },
+            "ordinalRange": {
+              "first": 1,
+              "last": 20
+            },
+            "eventOrder": [
+              {
+                "ordinal": 1,
+                "topLevelType": "session_meta",
+                "subtype": "session_meta"
+              },
+              {
+                "ordinal": 2,
+                "topLevelType": "event_msg",
+                "subtype": "task_started"
+              },
+              {
+                "ordinal": 3,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 4,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 5,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 6,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 7,
+                "topLevelType": "world_state",
+                "subtype": "world_state"
+              },
+              {
+                "ordinal": 8,
+                "topLevelType": "turn_context",
+                "subtype": "turn_context"
+              },
+              {
+                "ordinal": 9,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 10,
+                "topLevelType": "event_msg",
+                "subtype": "user_message"
+              },
+              {
+                "ordinal": 11,
+                "topLevelType": "response_item",
+                "subtype": "reasoning"
+              },
+              {
+                "ordinal": 12,
+                "topLevelType": "response_item",
+                "subtype": "reasoning"
+              },
+              {
+                "ordinal": 13,
+                "topLevelType": "response_item",
+                "subtype": "custom_tool_call"
+              },
+              {
+                "ordinal": 14,
+                "topLevelType": "event_msg",
+                "subtype": "mcp_tool_call_end"
+              },
+              {
+                "ordinal": 15,
+                "topLevelType": "response_item",
+                "subtype": "custom_tool_call_output"
+              },
+              {
+                "ordinal": 16,
+                "topLevelType": "event_msg",
+                "subtype": "token_count"
+              },
+              {
+                "ordinal": 17,
+                "topLevelType": "event_msg",
+                "subtype": "agent_message"
+              },
+              {
+                "ordinal": 18,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 19,
+                "topLevelType": "event_msg",
+                "subtype": "token_count"
+              },
+              {
+                "ordinal": 20,
+                "topLevelType": "event_msg",
+                "subtype": "task_complete"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "captureId": "C",
+        "classification": "CONTROLLED_INVALID_MODEL_TURN_FAILED",
+        "startedAtUtc": "2026-07-28T23:11:35.202Z",
+        "completedAtUtc": "2026-07-28T23:11:41.673Z",
+        "processExitCode": 1,
+        "argvDelta": [
+          {
+            "tokenIndex": 11,
+            "flag": "--model",
+            "from": "gpt-5.6-sol",
+            "to": "gpt-5.6-sol-c04-controlled-invalid",
+            "purpose": "CONTROLLED_TURN_FAILED_GRAMMAR_DISCOVERY"
+          }
+        ],
+        "sources": {
+          "execEvents": {
+            "rawCommitment": {
+              "sha256": "85aaf38fc2c20ba801a5851e0ca164599021287fae40593fd5ece74e81424228",
+              "bytes": 583,
+              "lines": 4
+            },
+            "ordinalRange": {
+              "first": 1,
+              "last": 4
+            },
+            "eventOrder": [
+              {
+                "ordinal": 1,
+                "topLevelType": "thread.started",
+                "subtype": "thread.started"
+              },
+              {
+                "ordinal": 2,
+                "topLevelType": "turn.started",
+                "subtype": "turn.started"
+              },
+              {
+                "ordinal": 3,
+                "topLevelType": "error",
+                "subtype": "error"
+              },
+              {
+                "ordinal": 4,
+                "topLevelType": "turn.failed",
+                "subtype": "turn.failed"
+              }
+            ]
+          },
+          "persistedRollout": {
+            "rawCommitment": {
+              "sha256": "3c0a39a2434dae4b092ea6aab3ece296d90718b47ae842d008173aaedb8f615f",
+              "bytes": 65168,
+              "lines": 11
+            },
+            "ordinalRange": {
+              "first": 1,
+              "last": 11
+            },
+            "eventOrder": [
+              {
+                "ordinal": 1,
+                "topLevelType": "session_meta",
+                "subtype": "session_meta"
+              },
+              {
+                "ordinal": 2,
+                "topLevelType": "event_msg",
+                "subtype": "task_started"
+              },
+              {
+                "ordinal": 3,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 4,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 5,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 6,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 7,
+                "topLevelType": "world_state",
+                "subtype": "world_state"
+              },
+              {
+                "ordinal": 8,
+                "topLevelType": "turn_context",
+                "subtype": "turn_context"
+              },
+              {
+                "ordinal": 9,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 10,
+                "topLevelType": "event_msg",
+                "subtype": "user_message"
+              },
+              {
+                "ordinal": 11,
+                "topLevelType": "event_msg",
+                "subtype": "task_complete"
+              }
+            ]
+          }
+        }
+      },
+      {
+        "captureId": "B_EXTENSION",
+        "classification": "PLAYWRIGHT_MCP_NATIVE_TYPE_EXTENSION",
+        "attemptOrdinal": 1,
+        "maxAttempts": 1,
+        "startedAtUtc": "2026-07-28T23:23:41.991Z",
+        "completedAtUtc": "2026-07-28T23:24:01.154Z",
+        "processExitCode": 0,
+        "argvDelta": [],
+        "sources": {
+          "execEvents": {
+            "rawCommitment": {
+              "sha256": "acb620ac6dbdf5597df8dac948ddeba9b62d07680303d6092464516acdeddd8f",
+              "bytes": 822,
+              "lines": 6
+            },
+            "ordinalRange": {
+              "first": 1,
+              "last": 6
+            },
+            "eventOrder": [
+              {
+                "ordinal": 1,
+                "topLevelType": "thread.started",
+                "subtype": "thread.started"
+              },
+              {
+                "ordinal": 2,
+                "topLevelType": "turn.started",
+                "subtype": "turn.started"
+              },
+              {
+                "ordinal": 3,
+                "topLevelType": "item.started",
+                "subtype": "mcp_tool_call"
+              },
+              {
+                "ordinal": 4,
+                "topLevelType": "item.completed",
+                "subtype": "mcp_tool_call"
+              },
+              {
+                "ordinal": 5,
+                "topLevelType": "item.completed",
+                "subtype": "agent_message"
+              },
+              {
+                "ordinal": 6,
+                "topLevelType": "turn.completed",
+                "subtype": "turn.completed"
+              }
+            ]
+          },
+          "persistedRollout": {
+            "rawCommitment": {
+              "sha256": "ac01582fc6996aa2b4fe04e5afc47ef459cbbc0c7a842301be786df1d82ce11f",
+              "bytes": 73561,
+              "lines": 20
+            },
+            "ordinalRange": {
+              "first": 1,
+              "last": 20
+            },
+            "eventOrder": [
+              {
+                "ordinal": 1,
+                "topLevelType": "session_meta",
+                "subtype": "session_meta"
+              },
+              {
+                "ordinal": 2,
+                "topLevelType": "event_msg",
+                "subtype": "task_started"
+              },
+              {
+                "ordinal": 3,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 4,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 5,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 6,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 7,
+                "topLevelType": "world_state",
+                "subtype": "world_state"
+              },
+              {
+                "ordinal": 8,
+                "topLevelType": "turn_context",
+                "subtype": "turn_context"
+              },
+              {
+                "ordinal": 9,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 10,
+                "topLevelType": "event_msg",
+                "subtype": "user_message"
+              },
+              {
+                "ordinal": 11,
+                "topLevelType": "response_item",
+                "subtype": "reasoning"
+              },
+              {
+                "ordinal": 12,
+                "topLevelType": "response_item",
+                "subtype": "custom_tool_call"
+              },
+              {
+                "ordinal": 13,
+                "topLevelType": "event_msg",
+                "subtype": "mcp_tool_call_end"
+              },
+              {
+                "ordinal": 14,
+                "topLevelType": "response_item",
+                "subtype": "custom_tool_call_output"
+              },
+              {
+                "ordinal": 15,
+                "topLevelType": "event_msg",
+                "subtype": "token_count"
+              },
+              {
+                "ordinal": 16,
+                "topLevelType": "response_item",
+                "subtype": "reasoning"
+              },
+              {
+                "ordinal": 17,
+                "topLevelType": "event_msg",
+                "subtype": "agent_message"
+              },
+              {
+                "ordinal": 18,
+                "topLevelType": "response_item",
+                "subtype": "message"
+              },
+              {
+                "ordinal": 19,
+                "topLevelType": "event_msg",
+                "subtype": "token_count"
+              },
+              {
+                "ordinal": 20,
+                "topLevelType": "event_msg",
+                "subtype": "task_complete"
+              }
+            ]
+          }
+        }
+      }
+    ],
+    "sourceGrammarDiscovery": {
+      "execEvents": {
+        "topLevelTypes": [
+          "error",
+          "item.completed",
+          "item.started",
+          "thread.started",
+          "turn.completed",
+          "turn.failed",
+          "turn.started"
+        ],
+        "envelopeExactKeySets": {
+          "thread.started": {
+            "exactKeySets": [
+              "thread_id,type"
+            ],
+            "associatedIdFieldNames": [
+              "thread_id"
+            ],
+            "observedCaptureIds": [
+              "A",
+              "B",
+              "C"
+            ]
+          },
+          "turn.started": {
+            "exactKeySets": [
+              "type"
+            ],
+            "associatedIdFieldNames": [],
+            "observedCaptureIds": [
+              "A",
+              "B",
+              "C"
+            ]
+          },
+          "item.completed": {
+            "exactKeySets": [
+              "item,type"
+            ],
+            "associatedIdFieldNames": [],
+            "observedCaptureIds": [
+              "A",
+              "B"
+            ]
+          },
+          "turn.completed": {
+            "exactKeySets": [
+              "type,usage"
+            ],
+            "associatedIdFieldNames": [],
+            "observedCaptureIds": [
+              "A",
+              "B"
+            ]
+          },
+          "item.started": {
+            "exactKeySets": [
+              "item,type"
+            ],
+            "associatedIdFieldNames": [],
+            "observedCaptureIds": [
+              "B"
+            ]
+          },
+          "error": {
+            "exactKeySets": [
+              "message,type"
+            ],
+            "associatedIdFieldNames": [],
+            "observedCaptureIds": [
+              "C"
+            ]
+          },
+          "turn.failed": {
+            "exactKeySets": [
+              "error,type"
+            ],
+            "associatedIdFieldNames": [],
+            "observedCaptureIds": [
+              "C"
+            ]
+          }
+        },
+        "payloadOrItemSubtypeExactKeySets": {
+          "item:agent_message": {
+            "container": "item",
+            "subtype": "agent_message",
+            "topLevelTypes": [
+              "item.completed"
+            ],
+            "exactKeySets": [
+              "id,text,type"
+            ],
+            "associatedIdFieldNames": [
+              "id"
+            ],
+            "argumentsNativeTypes": [],
+            "observedCaptureIds": [
+              "A",
+              "B"
+            ]
+          },
+          "item:mcp_tool_call": {
+            "container": "item",
+            "subtype": "mcp_tool_call",
+            "topLevelTypes": [
+              "item.completed",
+              "item.started"
+            ],
+            "exactKeySets": [
+              "arguments,error,id,result,server,status,tool,type"
+            ],
+            "associatedIdFieldNames": [
+              "id"
+            ],
+            "argumentsNativeTypes": [
+              "object"
+            ],
+            "observedCaptureIds": [
+              "B"
+            ]
+          }
+        }
+      },
+      "persistedRollout": {
+        "topLevelTypes": [
+          "event_msg",
+          "response_item",
+          "session_meta",
+          "turn_context",
+          "world_state"
+        ],
+        "envelopeExactKeySets": {
+          "session_meta": {
+            "exactKeySets": [
+              "payload,timestamp,type"
+            ],
+            "associatedIdFieldNames": [],
+            "observedCaptureIds": [
+              "A",
+              "B",
+              "C"
+            ]
+          },
+          "event_msg": {
+            "exactKeySets": [
+              "payload,timestamp,type"
+            ],
+            "associatedIdFieldNames": [],
+            "observedCaptureIds": [
+              "A",
+              "B",
+              "C"
+            ]
+          },
+          "response_item": {
+            "exactKeySets": [
+              "payload,timestamp,type"
+            ],
+            "associatedIdFieldNames": [],
+            "observedCaptureIds": [
+              "A",
+              "B",
+              "C"
+            ]
+          },
+          "world_state": {
+            "exactKeySets": [
+              "payload,timestamp,type"
+            ],
+            "associatedIdFieldNames": [],
+            "observedCaptureIds": [
+              "A",
+              "B",
+              "C"
+            ]
+          },
+          "turn_context": {
+            "exactKeySets": [
+              "payload,timestamp,type"
+            ],
+            "associatedIdFieldNames": [],
+            "observedCaptureIds": [
+              "A",
+              "B",
+              "C"
+            ]
+          }
+        },
+        "payloadOrItemSubtypeExactKeySets": {
+          "payload:session_meta": {
+            "container": "payload",
+            "subtype": "session_meta",
+            "topLevelTypes": [
+              "session_meta"
+            ],
+            "exactKeySets": [
+              "base_instructions,cli_version,context_window,cwd,history_mode,id,model_provider,originator,session_id,source,thread_source,timestamp"
+            ],
+            "associatedIdFieldNames": [
+              "id",
+              "session_id"
+            ],
+            "argumentsNativeTypes": [],
+            "observedCaptureIds": [
+              "A",
+              "B",
+              "C"
+            ]
+          },
+          "payload:task_started": {
+            "container": "payload",
+            "subtype": "task_started",
+            "topLevelTypes": [
+              "event_msg"
+            ],
+            "exactKeySets": [
+              "collaboration_mode_kind,model_context_window,started_at,turn_id,type"
+            ],
+            "associatedIdFieldNames": [
+              "turn_id"
+            ],
+            "argumentsNativeTypes": [],
+            "observedCaptureIds": [
+              "A",
+              "B",
+              "C"
+            ]
+          },
+          "payload:message": {
+            "container": "payload",
+            "subtype": "message",
+            "topLevelTypes": [
+              "response_item"
+            ],
+            "exactKeySets": [
+              "content,id,internal_chat_message_metadata_passthrough,phase,role,type",
+              "content,id,internal_chat_message_metadata_passthrough,role,type"
+            ],
+            "associatedIdFieldNames": [
+              "id"
+            ],
+            "argumentsNativeTypes": [],
+            "observedCaptureIds": [
+              "A",
+              "B",
+              "C"
+            ]
+          },
+          "payload:world_state": {
+            "container": "payload",
+            "subtype": "world_state",
+            "topLevelTypes": [
+              "world_state"
+            ],
+            "exactKeySets": [
+              "full,state"
+            ],
+            "associatedIdFieldNames": [],
+            "argumentsNativeTypes": [],
+            "fieldNativeTypes": {
+              "full": [
+                "boolean"
+              ],
+              "state": [
+                "object"
+              ]
+            },
+            "observedCaptureIds": [
+              "A",
+              "B",
+              "C"
+            ]
+          },
+          "payload:turn_context": {
+            "container": "payload",
+            "subtype": "turn_context",
+            "topLevelTypes": [
+              "turn_context"
+            ],
+            "exactKeySets": [
+              "approval_policy,approvals_reviewer,collaboration_mode,comp_hash,current_date,cwd,effort,model,multi_agent_mode,multi_agent_version,permission_profile,personality,realtime_active,sandbox_policy,summary,timezone,turn_id,workspace_roots"
+            ],
+            "associatedIdFieldNames": [
+              "turn_id"
+            ],
+            "argumentsNativeTypes": [],
+            "observedCaptureIds": [
+              "A",
+              "B",
+              "C"
+            ]
+          },
+          "payload:user_message": {
+            "container": "payload",
+            "subtype": "user_message",
+            "topLevelTypes": [
+              "event_msg"
+            ],
+            "exactKeySets": [
+              "audio,images,local_audio,local_images,message,text_elements,type"
+            ],
+            "associatedIdFieldNames": [],
+            "argumentsNativeTypes": [],
+            "observedCaptureIds": [
+              "A",
+              "B",
+              "C"
+            ]
+          },
+          "payload:agent_message": {
+            "container": "payload",
+            "subtype": "agent_message",
+            "topLevelTypes": [
+              "event_msg"
+            ],
+            "exactKeySets": [
+              "memory_citation,message,phase,type"
+            ],
+            "associatedIdFieldNames": [],
+            "argumentsNativeTypes": [],
+            "observedCaptureIds": [
+              "A",
+              "B"
+            ]
+          },
+          "payload:token_count": {
+            "container": "payload",
+            "subtype": "token_count",
+            "topLevelTypes": [
+              "event_msg"
+            ],
+            "exactKeySets": [
+              "info,rate_limits,type"
+            ],
+            "associatedIdFieldNames": [],
+            "argumentsNativeTypes": [],
+            "observedCaptureIds": [
+              "A",
+              "B"
+            ]
+          },
+          "payload:task_complete": {
+            "container": "payload",
+            "subtype": "task_complete",
+            "topLevelTypes": [
+              "event_msg"
+            ],
+            "exactKeySets": [
+              "completed_at,duration_ms,error,last_agent_message,started_at,turn_id,type",
+              "completed_at,duration_ms,last_agent_message,started_at,time_to_first_token_ms,turn_id,type"
+            ],
+            "associatedIdFieldNames": [
+              "turn_id"
+            ],
+            "argumentsNativeTypes": [],
+            "observedCaptureIds": [
+              "A",
+              "B",
+              "C"
+            ]
+          },
+          "payload:reasoning": {
+            "container": "payload",
+            "subtype": "reasoning",
+            "topLevelTypes": [
+              "response_item"
+            ],
+            "exactKeySets": [
+              "encrypted_content,id,internal_chat_message_metadata_passthrough,summary,type"
+            ],
+            "associatedIdFieldNames": [
+              "id"
+            ],
+            "argumentsNativeTypes": [],
+            "observedCaptureIds": [
+              "B"
+            ]
+          },
+          "payload:custom_tool_call": {
+            "container": "payload",
+            "subtype": "custom_tool_call",
+            "topLevelTypes": [
+              "response_item"
+            ],
+            "exactKeySets": [
+              "call_id,id,input,internal_chat_message_metadata_passthrough,name,status,type"
+            ],
+            "associatedIdFieldNames": [
+              "call_id",
+              "id"
+            ],
+            "argumentsNativeTypes": [],
+            "fieldNativeTypes": {
+              "input": [
+                "string"
+              ]
+            },
+            "observedCaptureIds": [
+              "B"
+            ]
+          },
+          "payload:mcp_tool_call_end": {
+            "container": "payload",
+            "subtype": "mcp_tool_call_end",
+            "topLevelTypes": [
+              "event_msg"
+            ],
+            "exactKeySets": [
+              "call_id,duration,invocation,result,type"
+            ],
+            "associatedIdFieldNames": [
+              "call_id"
+            ],
+            "argumentsNativeTypes": [],
+            "fieldNativeTypes": {
+              "invocation": [
+                "object"
+              ],
+              "result": [
+                "object"
+              ]
+            },
+            "observedCaptureIds": [
+              "B"
+            ]
+          },
+          "payload:custom_tool_call_output": {
+            "container": "payload",
+            "subtype": "custom_tool_call_output",
+            "topLevelTypes": [
+              "response_item"
+            ],
+            "exactKeySets": [
+              "call_id,id,internal_chat_message_metadata_passthrough,output,type"
+            ],
+            "associatedIdFieldNames": [
+              "call_id",
+              "id"
+            ],
+            "argumentsNativeTypes": [],
+            "fieldNativeTypes": {
+              "output": [
+                "array"
+              ]
+            },
+            "observedCaptureIds": [
+              "B"
+            ]
+          }
+        }
+      }
+    },
+    "coverageMatrix": [
+      {
+        "requirementId": "PERSISTED_SESSION_META",
+        "source": "persistedRollout",
+        "topLevelType": "session_meta",
+        "subtype": "session_meta",
+        "observed": true,
+        "observedCaptureIds": [
+          "A",
+          "B",
+          "C"
+        ]
+      },
+      {
+        "requirementId": "PERSISTED_TURN_CONTEXT",
+        "source": "persistedRollout",
+        "topLevelType": "turn_context",
+        "subtype": "turn_context",
+        "observed": true,
+        "observedCaptureIds": [
+          "A",
+          "B",
+          "C"
+        ]
+      },
+      {
+        "requirementId": "PERSISTED_RESPONSE_MESSAGE",
+        "source": "persistedRollout",
+        "topLevelType": "response_item",
+        "subtype": "message",
+        "observed": true,
+        "observedCaptureIds": [
+          "A",
+          "B",
+          "C"
+        ]
+      },
+      {
+        "requirementId": "PERSISTED_RESPONSE_REASONING",
+        "source": "persistedRollout",
+        "topLevelType": "response_item",
+        "subtype": "reasoning",
+        "observed": true,
+        "observedCaptureIds": [
+          "B"
+        ]
+      },
+      {
+        "requirementId": "PERSISTED_RESPONSE_FUNCTION_CALL",
+        "source": "persistedRollout",
+        "topLevelType": "response_item",
+        "subtype": "function_call",
+        "observed": false,
+        "observedCaptureIds": []
+      },
+      {
+        "requirementId": "PERSISTED_RESPONSE_FUNCTION_CALL_OUTPUT",
+        "source": "persistedRollout",
+        "topLevelType": "response_item",
+        "subtype": "function_call_output",
+        "observed": false,
+        "observedCaptureIds": []
+      },
+      {
+        "requirementId": "PERSISTED_EVENT_MSG",
+        "source": "persistedRollout",
+        "topLevelType": "event_msg",
+        "subtype": "<any>",
+        "observed": true,
+        "observedCaptureIds": [
+          "A",
+          "B",
+          "C"
+        ]
+      },
+      {
+        "requirementId": "EXEC_THREAD_STARTED",
+        "source": "execEvents",
+        "topLevelType": "thread.started",
+        "subtype": "thread.started",
+        "observed": true,
+        "observedCaptureIds": [
+          "A",
+          "B",
+          "C"
+        ]
+      },
+      {
+        "requirementId": "EXEC_TURN_STARTED",
+        "source": "execEvents",
+        "topLevelType": "turn.started",
+        "subtype": "turn.started",
+        "observed": true,
+        "observedCaptureIds": [
+          "A",
+          "B",
+          "C"
+        ]
+      },
+      {
+        "requirementId": "EXEC_ITEM_STARTED_AGENT_MESSAGE",
+        "source": "execEvents",
+        "topLevelType": "item.started",
+        "subtype": "agent_message",
+        "observed": false,
+        "observedCaptureIds": []
+      },
+      {
+        "requirementId": "EXEC_ITEM_COMPLETED_AGENT_MESSAGE",
+        "source": "execEvents",
+        "topLevelType": "item.completed",
+        "subtype": "agent_message",
+        "observed": true,
+        "observedCaptureIds": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "requirementId": "EXEC_ITEM_STARTED_REASONING",
+        "source": "execEvents",
+        "topLevelType": "item.started",
+        "subtype": "reasoning",
+        "observed": false,
+        "observedCaptureIds": []
+      },
+      {
+        "requirementId": "EXEC_ITEM_COMPLETED_REASONING",
+        "source": "execEvents",
+        "topLevelType": "item.completed",
+        "subtype": "reasoning",
+        "observed": false,
+        "observedCaptureIds": []
+      },
+      {
+        "requirementId": "EXEC_ITEM_STARTED_MCP_TOOL_CALL",
+        "source": "execEvents",
+        "topLevelType": "item.started",
+        "subtype": "mcp_tool_call",
+        "observed": true,
+        "observedCaptureIds": [
+          "B"
+        ]
+      },
+      {
+        "requirementId": "EXEC_ITEM_COMPLETED_MCP_TOOL_CALL",
+        "source": "execEvents",
+        "topLevelType": "item.completed",
+        "subtype": "mcp_tool_call",
+        "observed": true,
+        "observedCaptureIds": [
+          "B"
+        ]
+      },
+      {
+        "requirementId": "EXEC_TURN_COMPLETED",
+        "source": "execEvents",
+        "topLevelType": "turn.completed",
+        "subtype": "turn.completed",
+        "observed": true,
+        "observedCaptureIds": [
+          "A",
+          "B"
+        ]
+      },
+      {
+        "requirementId": "EXEC_TURN_FAILED",
+        "source": "execEvents",
+        "topLevelType": "turn.failed",
+        "subtype": "turn.failed",
+        "observed": true,
+        "observedCaptureIds": [
+          "C"
+        ]
+      }
+    ],
+    "unobservedRequiredTypes": [
+      "PERSISTED_RESPONSE_FUNCTION_CALL",
+      "PERSISTED_RESPONSE_FUNCTION_CALL_OUTPUT",
+      "EXEC_ITEM_STARTED_AGENT_MESSAGE",
+      "EXEC_ITEM_STARTED_REASONING",
+      "EXEC_ITEM_COMPLETED_REASONING"
+    ],
+    "coverageStatus": "FAIL_INCOMPLETE_REQUIRED_COVERAGE",
+    "observedButNotPredeclared": [
+      {
+        "source": "persistedRollout",
+        "topLevelType": "world_state",
+        "subtype": "world_state"
+      },
+      {
+        "source": "persistedRollout",
+        "topLevelType": "response_item",
+        "subtype": "custom_tool_call"
+      },
+      {
+        "source": "persistedRollout",
+        "topLevelType": "response_item",
+        "subtype": "custom_tool_call_output"
+      },
+      {
+        "source": "execEvents",
+        "topLevelType": "error",
+        "subtype": "error"
+      }
+    ]
+  }
+}
