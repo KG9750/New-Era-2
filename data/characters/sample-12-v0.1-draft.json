@@ -1,0 +1,1132 @@
+{
+  "schema_version": "character-sample-library-v0.1-draft",
+  "sample_library_id": "character-samples-c81466e0f691a8ed",
+  "status": "DRAFT_BEFORE_A1",
+  "development_stage": "A1_INPUT_PREPARATION_ONLY",
+  "source_library_id": "character-library-e990760a870ff576",
+  "source_library_schema_version": "character-library-v0.1.4-candidate",
+  "source_library_status": "CANDIDATE_NOT_FROZEN",
+  "culture_pack_version": "cn-frontier-draft-v0.1",
+  "purpose": "SAME_MBTI_DIFFERENT_LIFE_PATH_VALIDATION",
+  "gate_dependency": {
+    "formal_a1_status": "NOT_STARTED",
+    "waiting_for": "GATE_1H_CHARACTER_MEMORY_EVIDENCE",
+    "note": "本包只准备 A1 输入；Gate 1H 人物记忆度证据、E01–E06 与 MBTI 玩家验证均未执行。"
+  },
+  "samples": [
+    {
+      "schema_version": "character-sample-v0.1-draft",
+      "sample_id": "sample_01",
+      "source_character_id": "char_b032f4309fc7025b",
+      "source_distinction_fingerprint": "distinction-v2:[[\"growth-watch-quarter\",\"education-community-nursing\",\"work-rehab-ward\",\"turn-debt-collection\",\"motivation-repair-culture\"],[\"医疗\"],\"ISTJ\",[\"strong\",\"moderate\",\"strong\",\"light\"],[\"债务必须结清但不能无限继承\",\"共同体不能靠羞辱维持秩序\"],[\"拒绝把监护人的债务自动转给未成年家庭成员\"],\"寻找允许预防性停机、而不是只在故障后追责的聚落\"]",
+      "pair_id": "pair-istj",
+      "counterpart_source_character_id": "char_82d66105b40cbaf9",
+      "formal_name": "陶穗宁",
+      "age": 40,
+      "gender": "女",
+      "origin": "环城配额居住区",
+      "internal_mbti_type": "ISTJ",
+      "mbti_display_policy": "HIDDEN_IN_PLAYER_CARD_UNTIL_VALIDATED",
+      "primary_skills": [
+        "医疗"
+      ],
+      "qualifications": [
+        {
+          "qualification_id": "qual_community_nursing",
+          "rank": 1,
+          "source_node_id": "char_b032f4309fc7025b:bio:education",
+          "evidence": "完成基础护理及感染控制训练"
+        }
+      ],
+      "address_rules": [
+        {
+          "relationship": "default",
+          "form": "陶穗宁"
+        },
+        {
+          "relationship": "recognized_experience",
+          "form": "陶医生"
+        }
+      ],
+      "source_biography_summary": "居住区常有物资争执和夜间警戒，少年时期便参加轮值和人群疏散。 完成社区护理训练，学习伤口处理、感染观察和病人转运。 长期参与伤后康复、照护排班和家属沟通，能指导基础护理。 替一户无力偿债的家庭承担了公共劳动，因此失去自己的迁移名额。 寻找允许预防性停机、而不是只在故障后追责的聚落；希望完成关键设备的维护周期表并训练轮值搭档。",
+      "revised_biography": "陶穗宁在夜间警戒频繁的居住区长大，先学会把无关人员移出危险区，后来才接受社区护理训练。她在康复病区多年负责缓慢、重复却不能出错的照护排班；替未成年人承担债务劳动后，她开始警惕把制度代价推给最弱者。现在她想把“提前维护”同时用在病人和设备上，但这会与眼前产能发生冲突。",
+      "first_impression": "说话不急，先确认伤员、旁观者和撤离路线各在哪里。",
+      "ordinary_behavior": "把康复、清洁和设备检查拆成固定轮值，宁愿每天推进一点。",
+      "stress_behavior": "先清空危险区域，再找一名搭档复核处置顺序。",
+      "voice_line": "今天不停机，可能只是把停机推到最缺人的那天。",
+      "core_values": [
+        {
+          "value_id": "char_b032f4309fc7025b:value:0",
+          "summary": "债务必须结清但不能无限继承",
+          "source_ids": [
+            "char_b032f4309fc7025b:bio:turn"
+          ]
+        },
+        {
+          "value_id": "char_b032f4309fc7025b:value:1",
+          "summary": "共同体不能靠羞辱维持秩序",
+          "source_ids": [
+            "char_b032f4309fc7025b:bio:turn"
+          ]
+        }
+      ],
+      "redline_preview": "拒绝把监护人的债务自动转给未成年家庭成员",
+      "current_motivation": "寻找允许预防性停机、而不是只在故障后追责的聚落",
+      "relationship_hook": "一名康复者把重新学会行走视为欠下的人情",
+      "long_term_goal": "完成关键设备的维护周期表并训练轮值搭档",
+      "visible_request": "会请求为一台尚能运行的设备安排预防检修",
+      "identity_without_mbti": "她仍是坚持慢恢复、反对债务伤害未成年人、会为预防性维护争取时间的康复照护者。",
+      "same_type_contrast": "同为 ISTJ，陶穗宁围绕照护节律和预防维护行动；杜映秋围绕现场证据、风险标注和撤离责任行动。",
+      "decision_scene": {
+        "title": "康复班与水泵轴承",
+        "setup": "水泵出现异响，但当天也是三名伤员第一次完整康复训练。",
+        "accept_choice": "接受陶穗宁的请求，抽调一人停泵检查。",
+        "accept_consequence": "当日产能下降，伤员训练缩短，但避免故障扩大并积累维护记录。",
+        "decline_choice": "维持满负荷运行和原康复排班。",
+        "decline_consequence": "短期产能不变；若次日故障，陶穗宁会要求追查谁忽略了预警。"
+      },
+      "review_questions": [
+        "不显示 MBTI 时，玩家能否复述她为何重视预防维护？",
+        "玩家是否把她记成“医疗最高的人”，而不是康复节律与债务红线？",
+        "与杜映秋同场时，玩家能否说出两人处理风险的不同顺序？"
+      ],
+      "manual_review_status": {
+        "E01_naming": "not_run",
+        "E02_extreme_stats_and_experience": "not_run",
+        "E03_causal_bridge": "not_run",
+        "E04_stereotype_risk": "not_run",
+        "E05_decision_impact": "not_run",
+        "E06_distinction": "not_run",
+        "mbti_player_validation": "not_run"
+      }
+    },
+    {
+      "schema_version": "character-sample-v0.1-draft",
+      "sample_id": "sample_02",
+      "source_character_id": "char_82d66105b40cbaf9",
+      "source_distinction_fingerprint": "distinction-v2:[[\"growth-clinic-block\",\"education-field-survey\",\"work-weather-observer\",\"turn-abandoned-apprentice\",\"motivation-open-ledger\"],[\"侦察\",\"研究\"],\"ISTJ\",[\"light\",\"light\",\"moderate\",\"strong\"],[\"教学包含对学徒安全的责任\",\"设备可以重造，人不能被排在清单之外\"],[\"拒绝在可撤离条件下抛下受自己指导的人\"],\"希望加入一个公开记录配给与公共劳动的共同体\"]",
+      "pair_id": "pair-istj",
+      "counterpart_source_character_id": "char_b032f4309fc7025b",
+      "formal_name": "杜映秋",
+      "age": 49,
+      "gender": "非二元",
+      "origin": "区域医院附属居住区",
+      "internal_mbti_type": "ISTJ",
+      "mbti_display_policy": "HIDDEN_IN_PLAYER_CARD_UNTIL_VALIDATED",
+      "primary_skills": [
+        "侦察",
+        "研究"
+      ],
+      "qualifications": [
+        {
+          "qualification_id": "qual_field_survey",
+          "rank": 1,
+          "source_node_id": "char_82d66105b40cbaf9:bio:education",
+          "evidence": "完成基础路线测绘和风险标注训练"
+        }
+      ],
+      "address_rules": [
+        {
+          "relationship": "default",
+          "form": "杜映秋"
+        },
+        {
+          "relationship": "recognized_experience",
+          "form": "杜向导"
+        }
+      ],
+      "source_biography_summary": "在诊疗站家属区长大，早早习惯照顾病人并遵守隔离和清洁流程。 接受野外测绘、天气识别和低风险路线勘察训练。 在气象站负责观测、外场维护和灾害预警记录。 一次撤离中导师优先带走设备而留下学徒，此人回去把人救了出来。 希望加入一个公开记录配给与公共劳动的共同体；希望建立任何成员都能复核的物资交接账。",
+      "revised_biography": "杜映秋从诊疗站家属区带走了隔离与清洁习惯，又在野外测绘训练中学会把“看见异常”改写成可复核的风险标注。气象站撤离时，导师选择设备而放弃学徒，她返回把人带出，此后任何清单都必须写明最后一人的去向。她想建立公开交接账，因为在她看来，含糊记录往往先伤害不在场的人。",
+      "first_impression": "给出的每个结论都带范围、置信度和下一次复核时间。",
+      "ordinary_behavior": "出发前核对路线、天气、人员清单和交接人，回来后补齐空白。",
+      "stress_behavior": "列出不可逆风险，先处理人员失联，再处理设备损失。",
+      "voice_line": "设备编号都在，学徒的名字为什么不在撤离表上？",
+      "core_values": [
+        {
+          "value_id": "char_82d66105b40cbaf9:value:0",
+          "summary": "教学包含对学徒安全的责任",
+          "source_ids": [
+            "char_82d66105b40cbaf9:bio:turn"
+          ]
+        },
+        {
+          "value_id": "char_82d66105b40cbaf9:value:1",
+          "summary": "设备可以重造，人不能被排在清单之外",
+          "source_ids": [
+            "char_82d66105b40cbaf9:bio:turn"
+          ]
+        }
+      ],
+      "redline_preview": "拒绝在可撤离条件下抛下受自己指导的人",
+      "current_motivation": "希望加入一个公开记录配给与公共劳动的共同体",
+      "relationship_hook": "一名下游农场主始终记得其提前发出的洪水预警",
+      "long_term_goal": "建立任何成员都能复核的物资交接账",
+      "visible_request": "会请求追查一次来源不明的库存差额",
+      "identity_without_mbti": "此人仍由洪水预警、学徒撤离责任和公开交接账构成，不依赖四字母类型。",
+      "same_type_contrast": "同为 ISTJ，杜映秋通过证据边界和人员清单管理风险；陶穗宁通过持续照护和预防节律管理风险。",
+      "decision_scene": {
+        "title": "未回报的测绘学徒",
+        "setup": "暴雨将至，测绘组只带回设备，学徒在旧路标附近失联。",
+        "accept_choice": "同意杜映秋带护送者按最后坐标返回。",
+        "accept_consequence": "抢收少一组人，但学徒获救并补全一条危险路线。",
+        "decline_choice": "封闭外出，把人员列为失联。",
+        "decline_consequence": "保住眼前劳力；杜映秋拒绝下一次单人带教，训练效率长期下降。"
+      },
+      "review_questions": [
+        "玩家能否从她的说法理解“低置信度预警”而不是认为她胆小？",
+        "玩家是否记得她的学徒责任，而不只记得侦察数值？",
+        "与陶穗宁相比，她是否表现出不同的秩序来源？"
+      ],
+      "manual_review_status": {
+        "E01_naming": "not_run",
+        "E02_extreme_stats_and_experience": "not_run",
+        "E03_causal_bridge": "not_run",
+        "E04_stereotype_risk": "not_run",
+        "E05_decision_impact": "not_run",
+        "E06_distinction": "not_run",
+        "mbti_player_validation": "not_run"
+      }
+    },
+    {
+      "schema_version": "character-sample-v0.1-draft",
+      "sample_id": "sample_03",
+      "source_character_id": "char_f68c794618e1f705",
+      "source_distinction_fingerprint": "distinction-v2:[[\"growth-forest-edge\",\"education-archive\",\"work-quota-auditor\",\"turn-debt-collection\",\"motivation-clinic-system\"],[\"研究\",\"后勤\"],\"INTJ\",[\"light\",\"moderate\",\"moderate\",\"light\"],[\"债务必须结清但不能无限继承\",\"共同体不能靠羞辱维持秩序\"],[\"拒绝把监护人的债务自动转给未成年家庭成员\"],\"寻找能建立稳定诊疗、隔离和轮值制度的聚落\"]",
+      "pair_id": "pair-intj",
+      "counterpart_source_character_id": "char_08e063fd6a1c1f15",
+      "formal_name": "白清和",
+      "age": 55,
+      "gender": "女",
+      "origin": "南部丘陵林场",
+      "internal_mbti_type": "INTJ",
+      "mbti_display_policy": "HIDDEN_IN_PLAYER_CARD_UNTIL_VALIDATED",
+      "primary_skills": [
+        "研究",
+        "后勤"
+      ],
+      "qualifications": [
+        {
+          "qualification_id": "qual_archive_records",
+          "rank": 1,
+          "source_node_id": "char_f68c794618e1f705:bio:education",
+          "evidence": "掌握档案分类、版本和来源核验流程"
+        }
+      ],
+      "address_rules": [
+        {
+          "relationship": "default",
+          "form": "白清和"
+        },
+        {
+          "relationship": "familiar",
+          "form": "清和"
+        },
+        {
+          "relationship": "recognized_experience",
+          "form": "白先生"
+        }
+      ],
+      "source_biography_summary": "在林场边缘长大，长期参与边界巡看、失火预警和迷路者搜寻。 在旧大学档案区接受分类、版本追踪和证据核验训练。 长期核对配额记录、设备产出和异常损耗，曾追查一条被反复改写的账目。 替一户无力偿债的家庭承担了公共劳动，因此失去自己的迁移名额。 寻找能建立稳定诊疗、隔离和轮值制度的聚落；希望让聚落在自己缺席时仍能完成基础伤病处置。",
+      "revised_biography": "白清和在林场边缘学会从火险与失踪记录中看长期模式，后来进入档案区训练来源核验。她做配额审计时追过一条被反复改写的损耗记录，却因替一个无力偿债的家庭承担劳动而失去迁移名额。她来到新聚落不是为了继续做“审计员”，而是想让医疗、隔离和轮值在任何负责人缺席时仍能按证据运行。",
+      "first_impression": "先问记录来自哪里，再问结论会伤害谁。",
+      "ordinary_behavior": "为关键账目保留来源、版本和无法解释的差额，不用口头保证覆盖缺口。",
+      "stress_behavior": "先保护直接受影响的人，再把争议拆成可核验的记录链。",
+      "voice_line": "我不反对处分，我反对先处分再补证据。",
+      "core_values": [
+        {
+          "value_id": "char_f68c794618e1f705:value:0",
+          "summary": "债务必须结清但不能无限继承",
+          "source_ids": [
+            "char_f68c794618e1f705:bio:turn"
+          ]
+        },
+        {
+          "value_id": "char_f68c794618e1f705:value:1",
+          "summary": "共同体不能靠羞辱维持秩序",
+          "source_ids": [
+            "char_f68c794618e1f705:bio:turn"
+          ]
+        }
+      ],
+      "redline_preview": "拒绝把监护人的债务自动转给未成年家庭成员",
+      "current_motivation": "寻找能建立稳定诊疗、隔离和轮值制度的聚落",
+      "relationship_hook": "一名被其报告保护的基层记录员至今不愿公开身份",
+      "long_term_goal": "让聚落在自己缺席时仍能完成基础伤病处置",
+      "visible_request": "会请求固定医疗训练和清洁物资额度",
+      "identity_without_mbti": "她仍是保护证据来源、反对债务无限继承、想建立可替代制度的档案核验者。",
+      "same_type_contrast": "同为 INTJ，白清和把长期模式用于制度和证据链；顾远帆把长期模式用于警戒、撤离与最低伤害。",
+      "decision_scene": {
+        "title": "救济仓的重复损耗",
+        "setup": "账面显示同一批药品连续三次“自然损耗”，匿名记录员指向管理者。",
+        "accept_choice": "保留药品并启动双人复核，暂缓公开指控。",
+        "accept_consequence": "短期占用人力且管理者不满，但证据链和匿名来源得到保护。",
+        "decline_choice": "立即按现有账目核销并关闭调查。",
+        "decline_consequence": "省下审计时间；白清和将拒绝为后续配额报告背书。"
+      },
+      "review_questions": [
+        "玩家是否理解她保护匿名来源的理由？",
+        "不展示 MBTI 时，她与普通“研究高”角色是否仍可区分？",
+        "与顾远帆相比，玩家能否区分制度风险与现场防卫风险？"
+      ],
+      "manual_review_status": {
+        "E01_naming": "not_run",
+        "E02_extreme_stats_and_experience": "not_run",
+        "E03_causal_bridge": "not_run",
+        "E04_stereotype_risk": "not_run",
+        "E05_decision_impact": "not_run",
+        "E06_distinction": "not_run",
+        "mbti_player_validation": "not_run"
+      }
+    },
+    {
+      "schema_version": "character-sample-v0.1-draft",
+      "sample_id": "sample_04",
+      "source_character_id": "char_08e063fd6a1c1f15",
+      "source_distinction_fingerprint": "distinction-v2:[[\"growth-observation-station\",\"education-civil-defense\",\"work-settlement-watch\",\"turn-prisoner-order\",\"motivation-debt-repayment\"],[\"防卫\"],\"INTJ\",[\"strong\",\"strong\",\"moderate\",\"moderate\"],[\"防卫不是报复\",\"失去战斗能力的人应被看管而非处决\"],[\"拒绝攻击已经投降且失去即时威胁的人\"],\"需要一个可靠据点兑现对外部帮助者欠下的具体债务\"]",
+      "pair_id": "pair-intj",
+      "counterpart_source_character_id": "char_f68c794618e1f705",
+      "formal_name": "顾远帆",
+      "age": 52,
+      "gender": "非二元",
+      "origin": "高原气象观测站",
+      "internal_mbti_type": "INTJ",
+      "mbti_display_policy": "HIDDEN_IN_PLAYER_CARD_UNTIL_VALIDATED",
+      "primary_skills": [
+        "防卫"
+      ],
+      "qualifications": [
+        {
+          "qualification_id": "qual_settlement_watch",
+          "rank": 1,
+          "source_node_id": "char_08e063fd6a1c1f15:bio:education",
+          "evidence": "完成聚落警戒与掩护撤离训练"
+        }
+      ],
+      "address_rules": [
+        {
+          "relationship": "default",
+          "form": "顾远帆"
+        },
+        {
+          "relationship": "familiar",
+          "form": "远帆"
+        },
+        {
+          "relationship": "recognized_experience",
+          "form": "顾教官"
+        }
+      ],
+      "source_biography_summary": "在偏远观测站长大，习惯独自记录、复核读数并从长期变化中寻找模式。 参加聚落防卫与撤离训练，重点学习警戒、掩护和非战斗人员转移。 长期承担夜间警戒、纠纷隔离和非战斗人员撤离。 在一次冲突后拒绝处决已经放下武器的人，因此被撤出警戒队。 需要一个可靠据点兑现对外部帮助者欠下的具体债务；希望在不牺牲聚落基本供给的前提下偿还旧债。",
+      "revised_biography": "顾远帆在高原观测站长大，长期变化比单次喧闹更能说服他。防卫训练让他负责警戒、纠纷隔离和非战斗人员撤离；拒绝处决投降者后，他失去原岗位，却没有放弃防卫本身。他欠外部帮助者一笔具体物资债，加入聚落后会在安全、供给和承诺之间坚持写出可执行的边界。",
+      "first_impression": "站位总在出口和人群之间，发言前先确认威胁是否仍然存在。",
+      "ordinary_behavior": "把警戒触发条件、撤离路线和停止使用武力的条件写在同一张表上。",
+      "stress_behavior": "减少争辩，用书面命令隔离冲突并保护没有准备的人。",
+      "voice_line": "投降以后是看管问题，不是泄愤问题。",
+      "core_values": [
+        {
+          "value_id": "char_08e063fd6a1c1f15:value:0",
+          "summary": "防卫不是报复",
+          "source_ids": [
+            "char_08e063fd6a1c1f15:bio:turn"
+          ]
+        },
+        {
+          "value_id": "char_08e063fd6a1c1f15:value:1",
+          "summary": "失去战斗能力的人应被看管而非处决",
+          "source_ids": [
+            "char_08e063fd6a1c1f15:bio:turn"
+          ]
+        }
+      ],
+      "redline_preview": "拒绝攻击已经投降且失去即时威胁的人",
+      "current_motivation": "需要一个可靠据点兑现对外部帮助者欠下的具体债务",
+      "relationship_hook": "曾与一位强硬队长因俘虏待遇公开争执",
+      "long_term_goal": "在不牺牲聚落基本供给的前提下偿还旧债",
+      "visible_request": "会请求保留一批物资用于一次有争议的外部交付",
+      "identity_without_mbti": "此人仍由非报复性防卫、俘虏红线和有争议的外部债务构成。",
+      "same_type_contrast": "同为 INTJ，顾远帆的核心冲突是武力何时停止；白清和的核心冲突是证据何时足以启动制度处置。",
+      "decision_scene": {
+        "title": "粮仓旁的投降者",
+        "setup": "一次夜袭后，一名袭击者放下武器；聚落食物只够多养一人五天。",
+        "accept_choice": "按顾远帆方案解除武装、轮班看管并联系交换。",
+        "accept_consequence": "消耗粮食和警戒工时，但获得口供与谈判筹码。",
+        "decline_choice": "以节省资源为由处决投降者。",
+        "decline_consequence": "立即省下资源；顾远帆触发红线并退出当前防卫排班。"
+      },
+      "review_questions": [
+        "玩家是否把他的红线理解为防卫规则，而非软弱？",
+        "玩家能否记住外部债务对物资决策的影响？",
+        "与白清和相比，他是否呈现不同的“先规划再行动”？"
+      ],
+      "manual_review_status": {
+        "E01_naming": "not_run",
+        "E02_extreme_stats_and_experience": "not_run",
+        "E03_causal_bridge": "not_run",
+        "E04_stereotype_risk": "not_run",
+        "E05_decision_impact": "not_run",
+        "E06_distinction": "not_run",
+        "mbti_player_validation": "not_run"
+      }
+    },
+    {
+      "schema_version": "character-sample-v0.1-draft",
+      "sample_id": "sample_05",
+      "source_character_id": "char_8a45ce039608f518",
+      "source_distinction_fingerprint": "distinction-v2:[[\"growth-port-workshop\",\"education-food-processing\",\"work-seed-cooperative\",\"turn-debt-collection\",\"motivation-public-council\"],[\"生产\"],\"ISFP\",[\"moderate\",\"strong\",\"strong\",\"strong\"],[\"债务必须结清但不能无限继承\",\"共同体不能靠羞辱维持秩序\"],[\"拒绝把监护人的债务自动转给未成年家庭成员\"],\"寻找愿意让反对意见进入正式记录的聚落\"]",
+      "pair_id": "pair-isfp",
+      "counterpart_source_character_id": "char_057bc1474ee05fb4",
+      "formal_name": "蒋书衡",
+      "age": 30,
+      "gender": "男",
+      "origin": "东岬旧港维修区",
+      "internal_mbti_type": "ISFP",
+      "mbti_display_policy": "HIDDEN_IN_PLAYER_CARD_UNTIL_VALIDATED",
+      "primary_skills": [
+        "生产"
+      ],
+      "qualifications": [
+        {
+          "qualification_id": "qual_food_sanitation",
+          "rank": 2,
+          "source_node_id": "char_8a45ce039608f518:bio:work",
+          "evidence": "完成公共灶卫生和食物保存训练，并在长期主要职责中独立使用"
+        }
+      ],
+      "address_rules": [
+        {
+          "relationship": "default",
+          "form": "蒋书衡"
+        },
+        {
+          "relationship": "familiar",
+          "form": "书衡"
+        }
+      ],
+      "source_biography_summary": "童年在旧港维修棚与零件市场之间度过，学会从声音和震动判断设备状态。 学习食材保存、配给加工和公共灶卫生，并完成一次冬储轮值。 在种子合作社连续负责育苗、轮作记录和歉收后的补种安排。 替一户无力偿债的家庭承担了公共劳动，因此失去自己的迁移名额。 寻找愿意让反对意见进入正式记录的聚落；希望建立小型议事和异议追踪流程。",
+      "revised_biography": "蒋书衡在旧港维修棚与零件市场之间长大，却把长期工作落在种子合作社：育苗、轮作和歉收后的补种。替一户家庭承担债务劳动让他失去迁移名额，也让他拒绝把成年人的欠账自动压到孩子身上。来到新聚落后，他想建立有记录的异议流程，因为对他而言，照料土地和允许反对意见都是给失败保留第二条路。",
+      "first_impression": "先摸土、看苗，再问这项决定有没有给失败留退路。",
+      "ordinary_behavior": "为种植计划准备补种方案，也会把反对意见写进资源会议记录。",
+      "stress_behavior": "先照看受影响的人，随后追查异常究竟从哪一步开始。",
+      "voice_line": "种子还能再育一批，孩子不该继承一张永远还不完的账。",
+      "core_values": [
+        {
+          "value_id": "char_8a45ce039608f518:value:0",
+          "summary": "债务必须结清但不能无限继承",
+          "source_ids": [
+            "char_8a45ce039608f518:bio:turn"
+          ]
+        },
+        {
+          "value_id": "char_8a45ce039608f518:value:1",
+          "summary": "共同体不能靠羞辱维持秩序",
+          "source_ids": [
+            "char_8a45ce039608f518:bio:turn"
+          ]
+        }
+      ],
+      "redline_preview": "拒绝把监护人的债务自动转给未成年家庭成员",
+      "current_motivation": "寻找愿意让反对意见进入正式记录的聚落",
+      "relationship_hook": "仍欠一位合作社育种员一次种源交换",
+      "long_term_goal": "建立小型议事和异议追踪流程",
+      "visible_request": "会请求为一次资源决策举行有记录的公开讨论",
+      "identity_without_mbti": "他仍是会准备补种、反对未成年人继承债务、要求异议留痕的种植者。",
+      "same_type_contrast": "同为 ISFP，蒋书衡通过照料作物和议事程序保护弱者；乔书衡通过路线判断和拒绝牺牲平民保护弱者。",
+      "decision_scene": {
+        "title": "欠债家庭的种子份额",
+        "setup": "旧债权人要求扣下一个未成年家庭的春播种子作为利息。",
+        "accept_choice": "采用社区劳动计划，保留种子并公开记录异议。",
+        "accept_consequence": "聚落承担短期劳动缺口，但保住来年生产和家庭关系。",
+        "decline_choice": "按旧债合同扣走种子。",
+        "decline_consequence": "眼前账目结清；蒋书衡触发红线并停止合作社补种工作。"
+      },
+      "review_questions": [
+        "玩家是否能同时记住他的生产能力和议事诉求？",
+        "他的关怀是否被误读为没有成本的善良？",
+        "与乔书衡相比，同类型的价值表达是否足够不同？"
+      ],
+      "manual_review_status": {
+        "E01_naming": "not_run",
+        "E02_extreme_stats_and_experience": "not_run",
+        "E03_causal_bridge": "not_run",
+        "E04_stereotype_risk": "not_run",
+        "E05_decision_impact": "not_run",
+        "E06_distinction": "not_run",
+        "mbti_player_validation": "not_run"
+      }
+    },
+    {
+      "schema_version": "character-sample-v0.1-draft",
+      "sample_id": "sample_06",
+      "source_character_id": "char_057bc1474ee05fb4",
+      "source_distinction_fingerprint": "distinction-v2:[[\"growth-caravan-stop\",\"education-field-survey\",\"work-ridge-scout\",\"turn-civilian-crossfire\",\"motivation-debt-repayment\"],[\"侦察\"],\"ISFP\",[\"strong\",\"light\",\"strong\",\"light\"],[\"防卫的目的首先是让共同体活下来\",\"非战斗人员不能被当作消耗品\"],[\"拒绝以未同意的平民作为诱饵或掩体\"],\"需要一个可靠据点兑现对外部帮助者欠下的具体债务\"]",
+      "pair_id": "pair-isfp",
+      "counterpart_source_character_id": "char_8a45ce039608f518",
+      "formal_name": "乔书衡",
+      "age": 35,
+      "gender": "男",
+      "origin": "西线车队中转站",
+      "internal_mbti_type": "ISFP",
+      "mbti_display_policy": "HIDDEN_IN_PLAYER_CARD_UNTIL_VALIDATED",
+      "primary_skills": [
+        "侦察"
+      ],
+      "qualifications": [
+        {
+          "qualification_id": "qual_field_survey",
+          "rank": 2,
+          "source_node_id": "char_057bc1474ee05fb4:bio:work",
+          "evidence": "完成基础路线测绘和风险标注训练，并在长期主要职责中独立使用"
+        }
+      ],
+      "address_rules": [
+        {
+          "relationship": "default",
+          "form": "乔书衡"
+        },
+        {
+          "relationship": "familiar",
+          "form": "书衡"
+        }
+      ],
+      "source_biography_summary": "成长于车队中转站，能从货单、天气和人情往来中判断一趟路是否可靠。 接受野外测绘、天气识别和低风险路线勘察训练。 多年为山地聚落勘察水源、火险和冬季通路。 一次护送中亲眼看见无关居民被当作火力诱饵，从此离开原护卫队。 需要一个可靠据点兑现对外部帮助者欠下的具体债务；希望在不牺牲聚落基本供给的前提下偿还旧债。",
+      "revised_biography": "乔书衡在车队中转站学会从货单、天气和人情判断一条路是否真的可走，后来多年勘察山地水源、火险和冬季通路。护送任务中有人把未同意的居民当作诱饵，他因此离队。现在他需要可靠据点偿还外部帮助者，却不会用聚落的基本供给或无关者的安全换取“最快路线”。",
+      "first_impression": "不抢着下判断，会先独自走到地图空白处确认一次。",
+      "ordinary_behavior": "给路线承诺留余量，对未知地段亲自复核，不把侥幸写成通行条件。",
+      "stress_behavior": "暂时少说话，把分歧、天气和撤退点写到同一张路线纸上。",
+      "voice_line": "近路不是问题，把不知道风险的人推到前面才是问题。",
+      "core_values": [
+        {
+          "value_id": "char_057bc1474ee05fb4:value:0",
+          "summary": "防卫的目的首先是让共同体活下来",
+          "source_ids": [
+            "char_057bc1474ee05fb4:bio:turn"
+          ]
+        },
+        {
+          "value_id": "char_057bc1474ee05fb4:value:1",
+          "summary": "非战斗人员不能被当作消耗品",
+          "source_ids": [
+            "char_057bc1474ee05fb4:bio:turn"
+          ]
+        }
+      ],
+      "redline_preview": "拒绝以未同意的平民作为诱饵或掩体",
+      "current_motivation": "需要一个可靠据点兑现对外部帮助者欠下的具体债务",
+      "relationship_hook": "曾与一位向导因是否冒险穿越雪线分道扬镳",
+      "long_term_goal": "在不牺牲聚落基本供给的前提下偿还旧债",
+      "visible_request": "会请求保留一批物资用于一次有争议的外部交付",
+      "identity_without_mbti": "此人仍由路线勘察、平民安全红线和有条件的外部偿债构成。",
+      "same_type_contrast": "同为 ISFP，乔书衡的选择围绕路线与现场同意；蒋书衡的选择围绕生产恢复与制度性债务。",
+      "decision_scene": {
+        "title": "峡谷近路",
+        "setup": "外部交付即将逾期，近路经过不稳定峡谷，有居民车队愿意先行探路但不了解风险。",
+        "accept_choice": "绕行并提前通知延期，保留基本供给。",
+        "accept_consequence": "声誉短期下降，外部债务延后，但无人被当作诱饵。",
+        "decline_choice": "让居民车队先走近路确认安全。",
+        "decline_consequence": "可能按期交付；乔书衡触发红线并拒绝担任路线负责人。"
+      },
+      "review_questions": [
+        "玩家能否理解他拒绝近路的具体条件，而非认为他厌恶风险？",
+        "外部债务是否形成真实诱惑而不是背景装饰？",
+        "与蒋书衡相比，他的现场型判断是否清晰？"
+      ],
+      "manual_review_status": {
+        "E01_naming": "not_run",
+        "E02_extreme_stats_and_experience": "not_run",
+        "E03_causal_bridge": "not_run",
+        "E04_stereotype_risk": "not_run",
+        "E05_decision_impact": "not_run",
+        "E06_distinction": "not_run",
+        "mbti_player_validation": "not_run"
+      }
+    },
+    {
+      "schema_version": "character-sample-v0.1-draft",
+      "sample_id": "sample_07",
+      "source_character_id": "char_5479143a1a164b19",
+      "source_distinction_fingerprint": "distinction-v2:[[\"growth-forest-edge\",\"education-warehouse-ledger\",\"work-relief-depot\",\"turn-broken-promise\",\"motivation-seasonal-study\"],[\"后勤\"],\"ENFP\",[\"strong\",\"light\",\"light\",\"strong\"],[\"承诺应包含风险和余量\",\"无法履约时必须尽早通知\"],[\"拒绝在明知无力履约时继续隐瞒交付风险\"],\"希望在承担日常工作的同时继续补足一项长期短板\"]",
+      "pair_id": "pair-enfp",
+      "counterpart_source_character_id": "char_90deb66520a08696",
+      "formal_name": "秦远帆",
+      "age": 42,
+      "gender": "女",
+      "origin": "南部丘陵林场",
+      "internal_mbti_type": "ENFP",
+      "mbti_display_policy": "HIDDEN_IN_PLAYER_CARD_UNTIL_VALIDATED",
+      "primary_skills": [
+        "后勤"
+      ],
+      "qualifications": [
+        {
+          "qualification_id": "qual_inventory_ledger",
+          "rank": 1,
+          "source_node_id": "char_5479143a1a164b19:bio:education",
+          "evidence": "完成仓储盘点和交接账训练"
+        }
+      ],
+      "address_rules": [
+        {
+          "relationship": "default",
+          "form": "远帆"
+        },
+        {
+          "relationship": "recognized_experience",
+          "form": "秦管事"
+        }
+      ],
+      "source_biography_summary": "在林场边缘长大，长期参与边界巡看、失火预警和迷路者搜寻。 在联合仓房学习货位、损耗、路线和交接账，能独立完成常规盘点。 在救济仓站负责入库、紧急配给和争议物资的证据留存。 一次延期交货让友好聚落在寒潮中断粮，此人此后主动记录承诺余量。 希望在承担日常工作的同时继续补足一项长期短板；希望在半年内把一项非主要技能提升到可独立承担日常工作。",
+      "revised_biography": "秦远帆在林场边缘参与巡看和失火预警，进入联合仓房后把直觉变成货位、损耗与交接账。一次隐瞒延期让友好聚落在寒潮中断粮，她从此坚持承诺必须写明余量和失败通知。她希望补足非主要技能，但学习时间不是免费成长：每两个星期占用的训练块都必须让玩家看到产出代价。",
+      "first_impression": "会主动交谈，但答应交付前先问备用路线和最晚通知时间。",
+      "ordinary_behavior": "把口头征用转成交接人、截止时间和可撤销条件。",
+      "stress_behavior": "减少即兴承诺，改用书面清单说明哪些交付正在失去余量。",
+      "voice_line": "做不到不是最坏的，明知道做不到还让对方等才是。",
+      "core_values": [
+        {
+          "value_id": "char_5479143a1a164b19:value:0",
+          "summary": "承诺应包含风险和余量",
+          "source_ids": [
+            "char_5479143a1a164b19:bio:turn"
+          ]
+        },
+        {
+          "value_id": "char_5479143a1a164b19:value:1",
+          "summary": "无法履约时必须尽早通知",
+          "source_ids": [
+            "char_5479143a1a164b19:bio:turn"
+          ]
+        }
+      ],
+      "redline_preview": "拒绝在明知无力履约时继续隐瞒交付风险",
+      "current_motivation": "希望在承担日常工作的同时继续补足一项长期短板",
+      "relationship_hook": "一户被误扣配给的家庭仍等待此人完成申诉",
+      "long_term_goal": "在半年内把一项非主要技能提升到可独立承担日常工作",
+      "visible_request": "会请求每两周保留一个学习块并接受明确产出代价",
+      "identity_without_mbti": "她仍是会提前暴露交付风险、拒绝无交接征用、愿意承担学习代价的仓储负责人。",
+      "same_type_contrast": "同为 ENFP，秦远帆把可能性用于重排承诺和学习路径；沈知遥把可能性用于提出工程替代方案。",
+      "decision_scene": {
+        "title": "寒潮前的短缺通知",
+        "setup": "聚落发现无法按时交付燃料，立即通知会失去一项交换优惠。",
+        "accept_choice": "提前说明缺口并提出分批交付。",
+        "accept_consequence": "交换条件变差，但对方有时间寻找替代燃料，长期信任保留。",
+        "decline_choice": "等最后两天再决定是否能赶上。",
+        "decline_consequence": "保留短期议价空间；失败后秦远帆触发红线并公开交接记录。"
+      },
+      "review_questions": [
+        "玩家是否能看到她的开放表达与谨慎承诺同时成立？",
+        "学习请求是否被理解为有产能成本的选择？",
+        "与沈知遥相比，她是否不像“同一种外向理想主义者”？"
+      ],
+      "manual_review_status": {
+        "E01_naming": "not_run",
+        "E02_extreme_stats_and_experience": "not_run",
+        "E03_causal_bridge": "not_run",
+        "E04_stereotype_risk": "not_run",
+        "E05_decision_impact": "not_run",
+        "E06_distinction": "not_run",
+        "mbti_player_validation": "not_run"
+      }
+    },
+    {
+      "schema_version": "character-sample-v0.1-draft",
+      "sample_id": "sample_08",
+      "source_character_id": "char_90deb66520a08696",
+      "source_distinction_fingerprint": "distinction-v2:[[\"growth-observation-station\",\"education-electrical-maintenance\",\"work-wind-service\",\"turn-civilian-crossfire\",\"motivation-water-restoration\"],[\"工程\"],\"ENFP\",[\"light\",\"moderate\",\"moderate\",\"strong\"],[\"防卫的目的首先是让共同体活下来\",\"非战斗人员不能被当作消耗品\"],[\"拒绝以未同意的平民作为诱饵或掩体\"],\"相信附近一套废弃供水设施仍有恢复价值\"]",
+      "pair_id": "pair-enfp",
+      "counterpart_source_character_id": "char_5479143a1a164b19",
+      "formal_name": "沈知遥",
+      "age": 41,
+      "gender": "男",
+      "origin": "高原气象观测站",
+      "internal_mbti_type": "ENFP",
+      "mbti_display_policy": "HIDDEN_IN_PLAYER_CARD_UNTIL_VALIDATED",
+      "primary_skills": [
+        "工程"
+      ],
+      "qualifications": [
+        {
+          "qualification_id": "qual_low_voltage_service",
+          "rank": 1,
+          "source_node_id": "char_90deb66520a08696:bio:education",
+          "evidence": "完成低压设备断电检修训练"
+        }
+      ],
+      "address_rules": [
+        {
+          "relationship": "default",
+          "form": "知遥"
+        },
+        {
+          "relationship": "recognized_experience",
+          "form": "沈师傅"
+        }
+      ],
+      "source_biography_summary": "在偏远观测站长大，习惯独自记录、复核读数并从长期变化中寻找模式。 学习低压电路、风机控制和断电检修，能在监督下排查常见故障。 负责盐泽风机巡检、备件改制和恶劣天气后的快速复位。 一次护送中亲眼看见无关居民被当作火力诱饵，从此离开原护卫队。 相信附近一套废弃供水设施仍有恢复价值；希望验证旧水渠和泵站是否值得投入修复。",
+      "revised_biography": "沈知遥在高原观测站学会复核读数，后来负责盐泽风机巡检和恶劣天气后的快速复位。他愿意谈很多备选方案，却不会为了“大胆”牺牲可靠性；一次护送中看见居民被当作火力诱饵后，他离开原队伍。废弃供水设施对他既是工程机会，也是一次证明修复可以不靠冒险牺牲他人的试验。",
+      "first_impression": "一边说出三种修法，一边把最危险的那一种先划掉。",
+      "ordinary_behavior": "喜欢把工程问题拆成可逆试验，先勘察再争取完整资源。",
+      "stress_behavior": "把大故障拆成短时任务，并约定下一次停机复盘点。",
+      "voice_line": "先花一天确认水渠，不等于放弃修复，是避免拿人去赌。",
+      "core_values": [
+        {
+          "value_id": "char_90deb66520a08696:value:0",
+          "summary": "防卫的目的首先是让共同体活下来",
+          "source_ids": [
+            "char_90deb66520a08696:bio:turn"
+          ]
+        },
+        {
+          "value_id": "char_90deb66520a08696:value:1",
+          "summary": "非战斗人员不能被当作消耗品",
+          "source_ids": [
+            "char_90deb66520a08696:bio:turn"
+          ]
+        }
+      ],
+      "redline_preview": "拒绝以未同意的平民作为诱饵或掩体",
+      "current_motivation": "相信附近一套废弃供水设施仍有恢复价值",
+      "relationship_hook": "曾救下的一名高空检修搭档仍把安全绳托付给此人保管",
+      "long_term_goal": "验证旧水渠和泵站是否值得投入修复",
+      "visible_request": "会请求先做勘察，而不是立即承诺全部维修资源",
+      "identity_without_mbti": "此人仍由风机检修、平民安全红线和废弃供水修复目标构成。",
+      "same_type_contrast": "同为 ENFP，沈知遥用想象力探索工程路径；秦远帆用想象力调整承诺、交接和学习安排。",
+      "decision_scene": {
+        "title": "废水渠的第一天",
+        "setup": "聚落只能选择立即派满员维修，或先用一日勘察不稳定渠段。",
+        "accept_choice": "先勘察并做小范围压力测试。",
+        "accept_consequence": "供水恢复推迟一天，但发现一处会危及维修队的塌方。",
+        "decline_choice": "按旧图纸直接开始全线维修。",
+        "decline_consequence": "可能提前恢复供水；沈知遥会拒绝让未知情居民承担探路风险。"
+      },
+      "review_questions": [
+        "玩家会把他记成提出可逆试验的人，还是只记成工程最高？",
+        "他的乐观是否仍有可靠性边界？",
+        "与秦远帆相比，玩家能否指出两人的行动对象不同？"
+      ],
+      "manual_review_status": {
+        "E01_naming": "not_run",
+        "E02_extreme_stats_and_experience": "not_run",
+        "E03_causal_bridge": "not_run",
+        "E04_stereotype_risk": "not_run",
+        "E05_decision_impact": "not_run",
+        "E06_distinction": "not_run",
+        "mbti_player_validation": "not_run"
+      }
+    },
+    {
+      "schema_version": "character-sample-v0.1-draft",
+      "sample_id": "sample_09",
+      "source_character_id": "char_f54f717de8bb94d2",
+      "source_distinction_fingerprint": "distinction-v2:[[\"growth-port-workshop\",\"education-field-survey\",\"work-ridge-scout\",\"turn-forced-raid\",\"motivation-stable-teaching\"],[\"侦察\"],\"ESFJ\",[\"moderate\",\"light\",\"moderate\",\"strong\"],[\"生存压力不能自动正当化掠夺弱者\",\"交易失败也不等于可以动武\"],[\"拒绝主动劫掠未构成威胁的聚落\"],\"寻找愿意固定安排教学时间、让技能可以交接的聚落\"]",
+      "pair_id": "pair-esfj",
+      "counterpart_source_character_id": "char_ebeb5990ef78e161",
+      "formal_name": "方怀瑾",
+      "age": 47,
+      "gender": "非二元",
+      "origin": "东岬旧港维修区",
+      "internal_mbti_type": "ESFJ",
+      "mbti_display_policy": "HIDDEN_IN_PLAYER_CARD_UNTIL_VALIDATED",
+      "primary_skills": [
+        "侦察"
+      ],
+      "qualifications": [
+        {
+          "qualification_id": "qual_field_survey",
+          "rank": 2,
+          "source_node_id": "char_f54f717de8bb94d2:bio:work",
+          "evidence": "完成基础路线测绘和风险标注训练，并在长期主要职责中独立使用"
+        }
+      ],
+      "address_rules": [
+        {
+          "relationship": "default",
+          "form": "方怀瑾"
+        },
+        {
+          "relationship": "familiar",
+          "form": "怀瑾"
+        }
+      ],
+      "source_biography_summary": "童年在旧港维修棚与零件市场之间度过，学会从声音和震动判断设备状态。 接受野外测绘、天气识别和低风险路线勘察训练。 多年为山地聚落勘察水源、火险和冬季通路。 所在队伍决定劫掠一个没有防卫能力的村落，此人拒绝参与并独自离队。 寻找愿意固定安排教学时间、让技能可以交接的聚落；希望培养一名能独立承担自己主要技能日常工作的学员。",
+      "revised_biography": "方怀瑾从旧港维修区走向山地勘察，多年确认水源、火险和冬季通路。他习惯把地图空白变成可以教给下一人的方法，而不是个人筹码。原队伍准备劫掠一个无威胁村落时，他独自离队；如今他要求固定教学时间，因为一个聚落若只能依赖唯一向导，就仍然没有安全路线。",
+      "first_impression": "会先叫上相关的人一起看现场，再亲自确认地图上缺的那一段。",
+      "ordinary_behavior": "把路线经验变成公开标注和教学块，主动询问新人是否真正理解。",
+      "stress_behavior": "要求把争议说清楚，并把“缺资源”与“可以伤害谁”分开。",
+      "voice_line": "交易没谈成，就换路、换货，不能把没武器的人当补给点。",
+      "core_values": [
+        {
+          "value_id": "char_f54f717de8bb94d2:value:0",
+          "summary": "生存压力不能自动正当化掠夺弱者",
+          "source_ids": [
+            "char_f54f717de8bb94d2:bio:turn"
+          ]
+        },
+        {
+          "value_id": "char_f54f717de8bb94d2:value:1",
+          "summary": "交易失败也不等于可以动武",
+          "source_ids": [
+            "char_f54f717de8bb94d2:bio:turn"
+          ]
+        }
+      ],
+      "redline_preview": "拒绝主动劫掠未构成威胁的聚落",
+      "current_motivation": "寻找愿意固定安排教学时间、让技能可以交接的聚落",
+      "relationship_hook": "曾与一位向导因是否冒险穿越雪线分道扬镳",
+      "long_term_goal": "培养一名能独立承担自己主要技能日常工作的学员",
+      "visible_request": "会请求每周保留一个不被临时征用的教学块",
+      "identity_without_mbti": "此人仍是拒绝劫掠、重视现场确认并坚持培养接班人的山地向导。",
+      "same_type_contrast": "同为 ESFJ，方怀瑾通过共同踏勘与教学建立关系；高柏舟通过议事程序与发言秩序建立关系。",
+      "decision_scene": {
+        "title": "冬路与空仓",
+        "setup": "储粮不足，最近的非敌对村落拒绝低价交易，另一条山路尚未勘察。",
+        "accept_choice": "安排教学组勘察新路并重新谈判。",
+        "accept_consequence": "短期减少采集人手，但获得新路线和第二名可用向导。",
+        "decline_choice": "趁对方防卫薄弱夺取粮食。",
+        "decline_consequence": "可能立刻补粮；方怀瑾触发红线并退出勘察与教学。"
+      },
+      "review_questions": [
+        "玩家是否理解固定教学块与单点失效的关系？",
+        "他的外向表达是否被误作无条件服从群体？",
+        "与高柏舟相比，玩家能否区分现场协作和会议协作？"
+      ],
+      "manual_review_status": {
+        "E01_naming": "not_run",
+        "E02_extreme_stats_and_experience": "not_run",
+        "E03_causal_bridge": "not_run",
+        "E04_stereotype_risk": "not_run",
+        "E05_decision_impact": "not_run",
+        "E06_distinction": "not_run",
+        "mbti_player_validation": "not_run"
+      }
+    },
+    {
+      "schema_version": "character-sample-v0.1-draft",
+      "sample_id": "sample_10",
+      "source_character_id": "char_ebeb5990ef78e161",
+      "source_distinction_fingerprint": "distinction-v2:[[\"growth-market-street\",\"education-community-teaching\",\"work-council-facilitator\",\"turn-false-alarm\",\"motivation-finish-record\"],[\"交涉\"],\"ESFJ\",[\"moderate\",\"moderate\",\"strong\",\"moderate\"],[\"预警必须快，也必须注明置信度\",\"犯错后应修复流程而不是掩盖\"],[\"拒绝把未经复核的低置信度信号表述为确定灾害\"],\"希望完成一份曾因政治压力中断的调查或档案\"]",
+      "pair_id": "pair-esfj",
+      "counterpart_source_character_id": "char_f54f717de8bb94d2",
+      "formal_name": "高柏舟",
+      "age": 57,
+      "gender": "非二元",
+      "origin": "沿河市场自治街区",
+      "internal_mbti_type": "ESFJ",
+      "mbti_display_policy": "HIDDEN_IN_PLAYER_CARD_UNTIL_VALIDATED",
+      "primary_skills": [
+        "交涉"
+      ],
+      "qualifications": [
+        {
+          "qualification_id": "qual_basic_instruction",
+          "rank": 2,
+          "source_node_id": "char_ebeb5990ef78e161:bio:work",
+          "evidence": "完成小组教学和学习反馈训练，并在长期主要职责中独立使用"
+        }
+      ],
+      "address_rules": [
+        {
+          "relationship": "default",
+          "form": "高柏舟"
+        },
+        {
+          "relationship": "familiar",
+          "form": "柏舟"
+        }
+      ],
+      "source_biography_summary": "在多家共用摊位与仓房的街区长大，经常替长辈传话、记账和调停小纠纷。 在社区学习站接受教学组织训练，长期协助成人识字和基础技能课。 主持过配给、用水和公共劳动议事，负责让反对意见进入记录。 一次误报导致整个聚落仓促撤离，此人承担责任并重建了双人复核流程。 希望完成一份曾因政治压力中断的调查或档案；希望找到至少两份独立来源并公开最终结论。",
+      "revised_biography": "高柏舟在沿河市场街区替人传话、记账和调停，后来主持配给、用水与公共劳动议事。一次低置信度误报引发全聚落撤离，他没有掩盖错误，而是重建双人复核流程。现在他想完成一份被政治压力中断的档案；他会保护沉默者发言，也会阻止任何人把未经复核的猜测包装成确定灾害。",
+      "first_impression": "先问没说话的人怎么看，再确认每句警报是谁复核的。",
+      "ordinary_behavior": "为议题列出异议、证据等级和下一次复核，不用多数表决抹去少数记录。",
+      "stress_behavior": "主动找搭档复核，避免自己再次成为唯一的信息出口。",
+      "voice_line": "可以先警戒，但请把“可能”写成“可能”。",
+      "core_values": [
+        {
+          "value_id": "char_ebeb5990ef78e161:value:0",
+          "summary": "预警必须快，也必须注明置信度",
+          "source_ids": [
+            "char_ebeb5990ef78e161:bio:turn"
+          ]
+        },
+        {
+          "value_id": "char_ebeb5990ef78e161:value:1",
+          "summary": "犯错后应修复流程而不是掩盖",
+          "source_ids": [
+            "char_ebeb5990ef78e161:bio:turn"
+          ]
+        }
+      ],
+      "redline_preview": "拒绝把未经复核的低置信度信号表述为确定灾害",
+      "current_motivation": "希望完成一份曾因政治压力中断的调查或档案",
+      "relationship_hook": "一位旧议事员认为此人过分重视程序",
+      "long_term_goal": "找到至少两份独立来源并公开最终结论",
+      "visible_request": "会请求保存可能令人不快、但仍未核实的证据",
+      "identity_without_mbti": "此人仍由误报责任、双人复核、沉默者发言权和未完成档案构成。",
+      "same_type_contrast": "同为 ESFJ，高柏舟关注谁被听见以及消息如何定级；方怀瑾关注谁能共同确认路线并接过技能。",
+      "decision_scene": {
+        "title": "低置信度污染警报",
+        "setup": "单一水样出现异常，全面停水会损失两天生产，但继续使用可能扩大风险。",
+        "accept_choice": "发布临时警戒，限制用途并安排第二次独立采样。",
+        "accept_consequence": "产能下降但信息诚实，第二份结果将决定是否全面停水。",
+        "decline_choice": "把异常直接宣布为确定污染并全面停水。",
+        "decline_consequence": "最大化短期安全；高柏舟拒绝为未复核措辞背书，居民信任可能下降。"
+      },
+      "review_questions": [
+        "玩家能否区分“快速预警”和“夸大置信度”？",
+        "他是否不只是一个高交涉角色？",
+        "与方怀瑾相比，同类型的人际关注是否落在不同机制上？"
+      ],
+      "manual_review_status": {
+        "E01_naming": "not_run",
+        "E02_extreme_stats_and_experience": "not_run",
+        "E03_causal_bridge": "not_run",
+        "E04_stereotype_risk": "not_run",
+        "E05_decision_impact": "not_run",
+        "E06_distinction": "not_run",
+        "mbti_player_validation": "not_run"
+      }
+    },
+    {
+      "schema_version": "character-sample-v0.1-draft",
+      "sample_id": "sample_11",
+      "source_character_id": "char_0aa950ae5d079b4d",
+      "source_distinction_fingerprint": "distinction-v2:[[\"growth-observation-station\",\"education-electrical-maintenance\",\"work-pump-crew\",\"turn-quarantine-breach\",\"motivation-external-contact\"],[\"工程\"],\"ENTP\",[\"light\",\"strong\",\"moderate\",\"moderate\"],[\"感染信息必须及时公开\",\"隔离措施也要保障基本照护\"],[\"拒绝隐瞒已确认的传染风险\"],\"需要一个稳定聚落作为与多个外部关系继续往来的锚点\"]",
+      "pair_id": "pair-entp",
+      "counterpart_source_character_id": "char_69d38c37b2e8915c",
+      "formal_name": "乔澄意",
+      "age": 44,
+      "gender": "非二元",
+      "origin": "高原气象观测站",
+      "internal_mbti_type": "ENTP",
+      "mbti_display_policy": "HIDDEN_IN_PLAYER_CARD_UNTIL_VALIDATED",
+      "primary_skills": [
+        "工程"
+      ],
+      "qualifications": [
+        {
+          "qualification_id": "qual_low_voltage_service",
+          "rank": 1,
+          "source_node_id": "char_0aa950ae5d079b4d:bio:education",
+          "evidence": "完成低压设备断电检修训练"
+        }
+      ],
+      "address_rules": [
+        {
+          "relationship": "default",
+          "form": "乔澄意"
+        },
+        {
+          "relationship": "familiar",
+          "form": "澄意"
+        },
+        {
+          "relationship": "recognized_experience",
+          "form": "乔师傅"
+        }
+      ],
+      "source_biography_summary": "在偏远观测站长大，习惯独自记录、复核读数并从长期变化中寻找模式。 学习低压电路、风机控制和断电检修，能在监督下排查常见故障。 在水泵检修组承担主要故障排查，带过新人完成多次停机维护。 亲人因管理者隐瞒感染而病逝，此人随后推动公开隔离记录。 需要一个稳定聚落作为与多个外部关系继续往来的锚点；希望把一段私人互惠转成双方共同体都能理解的正式关系。",
+      "revised_biography": "乔澄意从观测站的长期读数走进水泵检修组，擅长在停机前找出几种解释，也容易对带病设备投入过度。亲人因管理者隐瞒感染去世后，他坚持确诊风险必须公开，同时隔离者也应得到基本照护。旧关系来访时，这条原则会直接考验他：连接外部网络不能建立在隐瞒聚落风险之上。",
+      "first_impression": "边讨论边拆解故障假设，但一旦证实风险就要求公开。",
+      "ordinary_behavior": "先列多个故障原因，用最小停机试验排除，不把私人关系写进技术结论。",
+      "stress_behavior": "把争议公开摊开；若设备仍运行，会忘记自己已经超时工作。",
+      "voice_line": "访客是我请来的，风险也该由我先说清，不该让别人替我猜。",
+      "core_values": [
+        {
+          "value_id": "char_0aa950ae5d079b4d:value:0",
+          "summary": "感染信息必须及时公开",
+          "source_ids": [
+            "char_0aa950ae5d079b4d:bio:turn"
+          ]
+        },
+        {
+          "value_id": "char_0aa950ae5d079b4d:value:1",
+          "summary": "隔离措施也要保障基本照护",
+          "source_ids": [
+            "char_0aa950ae5d079b4d:bio:turn"
+          ]
+        }
+      ],
+      "redline_preview": "拒绝隐瞒已确认的传染风险",
+      "current_motivation": "需要一个稳定聚落作为与多个外部关系继续往来的锚点",
+      "relationship_hook": "与旧检修组长对一次延迟停机仍有分歧",
+      "long_term_goal": "把一段私人互惠转成双方共同体都能理解的正式关系",
+      "visible_request": "会请求接待一名与自己有旧关系但聚落并不熟悉的访客",
+      "identity_without_mbti": "此人仍由水泵故障排查、感染公开红线和旧关系正式化的目标构成。",
+      "same_type_contrast": "同为 ENTP，乔澄意围绕技术假设和外部关系尝试方案；周照临围绕路线、配给和运输余量调整方案。",
+      "decision_scene": {
+        "title": "旧访客的确诊结果",
+        "setup": "乔澄意邀请的旧同伴抵达，同日筛查确认其携带传染风险。",
+        "accept_choice": "立即公开并提供有基本照护的隔离。",
+        "accept_consequence": "外部关系短期受损，占用医疗物资，但聚落获得清晰防护。",
+        "decline_choice": "以复检为由暂缓公开，让访客先进入维修区。",
+        "decline_consequence": "保住会面机会；乔澄意触发自身红线并要求封闭维修区追责。"
+      },
+      "review_questions": [
+        "玩家是否看到他的好奇心受到确诊边界约束？",
+        "旧关系是否让公开风险成为有代价的选择？",
+        "与周照临相比，他的方案探索是否更偏技术与关系？"
+      ],
+      "manual_review_status": {
+        "E01_naming": "not_run",
+        "E02_extreme_stats_and_experience": "not_run",
+        "E03_causal_bridge": "not_run",
+        "E04_stereotype_risk": "not_run",
+        "E05_decision_impact": "not_run",
+        "E06_distinction": "not_run",
+        "mbti_player_validation": "not_run"
+      }
+    },
+    {
+      "schema_version": "character-sample-v0.1-draft",
+      "sample_id": "sample_12",
+      "source_character_id": "char_69d38c37b2e8915c",
+      "source_distinction_fingerprint": "distinction-v2:[[\"growth-forest-edge\",\"education-long-haul-driving\",\"work-convoy-quartermaster\",\"turn-water-priority\",\"motivation-community-kitchen\"],[\"后勤\",\"侦察\"],\"ENTP\",[\"light\",\"light\",\"moderate\",\"moderate\"],[\"基本饮水优先于奢侈生产\",\"稀缺资源的排序必须公开\"],[\"拒绝在居民饮水不足时向非必要项目秘密供水\"],\"希望用公开配给和共同烹饪减少资源紧张时的猜疑\"]",
+      "pair_id": "pair-entp",
+      "counterpart_source_character_id": "char_0aa950ae5d079b4d",
+      "formal_name": "周照临",
+      "age": 55,
+      "gender": "非二元",
+      "origin": "南部丘陵林场",
+      "internal_mbti_type": "ENTP",
+      "mbti_display_policy": "HIDDEN_IN_PLAYER_CARD_UNTIL_VALIDATED",
+      "primary_skills": [
+        "后勤",
+        "侦察"
+      ],
+      "qualifications": [
+        {
+          "qualification_id": "qual_long_haul_vehicle",
+          "rank": 1,
+          "source_node_id": "char_69d38c37b2e8915c:bio:education",
+          "evidence": "完成长途车辆和货物固定训练"
+        }
+      ],
+      "address_rules": [
+        {
+          "relationship": "default",
+          "form": "周照临"
+        },
+        {
+          "relationship": "familiar",
+          "form": "照临"
+        },
+        {
+          "relationship": "recognized_experience",
+          "form": "周管事"
+        }
+      ],
+      "source_biography_summary": "在林场边缘长大，长期参与边界巡看、失火预警和迷路者搜寻。 接受长途车辆、货物固定和恶劣天气行驶训练。 在长途车队负责货载、燃料、路线接力和损耗核算。 干旱时管理者优先保证私人温室，此人公开了真实用水账并离开。 希望用公开配给和共同烹饪减少资源紧张时的猜疑；希望建立可预测的冬储与公共灶轮值。",
+      "revised_biography": "周照临在林场边缘参加巡看与失火预警，后来随长途车队核算货载、燃料、路线接力和损耗。干旱时管理者把公共水转给私人温室，他公开真实账目后离开。现在他想用公开配给和共同烹饪减少猜疑；他乐于重排路线和装载，却不会接受把基本饮水藏在“灵活调度”里。",
+      "first_impression": "会迅速提出替代路线，但每条路线都附带燃料和损耗余量。",
+      "ordinary_behavior": "把运输、冬储和公共灶看成一张可重排的网络，主动解释谁承担代价。",
+      "stress_behavior": "先找退路和备用交接点，再把被隐藏的资源流向摊开。",
+      "voice_line": "可以改路线，不能改账；水去了哪里，所有人都该看得见。",
+      "core_values": [
+        {
+          "value_id": "char_69d38c37b2e8915c:value:0",
+          "summary": "基本饮水优先于奢侈生产",
+          "source_ids": [
+            "char_69d38c37b2e8915c:bio:turn"
+          ]
+        },
+        {
+          "value_id": "char_69d38c37b2e8915c:value:1",
+          "summary": "稀缺资源的排序必须公开",
+          "source_ids": [
+            "char_69d38c37b2e8915c:bio:turn"
+          ]
+        }
+      ],
+      "redline_preview": "拒绝在居民饮水不足时向非必要项目秘密供水",
+      "current_motivation": "希望用公开配给和共同烹饪减少资源紧张时的猜疑",
+      "relationship_hook": "与一名车队领航员共同掌握一条尚未公开的安全路线",
+      "long_term_goal": "建立可预测的冬储与公共灶轮值",
+      "visible_request": "会请求在丰收时提前投入看似过量的保存工作",
+      "identity_without_mbti": "此人仍由长途后勤、公开用水账和可预测公共灶轮值构成。",
+      "same_type_contrast": "同为 ENTP，周照临用备选路线重组资源网络；乔澄意用故障假设重组技术判断与外部关系。",
+      "decision_scene": {
+        "title": "私人温室的暗管",
+        "setup": "干旱周发现一条未登记支管向高收益温室供水，停掉会损失珍稀作物。",
+        "accept_choice": "公开支管并优先保障居民饮水，再重排运输补水。",
+        "accept_consequence": "珍稀作物减产，但公共灶和饮水稳定，资源信任上升。",
+        "decline_choice": "暂时隐瞒支管，等待下一批水车。",
+        "decline_consequence": "保住高价值作物；周照临触发红线并公开真实水账。"
+      },
+      "review_questions": [
+        "玩家是否能复述他为何把配给和路线放在一起考虑？",
+        "他的灵活性是否仍有公开账目这一硬边界？",
+        "与乔澄意相比，玩家能否指出两人的探索对象不同？"
+      ],
+      "manual_review_status": {
+        "E01_naming": "not_run",
+        "E02_extreme_stats_and_experience": "not_run",
+        "E03_causal_bridge": "not_run",
+        "E04_stereotype_risk": "not_run",
+        "E05_decision_impact": "not_run",
+        "E06_distinction": "not_run",
+        "mbti_player_validation": "not_run"
+      }
+    }
+  ],
+  "validation": {
+    "scope": "DRAFT_SAMPLE_STRUCTURE_ONLY",
+    "machine_structure_passed": true,
+    "findings": [
+      {
+        "validation_id": "S01-SCHEMA",
+        "predicate": "样板库使用闭合 schema 且固定 12 人",
+        "evidence": "samples=12",
+        "result": "passed"
+      },
+      {
+        "validation_id": "S02-SOURCE-BINDING",
+        "predicate": "每个样板绑定唯一候选人物",
+        "evidence": "unique_sources=12",
+        "result": "passed"
+      },
+      {
+        "validation_id": "S03-SAME-TYPE-PAIRS",
+        "predicate": "六个 MBTI 对照组各含两人",
+        "evidence": "pair-enfp=2,pair-entp=2,pair-esfj=2,pair-intj=2,pair-isfp=2,pair-istj=2",
+        "result": "passed"
+      },
+      {
+        "validation_id": "S04-MBTI-DIMENSION-BALANCE",
+        "predicate": "四个 MBTI 维度均为 6:6",
+        "evidence": "I=6,E=6,S=6,N=6,T=6,F=6,J=6,P=6",
+        "result": "passed"
+      },
+      {
+        "validation_id": "S05-SKILL-COVERAGE",
+        "predicate": "八项技能均由至少一名样板主要覆盖",
+        "evidence": "生产=true,工程=true,医疗=true,后勤=true,侦察=true,防卫=true,交涉=true,研究=true",
+        "result": "passed"
+      },
+      {
+        "validation_id": "S06-CONTENT-COMPLETENESS",
+        "predicate": "每名样板具备完整可测试内容",
+        "evidence": "履历、第一印象、日常与压力行为、语音、决策场景、去 MBTI 身份均非空",
+        "result": "passed"
+      },
+      {
+        "validation_id": "S07-GATE-HONESTY",
+        "predicate": "人工门禁保持 NOT_RUN 且 A1 未提前通过",
+        "evidence": "NOT_STARTED/GATE_1H_CHARACTER_MEMORY_EVIDENCE",
+        "result": "passed"
+      },
+      {
+        "validation_id": "S08-DISTINCTION",
+        "predicate": "样板与同类型对照均可区分",
+        "evidence": "fingerprints=12,scenes=12",
+        "result": "passed"
+      }
+    ],
+    "manual_reviews": {
+      "E01": "not_run",
+      "E02": "not_run",
+      "E03": "not_run",
+      "E04": "not_run",
+      "E05": "not_run",
+      "E06": "not_run",
+      "mbti_player_validation": "not_run"
+    }
+  }
+}

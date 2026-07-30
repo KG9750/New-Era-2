@@ -5,12 +5,19 @@
 合同和批次组合，不是阶段 B 的正式人物库，也不是阶段 C 的完整生成器。便于
 人工浏览的摘要表见 `character-roster-50-v0.1-candidate.md`。
 
+`sample-12-v0.1-draft.json` 是从上述候选池绑定的 A1 前置样板包，阅读版见
+`character-samples-12-v0.1-draft.md`。它包含六组同 MBTI、不同人生路径的
+对照与决策场景，状态固定为
+`DRAFT_BEFORE_A1 / A1_INPUT_PREPARATION_ONLY`；E01–E06 和 MBTI 玩家验证均
+为 `NOT_RUN`。
+
 ## 生成
 
 ```bash
 cd prototype
 PATH=/opt/homebrew/opt/node@24/bin:$PATH npm ci
 PATH=/opt/homebrew/opt/node@24/bin:$PATH npm run characters:generate
+PATH=/opt/homebrew/opt/node@24/bin:$PATH npm run characters:samples:generate
 ```
 
 固定输入：
@@ -24,6 +31,15 @@ PATH=/opt/homebrew/opt/node@24/bin:$PATH npm run characters:generate
 - culture pack：`cn-frontier-draft-v0.1`。
 
 相同版本和输入必须逐字节生成相同 JSON。
+
+12 人样板包额外固定：
+
+- 来源候选库 ID：`character-library-e990760a870ff576`；
+- 样板库 ID：`character-samples-c81466e0f691a8ed`；
+- 六个对照类型：ISTJ、INTJ、ISFP、ENFP、ESFJ、ENTP，各 2 人；
+- 四维倾向均为 6:6；
+- 玩家卡默认隐藏 MBTI 四字母代码；
+- 八项机器结构 finding 必须全部 `passed`。
 
 ## 已实现范围
 

@@ -12,6 +12,7 @@
     "rc:verify": "node scripts/verify-rc-build.mjs",
     "rc:serve": "node dist/playtest-host.mjs --host 127.0.0.1",
     "characters:generate": "vite-node scripts/generate-character-library.ts",
+    "characters:samples:generate": "vite-node scripts/generate-character-sample-library.ts",
     "e2e": "npm run rc:build -- --build-id g1-e2e-20260726.1 --git-sha 1111111111111111111111111111111111111111 && npm run e2e:rc",
     "e2e:rc": "npm run rc:verify && playwright test"
   },

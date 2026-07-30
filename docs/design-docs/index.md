@@ -7,6 +7,7 @@ Use this index to find design documents for `Project-004-New Era 2`.
 - `concept-design-v0.4.md`: **概念设计 V0.4**（当前主线：周计划—产能推演 / 月度主题豁免 / 双战场）
 - `character-generation-rules-v0.1.md`: **人物角色生成规则 V0.1-r8**（Codex 独立零问题终审：`P0=0 / P1=0 / P2=0 / REVIEW_PASS`；受审 SHA 见终审报告）
 - `character-generator-v0.1-implementation.md`: **人物生成器 V0.1 技术 spike**（固定种子候选库 + 独立机器合同；完整 M12 与 E01–E06 尚未执行，不代表阶段 B/C 完成）
+- `character-sample-library-v0.1.md`: **12 人高完成度样板库 V0.1**（六组同 MBTI 对照的 A1 前置草案；机器结构通过，Gate 1H、E01–E06 与 MBTI 玩家验证未执行）
 - `character-generator-v0.1-review-remediation.md`: **人物生成器 V0.1 独立审查整改记录**（R5 代码复审已 `REVIEW_PASS`；完整 M12、人工门禁和阶段 C 仍开放）
 - `item-and-manufacturing-system-v0.1.md`: **物品与制造系统设计 V0.1 R1**（已冻结：分类 / 库存 / 制造 / 维修 / 装备 / 植物与伙伴动物；Gate 1 仍仅验证化肥样本）
 - `weekly-plan-production-forecast-slice-v0.1.md`: **周计划—产能推演两周切片规格 V0.1**（当前 Gate 1 设计对象）

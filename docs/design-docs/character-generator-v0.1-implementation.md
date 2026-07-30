@@ -1,9 +1,10 @@
 # 人物生成器 V0.1 候选实现
 
-**状态：** `TECHNICAL_SPIKE_BEFORE_A1 / CANDIDATE_NOT_FROZEN / IMPLEMENTED_MACHINE_CONTRACTS_PASS / MANUAL_REVIEW_NOT_RUN`
+**状态：** `TECHNICAL_SPIKE_BEFORE_A1 / CANDIDATE_NOT_FROZEN / A1_INPUT_DRAFT_AVAILABLE / IMPLEMENTED_MACHINE_CONTRACTS_PASS / MANUAL_REVIEW_NOT_RUN`
 **对应规则：** `character-generation-rules-v0.1.md` V0.1-r8
 **实现位置：** `prototype/src/characters/`
 **生成数据：** `data/characters/generated-50-v0.1-candidate.json`
+**12 人前置样板：** `data/characters/sample-12-v0.1-draft.json`
 
 ## 目标
 
@@ -22,8 +23,9 @@
 ```
 
 这不是规则阶段 B 的正式 50 人库，也不是阶段 C 的完整生成器。阶段 A1 的 12 人
-样板、MBTI 专项验证和人工审查尚未完成；两月加入、紧急补员、替代链、关系
-reducer、NPC dormant store 和开局四人选择器仍按规则阶段 C 单独实现。
+前置样板包已经生成，但尚未根据 Gate 1H 结果回审、执行 MBTI 专项验证和人工
+审查，也未冻结为正式 A1 样板；两月加入、紧急补员、替代链、关系 reducer、
+NPC dormant store 和开局四人选择器仍按规则阶段 C 单独实现。
 
 ## 公共接口
 
@@ -131,12 +133,13 @@ Node 20.20.2、22.23.1、24.18.0
 
 当前不得将候选库改为正式人物库，也不得称为阶段 B/C 完成，原因是：
 
-1. 阶段 A1 的 12 名高完成度样板尚未冻结；
+1. 阶段 A1 的 12 名高完成度前置样板已生成但尚未回审或冻结；
 2. E01 文化命名审核尚未执行；
 3. E02–E06 人工内容审核尚未执行；
 4. 规则要求的 12 名样板人物 MBTI 专项玩家验证尚未执行；
 5. 完整 M12、`PartyValidation`、人口事件状态机或 NPC 往返校验尚未实现。
 
-下一步应把当前输出只当作选材池，从中重写并冻结 12 名不同能力与 MBTI 的
-高完成度样板，逐人执行 E01–E06，修订内容包后再生成整批；阶段 A1 通过前，
-不得把当前机器结果当作内容冻结。
+当前 50 人输出仍只作为选材池；12 人前置样板已按六组同 MBTI 对照完成重写。
+下一步应先取得 Gate 1H 人物记忆度证据，再回审本包、冻结文化命名包、逐人执行
+E01–E06 并完成 MBTI 玩家验证。阶段 A1 独立审查通过前，不得把当前机器结果
+或 12 人草案当作内容冻结。
