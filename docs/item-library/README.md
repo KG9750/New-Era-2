@@ -12,6 +12,10 @@
 - 统一候选包：`../../data/item-library/item-library-r1-candidate-bundle.json`
 - 最新内容审查：`reviews/item-library-c7-independent-review-2026-07-27.md`
 - R1 基线审查：`reviews/item-library-r1-candidate-baseline-independent-review-2026-07-27.md`
+- R2-A 语义审计合同：`item-library-semantic-audit-contract-v0.1.md`
+- R2-A 机器可读审计：`../../data/item-library/semantic-audit-r2a.json`
+- R2-A 审计摘要：`../../data/item-library/semantic-audit-r2a.md`
+- R2-A 复审状态：`reviews/item-library-r2a-review-status-2026-07-30.md`（实现验证通过，外部独立复审待恢复）
 
 ## 数据布局
 
@@ -22,6 +26,8 @@
 - `transitions.c3.yaml`：库存或外部交接到非库存形态的转换流程；
 - `coverage-report*.md`：各档位确定性覆盖报告；
 - `item-library-r1-candidate-bundle.json`：C1–C7 合并后的只读生成物。
+- `semantic-audit-r2a.json`：220 项逐项语义分类和 334 节点依赖图；
+- `semantic-audit-r2a.md`：R2-A 人工审查摘要。
 
 分批文件是编辑源，bundle 是消费入口。不要手工修改 bundle。
 
@@ -31,6 +37,14 @@
 for profile in c1 c2 c3 c4 c5 c6 c7; do
   ruby scripts/validate_item_library.rb --profile "$profile"
 done
+ruby scripts/audit_item_library_semantics.rb
+```
+
+计算稳定 ID 的确定性依赖闭包：
+
+```bash
+ruby scripts/audit_item_library_semantics.rb \
+  --select item.agriculture.compound_fertilizer,item.furniture.field_bed
 ```
 
 ## 当前边界
