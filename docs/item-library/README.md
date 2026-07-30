@@ -15,7 +15,7 @@
 - R2-A 语义审计合同：`item-library-semantic-audit-contract-v0.1.md`
 - R2-A 机器可读审计：`../../data/item-library/semantic-audit-r2a.json`
 - R2-A 审计摘要：`../../data/item-library/semantic-audit-r2a.md`
-- R2-A 复审状态：`reviews/item-library-r2a-review-status-2026-07-30.md`（独立 subagent 两轮发现已修正，第三轮远端干净快照复审待完成）
+- R2-A 复审状态：`reviews/item-library-r2a-review-status-2026-07-30.md`（独立 subagent 三轮审查完成，`R2A_REVIEW_PASS`）
 
 ## 数据布局
 

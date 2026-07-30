@@ -5,15 +5,17 @@
 **实现验证：** `PASS`
 **独立 subagent 首审：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=1`）
 **独立 subagent 第二轮：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=0`）
-**独立 subagent 第三轮：** `PENDING`
-**最终状态：** `R2A_RECHECK_PENDING`
+**独立 subagent 第三轮：** `REVIEW_PASS`（`P0=0 / P1=0 / P2=0`）
+**最终状态：** `R2A_REVIEW_PASS`
 **运行时授权：** 无
 
 ## 1. 当前结论
 
 R2-A 已由独立、只读、全新上下文 subagent 完成首审。首审发现一项 P1 和一项 P2，因此结论为 `REVIEW_FAIL`。
 
-首审两项发现已按最小范围修正。第二轮复审确认首审指定的长凳误吸入和空选择均已解决，但又发现输出及目标物品仍会展开生命周期、转换和装备兼容关系，因此仍为 `REVIEW_FAIL`。该项也已按最小范围修正并通过本地回归；第三轮通过前不能宣称 R2-A 通过。
+首审两项发现已按最小范围修正。第二轮复审确认首审指定的长凳误吸入和空选择均已解决，但又发现输出及目标物品仍会展开生命周期、转换和装备兼容关系，因此仍为 `REVIEW_FAIL`。该项也已按最小范围修正。
+
+第三轮在远端干净快照 `69539ef9bf050631f412395e5ef288b17591fcd2`、Tree `2d610d05d9eaff397d4fe8c62abba41f9afe6552` 上完成独立只读复审，结论为 `P0=0 / P1=0 / P2=0 / REVIEW_PASS`。审查过程未编辑、暂存、提交或推送文件，也未调用 Claude 或 `claude-code-review`。
 
 候选内容继续保持 `candidate_only`、`runtime_authorization=NONE`，不允许整包导入，也不改变 Gate。
 
@@ -79,13 +81,22 @@ RUNTIME_AUTHORIZATION=NONE
 
 两项均会随稳定 ID 选择闭包显式输出，不是静默豁免。
 
-## 5. 解除阻塞条件
+## 5. 复审结论
 
-需要由同一独立 subagent 对第二轮修正后的远端干净快照进行第三轮非空、只读、可引用文件与行号的复审，至少覆盖：
+第三轮独立 subagent 已覆盖：
 
 - `scripts/audit_item_library_semantics.rb`
 - `docs/item-library/item-library-semantic-audit-contract-v0.1.md`
 - `data/item-library/semantic-audit-r2a.json`
 - `data/item-library/semantic-audit-r2a.md`
 
-复审必须给出 P0/P1/P2 数量与 `REVIEW_PASS` 或 `REVIEW_FAIL`。只有 `P0=0 / P1=0`，并且所有真实发现完成修正与回归后，R2-A 才能从 `R2A_RECHECK_PENDING` 转为复审通过。
+复审确认首审与第二轮的真实发现均已修正，且没有新增真实缺陷：
+
+```text
+P0=0
+P1=0
+P2=0
+REVIEW_PASS
+```
+
+`R2A_REVIEW_PASS` 仅表示候选物品库语义审计与稳定 ID 选择闭包满足当前合同，不构成运行时、正式数值、UI、存档迁移、Gate 或玩家测试授权。
