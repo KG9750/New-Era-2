@@ -1727,3 +1727,115 @@ amendment 只允许恢复该 Node wrapper defect：
 C04 admission、Gate 1A、Gate 1H、Gate 2 或 final `output_ref`。当前状态继续为
 `C04=NOT_RELEASED`、`CM01=UNALLOCATED`、P07/P08 与 D16–D20=`NOT_STARTED`、
 Gate 1H=`PENDING`、Gate 2=`LOCKED`、`output_ref=UNSET`。
+
+### 10.7 Integration-safe test-context recovery amendment
+
+第三次 owner pre-authority 是本计划之外的必要前置 authority。Owner 已在当前
+Codex 任务中明确授权“C04 第三次且仅一次的 integration-safe test-context
+recovery amendment”。该 authority 只允许修复 A03 暴露的测试上下文漂移，并在
+全部未消耗预检通过后使用一次字面量 `phase6-retry-03`；它不能由计划作者、
+实现者或 reviewer 自行扩大。
+
+外部 Owner pre-authority 记录必须逐字绑定本 proposed plan blob、此前
+`plan_ref=52eb452a5ffec167a3809d3f372e62b9d8524124`、source
+`842d5a6a9aecfb991ebd73bcec2108fae05f46e1`、failed Integration I
+`4d93ea5aa42bf6fb34fa0109c6bc66af82145b50`、A03 preservation
+`09c3b88ee0f9092788a974c95c4aec01de09df2e` 与 #58 failure comment
+`5123668371`。本节只记录该外部 authority 的最小范围，不能自我授权。
+
+A03 已在 failed I 的 `phase6-retry-02` 永久保留精确现场：
+
+- `lint.txt`：child exit `0`、`1173` bytes、`2` lines、SHA-256
+  `f5681104cb592db8fe2be27b9d24122c598447ad33caf1c287fa76b0ea9ce0b6`；
+- `test.txt`：child exit `1`、`11321` bytes、`2` lines、SHA-256
+  `2f95d717ac126b6d25a09d018813654aa95a735affcef631841044740eede37b`，
+  Vitest 为 `381 passed / 6 failed / 387 total`；
+- 其余十三项 command result、四组 verifier JSON/sidecar pair 与 archive 均未
+  创建。
+
+`phase6-retry-02/**`、failed I、preservation commit 与上述两个 TXT 永久只读，
+不得删除、覆盖、移动、补写、重签、迁移、复制或引用到最终 lineage、
+`commandResults[]`、`frozenEvidenceGuard`、E、CM01、freeze audit、IR、seal 或
+`output_ref`。
+
+根因限定为 `prototype/tests/c04-verifier-cli.test.ts` 的测试上下文选择：完整
+Vitest 在 evidence-lineage checkout 上运行时，六个本应验证通用 source/external
+output 语义的测试动态继承 integration context，因而被 production verifier 正确以
+`FROZEN_EVIDENCE_OUTPUT_PATH`、`FROZEN_EVIDENCE_SOURCE_DIFF` 与
+`C04_RUNTIME_OUTPUT_PATH` 拒绝。既有专门 integration fixture 已独立覆盖
+repo-relative retry namespace、archived namespace、external output 与 identity
+拒绝语义；production verifier 的 integration 路径、错误码、no-clobber 与
+fail-closed 行为都不得放松。
+
+本 amendment 只授权以下最小恢复：
+
+1. 通用 frozen-evidence/runtime-equivalence 的 source/external-output 测试必须
+   显式使用固定 source context，不再按当前 checkout 动态切换；专门的隔离
+   integration fixture 正反例继续使用显式 evidence-lineage context 并保持覆盖；
+2. A03 `test.txt` 中六个既有失败用例及其 `381/387` 结果是本 amendment 的正式
+   RED 基线；不得新增或删除 Vitest case。必须保留这六个用例及全部既有断言，
+   先重放确认其在 A03 evidence-lineage 语义下失败，再做最小测试上下文修复，使
+   同一 `23 files / 387 total` 套件在新 evidence-lineage checkout 全绿；不得通过
+   弱化 production verifier、删除断言、跳过测试、条件跳过或伪造
+   source/integration 身份取得 PASS；
+3. source allowlist 仍是 §4.2 同一 49 个无重复 exact paths；plan-only 阶段只能
+   修改本计划，再次冻结后 implementation 只能在该既有 allowlist 内更新测试
+   context、把 plan-ref/retry-root production contract 从旧字面量精确迁移到新
+   `plan_ref`/`phase6-retry-03`，并更新其必需的 authority/hash binding；不得新增
+   第 50 个 source path，也不得再次修改本计划；
+4. 必须创建不同于 `842d5a6...` 的新 source SHA，完整重跑 §5 Source Phase 6；
+   三路独立 source review 均得到 `P0=0 / P1=0 / P2=0 / PASS` 后，才能从
+   evidence baseline `5b9438cc5123ba35d8a703f3507bbf463e90176d` 创建全新
+   Integration I；
+5. 新 I 必须与新 source 的同一 49 个 allowlisted path 的 blob ID 与 mode 逐项
+   相同，并证明 A01/A02/A03 的三个 failed I 与三个 preservation commit 均不是
+   其 ancestor；
+6. 新 Integration I 上，在不调用 production Phase 6 wrapper、不创建任何
+   `phase6-retry-03` 路径且不消耗一次性 retry authority 的条件下，先使用 §5
+   固定 Node 24 process-local PATH 直接运行 `npm run lint` 与完整
+   `npm run test:run`。Vitest 必须为 `23 files / 387 passed / 387 total`，
+   skip/todo/pending 均为 `0`；
+7. 上述未消耗预检前后都必须只读证明字面量 `phase6-retry-03` 完全不存在、
+   worktree tracked clean、HEAD 未变化、Node identity 与 Git/worktree binding
+   符合 §5；任何一项失败都停止并保持本次 production retry authority 未消耗，
+   只能回到既有 49-path source 流程修复和重新复审，不能在该 I 上启动 wrapper；
+8. 只有第 4–7 项全部 PASS 后，才允许启动一次 production wrapper
+   integration Phase 6。C04 唯一新的有效 integration root 是字面量
+   `data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03`；
+   它只容纳 §5 十四项 command results 与四组 verifier pair，不授权 glob、别名、
+   `retry-04` 或任何未来 namespace；
+9. production wrapper 的第一项 Node/Git/argv identity preflight 一经启动，本次
+   一次性 authority 即消耗。`phase6-retry-03` 任一 command、pair、partial
+   group、archive 或 identity preflight 失败都必须立即停止并永久保留现场，不得
+   自行重试、回滚后再跑、覆盖、补写或创建 `retry-04`；
+10. 全部 integration Phase 6 通过后仍须完成独立 contract、code-quality 与
+    mechanical evidence 三路复审；三路均 PASS 前不得推送 final integration，也
+    不得启动任何后续阶段。
+
+强制 authority 与执行顺序不可重排：
+
+1. 只修改本计划并计算 proposed plan blob SHA-256；
+2. 在 #58 登记 Owner pre-authority，绑定 proposed plan blob、旧 `plan_ref`、
+   source、A03 failed I、preservation 与 failure comment；
+3. 两名独立 reviewer 对同一 proposed plan blob 分别得到
+   `P0=0 / P1=0 / P2=0 / PASS`；
+4. 创建只包含本计划文件的 plan-only commit，推送并在 #58 登记新
+   `plan_ref`、plan SHA-256、两份 review 与 Owner pre-authority 后再次冻结；
+5. 在既有 49-path allowlist 内按测试先行完成最小修复，创建新 source SHA；
+6. 完整 Source Phase 6 与三路独立 source review 全部通过；
+7. 从 evidence baseline 创建满足第 5 项谱系约束的新 Integration I；
+8. 在新 I 上完成第 6–7 项未消耗 authority 的 Node 24 lint 与 `387/387`
+   Integration-checkout 全测预检；
+9. 只有预检 PASS 才启动且只启动一次 production wrapper
+   `phase6-retry-03`；
+10. 完成 integration Phase 6 三路独立复审后，才允许按原计划进入后续阶段。
+
+本节只 supersede §5 与 §10.6 中将 `phase6-retry-02` 视为最后有效 root、禁止
+`phase6-retry-03`，以及与本节未消耗 Integration 预检顺序冲突的文字；A01/A02/A03
+失败事实、旧 namespace、preservation、source/evidence 拓扑、49-path
+allowlist、identity、no-clobber、P/D 编号、Gate 边界及其余合同全部保持不变。
+
+本 amendment 不授权 `CM01`、P07/P08、D16–D20、C04 admission、Gate 1A、
+Gate 1H、Gate 2 或 final `output_ref`。当前状态继续为
+`C04=NOT_RELEASED`、`CM01=UNALLOCATED`、P07/P08 与 D16–D20=`NOT_STARTED`、
+Gate 1H=`PENDING`、Gate 2=`LOCKED`、`output_ref=UNSET`。
