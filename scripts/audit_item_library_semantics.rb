@@ -43,6 +43,7 @@ def parse_arguments(argv)
       index += 1
       abort "SEMANTIC_AUDIT=FAIL\n- --select 缺少稳定 ID 列表" if index >= argv.length
       options[:select] = argv[index].split(",").map(&:strip).reject(&:empty?).uniq.sort
+      abort "SELECTION_CLOSURE=FAIL\n- --select 至少需要一个稳定 ID" if options[:select].empty?
     else
       abort "SEMANTIC_AUDIT=FAIL\n- 未知参数 #{argv[index]}"
     end
@@ -280,38 +281,53 @@ def build_selection_closure(roots, indexes)
   compatible_equipment = indexes.fetch(:compatible_equipment)
 
   selected = Set.new
-  queue = roots.dup
+  producer_expanded = Set.new
+  queue = roots.map { |id| { id: id, expand_producers: true } }
 
   until queue.empty?
-    id = queue.shift
-    next unless selected.add?(id)
+    entry = queue.shift
+    id = entry.fetch(:id)
 
     if items.key?(id)
+      newly_selected = selected.add?(id)
       item = items.fetch(id)
-      linked_recipe_ids = producers.fetch(id, []) +
-                          item.dig("interfaces", "repair_recipes").to_a +
-                          item.dig("interfaces", "dismantle_recipes").to_a
-      queue.concat(linked_recipe_ids)
-      queue.concat(source_transitions.fetch(id, []))
-      queue.concat(compatible_equipment.fetch(id, []))
-    elsif recipes.key?(id)
+      if entry.fetch(:expand_producers) && producer_expanded.add?(id)
+        queue.concat(producers.fetch(id, []).map { |recipe_id| { id: recipe_id, expand_producers: false } })
+      end
+      if newly_selected
+        lifecycle_recipe_ids = item.dig("interfaces", "repair_recipes").to_a +
+                               item.dig("interfaces", "dismantle_recipes").to_a
+        queue.concat(lifecycle_recipe_ids.map { |recipe_id| { id: recipe_id, expand_producers: false } })
+        queue.concat(source_transitions.fetch(id, []).map { |transition_id| { id: transition_id, expand_producers: false } })
+        queue.concat(compatible_equipment.fetch(id, []).map { |item_id| { id: item_id, expand_producers: true } })
+      end
+      next
+    end
+
+    next unless selected.add?(id)
+
+    if recipes.key?(id)
       recipe = recipes.fetch(id)
-      queue.concat(recipe_item_ids(recipe, "inputs"))
-      queue.concat(recipe_substitute_item_ids(recipe))
-      queue.concat(recipe_item_ids(recipe, "outputs"))
-      queue.concat(recipe_item_ids(recipe, "byproducts"))
-      queue << recipe_target_item(recipe) if recipe_target_item(recipe)
+      input_ids = recipe_item_ids(recipe, "inputs") + recipe_substitute_item_ids(recipe)
+      output_ids = recipe_item_ids(recipe, "outputs") + recipe_item_ids(recipe, "byproducts")
+      queue.concat(input_ids.uniq.map { |item_id| { id: item_id, expand_producers: true } })
+      queue.concat(output_ids.uniq.map { |item_id| { id: item_id, expand_producers: false } })
+      if recipe_target_item(recipe)
+        queue << { id: recipe_target_item(recipe), expand_producers: false }
+      end
     elsif transitions.key?(id)
       transition = transitions.fetch(id)
-      queue << transition.dig("source", "item") if transition.dig("source", "item")
-      queue.concat(recipe_item_ids(transition, "additional_inputs"))
-      queue << transition.dig("target", "definition")
+      if transition.dig("source", "item")
+        queue << { id: transition.dig("source", "item"), expand_producers: true }
+      end
+      queue.concat(recipe_item_ids(transition, "additional_inputs").map { |item_id| { id: item_id, expand_producers: true } })
+      queue << { id: transition.dig("target", "definition"), expand_producers: false }
     elsif definitions.key?(id)
       definition = definitions.fetch(id)
-      queue << definition["transition_id"]
+      queue << { id: definition["transition_id"], expand_producers: false }
       links = profile_item_links(definition)
-      queue.concat(links.fetch(:inputs))
-      queue.concat(links.fetch(:outputs))
+      queue.concat(links.fetch(:inputs).map { |item_id| { id: item_id, expand_producers: true } })
+      queue.concat(links.fetch(:outputs).map { |item_id| { id: item_id, expand_producers: false } })
     end
   end
 

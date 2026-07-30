@@ -2,11 +2,11 @@
 
 **来源基线：** `new-era-2.item-library.r1-c7-candidate`
 **来源 Payload SHA-256：** `02918459ef17e42ed5e2151660873f6a4e88e12dff29730a013f1d062fe554ad`
-**审计合同 SHA-256：** `1131fae90d7ce24e77863f58b73a84acadff73ee7bef98fbcceb31aaead3c40b`
-**审计工具 SHA-256：** `f2551728329df2b342d0af30827fd335c6f8e72379219f73342254d9cd6bffc9`
+**审计合同 SHA-256：** `93988442c174de210b133a67efc5b1c9ea3db9965dcfc00df3031a35b10de08e`
+**审计工具 SHA-256：** `7b8367177b6e9b7080a01f990d46d81eebf7dc6f64abbae1d6847bb69277bf68`
 **状态：** `candidate_only`
 **运行时授权：** `NONE`
-**审计 SHA-256：** `80f76d7b91b4c6ec5ae2d83b9c7f34dc32bde878f3b22beb65c889e8525265e0`
+**审计 SHA-256：** `2116338a6900b303e7bae2d6f9c73ce65fe6de14eac57bd8f2332f3f5d2ce433`
 
 ## 1. 结论
 

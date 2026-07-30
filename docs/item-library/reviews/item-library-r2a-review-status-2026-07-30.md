@@ -3,17 +3,18 @@
 **日期：** 2026-07-30
 **范围：** 220 项语义审计、依赖图、装备兼容与稳定 ID 选择闭包
 **实现验证：** `PASS`
-**外部独立复审：** `BLOCKED`
-**最终状态：** `R2A_REVIEW_PENDING`
+**独立 subagent 首审：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=1`）
+**独立 subagent 复审：** `PENDING`
+**最终状态：** `R2A_RECHECK_PENDING`
 **运行时授权：** 无
 
 ## 1. 当前结论
 
-R2-A 实现和本地回归已通过，但不能宣称 `REVIEW_PASS`。
+R2-A 已由独立、只读、全新上下文 subagent 完成首审。首审发现一项 P1 和一项 P2，因此结论为 `REVIEW_FAIL`。
 
-`claude-code-review` 与同参数 Claude CLI 在简单 smoke 中能够返回文本；但对本次文件、未提交差异、已暂存差异和分段代码执行只读审查时，均正常退出但返回 0 字节正文。根据审查技能规则，空输出是失败证据，不是通过证据。
+两项发现均已按最小范围修正，并通过定向复现和完整本地回归；当前等待同一独立 subagent 对修正后的远端干净快照复审。在复审给出 `P0=0 / P1=0 / REVIEW_PASS` 前，不能宣称 R2-A 通过。
 
-R2-A 因此外部复审待恢复。候选内容继续保持 `candidate_only`、`runtime_authorization=NONE`，不允许整包导入，也不改变 Gate。
+候选内容继续保持 `candidate_only`、`runtime_authorization=NONE`，不允许整包导入，也不改变 Gate。
 
 ## 2. 已完成的内部对抗性检查
 
@@ -24,6 +25,8 @@ R2-A 因此外部复审待恢复。候选内容继续保持 `candidate_only`、`
 3. 选择训练空包弹或离线传感核心时，原先闭包不会主动带出对应警告。现闭包输出 `applicable_warnings`。
 4. 语义审计器原先依赖 R1 校验器保证 Bundle 完整性。现会独立重算规范化 `payload_sha256`、数量与拒绝默认导入策略。
 5. 武器与弹药原先只靠 `ammo_family` 文本并列。现生成 `ammo_compatibility` 边，并要求所有需要弹药的平台至少有一个同族候选耗材。
+6. 首审 P1：选择闭包把工艺输入、产出和副产物放进同一种反向生产者扩展路径，选择猎弓工艺会经锯末副产物错误吸入公共长凳工艺。现按“输入可反向展开、输出只纳入节点”区分队列身份；同一物品后来以输入身份抵达时仍允许首次展开生产者。
+7. 首审 P2：`--select ''` 和 `--select ','` 会生成空闭包。现两种调用均以非零状态退出并输出 `SELECTION_CLOSURE=FAIL`。
 
 以上修正没有修改 R1 物品、工艺、转换或统一 Bundle。
 
@@ -58,8 +61,10 @@ RUNTIME_AUTHORIZATION=NONE
 - 栓动步枪闭包自动包含步枪弹药；
 - 训练空包弹闭包主动携带平台绑定警告；
 - 闭包 SHA-256 绑定来源基线与 Payload；
+- 猎弓工艺闭包不再包含 `recipe.c7_furniture.make_communal_bench` 或 `item.furniture.communal_bench`；
+- 空字符串和纯逗号选择均拒绝并输出 `SELECTION_CLOSURE=FAIL`；
 - Bundle、合同和审计工具源哈希回读匹配；
-- 暂存差异空白检查。
+- 差异空白检查。
 
 ## 4. 已裁定警告
 
@@ -72,11 +77,11 @@ RUNTIME_AUTHORIZATION=NONE
 
 ## 5. 解除阻塞条件
 
-需要一次非空、只读、可引用文件与行号的外部审查，至少覆盖：
+需要由同一独立 subagent 对修正后的远端干净快照进行一次非空、只读、可引用文件与行号的复审，至少覆盖：
 
 - `scripts/audit_item_library_semantics.rb`
 - `docs/item-library/item-library-semantic-audit-contract-v0.1.md`
 - `data/item-library/semantic-audit-r2a.json`
 - `data/item-library/semantic-audit-r2a.md`
 
-外审必须给出 P0/P1/P2 数量与 `REVIEW_PASS` 或 `REVIEW_FAIL`。只有 `P0=0 / P1=0`，并且所有真实发现完成修正与回归后，R2-A 才能从 `R2A_REVIEW_PENDING` 转为复审通过。
+复审必须给出 P0/P1/P2 数量与 `REVIEW_PASS` 或 `REVIEW_FAIL`。只有 `P0=0 / P1=0`，并且所有真实发现完成修正与回归后，R2-A 才能从 `R2A_RECHECK_PENDING` 转为复审通过。

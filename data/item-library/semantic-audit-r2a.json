@@ -6,8 +6,8 @@
   "runtime_authorization": "NONE",
   "source_files": {
     "data/item-library/item-library-r1-candidate-bundle.json": "32f9d9c41e7271e4da0f037167ad94023d050ee1b7471fdec98495393d9ff361",
-    "docs/item-library/item-library-semantic-audit-contract-v0.1.md": "1131fae90d7ce24e77863f58b73a84acadff73ee7bef98fbcceb31aaead3c40b",
-    "scripts/audit_item_library_semantics.rb": "f2551728329df2b342d0af30827fd335c6f8e72379219f73342254d9cd6bffc9"
+    "docs/item-library/item-library-semantic-audit-contract-v0.1.md": "93988442c174de210b133a67efc5b1c9ea3db9965dcfc00df3031a35b10de08e",
+    "scripts/audit_item_library_semantics.rb": "7b8367177b6e9b7080a01f990d46d81eebf7dc6f64abbae1d6847bb69277bf68"
   },
   "counts": {
     "inventory_items": 196,
@@ -9728,5 +9728,5 @@
       ]
     }
   ],
-  "audit_sha256": "80f76d7b91b4c6ec5ae2d83b9c7f34dc32bde878f3b22beb65c889e8525265e0"
+  "audit_sha256": "2116338a6900b303e7bae2d6f9c73ce65fe6de14eac57bd8f2332f3f5d2ce433"
 }
