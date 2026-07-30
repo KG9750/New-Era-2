@@ -4,7 +4,8 @@
 **范围：** 220 项语义审计、依赖图、装备兼容与稳定 ID 选择闭包
 **实现验证：** `PASS`
 **独立 subagent 首审：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=1`）
-**独立 subagent 复审：** `PENDING`
+**独立 subagent 第二轮：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=0`）
+**独立 subagent 第三轮：** `PENDING`
 **最终状态：** `R2A_RECHECK_PENDING`
 **运行时授权：** 无
 
@@ -12,7 +13,7 @@
 
 R2-A 已由独立、只读、全新上下文 subagent 完成首审。首审发现一项 P1 和一项 P2，因此结论为 `REVIEW_FAIL`。
 
-两项发现均已按最小范围修正，并通过定向复现和完整本地回归；当前等待同一独立 subagent 对修正后的远端干净快照复审。在复审给出 `P0=0 / P1=0 / REVIEW_PASS` 前，不能宣称 R2-A 通过。
+首审两项发现已按最小范围修正。第二轮复审确认首审指定的长凳误吸入和空选择均已解决，但又发现输出及目标物品仍会展开生命周期、转换和装备兼容关系，因此仍为 `REVIEW_FAIL`。该项也已按最小范围修正并通过本地回归；第三轮通过前不能宣称 R2-A 通过。
 
 候选内容继续保持 `candidate_only`、`runtime_authorization=NONE`，不允许整包导入，也不改变 Gate。
 
@@ -27,6 +28,7 @@ R2-A 已由独立、只读、全新上下文 subagent 完成首审。首审发�
 5. 武器与弹药原先只靠 `ammo_family` 文本并列。现生成 `ammo_compatibility` 边，并要求所有需要弹药的平台至少有一个同族候选耗材。
 6. 首审 P1：选择闭包把工艺输入、产出和副产物放进同一种反向生产者扩展路径，选择猎弓工艺会经锯末副产物错误吸入公共长凳工艺。现按“输入可反向展开、输出只纳入节点”区分队列身份；同一物品后来以输入身份抵达时仍允许首次展开生产者。
 7. 首审 P2：`--select ''` 和 `--select ','` 会生成空闭包。现两种调用均以非零状态退出并输出 `SELECTION_CLOSURE=FAIL`。
+8. 第二轮 P1：输出和目标物品虽不再反向展开生产者，但首次抵达仍会无条件扩展维修、拆解、来源转换和弹药兼容关系。现进一步区分“展开生产者”与“展开物品关联”：只有库存根展开生命周期、转换及兼容关系；输入身份只展开生产者；输出、副产物、目标和 profile 输出保持 node-only。
 
 以上修正没有修改 R1 物品、工艺、转换或统一 Bundle。
 
@@ -62,6 +64,8 @@ RUNTIME_AUTHORIZATION=NONE
 - 训练空包弹闭包主动携带平台绑定警告；
 - 闭包 SHA-256 绑定来源基线与 Payload；
 - 猎弓工艺闭包不再包含 `recipe.c7_furniture.make_communal_bench` 或 `item.furniture.communal_bench`；
+- 猎弓工艺闭包不再通过产出猎弓吸入箭矢或制箭工艺；
+- 床铺维修闭包不再通过目标床铺吸入部署转换或放置实体；`recipe.dismantle.field_bed` 仍可作为直接输入 `item.material.reclaimed_steel_plate` 的合法生产者出现，不属于目标关系扩展；
 - 空字符串和纯逗号选择均拒绝并输出 `SELECTION_CLOSURE=FAIL`；
 - Bundle、合同和审计工具源哈希回读匹配；
 - 差异空白检查。
@@ -77,7 +81,7 @@ RUNTIME_AUTHORIZATION=NONE
 
 ## 5. 解除阻塞条件
 
-需要由同一独立 subagent 对修正后的远端干净快照进行一次非空、只读、可引用文件与行号的复审，至少覆盖：
+需要由同一独立 subagent 对第二轮修正后的远端干净快照进行第三轮非空、只读、可引用文件与行号的复审，至少覆盖：
 
 - `scripts/audit_item_library_semantics.rb`
 - `docs/item-library/item-library-semantic-audit-contract-v0.1.md`

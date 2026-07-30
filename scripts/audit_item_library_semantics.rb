@@ -282,19 +282,20 @@ def build_selection_closure(roots, indexes)
 
   selected = Set.new
   producer_expanded = Set.new
-  queue = roots.map { |id| { id: id, expand_producers: true } }
+  item_links_expanded = Set.new
+  queue = roots.map { |id| { id: id, expand_producers: true, expand_item_links: true } }
 
   until queue.empty?
     entry = queue.shift
     id = entry.fetch(:id)
 
     if items.key?(id)
-      newly_selected = selected.add?(id)
+      selected.add(id)
       item = items.fetch(id)
       if entry.fetch(:expand_producers) && producer_expanded.add?(id)
         queue.concat(producers.fetch(id, []).map { |recipe_id| { id: recipe_id, expand_producers: false } })
       end
-      if newly_selected
+      if entry.fetch(:expand_item_links, false) && item_links_expanded.add?(id)
         lifecycle_recipe_ids = item.dig("interfaces", "repair_recipes").to_a +
                                item.dig("interfaces", "dismantle_recipes").to_a
         queue.concat(lifecycle_recipe_ids.map { |recipe_id| { id: recipe_id, expand_producers: false } })
