@@ -17,4 +17,5 @@ Design and product-experience entrypoint for `Project-004-New Era 2`.
 
 - 当前设计主线以概念设计 V0.4 为准；其中明确区分已确认规则、待原型验证假设与专项待办。
 - 物品与制造系统 V0.1 R1 已冻结；220 项候选库仍为 `candidate_only`，不授权整包运行时导入或改变 Gate。
+- R2-A 语义审计只提高候选库的可审计性与稳定 ID 依赖闭包能力，不改变 R1 内容、正式数值或运行时授权。
 - V0.4 尚未冻结为正式 GDD。
