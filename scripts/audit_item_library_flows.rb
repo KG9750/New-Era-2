@@ -77,6 +77,43 @@ def recipe_requirement_groups(recipe)
   groups
 end
 
+def minimum_positive_consumption_by_item(recipe)
+  rules_by_input = recipe.dig("substitution_policy", "rules")
+                         .to_a
+                         .group_by { |rule| rule["input"] }
+  slots = recipe.fetch("inputs", []).select { |input| input["consumed"] == true }.map do |input|
+    options = [{ "item" => input.fetch("item"), "amount" => input.fetch("amount").to_f }]
+    rules_by_input.fetch(input["item"], []).each do |rule|
+      rule.fetch("alternatives", []).each do |alternative|
+        options << {
+          "item" => alternative.fetch("item"),
+          "amount" => input.fetch("amount").to_f * alternative.fetch("ratio").to_f
+        }
+      end
+    end
+    options
+  end
+
+  slots.flat_map { |slot| slot.map { |option| option.fetch("item") } }.uniq.sort.to_h do |item_id|
+    mandatory_amount = 0.0
+    optional_amounts = []
+    slots.each do |slot|
+      matching_amounts = slot.select { |option| option["item"] == item_id }
+                             .map { |option| option.fetch("amount") }
+      next if matching_amounts.empty?
+
+      minimum_amount = matching_amounts.min
+      if slot.all? { |option| option["item"] == item_id }
+        mandatory_amount += minimum_amount
+      else
+        optional_amounts << minimum_amount
+      end
+    end
+    minimum_positive = mandatory_amount.positive? ? mandatory_amount : optional_amounts.min
+    [item_id, minimum_positive]
+  end
+end
+
 def round_number(value)
   value.nil? ? nil : value.round(6)
 end
@@ -235,32 +272,18 @@ def build_recipe_ledger(recipes, items, errors, warnings)
       end
     end
 
-    consumed_amounts = consumed_inputs.each_with_object(Hash.new(0.0)) do |input, memo|
-      memo[input.fetch("item")] += input.fetch("amount").to_f
-    end
-    substitute_amounts = Hash.new(0.0)
-    recipe.dig("substitution_policy", "rules").to_a.each do |rule|
-      primary_amount = consumed_amounts.fetch(rule["input"], 0.0)
-      rule.fetch("alternatives", []).each do |alternative|
-        substitute_amounts[alternative.fetch("item")] += primary_amount * alternative.fetch("ratio").to_f
-      end
-    end
     returned_amounts = (recipe.fetch("outputs", []) + inventory_byproducts)
                        .each_with_object(Hash.new(0.0)) do |output, memo|
       memo[output.fetch("item")] += output.fetch("max").to_f
     end
-    consumption_scenarios = consumed_amounts.map { |item_id, amount| [item_id, amount, "direct"] }
-    substitute_amounts.each do |item_id, amount|
-      consumption_scenarios << [item_id, amount + consumed_amounts.fetch(item_id, 0.0), "substitute"]
-    end
-    consumption_scenarios.each do |item_id, consumed_amount, source|
+    minimum_positive_consumption_by_item(recipe).each do |item_id, consumed_amount|
       returned_amount = returned_amounts.fetch(item_id, 0.0)
       next if returned_amount < consumed_amount
 
       errors << {
         "code" => "direct_self_amplification",
         "id" => recipe_id,
-        "message" => "#{item_id} 的#{source}最大返还量 #{round_number(returned_amount)} 不小于已消耗量 #{round_number(consumed_amount)}"
+        "message" => "#{item_id} 的最大返还量 #{round_number(returned_amount)} 不小于任一合法输入组合的最小正消耗量 #{round_number(consumed_amount)}"
       }
     end
 

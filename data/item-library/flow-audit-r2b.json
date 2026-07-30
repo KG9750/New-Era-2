@@ -8,8 +8,8 @@
   "source_files": {
     "data/item-library/item-library-r1-candidate-bundle.json": "32f9d9c41e7271e4da0f037167ad94023d050ee1b7471fdec98495393d9ff361",
     "data/item-library/semantic-audit-r2a.json": "c8279af1b1749286b7d1170af4b9a78229c2e31abc8b346090e6301b8dea59e3",
-    "docs/item-library/item-library-flow-audit-contract-v0.1.md": "f5a913ffe0b06d64052867eb093595605df4439912fb2681fcc98b197bb95fc7",
-    "scripts/audit_item_library_flows.rb": "cd6d1aa9966b8b04a3516ea56b3d8a900c1ebe6ab4b741799037ba47868b07d8"
+    "docs/item-library/item-library-flow-audit-contract-v0.1.md": "ea85e389391d52c79840683178c6b8ea2d5c31840acc97321ee6333fa7472622",
+    "scripts/audit_item_library_flows.rb": "83893f22827c3b6ce91c26cb68eda55d160e24ab9b98dcb09f09ae8036507970"
   },
   "counts": {
     "inventory_items": 196,
@@ -9038,5 +9038,5 @@
       }
     ]
   },
-  "audit_sha256": "5618a36fe1ac70d8f30835f9c8a3e7bdaa1d9d8acb407d32d7ce3ef089332778"
+  "audit_sha256": "b11ac7a39e9839f33bffe5375e7d9f5c3e827c89e70de0743f26defa45939f3d"
 }

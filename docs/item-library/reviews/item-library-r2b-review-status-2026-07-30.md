@@ -4,13 +4,14 @@
 **范围：** 制造来源与去向、转化循环、拆解/维修回收、候选价值异常、共享瓶颈与产能集中度
 **实现验证：** `PASS`
 **独立 subagent 首审：** `REVIEW_FAIL`（`P0=0 / P1=2 / P2=1`）
-**独立 subagent 复审：** `PENDING`
+**独立 subagent 第二轮：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=0`）
+**独立 subagent 第三轮：** `PENDING`
 **最终状态：** `R2B_RECHECK_PENDING`
 **运行时授权：** 无
 
 ## 1. 当前结论
 
-R2-B 首轮独立 subagent 审查发现两项 P1 和一项 P2，因此结论为 `REVIEW_FAIL`。三项发现均已按最小范围修正，并通过本地确定性与联合回归；在复审给出 `P0=0 / P1=0 / REVIEW_PASS` 前不能宣称 R2-B 通过。
+R2-B 首轮独立 subagent 审查发现两项 P1 和一项 P2。第二轮确认首审三项均已修正，但补测又发现多输入槽共享同一替代物时的部分替代组合可绕过自增殖检查，因此仍为 `REVIEW_FAIL`。该项已按最小范围修正并通过组合自测与完整回归；第三轮通过前不能宣称 R2-B 通过。
 
 当前实现没有修改 R1 物品、工艺、转换、产量、耗时或 `base_value`。全部内容继续保持 `candidate_only`、`runtime_authorization=NONE`，不允许整包导入，也不改变 Gate。
 
@@ -55,6 +56,7 @@ RUNTIME_AUTHORIZATION=NONE
 1. `P1`：多输入工艺的可达性曾按二元边传播，错误地把 AND 前置条件降为 OR。现改为 recipe-aware 超边闭包：每个必需输入位都要由主输入或其替代项之一满足，目标实例也必须可达，工艺才可执行。
 2. `P1`：直接自增殖曾只比较同物品最大单条返还。现按物品累计全部主产出和库存副产物最大返还量，并与累计直接消耗量及替代场景消耗量比较。
 3. `P2`：曾只核对 Payload，未核对 Bundle 与 R2-A 的基线身份。现要求两者共同指向 `new-era-2.item-library.r1-c7-candidate`。
+4. 第二轮 `P1`：同一替代物可用于多个输入槽时，曾只检查所有相关槽同时选择该替代物的聚合消耗。现按输入槽计算每种物品在任一合法组合中的最小正消耗量，覆盖单槽、部分槽与全部槽替代场景。
 
 ## 5. 循环与回收
 
@@ -74,4 +76,4 @@ RUNTIME_AUTHORIZATION=NONE
 - `data/item-library/flow-audit-r2b.json`
 - `data/item-library/flow-audit-r2b.md`
 
-复审至少覆盖 AND 超边可达性、累计返还自增殖、基线身份、终端去向、循环检测、拆解损耗、候选价值阈值、共享瓶颈统计、确定性哈希和候选边界。只有 `P0=0 / P1=0` 且所有真实发现修正后，才能从 `R2B_RECHECK_PENDING` 转为 `R2B_REVIEW_PASS`。
+第三轮至少覆盖 AND 超边可达性、重复返还累计、部分替代组合自增殖、基线身份、终端去向、循环检测、拆解损耗、候选价值阈值、共享瓶颈统计、确定性哈希和候选边界。只有 `P0=0 / P1=0` 且所有真实发现修正后，才能从 `R2B_RECHECK_PENDING` 转为 `R2B_REVIEW_PASS`。
