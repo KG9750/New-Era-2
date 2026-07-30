@@ -5,13 +5,15 @@
 **实现验证：** `PASS`
 **独立 subagent 首审：** `REVIEW_FAIL`（`P0=0 / P1=2 / P2=1`）
 **独立 subagent 第二轮：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=0`）
-**独立 subagent 第三轮：** `PENDING`
-**最终状态：** `R2B_RECHECK_PENDING`
+**独立 subagent 第三轮：** `REVIEW_PASS`（`P0=0 / P1=0 / P2=0`）
+**最终状态：** `R2B_REVIEW_PASS`
 **运行时授权：** 无
 
 ## 1. 当前结论
 
-R2-B 首轮独立 subagent 审查发现两项 P1 和一项 P2。第二轮确认首审三项均已修正，但补测又发现多输入槽共享同一替代物时的部分替代组合可绕过自增殖检查，因此仍为 `REVIEW_FAIL`。该项已按最小范围修正并通过组合自测与完整回归；第三轮通过前不能宣称 R2-B 通过。
+R2-B 首轮独立 subagent 审查发现两项 P1 和一项 P2。第二轮确认首审三项均已修正，但补测又发现多输入槽共享同一替代物时的部分替代组合可绕过自增殖检查，因此仍为 `REVIEW_FAIL`。该项也已按最小范围修正。
+
+第三轮在远端干净快照 `95e8683fd99f714b3c05ec18386d3d6cea350409`、Tree `60acafb7022b1eb2139f721ae72c4d035d18373e` 上完成独立只读复审，结论为 `P0=0 / P1=0 / P2=0 / REVIEW_PASS`。审查仓库始终保持只读，所有变异测试只在独立复制夹具中执行，也未调用 Claude 或 `claude-code-review`。
 
 当前实现没有修改 R1 物品、工艺、转换、产量、耗时或 `base_value`。全部内容继续保持 `candidate_only`、`runtime_authorization=NONE`，不允许整包导入，也不改变 Gate。
 
@@ -33,7 +35,8 @@ RUNTIME_AUTHORIZATION=NONE
 
 - 191 个物品具有非制造获得起点；
 - 196 个库存物品均可从这些起点沿转化图抵达；
-- 不可达已消耗输入为 0；
+- 90 张工艺均满足 AND 输入槽与目标实例可达条件；
+- 不可达工艺为 0；
 - 断裂来源为 0；
 - 缺少终端去向为 0。
 
@@ -67,13 +70,22 @@ RUNTIME_AUTHORIZATION=NONE
 
 两者均具有正人物时间，且最大拆解候选回收比分别为 `0.423913` 和 `0.222143`，保持有损边界。六张拆解工艺均低于无损阈值，六张维修工艺均低于高材料比警告阈值。
 
-## 6. 解除阻塞条件
+## 6. 复审结论
 
-独立 subagent 必须只读审查以下文件与生成关系：
+第三轮独立 subagent 已只读审查以下文件与生成关系：
 
 - `scripts/audit_item_library_flows.rb`
 - `docs/item-library/item-library-flow-audit-contract-v0.1.md`
 - `data/item-library/flow-audit-r2b.json`
 - `data/item-library/flow-audit-r2b.md`
 
-第三轮至少覆盖 AND 超边可达性、重复返还累计、部分替代组合自增殖、基线身份、终端去向、循环检测、拆解损耗、候选价值阈值、共享瓶颈统计、确定性哈希和候选边界。只有 `P0=0 / P1=0` 且所有真实发现修正后，才能从 `R2B_RECHECK_PENDING` 转为 `R2B_REVIEW_PASS`。
+复审覆盖 AND 超边可达性、重复返还累计、部分替代组合自增殖、非消耗槽、基线身份、终端去向、循环检测、拆解损耗、候选价值阈值、共享瓶颈统计、确定性哈希和候选边界。首审及第二轮的真实发现均已修正，没有新增真实缺陷：
+
+```text
+P0=0
+P1=0
+P2=0
+REVIEW_PASS
+```
+
+`R2B_REVIEW_PASS` 只表示候选制造流、循环和候选价值筛查满足当前合同，不构成运行时、正式价格或产能、Gate 2、人工试玩或整包导入授权。
