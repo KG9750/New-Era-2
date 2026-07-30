@@ -16,6 +16,10 @@
 - R2-A 机器可读审计：`../../data/item-library/semantic-audit-r2a.json`
 - R2-A 审计摘要：`../../data/item-library/semantic-audit-r2a.md`
 - R2-A 复审状态：`reviews/item-library-r2a-review-status-2026-07-30.md`（独立 subagent 三轮审查完成，`R2A_REVIEW_PASS`）
+- R2-B 制造流审计合同：`item-library-flow-audit-contract-v0.1.md`
+- R2-B 机器可读审计：`../../data/item-library/flow-audit-r2b.json`
+- R2-B 审计摘要：`../../data/item-library/flow-audit-r2b.md`
+- R2-B 复审状态：`reviews/item-library-r2b-review-status-2026-07-30.md`（实现验证通过，独立 subagent 审查待完成）
 
 ## 数据布局
 
@@ -28,6 +32,8 @@
 - `item-library-r1-candidate-bundle.json`：C1–C7 合并后的只读生成物。
 - `semantic-audit-r2a.json`：220 项逐项语义分类和 334 节点依赖图；
 - `semantic-audit-r2a.md`：R2-A 人工审查摘要。
+- `flow-audit-r2b.json`：90 张工艺的制造流、循环、候选价值和共享瓶颈机器报告；
+- `flow-audit-r2b.md`：R2-B 人工审查摘要。
 
 分批文件是编辑源，bundle 是消费入口。不要手工修改 bundle。
 
@@ -38,6 +44,7 @@ for profile in c1 c2 c3 c4 c5 c6 c7; do
   ruby scripts/validate_item_library.rb --profile "$profile"
 done
 ruby scripts/audit_item_library_semantics.rb
+ruby scripts/audit_item_library_flows.rb
 ```
 
 计算稳定 ID 的确定性依赖闭包：
