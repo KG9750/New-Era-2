@@ -1,3 +1,6 @@
+import { readFileSync } from 'node:fs'
+import { resolve } from 'node:path'
+
 import { describe, expect, it } from 'vitest'
 
 import persistedLibrary from '../../data/characters/generated-50-v0.1-candidate.json'
@@ -6,7 +9,11 @@ import {
   createCharacterSampleLibrary,
   validateCharacterSampleLibrary,
 } from '../src/characters/sample-library'
-import type { CharacterLibrary } from '../src/characters/model'
+import {
+  renderInternalCharacterSampleLibrary,
+  renderPlayerCharacterSampleCards,
+} from '../src/characters/sample-renderer'
+import { MBTI_TYPES, type CharacterLibrary } from '../src/characters/model'
 
 const sourceLibrary = persistedLibrary as unknown as CharacterLibrary
 
@@ -27,6 +34,29 @@ describe('12-person character sample library', () => {
     expect(
       validateCharacterSampleLibrary(persistedSampleLibrary, sourceLibrary),
     ).toEqual(rebuilt.validation.findings)
+  })
+
+  it('rebuilds both persisted Markdown views byte-for-byte', () => {
+    const library = createCharacterSampleLibrary(sourceLibrary)
+    const internalMarkdown = readFileSync(
+      resolve(
+        process.cwd(),
+        '../data/characters/character-samples-12-v0.1-draft.md',
+      ),
+      'utf8',
+    )
+    const playerMarkdown = readFileSync(
+      resolve(
+        process.cwd(),
+        '../data/characters/character-samples-12-v0.1-player-cards.md',
+      ),
+      'utf8',
+    )
+
+    expect(internalMarkdown).toBe(
+      renderInternalCharacterSampleLibrary(library),
+    )
+    expect(playerMarkdown).toBe(renderPlayerCharacterSampleCards(library))
   })
 
   it('builds six same-MBTI contrast pairs with balanced dimensions', () => {
@@ -70,8 +100,76 @@ describe('12-person character sample library', () => {
     )
   })
 
+  it('crosses critical skills between E and I instead of encoding occupations', () => {
+    const library = createCharacterSampleLibrary(sourceLibrary)
+    const criticalSkills = ['工程', '交涉', '医疗', '研究', '防卫']
+
+    for (const skill of criticalSkills) {
+      expect(
+        library.samples.some(
+          (sample) =>
+            sample.internal_mbti_type.startsWith('E') &&
+            sample.primary_skills.includes(skill as any),
+        ),
+      ).toBe(true)
+      expect(
+        library.samples.some(
+          (sample) =>
+            sample.internal_mbti_type.startsWith('I') &&
+            sample.primary_skills.includes(skill as any),
+        ),
+      ).toBe(true)
+    }
+    expect(
+      library.validation.findings.find(
+        (finding) =>
+          finding.validation_id === 'S09-EI-SKILL-CONTINGENCY',
+      )?.result,
+    ).toBe('passed')
+  })
+
+  it('gives both decision options an explicit immediate cost and long-term risk', () => {
+    const library = createCharacterSampleLibrary(sourceLibrary)
+    const tradeoffFields = [
+      'accept_immediate_cost',
+      'accept_long_term_risk',
+      'decline_immediate_cost',
+      'decline_long_term_risk',
+    ]
+
+    for (const sample of library.samples) {
+      const scene = sample.decision_scene as unknown as Record<string, unknown>
+      for (const field of tradeoffFields) {
+        expect(scene[field]).toEqual(expect.any(String))
+        expect((scene[field] as string).trim().length).toBeGreaterThanOrEqual(
+          8,
+        )
+      }
+      expect(
+        [
+          scene.accept_choice,
+          scene.accept_consequence,
+          scene.decline_choice,
+          scene.decline_consequence,
+        ].join(''),
+      ).not.toMatch(/处决投降者|劫掠无威胁|未成年.*扣走种子|平民.*诱饵|隐瞒.*感染/)
+    }
+  })
+
+  it('persists content repetition above twenty percent as a warning', () => {
+    const library = createCharacterSampleLibrary(sourceLibrary)
+    const repetitionFinding = library.validation.findings.find(
+      (finding) => finding.validation_id === 'S10-CONTENT-REPETITION',
+    )
+
+    expect(repetitionFinding?.result).toBe('warned')
+    expect(repetitionFinding?.evidence).toContain('redline_max=3/12')
+    expect(library.validation.machine_structure_passed).toBe(true)
+  })
+
   it('keeps human gates open and hides MBTI codes from player cards', () => {
     const library = createCharacterSampleLibrary(sourceLibrary)
+    const playerCards = renderPlayerCharacterSampleCards(library)
 
     expect(library.status).toBe('DRAFT_BEFORE_A1')
     expect(library.gate_dependency.formal_a1_status).toBe('NOT_STARTED')
@@ -88,6 +186,12 @@ describe('12-person character sample library', () => {
           ),
       ),
     ).toBe(true)
+    for (const mbtiType of MBTI_TYPES) {
+      expect(playerCards).not.toContain(mbtiType)
+    }
+    expect(playerCards).not.toContain('内部验证类型')
+    expect(playerCards).not.toContain('同类型对照')
+    expect(playerCards).not.toMatch(/同为 [A-Z]{4}/)
   })
 
   it('blocks a forged source binding', () => {
@@ -176,5 +280,141 @@ describe('12-person character sample library', () => {
     library.validation.manual_reviews.release_status = 'approved'
 
     expect(result(library, 'S01-SCHEMA')).toBe('blocked')
+  })
+
+  it('blocks tampering with any fixed authority value', () => {
+    const mutations: Array<(library: Record<string, any>) => void> = [
+      (library) => {
+        library.samples[0].mbti_display_policy = 'SHOW_IN_PLAYER_CARD'
+      },
+      (library) => {
+        library.samples[1].sample_id = library.samples[0].sample_id
+      },
+      (library) => {
+        library.samples[0].schema_version = 'forged-sample-schema'
+      },
+      (library) => {
+        library.sample_library_id = 'forged-library-id'
+      },
+      (library) => {
+        library.culture_pack_version = 'forged-culture-pack'
+      },
+      (library) => {
+        library.purpose = 'A1_ALREADY_PASSED'
+      },
+      (library) => {
+        library.gate_dependency.note = 'A1 与 E01-E06 已通过'
+      },
+      (library) => {
+        library.samples[0].counterpart_source_character_id =
+          library.samples[0].source_character_id
+        library.samples[1].counterpart_source_character_id =
+          library.samples[1].source_character_id
+      },
+      (library) => {
+        library.samples[0].pair_id = 'pair-forged'
+        library.samples[1].pair_id = 'pair-forged'
+        library.validation.findings.find(
+          (finding: Record<string, any>) =>
+            finding.validation_id === 'S03-SAME-TYPE-PAIRS',
+        ).evidence =
+          'pair-enfp=2,pair-entp=2,pair-esfj=2,pair-forged=2,pair-intj=2,pair-isfp=2'
+      },
+      (library) => {
+        const first = library.samples[0]
+        library.samples[0] = library.samples[1]
+        library.samples[1] = first
+        library.samples[0].sample_id = 'sample_01'
+        library.samples[1].sample_id = 'sample_02'
+      },
+      (library) => {
+        library.samples[0].revised_biography =
+          '这是一段长度足够、但没有绑定固定编修草案的协调伪造履历。'
+      },
+    ]
+
+    for (const mutate of mutations) {
+      const library = structuredClone(
+        createCharacterSampleLibrary(sourceLibrary),
+      ) as unknown as Record<string, any>
+      mutate(library)
+
+      expect(
+        validateCharacterSampleLibrary(library, sourceLibrary).some(
+          (finding) => finding.result === 'blocked',
+        ),
+      ).toBe(true)
+    }
+  })
+
+  it('blocks a sample when its supplied source library is invalid', () => {
+    const library = structuredClone(
+      createCharacterSampleLibrary(sourceLibrary),
+    )
+    const forgedSource = structuredClone(sourceLibrary)
+    forgedSource.characters[0].formal_name = '协调伪造姓名'
+    const sourceCharacterId = forgedSource.characters[0].character_id
+    const sample = library.samples.find(
+      (candidate) => candidate.source_character_id === sourceCharacterId,
+    )
+    if (sample !== undefined) {
+      sample.formal_name = '协调伪造姓名'
+    }
+
+    expect(
+      validateCharacterSampleLibrary(library, forgedSource).some(
+        (finding) => finding.result === 'blocked',
+      ),
+    ).toBe(true)
+  })
+
+  it('returns blocked findings instead of throwing for malformed JSON values', () => {
+    const malformedLibraries = [
+      (() => {
+        const library = structuredClone(
+          createCharacterSampleLibrary(sourceLibrary),
+        ) as unknown as Record<string, any>
+        library.samples[0].review_questions[0] = 42
+        return library
+      })(),
+      (() => {
+        const library = structuredClone(
+          createCharacterSampleLibrary(sourceLibrary),
+        ) as unknown as Record<string, any>
+        library.samples[0].decision_scene = null
+        return library
+      })(),
+      (() => {
+        const library = structuredClone(
+          createCharacterSampleLibrary(sourceLibrary),
+        ) as unknown as Record<string, any>
+        library.samples[0].revised_biography = null
+        return library
+      })(),
+    ]
+
+    for (const library of malformedLibraries) {
+      expect(() =>
+        validateCharacterSampleLibrary(library, sourceLibrary),
+      ).not.toThrow()
+      expect(
+        validateCharacterSampleLibrary(library, sourceLibrary).some(
+          (finding) => finding.result === 'blocked',
+        ),
+      ).toBe(true)
+    }
+  })
+
+  it('returns blocked findings when the source library itself is malformed', () => {
+    const library = createCharacterSampleLibrary(sourceLibrary)
+
+    expect(() =>
+      validateCharacterSampleLibrary(library, null),
+    ).not.toThrow()
+    expect(
+      validateCharacterSampleLibrary(library, null).every(
+        (finding) => finding.result === 'blocked',
+      ),
+    ).toBe(true)
   })
 })
