@@ -15,8 +15,8 @@
     "data/item-library/item-library-r1-candidate-bundle.json": "32f9d9c41e7271e4da0f037167ad94023d050ee1b7471fdec98495393d9ff361",
     "data/item-library/semantic-audit-r2a.json": "c8279af1b1749286b7d1170af4b9a78229c2e31abc8b346090e6301b8dea59e3",
     "data/item-library/flow-audit-r2b.json": "ce90090f3249a5446cf37273e52f7bde8cc489cec232633041475ae3f1b1a860",
-    "docs/item-library/item-library-calibration-contract-v0.1.md": "19fa5e668117e68f80b6260b565b8c30b7bfceae9b3b15aaa1fe428212585d32",
-    "scripts/propose_item_library_calibration.rb": "b9e95fb99b5669bdc64db72155f8e943ca576186ae973520eb3f1fe8847b3517"
+    "docs/item-library/item-library-calibration-contract-v0.1.md": "99c6d9f35ae826c405bb602941bf010319c7f8cc683d0f4ccf80f491e16e12cc",
+    "scripts/propose_item_library_calibration.rb": "090c0607d82ff726d7f7909cbf9a6c89c7095a8014114ff1e42c0b9f5769b2fb"
   },
   "thresholds": {
     "mass_review_ratio_exclusive": 1.05,
@@ -4041,5 +4041,5 @@
       "runtime and player-test evidence"
     ]
   },
-  "report_sha256": "bb2aea80fa6fa7c10f0f4aeeb235d1e9adb30bd2330fc7590b3f5f7a6eacf09c"
+  "report_sha256": "2df2685395614af967a57feaebdb99ba3cf5b8f50ed17f0574abd999f980384f"
 }

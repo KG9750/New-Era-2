@@ -216,7 +216,7 @@ def round_number(value)
 end
 
 def numeric_equal?(left, right)
-  left.is_a?(Numeric) && right.is_a?(Numeric) ? (left.to_f - right.to_f).abs < 0.0000001 : left == right
+  left == right
 end
 
 def item_entries(recipe)
@@ -250,17 +250,23 @@ def metric_profile(recipe, items)
   value_ratio_max = kind == "repair" || input_value <= 0 ? nil : output_value_max / input_value
 
   {
-    "input_mass" => round_number(input_mass),
-    "output_mass_min" => round_number(output_mass_min),
-    "output_mass_max" => round_number(output_mass_max),
-    "mass_return_ratio_min" => round_number(mass_ratio_min),
-    "mass_return_ratio_max" => round_number(mass_ratio_max),
-    "input_candidate_value" => round_number(input_value),
-    "output_candidate_value_min" => round_number(output_value_min),
-    "output_candidate_value_max" => round_number(output_value_max),
-    "candidate_value_return_ratio_min" => round_number(value_ratio_min),
-    "candidate_value_return_ratio_max" => round_number(value_ratio_max)
+    "input_mass" => input_mass,
+    "output_mass_min" => output_mass_min,
+    "output_mass_max" => output_mass_max,
+    "mass_return_ratio_min" => mass_ratio_min,
+    "mass_return_ratio_max" => mass_ratio_max,
+    "input_candidate_value" => input_value,
+    "output_candidate_value_min" => output_value_min,
+    "output_candidate_value_max" => output_value_max,
+    "candidate_value_return_ratio_min" => value_ratio_min,
+    "candidate_value_return_ratio_max" => value_ratio_max
   }
+end
+
+def serialized_metrics(metrics)
+  metrics.to_h do |key, value|
+    [key, value.is_a?(Numeric) ? round_number(value) : value]
+  end
 end
 
 def mass_classification(recipe, metrics)
@@ -280,6 +286,24 @@ def value_outlier?(recipe, metrics)
 
   ratio = metrics["candidate_value_return_ratio_max"]
   ratio && (ratio < VALUE_RATIO_LOW || ratio > VALUE_RATIO_HIGH)
+end
+
+def assert_strict_threshold_semantics!
+  synthetic_recipe = { "kind" => "assembly" }
+  mass_cases = [
+    [1.2500004, "severe_amplification"],
+    [1.0500004, "review_band"],
+    [0.2499996, "low_ratio_report_only"]
+  ]
+  mass_cases.each do |ratio, expected|
+    actual = mass_classification(synthetic_recipe, { "mass_return_ratio_max" => ratio })
+    raise "质量阈值内部回归失败：#{ratio} => #{actual}，预期 #{expected}" unless actual == expected
+  end
+
+  [4.0000004, 0.2499996].each do |ratio|
+    metrics = { "candidate_value_return_ratio_max" => ratio }
+    raise "价值阈值内部回归失败：#{ratio} 未判为异常" unless value_outlier?(synthetic_recipe, metrics)
+  end
 end
 
 def locate_unique(entries, item_id, context)
@@ -433,6 +457,11 @@ def build_markdown(report)
 end
 
 options = parse_arguments(ARGV)
+begin
+  assert_strict_threshold_semantics!
+rescue RuntimeError => e
+  abort "CALIBRATION_PROPOSALS=FAIL\n- #{e.message}"
+end
 [BUNDLE_PATH, SEMANTIC_AUDIT_PATH, FLOW_AUDIT_PATH, CONTRACT_PATH].each do |path|
   abort "CALIBRATION_PROPOSALS=FAIL\n- 缺少 #{path}" unless File.file?(path)
 end
@@ -519,11 +548,11 @@ recipe_profiles = baseline_recipes.keys.sort.map do |recipe_id|
   {
     "id" => recipe_id,
     "kind" => baseline_recipe.fetch("kind"),
-    "baseline" => baseline_metrics.merge(
+    "baseline" => serialized_metrics(baseline_metrics).merge(
       "mass_classification" => mass_classification(baseline_recipe, baseline_metrics),
       "candidate_value_outlier" => value_outlier?(baseline_recipe, baseline_metrics)
     ),
-    "proposed_overlay" => overlay_metrics.merge(
+    "proposed_overlay" => serialized_metrics(overlay_metrics).merge(
       "mass_classification" => mass_classification(overlay_recipe, overlay_metrics),
       "candidate_value_outlier" => value_outlier?(overlay_recipe, overlay_metrics)
     )
