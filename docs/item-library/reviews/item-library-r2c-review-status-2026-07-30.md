@@ -4,13 +4,13 @@
 **范围：** 90 张工艺的单位质量画像、R2-B 七项候选价值异常、内存 overlay、逐字段数值提案与影响范围
 **实现验证：** `PASS`
 **独立 subagent 首审：** `REVIEW_FAIL`（`P0=0 / P1=0 / P2=2`）
-**独立 subagent 复审：** `PENDING`
-**当前状态：** `R2C_RECHECK_PENDING`
+**独立 subagent 第二轮：** `REVIEW_PASS`（`P0=0 / P1=0 / P2=0`）
+**最终状态：** `R2C_REVIEW_PASS`
 **运行时授权：** `NONE`
 
 ## 1. 当前结论
 
-R2-C 已生成确定性的单位与候选价值校准提案。独立 subagent 首审发现两项 P2，均已按最小范围修正；复审尚未完成，因此不得标记为 `R2C_REVIEW_PASS`。
+R2-C 已生成确定性的单位与候选价值校准提案。独立 subagent 首审发现两项 P2，均已按最小范围修正；第二轮在提交 `4ed5d48e22d6c2f154dca3ffed88bb310bf2a2c9` 上完成只读复审，结论为 `P0=0 / P1=0 / P2=0 / REVIEW_PASS`。
 
 所有候选修正只应用于脚本内存中的 R1 深拷贝。R1 Bundle、C1–C7 YAML、稳定 ID、正式运行时数据和 Gate 状态均未修改。
 
@@ -46,30 +46,27 @@ bundle_file_sha256=32f9d9c41e7271e4da0f037167ad94023d050ee1b7471fdec98495393d9ff
 - 紧固件与粗制防护插板在质量修正后仍高于价值筛查上限，暂时以 `accepted_outlier / provisional` 裁定，并保留进入运行时前重新校准要求；
 - overlay 中没有未裁定的严重质量放大或候选价值异常。
 
-## 4. 审查要求
+## 4. 首审发现与修正
 
-首审发现与修正：
+1. `P2`：分类曾使用已舍入到六位小数的比值，可能漏报极靠近严格阈值的越界。现保留未舍入内部比值用于分类，只在序列化报告时舍入，并内建五个近边界回归断言。
+2. `P2`：`from` 前置条件曾允许小于 `1e-7` 的漂移。现改为精确数值相等，不再使用 epsilon 容差。
 
-1. 分类曾使用已舍入到六位小数的比值，可能漏报极靠近严格阈值的越界。现保留未舍入内部比值用于分类，只在序列化报告时舍入，并内建五个近边界回归断言。
-2. `from` 前置条件曾允许小于 `1e-7` 的漂移。现改为精确数值相等，不再使用 epsilon 容差。
+第二轮使用新的完整复制夹具确认：
 
-独立 subagent 必须只读检查：
+- `1.2500004`、`1.0500004`、质量比 `0.2499996`、价值比 `4.0000004` 和 `0.2499996` 均按未舍入值正确分类；
+- 报告显示仍稳定舍入到六位；
+- 精确 `from=10.0` 可以重建，`from=10.00000005` 会以 `from 漂移` 失败；
+- 15 个提案、90 个画像、2 个暂时接受异常和全部影响列表可独立复算；
+- JSON、Markdown、来源哈希、Overlay SHA-256 与报告 SHA-256 均可独立复算；
+- C1–C7、R2-A、R2-B、R2-C 全部回归通过。
 
-- `docs/item-library/item-library-calibration-contract-v0.1.md`
-- `scripts/propose_item_library_calibration.rb`
-- `data/item-library/calibration-proposals-r2c.json`
-- `data/item-library/calibration-proposals-r2c.md`
-- 本状态文档
+## 5. 最终结论
 
-审查至少覆盖：
+```text
+P0=0
+P1=0
+P2=0
+REVIEW_PASS
+```
 
-1. 质量与候选价值公式；
-2. 90 张工艺覆盖和 R2-B 七项异常身份；
-3. 每个 `from` 值及新增输入不存在条件；
-4. overlay 隔离与 R1 哈希不变；
-5. 修改前后比值、影响工艺和下游消费者；
-6. 残余异常裁定是否掩盖真实单位错误；
-7. JSON、Markdown、overlay SHA-256 与报告 SHA-256 的确定性；
-8. `candidate_only / runtime_authorization=NONE / proposal_only` 边界。
-
-任何 P0、P1 或真实 P2 finding 都必须逐项修正、回归并复审。只有 `P0=0 / P1=0 / P2=0` 后，才可把当前状态更新为 `R2C_REVIEW_PASS`。
+`R2C_REVIEW_PASS` 只表示校准提案满足当前合同并可确定性复算，不表示 R1 已修改、正式数值已冻结、运行时已授权、Gate 已解锁或真人试玩已完成。

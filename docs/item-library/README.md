@@ -23,7 +23,7 @@
 - R2-C 校准提案合同：`item-library-calibration-contract-v0.1.md`
 - R2-C 机器可读提案：`../../data/item-library/calibration-proposals-r2c.json`
 - R2-C 提案摘要：`../../data/item-library/calibration-proposals-r2c.md`
-- R2-C 审查状态：`reviews/item-library-r2c-review-status-2026-07-30.md`
+- R2-C 审查状态：`reviews/item-library-r2c-review-status-2026-07-30.md`（首审两项 P2 已修正，第二轮独立 subagent 审查完成，`R2C_REVIEW_PASS`）
 
 ## 数据布局
 
