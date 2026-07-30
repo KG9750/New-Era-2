@@ -23,7 +23,7 @@ const PHASE6_NODE_REALPATH =
 const PHASE6_NODE_VERSION = 'v24.18.0'
 const PHASE6_NODE_SHA256 =
   '72c18e2eeda260f67a5b2b66e96fa9b5ad82864676ebb54925695d87120cae3f'
-const PHASE6_PLAN_REF = '52eb452a5ffec167a3809d3f372e62b9d8524124'
+const PHASE6_PLAN_REF = '441f7d96635e9176c8aea3ff21454d596c287c49'
 const PHASE6_BUILD_ID = 'g1-rc-20260729.rc9-c04'
 const PHASE6_SOURCE_DATE_EPOCH = '946684800'
 const PHASE6_SOURCE_BASELINE = 'cd2fc9716d98c160fe530c593347992f18bf96e4'
@@ -244,7 +244,7 @@ export function antiPassEvidencePath(candidateAttempt, sampleId) {
 
 function phase6EvidenceRoot(candidateAttempt) {
   const directory =
-    candidateAttempt === 'C04' ? 'phase6-retry-02' : 'phase6'
+    candidateAttempt === 'C04' ? 'phase6-retry-03' : 'phase6'
   return `${candidateRoot(candidateAttempt)}/evidence/${directory}`
 }
 
@@ -1035,7 +1035,7 @@ function phase6PriorIntegrationEvidence(
     repoRoot,
     candidateRoot('C04'),
     'evidence',
-    'phase6-retry-02',
+    'phase6-retry-03',
   )
   const retryEntry = lstatSync(retryRoot, { throwIfNoEntry: false })
   if (index === 0) return retryEntry === undefined

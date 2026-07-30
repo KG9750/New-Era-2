@@ -264,7 +264,7 @@ function repoLocation(path) {
 function outputAllowed(relativePath) {
   if (
     relativePath ===
-      `${C04_ROOT}/evidence/phase6-retry-02/frozen-evidence-guard.json` ||
+      `${C04_ROOT}/evidence/phase6-retry-03/frozen-evidence-guard.json` ||
     relativePath ===
       `${C04_ROOT}/evidence/freeze-audit/frozen-evidence-guard.json`
   ) {

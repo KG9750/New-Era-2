@@ -269,7 +269,7 @@ function repoLocation(path) {
 function outputAllowed(relativePath) {
   if (
     relativePath ===
-      `${C04_ROOT}/evidence/phase6-retry-02/runtime-equivalence.json` ||
+      `${C04_ROOT}/evidence/phase6-retry-03/runtime-equivalence.json` ||
     relativePath ===
       `${C04_ROOT}/evidence/freeze-audit/runtime-equivalence.json`
   ) {

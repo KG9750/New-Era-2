@@ -53,7 +53,7 @@ const C04_ROOT = `${RC9_COHORT_ROOT}/candidates/C04`
 const HEX_64 = /^[a-f0-9]{64}$/
 const GIT_SHA = /^[a-f0-9]{40}$/
 const SOURCE_BASELINE = 'cd2fc9716d98c160fe530c593347992f18bf96e4'
-const PLAN_REF = '52eb452a5ffec167a3809d3f372e62b9d8524124'
+const PLAN_REF = '441f7d96635e9176c8aea3ff21454d596c287c49'
 const REJECTED_SOURCE_SHA = 'a39c63387242b0aaea0c76c6e36cc5bdc4851909'
 const EXCLUDED_C04_ANCESTORS = Object.freeze([
   '3cc6de4f6c8458f51936a893b95ea08e62bb0883',
@@ -414,9 +414,9 @@ async function validateOutputDestination(path, repoRoot, mode) {
   const { inside: insideRepo, relativePath } = canonicalLocation
   const fixedRelativePath = {
     fixtures:
-      `${C04_ROOT}/evidence/phase6-retry-02/manifest-fixtures.json`,
+      `${C04_ROOT}/evidence/phase6-retry-03/manifest-fixtures.json`,
     probe:
-      `${C04_ROOT}/evidence/phase6-retry-02/manifest-probe.json`,
+      `${C04_ROOT}/evidence/phase6-retry-03/manifest-probe.json`,
   }[mode]
   const validManifestPath =
     relativePath ===

@@ -42,7 +42,7 @@ const c04Root =
   'g1a-20260727-rc9-01/candidates/C04'
 const phase6Path =
   '/opt/homebrew/opt/node@24/bin:/opt/homebrew/bin:/usr/bin:/bin'
-const phase6PlanRef = '52eb452a5ffec167a3809d3f372e62b9d8524124'
+const phase6PlanRef = '441f7d96635e9176c8aea3ff21454d596c287c49'
 const phase6PackageScript =
   `PATH=${phase6Path} ` +
   '/opt/homebrew/opt/node@24/bin/node ' +
@@ -203,23 +203,15 @@ function currentSourceHead() {
   throw new Error('C04 source branch ref is unavailable')
 }
 
-function currentVerificationContext() {
-  const head = currentHead()
-  return isAncestor(sourceBaseline, head)
-    ? {
-        mode: 'source',
-        baseline: sourceBaseline,
-        head,
-        sourceHead: head,
-        expectedStatus: 'PASS_SOURCE_SCOPE',
-      }
-    : {
-        mode: 'evidence-lineage',
-        baseline: evidenceBaseline,
-        head,
-        sourceHead: currentSourceHead(),
-        expectedStatus: 'PASS_EVIDENCE_LINEAGE',
-      }
+function sourceVerificationContext() {
+  const sourceHead = currentSourceHead()
+  return {
+    mode: 'source',
+    baseline: sourceBaseline,
+    head: sourceHead,
+    sourceHead,
+    expectedStatus: 'PASS_SOURCE_SCOPE',
+  }
 }
 
 function sourceImplementationCommitted() {
@@ -1111,7 +1103,7 @@ describe('C04 Phase 6 Node wrapper', () => {
         '--mode',
         'source',
         '--plan-ref',
-        '52eb452a5ffec167a3809d3f372e62b9d8524124',
+        '441f7d96635e9176c8aea3ff21454d596c287c49',
         '--source-sha',
         '1'.repeat(40),
         '--output',
@@ -1712,7 +1704,7 @@ describe('C04 Phase 6 Node wrapper', () => {
     ['future', 'build.txt'],
     ['unknown', 'unknown-command.txt'],
   ])(
-    'rejects a %s retry-02 output before the current integration command',
+    'rejects a %s retry-03 output before the current integration command',
     (_label, filename) => {
       const fixture = materializePhase6NpmWrapper()
       materializePriorIntegrationOutputs(fixture, 'test')
@@ -1723,7 +1715,7 @@ describe('C04 Phase 6 Node wrapper', () => {
         fixture.repo,
         c04Root,
         'evidence',
-        'phase6-retry-02',
+        'phase6-retry-03',
         filename,
       )
       writeFileSync(unexpected, 'not yet authorized\n')
@@ -2158,7 +2150,7 @@ describe('C04 Phase 6 Node wrapper', () => {
     },
   )
 
-  it('requires the retry-02 root to be completely absent before integration lint', () => {
+  it('requires the retry-03 root to be completely absent before integration lint', () => {
     const fixture = materializePhase6NpmWrapper()
     const output = phase6WrapperOutput(
       fixture,
@@ -2328,7 +2320,7 @@ describe('C04 Phase 6 Node wrapper', () => {
           '--mode',
           'source',
           '--plan-ref',
-          '52eb452a5ffec167a3809d3f372e62b9d8524124',
+          '441f7d96635e9176c8aea3ff21454d596c287c49',
           '--source-sha',
           '1'.repeat(40),
           '--output',
@@ -2407,7 +2399,7 @@ describe('C04 Phase 6 Node wrapper', () => {
       workingDirectory: 'prototype',
       outputPath: output,
       argv: ['npm', 'run', 'lint'],
-      planRef: '52eb452a5ffec167a3809d3f372e62b9d8524124',
+      planRef: '441f7d96635e9176c8aea3ff21454d596c287c49',
       sourceSha: fixture.sourceSha,
     })
     expect(parseLastJson(
@@ -2857,10 +2849,10 @@ describe('C04 Phase 6 Node wrapper', () => {
     },
   )
 
-  it('binds integration output to retry-02 from a non-repo cwd', () => {
+  it('binds integration output to retry-03 from a non-repo cwd', () => {
     const fixture = materializePhase6NpmWrapper()
     const output =
-      `${c04Root}/evidence/phase6-retry-02/` +
+      `${c04Root}/evidence/phase6-retry-03/` +
       'lint.txt'
     const outputPath = join(fixture.repo, output)
     const result = spawnSync(
@@ -2895,7 +2887,7 @@ describe('C04 Phase 6 Node wrapper', () => {
     expect(identity).toMatchObject({
       commandId: 'lint',
       mode: 'integration',
-      planRef: '52eb452a5ffec167a3809d3f372e62b9d8524124',
+      planRef: '441f7d96635e9176c8aea3ff21454d596c287c49',
       integrationSha: fixture.integrationSha,
       artifactSourceSha: fixture.sourceSha,
       argv: ['npm', 'run', 'lint'],
@@ -2906,7 +2898,7 @@ describe('C04 Phase 6 Node wrapper', () => {
     ).cwd).toBe(fixture.prototype)
   })
 
-  it.each(['phase6-retry-01', 'phase6-retry-03'])(
+  it.each(['phase6-retry-01', 'phase6-retry-02'])(
     'rejects the unallocated integration namespace %s before creating it',
     (namespace) => {
       const fixture = materializePhase6Wrapper()
@@ -2924,7 +2916,7 @@ describe('C04 Phase 6 Node wrapper', () => {
           '--mode',
           'integration',
           '--plan-ref',
-          '52eb452a5ffec167a3809d3f372e62b9d8524124',
+          '441f7d96635e9176c8aea3ff21454d596c287c49',
           '--integration-sha',
           fixture.integrationSha,
           '--artifact-source-sha',
@@ -2957,7 +2949,7 @@ describe('C04 Phase 6 Node wrapper', () => {
     const fixture = materializePhase6ManifestWrapper()
     materializePriorIntegrationOutputs(fixture, 'manifest-fixtures')
     const output =
-      `${c04Root}/evidence/phase6-retry-02/` +
+      `${c04Root}/evidence/phase6-retry-03/` +
       'manifest-fixtures.json'
     const outputPath = join(fixture.repo, output)
     const result = spawnSync(
@@ -3521,7 +3513,7 @@ describe('C04 frozen-evidence production CLI', () => {
     () => {
     const root = temporaryDirectory('new-era-frozen-pass-')
     const output = join(root, 'guard.json')
-    const context = currentVerificationContext()
+    const context = sourceVerificationContext()
     const args = [
       '--mode',
       context.mode,
@@ -3659,7 +3651,7 @@ describe('C04 frozen-evidence production CLI', () => {
   it('rejects a source guard bound to the reserved retry output before path validation', () => {
     const fixture = materializeVerifierRepository(frozen)
     const output =
-      `${c04Root}/evidence/phase6-retry-02/` +
+      `${c04Root}/evidence/phase6-retry-03/` +
       'frozen-evidence-guard.json'
     mkdirSync(dirname(join(fixture.repo, output)), { recursive: true })
     const result = run(
@@ -3683,10 +3675,10 @@ describe('C04 frozen-evidence production CLI', () => {
     expect(existsSync(join(fixture.repo, 'prototype', output))).toBe(false)
   })
 
-  it('rejects an evidence-lineage guard bound to the archived retry-01 namespace', () => {
+  it('rejects an evidence-lineage guard bound to the archived retry-02 namespace', () => {
     const fixture = materializeIntegrationVerifierRepository(frozen)
     const output =
-      `${c04Root}/evidence/phase6-retry-01/` +
+      `${c04Root}/evidence/phase6-retry-02/` +
       'frozen-evidence-guard.json'
     const outputPath = join(fixture.repo, output)
     mkdirSync(dirname(outputPath), { recursive: true })
@@ -3713,7 +3705,7 @@ describe('C04 frozen-evidence production CLI', () => {
   it('publishes an evidence-lineage guard to the repo-relative retry namespace', () => {
     const fixture = materializeIntegrationVerifierRepository(frozen)
     const output =
-      `${c04Root}/evidence/phase6-retry-02/` +
+      `${c04Root}/evidence/phase6-retry-03/` +
       'frozen-evidence-guard.json'
     const outputPath = join(fixture.repo, output)
     mkdirSync(dirname(outputPath), { recursive: true })
@@ -3853,7 +3845,7 @@ describe('C04 runtime-equivalence production CLI', () => {
     () => {
     const root = temporaryDirectory('new-era-runtime-pass-')
     const output = join(root, 'runtime.json')
-    const context = currentVerificationContext()
+    const context = sourceVerificationContext()
     const artifact = materializeC04Artifact(context.sourceHead)
     const args = [
       '--baseline',
@@ -3887,7 +3879,7 @@ describe('C04 runtime-equivalence production CLI', () => {
 
   it('rejects an artifact directory symlink without producing output', () => {
     const root = temporaryDirectory('new-era-runtime-link-')
-    const context = currentVerificationContext()
+    const context = sourceVerificationContext()
     const artifact = materializeC04Artifact(context.sourceHead)
     const artifactLink = join(root, 'artifact-link')
     const output = join(root, 'runtime.json')
@@ -3908,7 +3900,7 @@ describe('C04 runtime-equivalence production CLI', () => {
   })
 
   it('rejects an output located inside the artifact directory', () => {
-    const context = currentVerificationContext()
+    const context = sourceVerificationContext()
     const artifact = materializeC04Artifact(context.sourceHead)
     const output = join(artifact, 'verification', 'runtime.json')
     mkdirSync(dirname(output), { recursive: true })
@@ -3931,7 +3923,7 @@ describe('C04 runtime-equivalence production CLI', () => {
   })
 
   it('rejects the artifact directory itself as output before no-clobber checks', () => {
-    const context = currentVerificationContext()
+    const context = sourceVerificationContext()
     const artifact = materializeC04Artifact(context.sourceHead)
     const manifest = JSON.parse(
       readFileSync(join(artifact, 'artifact-manifest.json'), 'utf8'),
@@ -3972,7 +3964,7 @@ describe('C04 runtime-equivalence production CLI', () => {
 
   it('rejects an output ancestor symlink into old C04 evidence', () => {
     const fixture = materializeVerifierRepository(runtime)
-    const context = currentVerificationContext()
+    const context = sourceVerificationContext()
     const artifact = materializeC04Artifact(context.sourceHead)
     const oldEvidence = join(fixture.repo, c04Root, 'evidence', 'phase6')
     const targetParent = join(oldEvidence, 'ancestor-link-target')
@@ -4005,7 +3997,7 @@ describe('C04 runtime-equivalence production CLI', () => {
 
   it('preserves a truly external absolute temp output', () => {
     const fixture = materializeVerifierRepository(runtime)
-    const context = currentVerificationContext()
+    const context = sourceVerificationContext()
     const artifact = materializeC04Artifact(context.sourceHead)
     const output = join(fixture.root, 'external', 'runtime.json')
     mkdirSync(dirname(output), { recursive: true })
@@ -4052,7 +4044,7 @@ describe('C04 runtime-equivalence production CLI', () => {
 
   it('rejects a relative output escape in source mode', () => {
     const fixture = materializeVerifierRepository(runtime)
-    const context = currentVerificationContext()
+    const context = sourceVerificationContext()
     const artifact = materializeC04Artifact(context.sourceHead)
     const output = '../external-runtime.json'
     const resolvedOutput = resolve(fixture.repo, output)
@@ -4076,10 +4068,10 @@ describe('C04 runtime-equivalence production CLI', () => {
 
   it('rejects a source verification bound to the reserved retry output before path validation', () => {
     const fixture = materializeVerifierRepository(runtime)
-    const context = currentVerificationContext()
+    const context = sourceVerificationContext()
     const artifact = materializeC04Artifact(context.sourceHead)
     const output =
-      `${c04Root}/evidence/phase6-retry-02/` +
+      `${c04Root}/evidence/phase6-retry-03/` +
       'runtime-equivalence.json'
     mkdirSync(dirname(join(fixture.repo, output)), { recursive: true })
     const result = run(
@@ -4105,11 +4097,11 @@ describe('C04 runtime-equivalence production CLI', () => {
     expect(existsSync(join(fixture.repo, 'prototype', output))).toBe(false)
   })
 
-  it('rejects an integration verification bound to the archived retry-01 namespace', () => {
+  it('rejects an integration verification bound to the archived retry-02 namespace', () => {
     const fixture = materializeIntegrationVerifierRepository(runtime)
     const artifact = materializeC04Artifact(fixture.sourceHead)
     const output =
-      `${c04Root}/evidence/phase6-retry-01/` +
+      `${c04Root}/evidence/phase6-retry-02/` +
       'runtime-equivalence.json'
     const outputPath = join(fixture.repo, output)
     mkdirSync(dirname(outputPath), { recursive: true })
@@ -4139,7 +4131,7 @@ describe('C04 runtime-equivalence production CLI', () => {
     const fixture = materializeIntegrationVerifierRepository(runtime)
     const artifact = materializeC04Artifact(fixture.sourceHead)
     const output =
-      `${c04Root}/evidence/phase6-retry-02/` +
+      `${c04Root}/evidence/phase6-retry-03/` +
       'runtime-equivalence.json'
     const outputPath = join(fixture.repo, output)
     mkdirSync(dirname(outputPath), { recursive: true })
@@ -4243,7 +4235,7 @@ describe('C04 runtime-equivalence production CLI', () => {
 
   it('maps a non-directory runtime output ancestor to the output-path error', () => {
     const fixture = materializeVerifierRepository(runtime)
-    const context = currentVerificationContext()
+    const context = sourceVerificationContext()
     const artifact = materializeC04Artifact(context.sourceHead)
     const ancestor = join(fixture.root, 'ancestor-file')
     const output = join(ancestor, 'runtime.json')
@@ -4268,7 +4260,7 @@ describe('C04 runtime-equivalence production CLI', () => {
 
   it('rejects artifact source identity mismatch without publishing failure output', () => {
     const root = temporaryDirectory('new-era-runtime-binding-')
-    const context = currentVerificationContext()
+    const context = sourceVerificationContext()
     const artifact = materializeC04Artifact(context.sourceHead)
     const output = join(root, 'runtime.json')
     const result = run(runtime, [
@@ -4288,7 +4280,7 @@ describe('C04 runtime-equivalence production CLI', () => {
 
   it('preserves a sentinel output on partial-group rejection', () => {
     const root = temporaryDirectory('new-era-runtime-sentinel-')
-    const context = currentVerificationContext()
+    const context = sourceVerificationContext()
     const artifact = materializeC04Artifact(context.sourceHead)
     const output = join(root, 'runtime.json')
     writeFileSync(output, 'sentinel\n')

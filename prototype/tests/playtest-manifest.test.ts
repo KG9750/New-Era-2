@@ -36,7 +36,7 @@ const cohort =
 const c04Root = `${cohort}/candidates/C04`
 const evidenceBaseline = '5b9438cc5123ba35d8a703f3507bbf463e90176d'
 const sourceBaseline = 'cd2fc9716d98c160fe530c593347992f18bf96e4'
-const phase6PlanRef = '52eb452a5ffec167a3809d3f372e62b9d8524124'
+const phase6PlanRef = '441f7d96635e9176c8aea3ff21454d596c287c49'
 const phase6Path =
   '/opt/homebrew/opt/node@24/bin:/opt/homebrew/bin:/usr/bin:/bin'
 const excludedC04Ancestors = [
@@ -767,7 +767,7 @@ function createFullManifestRepository({
 
   const commandResults = requiredCommandIds.map((id) => {
     const outputPath =
-      `${c04Root}/evidence/phase6-retry-02/` +
+      `${c04Root}/evidence/phase6-retry-03/` +
       ({
         'schema-fixtures': 'schema-fixtures.txt',
         'guard-rc8': 'guard-rc8.txt',
@@ -796,7 +796,7 @@ function createFullManifestRepository({
         '72c18e2eeda260f67a5b2b66e96fa9b5ad82864676ebb54925695d87120cae3f',
       workingDirectory: 'prototype',
       outputPath,
-      planRef: '52eb452a5ffec167a3809d3f372e62b9d8524124',
+      planRef: '441f7d96635e9176c8aea3ff21454d596c287c49',
       integrationSha,
       artifactSourceSha: sourceSha,
     }
@@ -953,7 +953,7 @@ function createFullManifestRepository({
   })
 
   const guardPath =
-    `${c04Root}/evidence/phase6-retry-02/frozen-evidence-guard.json`
+    `${c04Root}/evidence/phase6-retry-03/frozen-evidence-guard.json`
   const guardDocument = {
     schemaVersion: 'gate1a-frozen-evidence-guard-v1',
     mode: 'evidence-lineage',
@@ -992,7 +992,7 @@ function createFullManifestRepository({
               '72c18e2eeda260f67a5b2b66e96fa9b5ad82864676ebb54925695d87120cae3f',
             workingDirectory: 'prototype',
             outputPath: guardPath,
-            planRef: '52eb452a5ffec167a3809d3f372e62b9d8524124',
+            planRef: '441f7d96635e9176c8aea3ff21454d596c287c49',
             integrationSha,
             artifactSourceSha: sourceSha,
           },
@@ -1133,7 +1133,7 @@ function expectFullFailurePreservesOutputs(
 }
 
 describe('candidate playtest manifest shared contract', () => {
-  it('accepts only retry-02 command evidence for C04', () => {
+  it('accepts only retry-03 command evidence for C04', () => {
     const fixtureDocument = JSON.parse(
       readFileSync(
         resolve(
@@ -1148,16 +1148,18 @@ describe('candidate playtest manifest shared contract', () => {
     const fixture = fixtureDocument.input
 
     expect(validateCandidateManifest(fixture).accepted).toBe(true)
-    const archived = JSON.parse(
-      JSON.stringify(fixture).replaceAll(
-        'phase6-retry-02',
-        'phase6-retry-01',
-      ),
-    )
-    expect(validateCandidateManifest(archived)).toEqual({
-      accepted: false,
-      errorCode: 'CANDIDATE_MANIFEST_EVIDENCE',
-    })
+    for (const namespace of ['phase6-retry-01', 'phase6-retry-02']) {
+      const archived = JSON.parse(
+        JSON.stringify(fixture).replaceAll(
+          'phase6-retry-03',
+          namespace,
+        ),
+      )
+      expect(validateCandidateManifest(archived)).toEqual({
+        accepted: false,
+        errorCode: 'CANDIDATE_MANIFEST_EVIDENCE',
+      })
+    }
   })
 })
 
@@ -1203,7 +1205,7 @@ describe('candidate playtest manifest production CLI', () => {
       'verify-playtest-manifest.mjs',
     )
     const output =
-      `${c04Root}/evidence/phase6-retry-02/manifest-fixtures.json`
+      `${c04Root}/evidence/phase6-retry-03/manifest-fixtures.json`
     mkdirSync(join(prototype, 'scripts'), { recursive: true })
     mkdirSync(dirname(join(repo, output)), { recursive: true })
     cpSync(verifier, script)
@@ -1243,7 +1245,7 @@ describe('candidate playtest manifest production CLI', () => {
     expectExactSidecar(join(repo, output), output)
 
     const probeOutput =
-      `${c04Root}/evidence/phase6-retry-02/manifest-probe.json`
+      `${c04Root}/evidence/phase6-retry-03/manifest-probe.json`
     const probeIdentity = integrationPhase6Identity(
       fullFixture,
       'manifest-probe',
@@ -1284,7 +1286,7 @@ describe('candidate playtest manifest production CLI', () => {
       [
         '--fixtures',
         '--output',
-        `${c04Root}/evidence/phase6-retry-02/manifest-probe.json`,
+        `${c04Root}/evidence/phase6-retry-03/manifest-probe.json`,
       ],
     ],
     [
@@ -1295,7 +1297,7 @@ describe('candidate playtest manifest production CLI', () => {
         '--repo-root',
         '..',
         '--output',
-        `${c04Root}/evidence/phase6-retry-02/manifest-fixtures.json`,
+        `${c04Root}/evidence/phase6-retry-03/manifest-fixtures.json`,
       ],
     ],
   ])(
@@ -1328,7 +1330,7 @@ describe('candidate playtest manifest production CLI', () => {
       [
         '--fixtures',
         '--output',
-        `${c04Root}/evidence/phase6-retry-01/manifest-fixtures.json`,
+        `${c04Root}/evidence/phase6-retry-02/manifest-fixtures.json`,
       ],
     ],
     [
@@ -1339,11 +1341,11 @@ describe('candidate playtest manifest production CLI', () => {
         '--repo-root',
         '..',
         '--output',
-        `${c04Root}/evidence/phase6-retry-01/manifest-probe.json`,
+        `${c04Root}/evidence/phase6-retry-02/manifest-probe.json`,
       ],
     ],
   ])(
-    'rejects %s mode bound to the archived retry-01 namespace',
+    'rejects %s mode bound to the archived retry-02 namespace',
     (_mode, args) => {
       const fixture = materializeManifestVerifierRepository(
         'new-era-manifest-archived-retry-',
@@ -1805,8 +1807,8 @@ describe('candidate playtest manifest production CLI', () => {
   }, 15_000)
 
   it.each([
-    `${c04Root}/evidence/phase6-retry-02/manifest-fixtures.json`,
-    `${c04Root}/evidence/phase6-retry-02/manifest-probe.json`,
+    `${c04Root}/evidence/phase6-retry-03/manifest-fixtures.json`,
+    `${c04Root}/evidence/phase6-retry-03/manifest-probe.json`,
   ])(
     'rejects full mode bound to the Phase 6 output %s',
     (output) => {
