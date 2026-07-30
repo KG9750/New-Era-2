@@ -1,0 +1,1254 @@
+schema_version: 0.2.0
+library_status: candidate_only
+authority:
+  contract: docs/item-library/item-library-authoring-contract-v0.2.md
+  design: docs/design-docs/item-and-manufacturing-system-v0.1.md
+  design_sha256: 24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb
+scope_note: 第二批 30 项增量候选内容；与 C1 合并后累计 60 项，不授权运行时导入。
+
+items:
+  - id: item.weapon.utility_machete
+    name: 工具砍刀
+    description: 可用于清理灌木和近距离自卫的厚背刀具；兼具劳动与武器属性，但不能替代专业农具或远程装备。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: independent_item
+    tags: [weapon, melee, mechanical, repair]
+    resource_chains: [industry, survival, security]
+    availability: common
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [equip, maintain, repair, dismantle, trade, store]
+    unit: piece
+    mass: 1.2
+    volume: 1.8
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked]
+    base_value: 30
+    acquisition_paths:
+      - {type: trade, note: 从工具商或商队购入，公开携带受当地武器规则约束。}
+      - {type: salvage, note: 从农场、工棚或废弃车辆中回收并检查刃口与柄部。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 砍伐、碰撞和锈蚀会降低刃口与柄部可靠性。}
+      - {type: confiscated, note: 在受控区域作为武器携带时可能被查扣。}
+      - {type: lost, note: 外出作业或撤离时遗失后退出分配记录。}
+    logistics_note: 单件记录完整度与持有人；劳动分配和安全分配不能同时占用同一把刀。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让低技术工具同时服务生产与防卫，并以持有风险、人物分配和维护状态限制无条件兼用。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: restricted
+      wear_sources: [use, impact, moisture, corrosion]
+      failure_consequence: 刃口或柄部失效后不能安全装备，只能保养、专案翻修或作为回收对象处理。
+    equipment_profile:
+      role: weapon_platform
+      ammo_family: none
+      use_constraints: 需要近战训练、明确持有人和安全携带规则；不产生远程战斗能力。
+
+  - id: item.weapon.bolt_rifle
+    name: 栓动步枪
+    description: 结构相对简单的旧式远程武器平台，依赖匹配弹药、定期清洁和受训人员，不冻结命中或伤害数值。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: independent_item
+    tags: [weapon, firearm, mechanical, repair]
+    resource_chains: [security, industry, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: high, traceability: local_markings, wealth_signal: medium}
+    actions: [equip, fire, maintain, repair, dismantle, reserve, trade, store]
+    unit: piece
+    mass: 4.2
+    volume: 9.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, ammunition_locked]
+    base_value: 95
+    acquisition_paths:
+      - {type: salvage, note: 从旧哨所或战后现场回收，必须核对来源、枪机和枪管状态。}
+      - {type: trade, note: 通过受控军械交易取得并登记本地标记。}
+      - {type: mission, note: 作为防务援助或任务战利品取得，通常伴随归属争议。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 发射积垢、腐蚀和冲击会降低可靠性并触发维修需求。}
+      - {type: dismantled, note: 拆解后原实例、来源和分配记录终止，只回收部分材料。}
+      - {type: confiscated, note: 未登记携带或交易可能被监管方查扣。}
+    logistics_note: 武器、弹药和持有人分别锁定；仓库有枪不等于防区已经获得可用射击能力。
+    interfaces:
+      produced_by: []
+      used_by: []
+      repair_recipes: [recipe.repair.bolt_rifle_service]
+      dismantle_recipes: [recipe.dismantle.bolt_rifle]
+    decision_role: 以相对易维护的远程平台换取弹药、军械人员时间、合法性和来源争议的持续成本。
+    durability_profile:
+      tracked: true
+      repairability: repairable
+      dismantle_policy: allowed
+      wear_sources: [use, impact, moisture, corrosion, fouling]
+      failure_consequence: 损坏后不能分配给防区，仍占用上锁空间并需要军械维修或拆解。
+    equipment_profile:
+      role: weapon_platform
+      ammo_family: rifle
+      use_constraints: 需要匹配步枪弹、受训人物、维护状态合格和明确防务授权。
+
+  - id: item.weapon.pump_shotgun
+    name: 泵动霰弹枪
+    description: 适合近距离警戒的旧式武器平台，结构耐用但弹药体积和噪声限制长期携行。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: independent_item
+    tags: [weapon, firearm, mechanical, repair]
+    resource_chains: [security, industry, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: high, traceability: local_markings, wealth_signal: medium}
+    actions: [equip, fire, maintain, repair, dismantle, reserve, trade, store]
+    unit: piece
+    mass: 3.8
+    volume: 8.5
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, ammunition_locked]
+    base_value: 88
+    acquisition_paths:
+      - {type: salvage, note: 从旧保安设施或农庄回收，逐件检查供弹机构和枪管。}
+      - {type: trade, note: 通过受控军械商购入并记录序列标记。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 积垢、供弹磨损和受潮会扩大故障风险。}
+      - {type: dismantled, note: 拆解后返还部分机械件和金属，原武器实例永久终止。}
+      - {type: confiscated, note: 在非防务岗位公开携带可能触发查扣。}
+    logistics_note: 需要与霰弹批次、持有人和防区距离共同规划，不能只按武器总数计算战备。
+    interfaces:
+      produced_by: []
+      used_by: []
+      repair_recipes: [recipe.repair.pump_shotgun_service]
+      dismantle_recipes: [recipe.dismantle.pump_shotgun]
+    decision_role: 提供近距离警戒选择，同时用弹药运量、噪声、人员适配和受控持有形成清晰代价。
+    durability_profile:
+      tracked: true
+      repairability: repairable
+      dismantle_policy: allowed
+      wear_sources: [use, impact, moisture, corrosion, fouling]
+      failure_consequence: 供弹或枪管状态不合格时不能装备，必须维修、封存或拆解。
+    equipment_profile:
+      role: weapon_platform
+      ammo_family: shotgun
+      use_constraints: 需要匹配霰弹、近距离安全训练、合格维护状态和明确防务岗位。
+
+  - id: item.ammunition.rifle_cartridge_batch
+    name: 步枪弹批
+    description: 与栓动步枪匹配的受控弹药批次，只按标准盒管理，不在 C2 冻结口径性能或单发伤害。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: bulk_material
+    tags: [ammunition, rifle_caliber, traceable]
+    resource_chains: [security, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: regulated_batch, wealth_signal: medium}
+    actions: [fire, reserve, trade, deliver, store]
+    unit: box
+    mass: 1.1
+    volume: 0.8
+    stack_rule: {stackable: true, merge_keys: [caliber, batch_grade, legal_status, ownership]}
+    storage_rule: [dry, locked, ammunition_locked, away_from_food]
+    base_value: 24
+    acquisition_paths:
+      - {type: trade, note: 通过受控军械交易按口径与批号购入。}
+      - {type: mission, note: 作为防务援助或受审计任务物资获得。}
+      - {type: salvage, note: 从密封军械箱回收，开箱后重新检查污染和批次。}
+    consumption_loss_paths:
+      - {type: consumed_directly, note: 训练或防务发射后从批次库存扣除。}
+      - {type: confiscated, note: 无合法来源或超配额储存时可能被查扣。}
+      - {type: destroyed, note: 受潮、火灾或不安全批次需要受控销毁。}
+    logistics_note: 与武器分柜上锁并按口径、批号和承诺分区；弹药存在不等于已经装填或送达防区。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把远程安全能力绑定到可审计、会消耗且占用运输能力的独立弹药库存。
+    equipment_profile:
+      role: ammunition
+      ammo_family: rifle
+      use_constraints: 只能供匹配步枪平台使用；训练、防守和贸易预留不得重复计数。
+
+  - id: item.ammunition.shotgun_shell_batch
+    name: 霰弹批
+    description: 与泵动霰弹枪匹配的盒装受控弹药，体积较大且用途偏近距离警戒。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: bulk_material
+    tags: [ammunition, shotgun_caliber, traceable]
+    resource_chains: [security, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: regulated_batch, wealth_signal: medium}
+    actions: [fire, reserve, trade, deliver, store]
+    unit: box
+    mass: 1.4
+    volume: 1.3
+    stack_rule: {stackable: true, merge_keys: [caliber, batch_grade, legal_status, ownership]}
+    storage_rule: [dry, locked, ammunition_locked, away_from_food]
+    base_value: 22
+    acquisition_paths:
+      - {type: trade, note: 从受控军械商按批号购入，来源进入本地台账。}
+      - {type: salvage, note: 从旧保安库回收密封弹盒并进行受潮检查。}
+    consumption_loss_paths:
+      - {type: consumed_directly, note: 训练或近距离防守发射后消耗。}
+      - {type: confiscated, note: 无授权持有或转卖会触发查扣。}
+      - {type: destroyed, note: 受潮变形或来源不安全的批次必须销毁。}
+    logistics_note: 按批号与口径锁柜，较高体积会与医疗和食品补给争夺外出携行空间。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 用较高体积和受控来源限制近距离火力储备，让武器数量不能替代弹药物流。
+    equipment_profile:
+      role: ammunition
+      ammo_family: shotgun
+      use_constraints: 只能供匹配霰弹平台使用，必须区分训练、防区和任务承诺。
+
+  - id: item.ammunition.training_blank_batch
+    name: 训练空包弹批
+    description: 用于操作、纪律和噪声适应训练的无弹头批次，仍有危险且不能作为实弹防务储备。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: bulk_material
+    tags: [ammunition, training, traceable]
+    resource_chains: [security, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: regulated_batch, wealth_signal: low}
+    actions: [fire, reserve, trade, deliver, store]
+    unit: box
+    mass: 0.8
+    volume: 0.8
+    stack_rule: {stackable: true, merge_keys: [caliber, batch_grade, charge_state, legal_status]}
+    storage_rule: [dry, locked, ammunition_locked]
+    base_value: 12
+    acquisition_paths:
+      - {type: trade, note: 从训练物资渠道按武器适配规格取得。}
+      - {type: mission, note: 作为民兵训练援助或安全合作物资获得。}
+    consumption_loss_paths:
+      - {type: consumed_directly, note: 在受控训练中发射消耗，不能计入实弹防守。}
+      - {type: confiscated, note: 与实弹混装或无标记运输可能被查扣。}
+      - {type: destroyed, note: 包装破损或标识无法确认时受控销毁。}
+    logistics_note: 必须与实弹使用不同颜色、标签和柜位，训练领用不得减少或增加实弹预测。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 允许用较低政治成本训练操作流程，同时明确不能把训练资源伪装成战斗储备。
+    equipment_profile:
+      role: ammunition
+      ammo_family: blank
+      use_constraints: 只用于受控训练；近距离仍有危险，且不得装入战备承诺。
+
+  - id: item.ammunition.signal_flare_batch
+    name: 信号弹批
+    description: 用于夜间识别、求援和撤离标记的受控信号耗材，可能暴露位置并引发火灾。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: bulk_material
+    tags: [ammunition, signal, traceable, flammable]
+    resource_chains: [security, survival, politics]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: high, traceability: regulated_batch, wealth_signal: low}
+    actions: [fire, reserve, trade, deliver, store]
+    unit: box
+    mass: 0.9
+    volume: 1.2
+    stack_rule: {stackable: true, merge_keys: [batch_grade, charge_state, legal_status, ownership]}
+    storage_rule: [dry, locked, ammunition_locked, hazardous]
+    base_value: 18
+    acquisition_paths:
+      - {type: trade, note: 从救援或航运渠道按批号购入。}
+      - {type: mission, note: 作为搜救任务物资或紧急援助获得。}
+    consumption_loss_paths:
+      - {type: consumed_directly, note: 发射后消耗并公开当前位置或约定信号。}
+      - {type: destroyed, note: 受潮、过期或外壳损坏后必须受控销毁。}
+      - {type: confiscated, note: 在高风险地区无申报携带可能被查扣。}
+    logistics_note: 与普通照明分开存放并标明信号含义；外出分配要与撤离和救援预案绑定。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供低技术远距离沟通手段，同时以位置暴露、火灾风险和一次性消耗形成取舍。
+    equipment_profile:
+      role: signal_supply
+      ammo_family: flare
+      use_constraints: 只用于预先约定的识别、求援或撤离信号；发射会暴露位置。
+
+  - id: item.weapon.cleaning_kit
+    name: 武器清洁维护组
+    description: 把清洁布、清洁液和常用小件封装为军械保养工具组，可重复使用但内容会逐步耗尽。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: independent_item
+    tags: [maintenance_supply, cleaning, repair, firearm]
+    resource_chains: [security, industry]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: low}
+    actions: [maintain, repair, reserve, trade, dismantle, store]
+    unit: set
+    mass: 1.8
+    volume: 3.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, away_from_food]
+    base_value: 26
+    acquisition_paths:
+      - {type: manufacture, note: 在军械工作台把通用清洁与维修物资按清单封装。}
+      - {type: trade, note: 从工具商或军械商采购并核对溶剂与刷具内容。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 刷具、通条和容器反复使用后磨损，耗材需要补充。}
+      - {type: dismantled, note: 拆包可返还剩余通用物资，但需要重新分拣且本轮不设通用拆解工艺。}
+      - {type: lost, note: 随外出队携带时遗失会同时影响多个武器维护计划。}
+    logistics_note: 可分配给军械台或外出队；同一套工具不能同时支持两个地点的维修。
+    interfaces:
+      produced_by: [recipe.c2_assembly.weapon_cleaning_kit]
+      used_by: [recipe.repair.bolt_rifle_service, recipe.repair.pump_shotgun_service]
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 以提前封装通用清洁物资换取维修速度，并让军械维护与公共卫生竞争清洁材料。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: restricted
+      wear_sources: [use, handling, age]
+      failure_consequence: 内容缺失或工具磨损后不能作为完整维护组分配，只能补充、拆包或降级使用。
+    equipment_profile:
+      role: maintenance_supply
+      ammo_family: none
+      use_constraints: 只提供维护条件，不产生战斗力；必须由具备军械维护资格的人物使用。
+
+  - id: item.book.agricultural_manual
+    name: 旧式农业手册
+    description: 记录轮作、灌溉和土壤观察方法的纸质手册，只有被合适人物阅读并用于计划时才有价值。
+    status: candidate_only
+    category: book_and_data
+    form: independent_item
+    tags: [readable, knowledge, agricultural_input, old_world]
+    resource_chains: [survival, politics]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: none, wealth_signal: low}
+    actions: [read, reserve, trade, deliver, store]
+    unit: copy
+    mass: 0.8
+    volume: 1.2
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, archive_safe, light_protected]
+    base_value: 22
+    acquisition_paths:
+      - {type: salvage, note: 从学校、农技站或私人藏书中回收并检查缺页。}
+      - {type: trade, note: 与农户或抄写者交换完整版本。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 频繁翻阅、潮湿和虫害会降低可读性。}
+      - {type: delivered, note: 作为教育或农业援助承诺交付。}
+      - {type: destroyed, note: 严重霉变或火灾后知识载体永久损失。}
+    logistics_note: 按版本和完整度单件存放，阅读占用人物时间，借出后不能同时供另一岗位查阅。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把知识收益绑定到阅读时间、人物理解和实体载体，而不是入库即获得全局农业加成。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: none
+      wear_sources: [handling, moisture, light, age]
+      failure_consequence: 缺页或霉变后只能提供部分信息，不能作为完整教学材料。
+    knowledge_profile:
+      domain: agriculture
+      requires_reader: true
+      effect_note: 只有读者理解并把方法转入具体农田计划时，才可能改善解释或减少已知失误。
+
+  - id: item.book.field_medicine_manual
+    name: 野外医疗手册
+    description: 面向缺乏完整医院条件的基础处置手册，可支持复核流程但不能授予医疗资格。
+    status: candidate_only
+    category: book_and_data
+    form: independent_item
+    tags: [readable, knowledge, medical, old_world]
+    resource_chains: [survival, security, politics]
+    availability: controlled
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: medium}
+    actions: [read, reserve, trade, deliver, store]
+    unit: copy
+    mass: 1.0
+    volume: 1.4
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, archive_safe, light_protected]
+    base_value: 38
+    acquisition_paths:
+      - {type: salvage, note: 从急救站、救援车辆或学校医务室回收。}
+      - {type: trade, note: 从医疗商队交换带有完整图示的版本。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 潮湿、污染和频繁现场使用会破坏页面。}
+      - {type: delivered, note: 作为医疗培训或援助物资交付。}
+      - {type: confiscated, note: 某些管辖区可能限制未经授权传播医疗资料。}
+    logistics_note: 与污染医疗区分开存放；外借给远征队时聚落内不能同时使用原件。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供流程复核与学习机会，但明确不能替代医疗资格、工具、药品和实际经验。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: none
+      wear_sources: [handling, moisture, age]
+      failure_consequence: 页面污染或缺失后不能用于清洁医疗环境，只保留有限参考价值。
+    knowledge_profile:
+      domain: medicine
+      requires_reader: true
+      effect_note: 只有具备基础医疗能力的人物阅读并在具体处置中使用，才能改善流程检查。
+
+  - id: item.book.machine_maintenance_ledger
+    name: 机械维护图册
+    description: 汇集旧设备结构图、维护周期和手写故障记录的图册，来源混杂且需要机械人员判断适配性。
+    status: candidate_only
+    category: book_and_data
+    form: independent_item
+    tags: [readable, knowledge, repair, mechanical, old_world]
+    resource_chains: [industry, survival, security]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: medium}
+    actions: [read, inspect, reserve, trade, store]
+    unit: copy
+    mass: 1.4
+    volume: 2.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, archive_safe]
+    base_value: 44
+    acquisition_paths:
+      - {type: salvage, note: 从旧工坊、设备柜和维修人员遗物中回收。}
+      - {type: trade, note: 与机械师交换包含特定设备族记录的版本。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 油污、折页和现场标注会逐步降低可读性。}
+      - {type: lost, note: 随维修队携带时遗失会同时丢失历史故障记录。}
+      - {type: destroyed, note: 火灾或严重油污后无法恢复。}
+    logistics_note: 按设备族建立索引并保留原始批注；移动到现场时需记录借阅人和归还位置。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让维护知识具有设备适配性和来源历史，避免一本书无条件覆盖所有机械。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: none
+      wear_sources: [handling, moisture, age]
+      failure_consequence: 图页或批注缺失后只能支持部分设备族，预测不确定性上升。
+    knowledge_profile:
+      domain: maintenance
+      requires_reader: true
+      effect_note: 机械人员必须把图册内容与目标设备型号和当前故障相匹配，才可能缩小维修区间。
+
+  - id: item.data.offline_archive_drive
+    name: 离线档案盘
+    description: 物理隔离的旧式存储设备，保存地方档案与技术资料；读取需要兼容终端，维修可能损坏数据。
+    status: candidate_only
+    category: book_and_data
+    form: independent_item
+    tags: [offline_data, knowledge, physically_isolated, old_world, high_wealth_exposure]
+    resource_chains: [industry, politics, security]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: high}
+    actions: [read, inspect, repair, dismantle, reserve, trade, store]
+    unit: piece
+    mass: 0.6
+    volume: 0.8
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, shock_protected, magnetic_shielded, archive_safe]
+    base_value: 120
+    acquisition_paths:
+      - {type: salvage, note: 从档案馆、行政终端或旧研究设施回收，内容与硬件状态未知。}
+      - {type: mission, note: 作为证据、技术资料或地方记忆保护任务取得。}
+      - {type: trade, note: 通过受控信息交易取得，必须核对所有权与副本声明。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 接口、介质和控制板老化会降低可读性。}
+      - {type: dismantled, note: 拆解可回收电子件，但数据与来源上下文永久损失。}
+      - {type: confiscated, note: 受控档案或禁制资料可能被查扣。}
+    logistics_note: 单件防震防磁上锁存放；原盘、工作副本和读取终端必须分开记录。
+    interfaces:
+      produced_by: []
+      used_by: []
+      repair_recipes: [recipe.repair.offline_archive_drive]
+      dismantle_recipes: [recipe.dismantle.offline_archive_drive]
+    decision_role: 在保留不可替代的数据、回收稀缺电子件和承担政治风险之间形成不可逆选择。
+    durability_profile:
+      tracked: true
+      repairability: repairable
+      dismantle_policy: allowed
+      wear_sources: [impact, moisture, magnetic, heat, age]
+      failure_consequence: 故障后内容不可读取；不当维修或拆解可能永久消除数据和证据。
+    knowledge_profile:
+      domain: history
+      requires_reader: true
+      effect_note: 需要兼容终端、档案人员和读取时间；内容确认前不提供任何自动收益。
+
+  - id: item.furniture.field_bed
+    name: 折叠野战床
+    description: 可搬运和安装的单人睡眠家具，改善离地休息条件，但需要织物、金属和可达空间。
+    status: candidate_only
+    category: furniture
+    form: independent_item
+    tags: [furniture, sleep, textile, metal]
+    resource_chains: [survival, industry, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: low}
+    actions: [install, repair, dismantle, reserve, trade, deliver, store]
+    unit: piece
+    mass: 9.0
+    volume: 24.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, moisture_protected]
+    base_value: 42
+    acquisition_paths:
+      - {type: manufacture, note: 在木作与基础工坊间完成框架、织物和紧固件装配。}
+      - {type: salvage, note: 从营地、诊所或宿舍回收并检查框架和布面。}
+      - {type: trade, note: 从生活物资商队采购折叠床。}
+    consumption_loss_paths:
+      - {type: installed, note: 搬运并展开后转为地图放置实体，占用实际床位空间。}
+      - {type: worn_out, note: 长期承重、受潮和搬运会损坏布面与框架。}
+      - {type: dismantled, note: 拆解只返还部分金属、织物和紧固件。}
+    logistics_note: 库存中的折叠床不等于可用床位；必须运到房间、安装并保持通行空间。
+    interfaces:
+      produced_by: [recipe.c2_assembly.field_bed]
+      used_by: []
+      repair_recipes: [recipe.repair.field_bed]
+      dismantle_recipes: [recipe.dismantle.field_bed]
+    decision_role: 把休息条件连接到金属、织物、安装空间和维修时间，而不是用家具库存自动提供舒适度。
+    durability_profile:
+      tracked: true
+      repairability: repairable
+      dismantle_policy: allowed
+      wear_sources: [use, compression, moisture, handling]
+      failure_consequence: 布面或框架损坏后不能作为安全床位部署，仍占用仓储空间。
+    deployment_profile:
+      converts_to_placed_entity: true
+      installation_required: true
+      footprint: medium
+      uninstall_result: returns_item
+
+  - id: item.furniture.lockable_storage_chest
+    name: 上锁储物箱
+    description: 可安装的个人或受控物资储藏家具，提供物理分区但不自动解决所有权和访问规则。
+    status: candidate_only
+    category: furniture
+    form: independent_item
+    tags: [furniture, storage, access_control, mechanical]
+    resource_chains: [survival, industry, politics, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: medium}
+    actions: [install, maintain, dismantle, reserve, trade, store]
+    unit: piece
+    mass: 18.0
+    volume: 55.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry]
+    base_value: 50
+    acquisition_paths:
+      - {type: salvage, note: 从住宅、工坊或行政点回收并更换或登记锁具。}
+      - {type: trade, note: 从木工或旧货商购入，钥匙与所有权单独交接。}
+    consumption_loss_paths:
+      - {type: installed, note: 部署后成为有位置和访问规则的储藏实体。}
+      - {type: worn_out, note: 铰链、锁具和箱体受潮或强行开启后损坏。}
+      - {type: dismantled, note: 受限拆除可回收部分材料，但会终止原访问与归属上下文。}
+    logistics_note: 体积大且需要钥匙、负责人和放置位置共同登记；未安装时不增加有效储藏容量。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供物理访问控制，同时暴露钥匙管理、个人所有权和公共征用之间的制度冲突。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: restricted
+      wear_sources: [use, impact, moisture, corrosion]
+      failure_consequence: 锁具或箱体失效后不能提供可靠访问控制，只保留普通容器用途。
+    deployment_profile:
+      converts_to_placed_entity: true
+      installation_required: true
+      footprint: medium
+      uninstall_result: returns_item
+
+  - id: item.furniture.communal_table
+    name: 公共长桌
+    description: 用于集体用餐、会议和手工活动的大型家具，需要实际空间、搬运和维护，不提供被动全局关系加成。
+    status: candidate_only
+    category: furniture
+    form: independent_item
+    tags: [furniture, social, display]
+    resource_chains: [survival, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: high, traceability: none, wealth_signal: low}
+    actions: [install, maintain, dismantle, trade, deliver, store]
+    unit: piece
+    mass: 28.0
+    volume: 90.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry]
+    base_value: 45
+    acquisition_paths:
+      - {type: salvage, note: 从食堂、学校或会议室回收并检查结构稳定。}
+      - {type: trade, note: 从木工或拆迁商购买可运输的桌体。}
+    consumption_loss_paths:
+      - {type: installed, note: 部署后占用公共空间并需要可达座位。}
+      - {type: worn_out, note: 长期使用、受潮和搬迁会使结构松动。}
+      - {type: delivered, note: 作为公共设施援助交付给其他聚落。}
+    logistics_note: 需要多人或车辆搬运；仓库中的桌子不产生社交效果，必须放在实际可达空间使用。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让公共空间建设占用面积和搬运能力，并把“有家具”与“有可用集会场所”区分开。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: restricted
+      wear_sources: [use, impact, moisture, handling]
+      failure_consequence: 结构松动后不能安全承载集体活动，只能修整、降级或拆除。
+    deployment_profile:
+      converts_to_placed_entity: true
+      installation_required: true
+      footprint: large
+      uninstall_result: returns_materials
+
+  - id: item.furniture.task_lamp
+    name: 有线工作灯
+    description: 依靠本地线路供电的定向照明家具，可改善夜间工作条件，但占用铜线、电子件和维护能力。
+    status: candidate_only
+    category: furniture
+    form: independent_item
+    tags: [furniture, lighting, electrical, wired_control]
+    resource_chains: [industry, survival, security]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: medium}
+    actions: [install, activate, repair, dismantle, reserve, trade, store]
+    unit: piece
+    mass: 2.5
+    volume: 4.5
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, shock_protected, moisture_protected]
+    base_value: 46
+    acquisition_paths:
+      - {type: manufacture, note: 在电气工作台用回收导体、电子件和线束装配。}
+      - {type: salvage, note: 从工坊、诊所或办公室回收并离线测试。}
+      - {type: trade, note: 采购不依赖网络授权的旧式工作灯。}
+    consumption_loss_paths:
+      - {type: installed, note: 安装后成为依赖线路和工作位的照明实体。}
+      - {type: worn_out, note: 接头、开关和发光部件老化后需要维修。}
+      - {type: dismantled, note: 拆解返还部分导体与电子件，原灯具实例终止。}
+    logistics_note: 灯具和线路必须共同运达目标工作位；库存中有灯不等于夜间岗位获得照明。
+    interfaces:
+      produced_by: [recipe.c2_assembly.task_lamp]
+      used_by: []
+      repair_recipes: [recipe.repair.task_lamp]
+      dismantle_recipes: [recipe.dismantle.task_lamp]
+    decision_role: 用本地可控照明提升具体岗位条件，同时与预警、维修和通信争夺电气材料。
+    durability_profile:
+      tracked: true
+      repairability: repairable
+      dismantle_policy: allowed
+      wear_sources: [use, impact, moisture, heat, age]
+      failure_consequence: 故障后不再提供工作位照明，并继续占用线路与安装空间。
+    deployment_profile:
+      converts_to_placed_entity: true
+      installation_required: true
+      footprint: small
+      uninstall_result: returns_item
+
+  - id: item.decoration.settlement_banner
+    name: 聚落手制旗帜
+    description: 由居民共同缝制的身份象征，可用于仪式与公共空间展示，但展示也会公开政治立场。
+    status: candidate_only
+    category: decoration_and_instrument
+    form: independent_item
+    tags: [display, memorial, textile, identity]
+    resource_chains: [politics]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: high, traceability: local_markings, wealth_signal: low}
+    actions: [display, install, deliver, trade, store]
+    unit: piece
+    mass: 2.0
+    volume: 5.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, light_protected]
+    base_value: 28
+    acquisition_paths:
+      - {type: manufacture, note: 由居民在特定事件中使用织物和颜料共同制作，本轮不定义通用配方。}
+      - {type: mission, note: 作为聚落成立、联盟或纪念事件产物获得。}
+    consumption_loss_paths:
+      - {type: installed, note: 展示后成为具体地点的可见政治符号。}
+      - {type: worn_out, note: 日晒、雨水和反复悬挂会损坏织物。}
+      - {type: destroyed, note: 冲突中被毁会形成明确的政治与记忆事件。}
+    logistics_note: 展示需要具体公共位置和维护人；收起后政治可见性下降但仍保留来源记录。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让装饰承担身份表达与暴露风险，而不是无条件提供士气数值。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: none
+      wear_sources: [handling, moisture, light, age]
+      failure_consequence: 严重破损后不能正式展示，但其纪念来源仍可能保留。
+
+  - id: item.instrument.harmonica
+    name: 旧口琴
+    description: 便携的机械乐器，可由会演奏的人物用于休息或社交；拥有乐器不等于自动产生娱乐效果。
+    status: candidate_only
+    category: decoration_and_instrument
+    form: independent_item
+    tags: [music, personal, mechanical, old_world]
+    resource_chains: [politics, survival]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: none, wealth_signal: low}
+    actions: [play, maintain, trade, deliver, store]
+    unit: piece
+    mass: 0.2
+    volume: 0.3
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, moisture_protected]
+    base_value: 24
+    acquisition_paths:
+      - {type: salvage, note: 从私人住宅、行李或旧商店中回收。}
+      - {type: trade, note: 与旅行者或收藏者交换。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 簧片、外壳和卫生状态会随演奏与受潮恶化。}
+      - {type: lost, note: 个人携带或外出时遗失会触发持有者记忆。}
+      - {type: delivered, note: 作为礼物或文化交流物品交付。}
+    logistics_note: 通常分配给具体人物并单件存放；借用与赠送必须改变持有记录。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把娱乐价值绑定到演奏者时间、个人归属和关系，而不是仓库数量。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: none
+      wear_sources: [use, moisture, handling, age]
+      failure_consequence: 音准或卫生状态不合格后不能正常演奏，只保留纪念价值。
+
+  - id: item.decoration.memorial_photo_frame
+    name: 纪念照片框
+    description: 保存人物、家庭或聚落事件照片的单件纪念物，图像内容与来源远比材料价值重要。
+    status: candidate_only
+    category: decoration_and_instrument
+    form: independent_item
+    tags: [display, memorial, personal]
+    resource_chains: [politics]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [display, install, trade, deliver, store]
+    unit: piece
+    mass: 0.8
+    volume: 1.5
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, light_protected, shock_protected]
+    base_value: 12
+    acquisition_paths:
+      - {type: salvage, note: 从住宅、遗物或废墟中回收，内容可能关联现有人物。}
+      - {type: mission, note: 作为寻回遗物或纪念事件结果获得。}
+    consumption_loss_paths:
+      - {type: installed, note: 展示后关联具体房间与可见对象。}
+      - {type: destroyed, note: 火灾、受潮或冲突破坏会永久消除图像载体。}
+      - {type: delivered, note: 归还家属或作为和解物交付后离开聚落库存。}
+    logistics_note: 单件防潮避光存放并保留图像人物索引；不能按普通木料或玻璃价值处理。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让低材料价值物品通过身份、记忆和归还选择产生高关系价值。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: none
+      wear_sources: [impact, moisture, light, age]
+      failure_consequence: 图像损坏后纪念与证据价值永久下降，替换外框不能恢复内容。
+
+  - id: item.valuable.mechanical_watch
+    name: 机械腕表
+    description: 无需网络校时的旧式精密计时器，可用于岗位协同、贸易和个人身份表达，维修需要罕见精密知识。
+    status: candidate_only
+    category: jewelry_and_valuable
+    form: independent_item
+    tags: [valuable, personal, timekeeping, mechanical, old_world, high_wealth_exposure]
+    resource_chains: [industry, politics, security]
+    availability: controlled
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: high}
+    actions: [wear, inspect, repair, dismantle, trade, deliver, store]
+    unit: piece
+    mass: 0.1
+    volume: 0.1
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, shock_protected]
+    base_value: 130
+    acquisition_paths:
+      - {type: salvage, note: 从私人遗物、旧商店或行政人员物品中回收。}
+      - {type: trade, note: 从收藏者或精密器械商交易，来源显著影响价值。}
+      - {type: mission, note: 作为寻回遗物、酬谢或证据任务结果获得。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 冲击、受潮和润滑老化会降低走时可靠性。}
+      - {type: dismantled, note: 拆解只回收少量精密件，并永久消除具名物品与来源价值。}
+      - {type: lost, note: 个人佩戴时遗失会产生所有权与关系后果。}
+    logistics_note: 单件上锁并记录持有人、来源和走时状态；分配给岗位后不能同时作为贸易储值。
+    interfaces:
+      produced_by: []
+      used_by: []
+      repair_recipes: [recipe.repair.mechanical_watch_service]
+      dismantle_recipes: [recipe.dismantle.mechanical_watch]
+    decision_role: 把离线计时功能、精密维修、个人身份和高价值贸易集中在同一件可失去来源的物品上。
+    durability_profile:
+      tracked: true
+      repairability: repairable
+      dismantle_policy: allowed
+      wear_sources: [use, impact, moisture, magnetic, age]
+      failure_consequence: 走时失准后不能用于协同计时，但仍保留贵重和纪念属性。
+    provenance_profile:
+      ownership: personal
+      source: 旧世界私人持有物或任务遗物，表背标记可能指向原主人。
+      significance: 来源决定它是岗位工具、礼物、遗物、争议财产还是普通储值品。
+
+  - id: item.valuable.family_ring
+    name: 家族戒指
+    description: 材料价值有限但拥有明确家族标记的个人贵重品，赠送、归还或出售会产生不同关系含义。
+    status: candidate_only
+    category: jewelry_and_valuable
+    form: independent_item
+    tags: [valuable, personal, memorial, identity, high_wealth_exposure]
+    resource_chains: [politics]
+    availability: unique
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: high}
+    actions: [wear, inspect, trade, deliver, store]
+    unit: piece
+    mass: 0.02
+    volume: 0.02
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [locked]
+    base_value: 90
+    acquisition_paths:
+      - {type: mission, note: 通过遗物寻回、继承争议或人物加入事件取得。}
+      - {type: trade, note: 只有在持有人同意或所有权明确时才能合法交易。}
+    consumption_loss_paths:
+      - {type: delivered, note: 归还家族或作为承诺礼物交付。}
+      - {type: lost, note: 个人佩戴或撤离时遗失会触发关系与记忆后果。}
+      - {type: confiscated, note: 在所有权争议中可能被要求暂扣作为证据。}
+    logistics_note: 单件记录持有人和家族标记；高材料价值不能覆盖原主人的所有权请求。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让“贵重”不仅是出售价格，还成为归还、赠送、纪念和争议所有权的选择。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: none
+      wear_sources: [use, impact, handling]
+      failure_consequence: 变形或标记磨损会降低身份辨识度；熔解将不可逆消除家族来源。
+    provenance_profile:
+      ownership: disputed
+      source: 带有可辨识家族纹记的私人遗物。
+      significance: 纹记允许原家族主张权利，使出售、佩戴或归还产生不同政治后果。
+
+  - id: item.valuable.silver_trade_token
+    name: 银质贸易牌
+    description: 由区域商会验记的小型银质储值牌，便于携带但会暴露财富并依赖验记信誉。
+    status: candidate_only
+    category: jewelry_and_valuable
+    form: independent_item
+    tags: [valuable, trade_value, traceable, high_wealth_exposure]
+    resource_chains: [politics, industry]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: high}
+    actions: [inspect, authenticate, trade, deliver, store]
+    unit: token
+    mass: 0.05
+    volume: 0.03
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [locked]
+    base_value: 100
+    acquisition_paths:
+      - {type: trade, note: 通过受认可商会或大型交易取得并核对验记。}
+      - {type: mission, note: 作为高价值任务酬劳或保证金返还。}
+    consumption_loss_paths:
+      - {type: delivered, note: 作为支付、保证金或政治承诺交付。}
+      - {type: confiscated, note: 验记可疑、来源非法或跨区携带时可能被扣押。}
+      - {type: lost, note: 小体积便携同时增加遗失和盗窃风险。}
+    logistics_note: 单件验记后上锁登记；不能仅按银重与无验记金属合并。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供高密度储值与跨聚落交易能力，同时引入验记依赖、财富暴露和监管风险。
+    durability_profile:
+      tracked: true
+      repairability: nonrepairable
+      dismantle_policy: none
+      wear_sources: [handling, corrosion]
+      failure_consequence: 验记磨损或被改动后失去商会信用，只剩材料价值。
+    provenance_profile:
+      ownership: public
+      source: 由区域商会验记并通过任务或交易进入聚落。
+      significance: 验记和交易链决定接受度，熔化或改刻会摧毁大部分信用价值。
+
+  - id: item.document.travel_permit_booklet
+    name: 边境通行证册
+    description: 由特定管辖方签发的物理通行凭证，纸面存在不等于权利仍有效。
+    status: candidate_only
+    category: document_and_credential
+    form: independent_item
+    tags: [credential, identity, traceable]
+    resource_chains: [politics, security]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: regulated_batch, wealth_signal: low}
+    actions: [present, authenticate, reserve, deliver, store]
+    unit: copy
+    mass: 0.1
+    volume: 0.1
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, archive_safe]
+    base_value: 16
+    acquisition_paths:
+      - {type: mission, note: 完成审查、外交或边境任务后由签发方交付。}
+      - {type: allocation, note: 从聚落公共档案分配给获准出行的人物。}
+    consumption_loss_paths:
+      - {type: invalidated, note: 签发方撤销、过期或持有人改变后权利失效，物理证册仍可作为记录。}
+      - {type: confiscated, note: 边境检查中因身份不符或伪造嫌疑被扣押。}
+      - {type: lost, note: 遗失后人物无法出示，且可能触发冒用风险。}
+    logistics_note: 单件关联持有人、签发方和有效状态；保管地点与当前权利记录分开显示。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 明确区分可搬运的纸面凭证与可撤销的通行权，防止把文件库存当成永久权限。
+    durability_profile:
+      tracked: true
+      repairability: nonrepairable
+      dismantle_policy: none
+      wear_sources: [handling, moisture, light, age]
+      failure_consequence: 破损后可能无法通过现场验证，即使权利记录仍有效也需要补发载体。
+    record_transition:
+      creates_rights_record: true
+      authority_scope: 特定签发方控制的边境与时间窗口。
+      revocation_note: 签发方撤销或有效期结束后，证册保留为历史文件但不再授予通行权。
+
+  - id: item.document.ration_coupon_book
+    name: 配给券册
+    description: 记录有限食品或日用品领取额度的物理券册，兑付会消耗相应权利而非复制库存。
+    status: candidate_only
+    category: document_and_credential
+    form: independent_item
+    tags: [credential, rationing, traceable]
+    resource_chains: [survival, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: medium}
+    actions: [present, redeem, authenticate, trade, deliver, store]
+    unit: copy
+    mass: 0.15
+    volume: 0.2
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, archive_safe]
+    base_value: 30
+    acquisition_paths:
+      - {type: allocation, note: 由聚落或区域配给机构按人口与承诺发放。}
+      - {type: mission, note: 作为救济、补偿或劳动报酬取得。}
+    consumption_loss_paths:
+      - {type: invalidated, note: 兑付、过期或批次撤销后对应额度失效。}
+      - {type: confiscated, note: 重复兑付、来源异常或黑市交易时可能被扣押。}
+      - {type: delivered, note: 转交给个人或其他聚落后离开公共控制。}
+    logistics_note: 券册、剩余额度和实际食品库存分别记录；有券不代表发放点当期有货。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把领取权、实物库存与政治承诺拆开，防止凭证成为可重复使用的隐形物资。
+    durability_profile:
+      tracked: true
+      repairability: nonrepairable
+      dismantle_policy: none
+      wear_sources: [handling, moisture, age]
+      failure_consequence: 印记或券页损坏后无法可靠验证剩余额度，需要签发方复核。
+    record_transition:
+      creates_rights_record: true
+      authority_scope: 指定配给机构、物资类别、额度和有效期。
+      revocation_note: 兑付或撤销后权利记录减少或归零，纸面残券只保留审计价值。
+
+  - id: item.document.workshop_qualification_certificate
+    name: 工坊资格证
+    description: 证明特定人物曾通过岗位考核的物理证书，不能替代当前技能、健康状态和设施条件。
+    status: candidate_only
+    category: document_and_credential
+    form: independent_item
+    tags: [credential, qualification, identity, traceable]
+    resource_chains: [industry, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: low}
+    actions: [present, authenticate, read, deliver, store]
+    unit: copy
+    mass: 0.1
+    volume: 0.2
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, archive_safe, locked]
+    base_value: 12
+    acquisition_paths:
+      - {type: mission, note: 完成岗位考核、学徒期或认证任务后由机构签发。}
+      - {type: allocation, note: 从公共档案领取个人持有副本。}
+    consumption_loss_paths:
+      - {type: invalidated, note: 资格被暂停、撤销或岗位范围改变后证书失效。}
+      - {type: confiscated, note: 伪造或冒用时被审计人员扣押。}
+      - {type: lost, note: 遗失会增加现场验证成本，但不自动抹除权威记录。}
+    logistics_note: 证书载体与人物资格记录双向索引；文件被盗不能把资格转移给他人。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 允许世界通过物理文件呈现资格，同时阻止“捡到证书就获得技能”的逻辑错误。
+    durability_profile:
+      tracked: true
+      repairability: nonrepairable
+      dismantle_policy: none
+      wear_sources: [handling, moisture, light, age]
+      failure_consequence: 载体无法辨识后需要查验权威记录或补发，不能现场证明资格。
+    record_transition:
+      creates_rights_record: true
+      authority_scope: 指定签发机构认可的工坊岗位和工艺范围。
+      revocation_note: 资格状态以人物与签发机构记录为准，纸面证书不能阻止暂停或撤销。
+
+  - id: item.document.disputed_property_deed
+    name: 争议产权契据
+    description: 记载建筑或土地权利的旧契据，物理持有不能自动解决多个签发体系之间的所有权争议。
+    status: candidate_only
+    category: document_and_credential
+    form: independent_item
+    tags: [credential, ownership_record, disputed, traceable, high_wealth_exposure]
+    resource_chains: [politics, industry]
+    availability: unique
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: regulated_batch, wealth_signal: high}
+    actions: [read, present, authenticate, trade, deliver, store]
+    unit: copy
+    mass: 0.2
+    volume: 0.3
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, fireproof, archive_safe]
+    base_value: 160
+    acquisition_paths:
+      - {type: salvage, note: 从行政档案、私人保险柜或废弃建筑中发现。}
+      - {type: mission, note: 作为产权调查、继承或外交争议的关键证据取得。}
+    consumption_loss_paths:
+      - {type: delivered, note: 提交仲裁、归还权利人或交换政治承诺后离开库存。}
+      - {type: confiscated, note: 争议方或监管机构可能扣押原件。}
+      - {type: destroyed, note: 原件毁损会削弱部分证据链，但不自动消除所有权主张。}
+    logistics_note: 原件防火上锁，使用副本处理日常查阅；任何移动都保留交接记录。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让文件成为政治证据而不是可直接兑换建筑的钥匙，并保留相互冲突的权利主张。
+    durability_profile:
+      tracked: true
+      repairability: nonrepairable
+      dismantle_policy: none
+      wear_sources: [handling, moisture, light, age]
+      failure_consequence: 印章、签字或边界描述损坏后证据可信度下降，无法通过普通维修恢复。
+    record_transition:
+      creates_rights_record: true
+      authority_scope: 契据所述建筑或土地，以及愿意承认该签发体系的机构。
+      revocation_note: 仲裁、征用或新制度可能改变权利；物理原件只作为证据，不强制世界接受主张。
+
+  - id: item.rare.prewar_bearing_sample
+    name: 战前精密轴承样品
+    description: 密封保存的高精度机械样品，可作为测量和维修参照，但消耗或拆解会失去工艺基准价值。
+    status: candidate_only
+    category: rare_and_special
+    form: independent_item
+    tags: [rare, old_world, mechanical, sealed, high_wealth_exposure]
+    resource_chains: [industry, security, politics]
+    availability: unique
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: high}
+    actions: [inspect, reserve, trade, deliver, store]
+    unit: piece
+    mass: 0.4
+    volume: 0.3
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, shock_protected, moisture_protected]
+    base_value: 180
+    acquisition_paths:
+      - {type: salvage, note: 从战前工厂质检柜或研究设施密封箱中取得。}
+      - {type: mission, note: 作为技术遗产寻回任务的核心目标获得。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 反复拆装、污染或碰撞会降低其作为精度参照的价值。}
+      - {type: delivered, note: 交给外部工坊或政治对象后失去本地参照能力。}
+      - {type: confiscated, note: 高端工艺样品可能受技术管制。}
+    logistics_note: 单件密封防震保管，借给精密维修时记录责任人；不得与普通机械备件合并。
+    interfaces:
+      produced_by: []
+      used_by: [recipe.repair.mechanical_watch_service]
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 在保留长期精密工艺参照、完成高价值维修和对外交易之间形成稀缺选择。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: restricted
+      wear_sources: [impact, moisture, corrosion, handling]
+      failure_consequence: 表面或尺寸基准受损后不能再提高精密维修的品质上限，只剩普通材料价值。
+    provenance_profile:
+      ownership: public
+      source: 战前制造设施的密封质检样品。
+      significance: 完整封存和原始标记使其成为工艺基准，拆封记录会改变可信度与价值。
+
+  - id: item.rare.offline_sensor_core
+    name: 离线传感核心
+    description: 不依赖外部网络授权的高品质传感核心，可支持未来诊断或预警升级，但当前没有运行时导入授权。
+    status: candidate_only
+    category: rare_and_special
+    form: independent_item
+    tags: [rare, old_world, electrical, sensor, physically_isolated, high_wealth_exposure]
+    resource_chains: [industry, security, politics]
+    availability: unique
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: high}
+    actions: [inspect, reserve, trade, deliver, store]
+    unit: piece
+    mass: 0.7
+    volume: 0.9
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, shock_protected, magnetic_shielded]
+    base_value: 210
+    acquisition_paths:
+      - {type: salvage, note: 从旧工业控制系统或军事传感设施中完整拆取。}
+      - {type: mission, note: 作为离线技术寻回或防止联网锁定的任务目标。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 静电、冲击、磁场和老化会降低校准可信度。}
+      - {type: delivered, note: 作为技术交换或政治承诺交付。}
+      - {type: confiscated, note: 受控传感技术可能被硅基或地方监管方查扣。}
+    logistics_note: 单件防震防磁上锁，测试与安装必须记录；库存存在不代表任何设施已获得传感功能。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 为未来离线自动化保留高价值核心，同时明确它不能在当前阶段直接变成无风险升级。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: restricted
+      wear_sources: [impact, moisture, magnetic, heat, age]
+      failure_consequence: 校准或接口失效后只能作为研究样本，不能承担可靠传感职责。
+    provenance_profile:
+      ownership: public
+      source: 旧世界独立控制系统的核心部件。
+      significance: 离线能力使其具有战略价值，也提高技术管制、盗窃和政治争夺风险。
+
+  - id: item.rare.sealed_seed_vault
+    name: 密封种源匣
+    description: 保存来源清晰的多种旧世界种子的密封匣，开启可获得种源但会失去整体封存与证据价值。
+    status: candidate_only
+    category: rare_and_special
+    form: independent_item
+    tags: [rare, old_world, seed_stock, sealed, traceable, high_wealth_exposure]
+    resource_chains: [survival, politics]
+    availability: unique
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: high}
+    actions: [inspect, reserve, trade, deliver, store]
+    unit: piece
+    mass: 6.0
+    volume: 8.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, cool, locked, moisture_protected]
+    base_value: 240
+    acquisition_paths:
+      - {type: salvage, note: 从农业研究站、灾备仓或冷库中完整寻回。}
+      - {type: mission, note: 作为种质保护、外交交接或粮食未来任务的核心物品。}
+    consumption_loss_paths:
+      - {type: invalidated, note: 开封后整体密封状态和批次证据失效，内容转入后续种源处理。}
+      - {type: delivered, note: 交给研究、农业或外交对象后离开聚落控制。}
+      - {type: destroyed, note: 高温、受潮或污染会不可逆损失种质。}
+    logistics_note: 整匣冷凉上锁并监测密封；是否开封必须作为不可逆承诺单独确认。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 在保存长期种质、立即开封获取农业选择和对外交付之间制造不可逆的时间取舍。
+    durability_profile:
+      tracked: true
+      repairability: nonrepairable
+      dismantle_policy: none
+      wear_sources: [impact, moisture, heat, age]
+      failure_consequence: 密封破坏或温控失败后不能恢复原始种质可信度，只能转入风险较高的开封处理。
+    provenance_profile:
+      ownership: public
+      source: 旧世界农业研究或灾备体系的密封种质容器。
+      significance: 完整封条同时证明内容来源和保存链，开封会不可逆改变其政治与科研价值。
+
+  - id: item.rare.silicon_access_token
+    name: 硅基访问令牌
+    description: 可能打开受硅基体系控制设施或数据的联网凭据，效率潜力高但依赖、锁定和追踪风险同样高。
+    status: candidate_only
+    category: rare_and_special
+    form: independent_item
+    tags: [rare, silicon_technology, access_control, traceable, high_wealth_exposure]
+    resource_chains: [industry, security, politics]
+    availability: unique
+    legal_profile: silicon_jurisdiction
+    exposure_profile: {visibility: low, traceability: networked, wealth_signal: high}
+    actions: [inspect, authenticate, activate, reserve, trade, deliver, store]
+    unit: token
+    mass: 0.1
+    volume: 0.1
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, shock_protected, magnetic_shielded]
+    base_value: 260
+    acquisition_paths:
+      - {type: mission, note: 从受控设施、授权人员或高风险数据任务中取得。}
+      - {type: salvage, note: 从失效终端或遗留身份设备中回收，但有效性未知。}
+    consumption_loss_paths:
+      - {type: invalidated, note: 远程撤销、过期或所有者变化后访问权失效，物理令牌仍存在。}
+      - {type: confiscated, note: 硅基体系或地方监管方可识别并查扣。}
+      - {type: destroyed, note: 为阻止追踪或滥用而物理销毁，但远端记录可能仍保留。}
+    logistics_note: 默认上锁并隔离于普通电子设备；任何激活都需要单独授权并公开联网与追踪后果。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把快速访问能力与外部依赖、远程撤销、身份追踪和政治管辖绑定，避免成为必选万能钥匙。
+    durability_profile:
+      tracked: true
+      repairability: nonrepairable
+      dismantle_policy: none
+      wear_sources: [impact, moisture, magnetic, heat, age]
+      failure_consequence: 物理或远端认证失效后不能提供访问权，只保留证据与研究价值。
+    provenance_profile:
+      ownership: disputed
+      source: 硅基管辖体系签发或遗留的身份访问设备。
+      significance: 有效性、原持有人和远端记录决定它是钥匙、诱饵、证据还是追踪源。
+
+interface_extensions:
+  item.material.reclaimed_steel_plate:
+    produced_by:
+      - recipe.dismantle.bolt_rifle
+      - recipe.dismantle.pump_shotgun
+      - recipe.dismantle.field_bed
+    used_by:
+      - recipe.c2_assembly.field_bed
+      - recipe.repair.field_bed
+  item.component.fastener_set:
+    produced_by:
+      - recipe.dismantle.field_bed
+    used_by:
+      - recipe.c2_assembly.field_bed
+      - recipe.c2_assembly.task_lamp
+      - recipe.repair.field_bed
+  item.component.mechanical_spares:
+    produced_by:
+      - recipe.dismantle.bolt_rifle
+      - recipe.dismantle.pump_shotgun
+      - recipe.dismantle.mechanical_watch
+    used_by:
+      - recipe.c2_assembly.weapon_cleaning_kit
+      - recipe.repair.bolt_rifle_service
+      - recipe.repair.pump_shotgun_service
+      - recipe.repair.mechanical_watch_service
+  item.waste.metal_offcuts:
+    produced_by:
+      - recipe.dismantle.bolt_rifle
+      - recipe.dismantle.pump_shotgun
+      - recipe.dismantle.mechanical_watch
+  item.material.woven_cloth:
+    produced_by:
+      - recipe.dismantle.field_bed
+    used_by:
+      - recipe.c2_assembly.field_bed
+      - recipe.repair.field_bed
+  item.daily.cleaning_rags:
+    used_by:
+      - recipe.c2_assembly.weapon_cleaning_kit
+      - recipe.repair.bolt_rifle_service
+      - recipe.repair.pump_shotgun_service
+      - recipe.repair.offline_archive_drive
+  item.daily.cleaning_solution:
+    used_by:
+      - recipe.c2_assembly.weapon_cleaning_kit
+      - recipe.repair.mechanical_watch_service
+  item.material.copper_wire:
+    produced_by:
+      - recipe.dismantle.offline_archive_drive
+      - recipe.dismantle.task_lamp
+    used_by:
+      - recipe.c2_assembly.task_lamp
+      - recipe.repair.offline_archive_drive
+      - recipe.repair.task_lamp
+  item.component.recovered_electronics:
+    produced_by:
+      - recipe.dismantle.offline_archive_drive
+      - recipe.dismantle.task_lamp
+    used_by:
+      - recipe.c2_assembly.task_lamp
+      - recipe.repair.offline_archive_drive
+      - recipe.repair.task_lamp
+  item.component.cable_harness:
+    produced_by:
+      - recipe.dismantle.task_lamp
+    used_by:
+      - recipe.c2_assembly.task_lamp
+      - recipe.repair.task_lamp

@@ -1,0 +1,392 @@
+schema_version: 0.5.0
+library_status: candidate_only
+authority:
+  contract: docs/item-library/item-library-authoring-contract-v0.5.md
+  design: docs/design-docs/item-and-manufacturing-system-v0.1.md
+  design_sha256: 24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb
+scope_note: C5 的 15 个代表工艺连接组件、工具、离线电子、食品保存与基础医疗，不冻结运行时效果数值。
+
+recipes:
+  - id: recipe.c5_component.assemble_connectors
+    name: 绝缘连接件组装
+    description: 将铜线裁切成导体端子并以回收橡胶形成基础绝缘和应力保护。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [industry, security]
+    inputs:
+      - {item: item.material.copper_wire, amount: 0.3, consumed: true}
+      - {item: item.material.reclaimed_rubber_strip, amount: 0.1, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [electrical_bench]
+    tools: [soldering_tools, electrical_testing_tools, measuring_tools]
+    qualification: {minimum_role: electrician, skill: electronics, specialty: electrical_connectors, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 2.0, max: 4.0}
+    logistics:
+      input_staging: 铜线和橡胶按污染、尺寸与绝缘状态送到电气台。
+      output_storage: 完成通断和拉力检查后按接口批次分格入库。
+    outputs:
+      - {item: item.component.electrical_connector_set, min: 0.8, max: 1.0}
+    byproducts: []
+    risks:
+      - {id: electrical_fault, condition: 导体压接或绝缘覆盖不完整。, effect: 成品不能进入可靠电气库存。}
+      - {id: material_variation, condition: 回收橡胶厚度与老化状态不一致。, effect: 可用产量和适配范围下降。}
+
+  - id: recipe.c5_component.assemble_bearing_kit
+    name: 密封轴承整配
+    description: 从通用机械备件中选择适配转动件，以整形钢件和橡胶密封形成维修轴承组。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [industry, survival, security]
+    inputs:
+      - {item: item.component.mechanical_spares, amount: 1.0, consumed: true}
+      - {item: item.material.reclaimed_steel_plate, amount: 0.2, consumed: true}
+      - {item: item.material.reclaimed_rubber_strip, amount: 0.1, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [precision_bench, basic_workshop]
+    tools: [metalworking_tools, measuring_tools]
+    qualification: {minimum_role: mechanic, skill: fabrication, specialty: mechanical_components, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 4.0, max: 7.0}
+    logistics:
+      input_staging: 备件按设备族、磨损与污染分级，钢件和密封条保持清洁。
+      output_storage: 轴承组完成转动检查后密封并标记适配尺寸。
+    outputs:
+      - {item: item.component.sealed_bearing_kit, min: 0.6, max: 0.85}
+    byproducts:
+      - {type: item, item: item.waste.metal_offcuts, min: 0.05, max: 0.12}
+    risks:
+      - {id: material_variation, condition: 回收滚动件磨损和尺寸差异超出整配能力。, effect: 产量和可用设备族缩小。}
+      - {id: contamination, condition: 清洁或密封阶段混入粉尘和金属屑。, effect: 成品退出可靠维修库存。}
+
+  - id: recipe.c5_component.assemble_protected_relay
+    name: 防护继电模块封装
+    description: 筛选回收继电器并用绝缘连接件完成本地控制模块的配线与防护封装。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [industry, security]
+    inputs:
+      - {item: item.component.recovered_electronics, amount: 1.0, consumed: true}
+      - {item: item.component.electrical_connector_set, amount: 1.0, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [electrical_bench, clean_workbench]
+    tools: [soldering_tools, electrical_testing_tools]
+    qualification: {minimum_role: electrician, skill: electronics, specialty: protected_control, missing_effect: prohibited}
+    effective_time_hours: {min: 4.0, max: 7.0}
+    logistics:
+      input_staging: 回收电子件必须先完成离线识别和联网锁定排除。
+      output_storage: 模块测试后防震封装并按线圈与触点状态标记。
+    outputs:
+      - {item: item.component.protected_relay_module, min: 0.7, max: 0.9}
+    byproducts:
+      - {type: burden, burden: chemical_residue, min: 0.1, max: 0.4}
+    risks:
+      - {id: electrical_fault, condition: 继电器状态或连接测试不完整。, effect: 模块可能误动作并退出可用库存。}
+      - {id: unauthorized_access, condition: 未识别的联网控制件混入封装。, effect: 工艺中止并隔离输入批次。}
+
+  - id: recipe.c5_component.assemble_power_regulator
+    name: 本地电源调节模块装配
+    description: 将回收电子组件、铜线和熔断件装配为物理隔离的低压电源调节模块。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [industry, survival, security]
+    inputs:
+      - {item: item.component.recovered_electronics, amount: 1.0, consumed: true}
+      - {item: item.material.copper_wire, amount: 0.2, consumed: true}
+      - {item: item.component.ceramic_fuse_set, amount: 1.0, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [electrical_bench, clean_workbench]
+    tools: [soldering_tools, electrical_testing_tools, measuring_tools]
+    qualification: {minimum_role: electrician, skill: electronics, specialty: protected_control, missing_effect: prohibited}
+    effective_time_hours: {min: 5.0, max: 8.0}
+    logistics:
+      input_staging: 电子件按输入范围和锁定状态筛分，熔断件按规格单独取料。
+      output_storage: 完成本地负载测试后断电、防震并标记输入范围。
+    outputs:
+      - {item: item.component.local_power_regulator, min: 0.65, max: 0.85}
+    byproducts:
+      - {type: burden, burden: chemical_residue, min: 0.1, max: 0.5}
+    risks:
+      - {id: electrical_fault, condition: 极性、绝缘或熔断规格不匹配。, effect: 成品被禁止使用并可能损失输入。}
+      - {id: battery_short, condition: 测试电源缺少短路隔离。, effect: 工艺中止并产生电池和人员风险。}
+
+  - id: recipe.c5_component.assemble_hose
+    name: 低压软管组件装配
+    description: 将回收橡胶条、整形钢接头与紧固件装成可检查的低压液体软管组件。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [industry, survival]
+    inputs:
+      - {item: item.material.reclaimed_rubber_strip, amount: 0.8, consumed: true}
+      - {item: item.material.reclaimed_steel_plate, amount: 0.2, consumed: true}
+      - {item: item.component.fastener_set, amount: 0.3, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [basic_workshop]
+    tools: [measuring_tools, metalworking_tools]
+    qualification: {minimum_role: mechanic, skill: maintenance, specialty: hose_fitting, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 3.0, max: 5.0}
+    logistics:
+      input_staging: 橡胶按原接触介质和老化状态送入，连接件与夹固件按尺寸配套。
+      output_storage: 完成基础泄漏检查后标记可用介质并避光卷存。
+    outputs:
+      - {item: item.component.pressure_hose_assembly, min: 0.7, max: 0.9}
+    byproducts: []
+    risks:
+      - {id: pressure_burst, condition: 接头夹固、材料老化或测试不合格。, effect: 成品不能接入液体系统。}
+      - {id: contamination, condition: 燃料或未知化学残留未识别。, effect: 组件永久退出食品和水用途。}
+
+  - id: recipe.c5_tool.assemble_mechanic_set
+    name: 机械手工具组装配
+    description: 将整形钢件、木柄与通用紧固件制作并配成基础机械手工具组。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [industry, survival, security]
+    inputs:
+      - {item: item.material.reclaimed_steel_plate, amount: 1.0, consumed: true}
+      - {item: item.material.reclaimed_lumber, amount: 0.4, consumed: true}
+      - {item: item.component.fastener_set, amount: 0.5, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [basic_workshop, precision_bench]
+    tools: [metalworking_tools, woodworking_tools, measuring_tools]
+    qualification: {minimum_role: mechanic, skill: fabrication, specialty: hand_tool_assembly, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 8.0, max: 13.0}
+    logistics:
+      input_staging: 钢件、木料和紧固件按工具清单集结，避免挪用已预留维修材料。
+      output_storage: 每套工具完成尺寸、柄部和缺件检查后上锁入库。
+    outputs:
+      - {item: item.tool.mechanic_hand_tool_set, min: 0.8, max: 1.0}
+    byproducts:
+      - {type: item, item: item.waste.metal_offcuts, min: 0.08, max: 0.15}
+      - {type: item, item: item.waste.sawdust, min: 0.03, max: 0.08}
+    risks:
+      - {id: worker_injury, condition: 锻整、刃口和柄部安装缺少固定与防护。, effect: 有效时间增加并产生人员伤害。}
+      - {id: quality_loss, condition: 尺寸或热处理不稳定。, effect: 工具组只能承担较低风险工作。}
+
+  - id: recipe.c5_electronic.assemble_field_telephone
+    name: 有线现场电话装配
+    description: 用线束、继电模块、连接件和本地电池装配点对点现场通信端点。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [security, industry, politics]
+    inputs:
+      - {item: item.component.cable_harness, amount: 1.0, consumed: true}
+      - {item: item.component.protected_relay_module, amount: 1.0, consumed: true}
+      - {item: item.component.electrical_connector_set, amount: 1.0, consumed: true}
+      - {item: item.component.rechargeable_battery_module, amount: 1.0, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [electrical_bench]
+    tools: [soldering_tools, electrical_testing_tools]
+    qualification: {minimum_role: electrician, skill: electronics, specialty: wired_communications, missing_effect: prohibited}
+    effective_time_hours: {min: 7.0, max: 11.0}
+    logistics:
+      input_staging: 线路、端点组件和电池按接口与状态成套送到电气台。
+      output_storage: 完成双端本地测试后断电入库，线路部署材料另行准备。
+    outputs:
+      - {item: item.electronic.wired_field_telephone, min: 1.0, max: 1.0}
+    byproducts: []
+    risks:
+      - {id: false_alarm, condition: 线路极性、继电或振铃测试不完整。, effect: 设备可能传递错误状态并退出可用库存。}
+      - {id: battery_short, condition: 电池与线路保护不匹配。, effect: 装配中止并隔离电池和设备。}
+
+  - id: recipe.c5_electronic.assemble_task_lantern
+    name: 可充电任务灯装配
+    description: 将电池模块、本地调节模块、铜线和回收玻璃片装成物理隔离的便携任务灯。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [survival, industry, security]
+    inputs:
+      - {item: item.component.rechargeable_battery_module, amount: 1.0, consumed: true}
+      - {item: item.component.local_power_regulator, amount: 1.0, consumed: true}
+      - {item: item.material.copper_wire, amount: 0.2, consumed: true}
+      - {item: item.material.reclaimed_glass_sheet, amount: 0.2, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [electrical_bench, basic_workshop]
+    tools: [soldering_tools, electrical_testing_tools, glassworking_tools]
+    qualification: {minimum_role: electrician, skill: electronics, specialty: portable_lighting, missing_effect: prohibited}
+    effective_time_hours: {min: 5.0, max: 8.0}
+    logistics:
+      input_staging: 电池保持隔离，玻璃边缘处理后再与电气组件集结。
+      output_storage: 完成充放电和灯体检查后以断电状态防震入库。
+    outputs:
+      - {item: item.electronic.rechargeable_task_lantern, min: 1.0, max: 1.0}
+    byproducts:
+      - {type: item, item: item.waste.glass_fines, min: 0.02, max: 0.05}
+    risks:
+      - {id: battery_short, condition: 调节、绝缘或电池连接不合格。, effect: 设备和电池退出可用库存。}
+      - {id: glass_cut, condition: 回收玻璃边缘未安全处理。, effect: 工时扩大并产生人员伤害。}
+
+  - id: recipe.c5_food.mill_flour
+    name: 原粮清理磨粉
+    description: 将原粮清理、磨制并装袋为粗磨面粉，提高烹饪便利但缩短储存稳定性。
+    status: candidate_only
+    kind: food_processing
+    resource_chains: [survival, politics]
+    inputs:
+      - {item: item.food.raw_grain, amount: 1.0, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [grain_mill]
+    tools: [milling_tools, measuring_tools]
+    qualification: {minimum_role: cook, skill: cooking, specialty: grain_milling, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 3.0, max: 5.0}
+    logistics:
+      input_staging: 原粮按受潮、虫害和污染状态送到磨坊，食用批次与种源分开。
+      output_storage: 面粉立即装入干燥食品袋并标记磨制批次。
+    outputs:
+      - {item: item.food.grain_flour, min: 0.75, max: 0.9}
+    byproducts:
+      - {type: burden, burden: smoke_and_dust, min: 0.1, max: 0.4}
+    risks:
+      - {id: foodborne_illness, condition: 虫害、霉变或设备污染未在磨制前识别。, effect: 整批面粉退出食品用途。}
+      - {id: dust_exposure, condition: 磨坊通风和粉尘控制不足。, effect: 有效时间扩大并增加火灾和健康风险。}
+
+  - id: recipe.c5_food.bake_flatbread
+    name: 基础扁饼烘制
+    description: 用面粉、洁净水和盐在基础厨房以柴薪烘制短期主食。
+    status: candidate_only
+    kind: food_processing
+    resource_chains: [survival, security, politics]
+    inputs:
+      - {item: item.food.grain_flour, amount: 1.0, consumed: true}
+      - {item: item.water.clean_water, amount: 0.5, consumed: true}
+      - {item: item.chemical.mineral_salt, amount: 0.02, consumed: true}
+      - {item: item.material.dry_firewood, amount: 0.2, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [basic_kitchen]
+    tools: [cooking_set, measuring_tools]
+    qualification: {minimum_role: cook, skill: cooking, specialty: flatbread_baking, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 2.0, max: 4.0}
+    logistics:
+      input_staging: 食材与燃料分别送到厨房，洁净水不得被医疗或饮水重复承诺。
+      output_storage: 扁饼冷却后按烘制时段分装并进入短期食品区。
+    outputs:
+      - {item: item.food.basic_flatbread, min: 1.2, max: 1.5}
+    byproducts:
+      - {type: item, item: item.waste.wood_ash, min: 0.01, max: 0.03}
+    risks:
+      - {id: foodborne_illness, condition: 和面、表面或容器污染。, effect: 成品不得进入分餐库存。}
+      - {id: fire, condition: 炉火和柴薪隔离不合格。, effect: 批次和厨房设施面临损失。}
+
+  - id: recipe.c5_food.dry_vegetable
+    name: 蔬菜切分脱水
+    description: 将合格新鲜蔬菜切分并以受控热源脱水封装，减少腐坏但消耗燃料和人物时间。
+    status: candidate_only
+    kind: food_processing
+    resource_chains: [survival, security, politics]
+    inputs:
+      - {item: item.food.fresh_vegetable, amount: 1.0, consumed: true}
+      - {item: item.material.dry_firewood, amount: 0.15, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [food_preservation_station, basic_kitchen]
+    tools: [preservation_tools, cooking_set]
+    qualification: {minimum_role: cook, skill: cooking, specialty: food_dehydration, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 4.0, max: 7.0}
+    logistics:
+      input_staging: 鲜菜按新鲜度送入食品安全区，腐败和污染部分先剔除。
+      output_storage: 成品完全冷却后防潮封装并标记加工批次。
+    outputs:
+      - {item: item.food.dried_vegetable, min: 0.25, max: 0.4}
+    byproducts:
+      - {type: burden, burden: wastewater, min: 0.1, max: 0.3}
+    risks:
+      - {id: spoilage, condition: 脱水不足或冷却后吸湿。, effect: 包装内霉变风险上升并可能损失整批。}
+      - {id: fire, condition: 热源、干燥材料和通风控制不合格。, effect: 工艺中止并产生厨房火灾风险。}
+
+  - id: recipe.c5_food.ferment_root_vegetable
+    name: 根菜盐水发酵
+    description: 将根茎蔬菜、矿物盐和洁净水在清洁容器中完成受控发酵。
+    status: candidate_only
+    kind: food_processing
+    resource_chains: [survival, politics]
+    inputs:
+      - {item: item.food.root_vegetable, amount: 1.0, consumed: true}
+      - {item: item.chemical.mineral_salt, amount: 0.05, consumed: true}
+      - {item: item.water.clean_water, amount: 0.5, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [food_preservation_station]
+    tools: [preservation_tools, measuring_tools]
+    qualification: {minimum_role: cook, skill: cooking, specialty: food_fermentation, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 3.0, max: 5.0}
+    logistics:
+      input_staging: 根菜清理后与盐、水和清洁容器同批集结。
+      output_storage: 发酵批次按开始日期、封口和异常状态单独存放。
+    outputs:
+      - {item: item.food.fermented_root_vegetable, min: 1.0, max: 1.1}
+    byproducts: []
+    risks:
+      - {id: foodborne_illness, condition: 盐水比例、容器清洁或发酵状态异常。, effect: 整批禁止食用并隔离。}
+      - {id: packaging_failure, condition: 封口泄漏或容器承压异常。, effect: 保存窗口缩短并产生污染风险。}
+
+  - id: recipe.c5_food.brew_herbal_infusion
+    name: 草本浸泡饮品制作
+    description: 用干燥药草、洁净水和柴薪制作短期浸泡饮品，不产生药物治疗效果声明。
+    status: candidate_only
+    kind: food_processing
+    resource_chains: [survival, politics]
+    inputs:
+      - {item: item.plant.dried_medicinal_herb, amount: 0.05, consumed: true}
+      - {item: item.water.clean_water, amount: 1.0, consumed: true}
+      - {item: item.material.dry_firewood, amount: 0.05, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [basic_kitchen]
+    tools: [cooking_set, measuring_tools]
+    qualification: {minimum_role: cook, skill: cooking, specialty: herbal_brewing, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 1.0, max: 2.0}
+    logistics:
+      input_staging: 药草按来源与污染状态送到食品区，医疗预留批次不得擅自占用。
+      output_storage: 饮品冷却后装入清洁瓶并标记短期饮用窗口。
+    outputs:
+      - {item: item.food.herbal_infusion, min: 0.9, max: 1.0}
+    byproducts:
+      - {type: burden, burden: wastewater, min: 0.05, max: 0.1}
+    risks:
+      - {id: contamination, condition: 药草、器具或装瓶环境受到污染。, effect: 成品退出食品库存。}
+      - {id: ingredient_shortage, condition: 医疗用途已经预留同批药草。, effect: 工艺无法按计划开始。}
+
+  - id: recipe.c5_medical.prepare_oral_rehydration
+    name: 口服补液配制
+    description: 由医护人员用洁净水、粗制糖料和矿物盐按受控比例配制口服补液。
+    status: candidate_only
+    kind: medical_processing
+    resource_chains: [survival, security]
+    inputs:
+      - {item: item.water.clean_water, amount: 1.0, consumed: true}
+      - {item: item.food.unrefined_sugar, amount: 0.03, consumed: true}
+      - {item: item.chemical.mineral_salt, amount: 0.003, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [medical_clean_station, clean_workbench]
+    tools: [medical_packing_tools, measuring_tools, sterilization_tools]
+    qualification: {minimum_role: medic, skill: medicine, specialty: hydration_care, missing_effect: prohibited}
+    effective_time_hours: {min: 1.0, max: 2.0}
+    logistics:
+      input_staging: 三种输入按食品和医疗清洁要求集结，容器与标签提前准备。
+      output_storage: 配制后立即封口、标记浓度与时间并进入短期医疗区。
+    outputs:
+      - {item: item.medical.oral_rehydration_solution, min: 1.0, max: 1.0}
+    byproducts: []
+    risks:
+      - {id: dosage_error, condition: 糖盐比例、计量或标签错误。, effect: 整批不得用于照护。}
+      - {id: contamination, condition: 水、器具或容器清洁不合格。, effect: 整批报废并清洁工作区。}
+
+  - id: recipe.c5_medical.assemble_clean_splint
+    name: 清洁夹板裁配
+    description: 将整形木板、织物衬垫和紧固件裁配为可封装的基础夹板组。
+    status: candidate_only
+    kind: medical_processing
+    resource_chains: [survival, security]
+    inputs:
+      - {item: item.material.reclaimed_lumber, amount: 0.4, consumed: true}
+      - {item: item.material.woven_cloth, amount: 0.3, consumed: true}
+      - {item: item.component.fastener_set, amount: 0.2, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [medical_clean_station, carpentry_bench]
+    tools: [medical_packing_tools, woodworking_tools, measuring_tools]
+    qualification: {minimum_role: medic, skill: medicine, specialty: splinting, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 3.0, max: 5.0}
+    logistics:
+      input_staging: 木板先完成毛刺和污染检查，再与清洁织物和固定件送入医疗区。
+      output_storage: 按尺寸封装并标记清洁状态，避免与普通木工件混放。
+    outputs:
+      - {item: item.medical.clean_splint_set, min: 0.9, max: 1.0}
+    byproducts:
+      - {type: item, item: item.waste.sawdust, min: 0.02, max: 0.05}
+    risks:
+      - {id: contamination, condition: 木屑、表面或衬垫未达到清洁要求。, effect: 成品只能退出医疗库存或重新处理。}
+      - {id: quality_loss, condition: 尺寸、边缘或固定结构不稳定。, effect: 夹板适配范围和可靠性下降。}

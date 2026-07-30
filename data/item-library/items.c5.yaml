@@ -1,0 +1,974 @@
+schema_version: 0.5.0
+library_status: candidate_only
+authority:
+  contract: docs/item-library/item-library-authoring-contract-v0.5.md
+  design: docs/design-docs/item-and-manufacturing-system-v0.1.md
+  design_sha256: 24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb
+scope_note: C5 的 30 项候选内容补齐组件工具电子与食品医疗配额，不授权运行时导入。
+
+items:
+  - id: item.component.electrical_connector_set
+    name: 绝缘电气连接件组
+    description: 由铜导体、绝缘层和机械固定件组成的低压连接组，适合离线设备装配，不冻结载流能力。
+    status: candidate_only
+    category: component
+    form: bulk_material
+    tags: [electrical, conductive, insulated, connector, manufacturing]
+    resource_chains: [industry, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: low}
+    actions: [install, repair, process, reserve, trade, store]
+    unit: set
+    mass: 0.4
+    volume: 0.5
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, moisture_protected]
+    base_value: 12
+    acquisition_paths:
+      - {type: manufacture, note: 在电气工作台将铜线和回收橡胶绝缘层裁切并完成基础通断检查。}
+      - {type: trade, note: 按接口族采购有标记的低压连接件。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 用于继电模块、软管组件和有线电话装配。}
+      - {type: installed, note: 进入设施线路维修后成为设备组成部分。}
+      - {type: worn_out, note: 接点腐蚀、松脱或绝缘破损后退出可靠库存。}
+    logistics_note: 按接口、导体状态和绝缘批次分格保存，不能只按总数量替代适配性。
+    interfaces:
+      produced_by: [recipe.c5_component.assemble_connectors]
+      used_by: [recipe.c5_component.assemble_protected_relay, recipe.c5_electronic.assemble_field_telephone]
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 让铜料可用与设备能及时接线成为两个不同条件，并在多种装配间形成共享瓶颈。
+
+  - id: item.component.sealed_bearing_kit
+    name: 密封轴承组
+    description: 用回收机械件整配并加设基础密封的转动组件，只保证设备族适配，不冻结寿命和负载。
+    status: candidate_only
+    category: component
+    form: bulk_material
+    tags: [mechanical, bearing, repair, manufacturing]
+    resource_chains: [industry, survival, security]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: medium}
+    actions: [install, repair, reserve, trade, store]
+    unit: set
+    mass: 1.1
+    volume: 0.8
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, moisture_protected, contamination_controlled]
+    base_value: 34
+    acquisition_paths:
+      - {type: manufacture, note: 由机械工分级机械备件、整形钢件并加设回收橡胶密封。}
+      - {type: trade, note: 按设备轴径与状态采购密封轴承组。}
+    consumption_loss_paths:
+      - {type: installed, note: 用于泵、磨坊或动力设备维修后转为设备部件。}
+      - {type: worn_out, note: 污染、锈蚀或滚动面损伤后退出可用库存。}
+      - {type: traded_away, note: 作为稀缺机械维修件交易。}
+    logistics_note: 保持清洁封装并按设备族分格，开封后必须重新检查污染状态。
+    interfaces: {produced_by: [recipe.c5_component.assemble_bearing_kit], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把精确适配和清洁状态加入机械维修条件，避免通用废金属直接等价于可用轴承。
+
+  - id: item.component.protected_relay_module
+    name: 防护继电模块
+    description: 由回收继电器、连接件和物理外壳组成的本地控制模块，可用于有线设备但不具备联网能力。
+    status: candidate_only
+    category: component
+    form: bulk_material
+    tags: [electrical, relay, local_firmware, physically_isolated, wired_control]
+    resource_chains: [industry, security]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: medium}
+    actions: [install, repair, process, reserve, trade, store]
+    unit: set
+    mass: 0.8
+    volume: 1.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, legal_status, ownership]}
+    storage_rule: [dry, locked, shock_protected, moisture_protected]
+    base_value: 39
+    acquisition_paths:
+      - {type: manufacture, note: 在电气工作台筛选回收电子件并封装为本地继电模块。}
+      - {type: salvage, note: 从旧控制柜拆取后进行离线通断测试。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 用于有线现场电话装配。}
+      - {type: installed, note: 用于本地控制设施维修后退出库存。}
+      - {type: confiscated, note: 来源不明的控制件可能受到设备管制。}
+    logistics_note: 按线圈和触点测试状态保存，未知联网锁定件不得混入。
+    interfaces: {produced_by: [recipe.c5_component.assemble_protected_relay], used_by: [recipe.c5_electronic.assemble_field_telephone], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 用可维修的本地控制换取电子筛选、电工时间和受控来源成本。
+
+  - id: item.component.local_power_regulator
+    name: 本地电源调节模块
+    description: 使用回收离线电子件和熔断保护组成的低压调节模块，不声明输出功率或电池续航。
+    status: candidate_only
+    category: component
+    form: bulk_material
+    tags: [electrical, power_control, local_firmware, physically_isolated, fuse]
+    resource_chains: [industry, survival, security]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: medium}
+    actions: [install, repair, process, reserve, trade, store]
+    unit: set
+    mass: 0.7
+    volume: 0.9
+    stack_rule: {stackable: true, merge_keys: [batch_grade, charge_state, legal_status, ownership]}
+    storage_rule: [dry, locked, shock_protected, magnetic_shielded]
+    base_value: 44
+    acquisition_paths:
+      - {type: manufacture, note: 由电工将回收电子组件、铜线和匹配熔断件装入物理隔离外壳。}
+      - {type: trade, note: 采购可离线运行且有输入范围标记的模块。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 用于可充电任务灯装配。}
+      - {type: installed, note: 进入低压设备维修后成为设备组成部分。}
+      - {type: worn_out, note: 过热、短路或接点腐蚀后退出可用库存。}
+    logistics_note: 按输入范围和熔断规格分格防震保存，不能用外观相似替代电气适配。
+    interfaces: {produced_by: [recipe.c5_component.assemble_power_regulator], used_by: [recipe.c5_electronic.assemble_task_lantern], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让便携照明和低压设备依赖可解释的保护组件，而不是直接把电池视为完整电源。
+
+  - id: item.component.ceramic_fuse_set
+    name: 陶瓷熔断件组
+    description: 按规格分组的被动过流保护件，体积小但不可用普通铜线替代。
+    status: candidate_only
+    category: component
+    form: bulk_material
+    tags: [electrical, fuse, protective, manufacturing]
+    resource_chains: [industry, security]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: medium}
+    actions: [install, repair, reserve, trade, store]
+    unit: set
+    mass: 0.2
+    volume: 0.3
+    stack_rule: {stackable: true, merge_keys: [batch_grade, ownership]}
+    storage_rule: [dry, shock_protected, moisture_protected]
+    base_value: 18
+    acquisition_paths:
+      - {type: salvage, note: 从旧配电柜回收并逐个检查断路与规格标记。}
+      - {type: trade, note: 按额定规格采购封装熔断件。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 用于本地电源调节模块装配。}
+      - {type: consumed_directly, note: 设备过流保护动作或维修更换后消耗。}
+      - {type: worn_out, note: 标记不清、裂纹或受潮后退出可靠库存。}
+    logistics_note: 按规格独立分格，标记缺失的批次只能隔离，不能合并到可用库存。
+    interfaces: {produced_by: [], used_by: [recipe.c5_component.assemble_power_regulator], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 以低体积关键件限制电气扩张，并明确安全保护不能由大宗导体替代。
+
+  - id: item.component.pressure_hose_assembly
+    name: 低压软管组件
+    description: 由回收橡胶、连接件和夹固件组成的液体转运组件，不冻结耐压或适用化学体系。
+    status: candidate_only
+    category: component
+    form: bulk_material
+    tags: [mechanical, rubber, hose, water_system, repair]
+    resource_chains: [industry, survival]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: low}
+    actions: [install, repair, pump, reserve, trade, store]
+    unit: set
+    mass: 1.5
+    volume: 3.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, cool, light_protected, contamination_controlled]
+    base_value: 23
+    acquisition_paths:
+      - {type: manufacture, note: 将合格橡胶条、连接件和紧固件组装并完成基础泄漏检查。}
+      - {type: trade, note: 按接口与适用液体采购成套软管。}
+    consumption_loss_paths:
+      - {type: installed, note: 接入手泵、过滤或转运设备后成为设备组成部分。}
+      - {type: contaminated, note: 接触未知燃料或化学残留后不得回到食品和水系统库存。}
+      - {type: worn_out, note: 老化、折裂或接头松脱后退出可用库存。}
+    logistics_note: 按接触介质和污染状态分卷存放，水用与燃料用软管不得混用。
+    interfaces: {produced_by: [recipe.c5_component.assemble_hose], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把液体设备能力绑定到接口和洁净状态，避免有泵就自动获得可用输送链。
+
+  - id: item.component.medical_instrument_spares
+    name: 医疗器械备件组
+    description: 经清洁分装的夹持件、紧固件和替换柄部，只能维护适配器械，不等于完整手术工具。
+    status: candidate_only
+    category: component
+    form: bulk_material
+    tags: [medical, medical_instrument, repair, metal, traceable]
+    resource_chains: [survival, security]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: medium}
+    actions: [repair, disinfect, reserve, trade, store]
+    unit: set
+    mass: 0.6
+    volume: 0.8
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, legal_status, ownership]}
+    storage_rule: [dry, locked, contamination_controlled]
+    base_value: 31
+    acquisition_paths:
+      - {type: salvage, note: 从报废医疗箱中拆取并完成材质、完整度和污染检查。}
+      - {type: trade, note: 通过受控医疗渠道按器械族采购。}
+    consumption_loss_paths:
+      - {type: consumed_directly, note: 在医疗器械维护中按适配件消耗。}
+      - {type: contaminated, note: 无法完成清洁确认的批次退出医疗用途。}
+      - {type: confiscated, note: 来源不明的受控器械件可能被查扣。}
+    logistics_note: 保持密封、批次与适配标签，普通机械备件不得直接并入医疗库存。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让医疗器械维护依赖清洁和适配零件，而不是与普通机械维修共享无差别备件。
+
+  - id: item.component.food_grade_seal_set
+    name: 食品级密封件组
+    description: 用于食品容器和保存工具的垫圈、封口片与夹扣，必须保持材料来源和污染状态。
+    status: candidate_only
+    category: component
+    form: bulk_material
+    tags: [food_grade, preservation, container, rubber]
+    resource_chains: [survival, industry]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: low}
+    actions: [install, repair, reserve, trade, store]
+    unit: set
+    mass: 0.3
+    volume: 0.5
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, food_safe, contamination_controlled, light_protected]
+    base_value: 13
+    acquisition_paths:
+      - {type: trade, note: 从食品加工供应者采购有材料标记的密封件。}
+      - {type: salvage, note: 只从未接触危险品且可核验材料的食品设备中回收。}
+    consumption_loss_paths:
+      - {type: installed, note: 更换食品容器或保存工具密封后成为设备组成部分。}
+      - {type: contaminated, note: 接触化学品或来源不明时退出食品用途。}
+      - {type: worn_out, note: 失去弹性、开裂或变形后报废。}
+    logistics_note: 与普通橡胶件分柜并保持食品用途标记，开封批次优先用于维护。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 以小型合规部件约束保存食品扩张，并让容器维护与普通机械维修区分。
+
+  - id: item.tool.mechanic_hand_tool_set
+    name: 机械手工具组
+    description: 由扳手、钳具和基础量具组成的可分配工具组，允许常规机械装配但不提供无条件效率加成。
+    status: candidate_only
+    category: tool
+    form: independent_item
+    tags: [mechanical, hand_tool, repair, manufacturing]
+    resource_chains: [industry, survival, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: medium}
+    actions: [repair, maintain, reserve, trade, store]
+    unit: set
+    mass: 6.0
+    volume: 8.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, moisture_protected]
+    base_value: 61
+    acquisition_paths:
+      - {type: manufacture, note: 由机械工整形回收金属并配制木柄、紧固件和收纳套。}
+      - {type: trade, note: 采购内容清单与尺寸状态可核验的工具组。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 使用、冲击、锈蚀或遗失单件会降低可执行工具能力。}
+      - {type: lost, note: 外出维修后未归还会退出工具分配。}
+      - {type: traded_away, note: 作为完整工具组交易后失去相应工位能力入口。}
+    logistics_note: 单件组记录责任人和缺件状态，不能在两个工位同时分配同一套工具。
+    interfaces: {produced_by: [recipe.c5_tool.assemble_mechanic_set], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 将机械工艺的执行条件落到可占用、会缺件和需要维护的独立工具实例。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: restricted
+      wear_sources: [use, impact, moisture, corrosion]
+      failure_consequence: 缺件、变形或锈蚀后不再满足完整机械工具条件，只能保养、补件或专案回收。
+
+  - id: item.tool.food_preservation_kit
+    name: 食品保存工具组
+    description: 包含切片、称量、压榨和封装辅助件的独立工具组，不自动延长任何食品保质期。
+    status: candidate_only
+    category: tool
+    form: independent_item
+    tags: [food_grade, preservation, hand_tool]
+    resource_chains: [survival, industry]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: medium}
+    actions: [cook, maintain, clean, reserve, trade, store]
+    unit: set
+    mass: 4.5
+    volume: 7.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, food_safe, contamination_controlled]
+    base_value: 52
+    acquisition_paths:
+      - {type: salvage, note: 从旧厨房或食品工坊回收并逐件确认材料和污染状态。}
+      - {type: trade, note: 从食品加工商采购有内容清单的工具组。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 刀具钝化、压榨件变形或封装附件缺失后降低可用性。}
+      - {type: contaminated, note: 接触危险化学品后退出食品用途。}
+      - {type: lost, note: 分散到不同厨房后未归还会形成不完整工具组。}
+    logistics_note: 在食品安全区整组保存，使用后清洁归位并记录缺件。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让脱水和发酵工艺依赖可维护工具与清洁条件，而不是只消耗食材。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: restricted
+      wear_sources: [use, impact, moisture, corrosion]
+      failure_consequence: 工具组污染或缺件后不能满足食品保存条件，需要清洁、补件或隔离。
+
+  - id: item.tool.field_medical_instrument_kit
+    name: 野外医疗器械包
+    description: 包含基础检查、夹持、剪切和缝合辅助器械的独立包，必须由合格人员在合适卫生条件下使用。
+    status: candidate_only
+    category: tool
+    form: independent_item
+    tags: [medical, medical_instrument, portable, traceable]
+    resource_chains: [survival, security]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: medium}
+    actions: [treat, disinfect, maintain, reserve, trade, store]
+    unit: set
+    mass: 3.2
+    volume: 5.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, contamination_controlled, shock_protected]
+    base_value: 86
+    acquisition_paths:
+      - {type: trade, note: 通过受控医疗渠道采购并记录器械清单和批次。}
+      - {type: mission, note: 作为医疗援助取得，通常附带用途和归属记录。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 刃口、铰接或测量部件磨损后失去可靠用途。}
+      - {type: contaminated, note: 未完成清洁和封装确认时退出可用医疗分配。}
+      - {type: confiscated, note: 无资质持有或来源异常时可能被查扣。}
+    logistics_note: 整包记录清洁状态、责任人和缺件，日常诊疗与战场预留不能重复分配。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 将医疗能力绑定到人员、卫生和可用器械，而不是把药品库存等同于治疗完成。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: restricted
+      wear_sources: [use, impact, moisture, corrosion]
+      failure_consequence: 污染、缺件或机械失效后不能用于诊疗，只能重新处理、补件或隔离。
+
+  - id: item.tool.precision_soldering_kit
+    name: 精密焊接工具组
+    description: 用于离线电子装配和维修的可控热工具组，需要电气人员、通风和防火条件。
+    status: candidate_only
+    category: tool
+    form: independent_item
+    tags: [electrical, soldering, hand_tool, repair]
+    resource_chains: [industry, security]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: medium}
+    actions: [repair, maintain, reserve, trade, store]
+    unit: set
+    mass: 2.8
+    volume: 4.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, ventilated, moisture_protected]
+    base_value: 73
+    acquisition_paths:
+      - {type: salvage, note: 从旧电子工坊回收并检查加热、绝缘和接地状态。}
+      - {type: trade, note: 采购可离线使用且耗材规格明确的焊接工具组。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 加热头、绝缘或夹持件磨损后不能安全使用。}
+      - {type: lost, note: 外出抢修时遗失会使精密装配失去工具入口。}
+      - {type: confiscated, note: 在受控电子区域无授权持有可能被查扣。}
+    logistics_note: 与易燃材料隔离并整组上锁，使用前后记录绝缘和加热状态。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让精密电子工作依赖可维护工具、合格人物和安全空间，避免回收电子件自动变成设备。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: restricted
+      wear_sources: [use, heat, impact, moisture]
+      failure_consequence: 加热或绝缘状态不合格时禁止使用，只能保养、专案维修或隔离。
+
+  - id: item.electronic.wired_field_telephone
+    name: 有线现场电话
+    description: 依靠物理线路和本地电源运行的点对点通信设备，不具备无线或外部网络接入。
+    status: candidate_only
+    category: electronic_device
+    form: independent_item
+    tags: [electrical, telephone, wired_control, physically_isolated, portable]
+    resource_chains: [security, industry, politics]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: medium}
+    actions: [operate, maintain, reserve, trade, store]
+    unit: set
+    mass: 4.0
+    volume: 6.5
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, shock_protected, moisture_protected]
+    base_value: 92
+    acquisition_paths:
+      - {type: manufacture, note: 由电工用线束、继电模块、连接件和电池模块完成离线装配测试。}
+      - {type: salvage, note: 从旧工事回收并确认不依赖远程授权。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 话筒、接点、电池或外壳失效后不能可靠通信。}
+      - {type: lost, note: 外勤铺设或撤离时遗失后退出设备分配。}
+      - {type: confiscated, note: 未申报的专用通信线路可能被监管方查扣。}
+    logistics_note: 设备、成对端点、线路和电源必须共同送达；库存有电话不等于地点之间已经连通。
+    interfaces: {produced_by: [recipe.c5_electronic.assemble_field_telephone], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 用布线和维护成本换取不依赖外部网络的通信能力入口。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: restricted
+      wear_sources: [use, impact, moisture, corrosion]
+      failure_consequence: 端点、线路接口或本地电源故障后不能提供通信，只能维护或专案翻修。
+
+  - id: item.electronic.rechargeable_task_lantern
+    name: 可充电任务灯
+    description: 使用本地调节模块和可更换电池的便携照明设备，不冻结亮度、续航或照明效果。
+    status: candidate_only
+    category: electronic_device
+    form: independent_item
+    tags: [electrical, lighting, battery, portable, physically_isolated]
+    resource_chains: [survival, industry, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: medium}
+    actions: [operate, charge, maintain, reserve, trade, store]
+    unit: piece
+    mass: 2.2
+    volume: 3.5
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, cool, shock_protected]
+    base_value: 64
+    acquisition_paths:
+      - {type: manufacture, note: 在电气工作台装配电池模块、调节模块、导线和防护玻璃。}
+      - {type: trade, note: 采购可离线充电且电池可更换的任务灯。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 电池、调节件、灯体或密封失效后不能可靠照明。}
+      - {type: lost, note: 外出作业或撤离时遗失后退出设备分配。}
+      - {type: traded_away, note: 交易后减少夜间任务的照明入口。}
+    logistics_note: 灯体和电池荷电状态分别记录，入库不等于已经充电或送到任务地点。
+    interfaces: {produced_by: [recipe.c5_electronic.assemble_task_lantern], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让夜间工作与撤离准备争夺电池、电子件和维护时间。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: restricted
+      wear_sources: [use, impact, moisture, heat]
+      failure_consequence: 供电或灯体状态不合格时不能作为可靠任务照明，只能保养或专案翻修。
+
+  - id: item.electronic.analog_weather_station
+    name: 模拟气象观测箱
+    description: 由机械与模拟传感部件组成的离线观测设备，需要人物读取和记录，不自动生成预测。
+    status: candidate_only
+    category: electronic_device
+    form: independent_item
+    tags: [sensor, weather, physically_isolated, diagnostic]
+    resource_chains: [survival, industry, politics]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: medium}
+    actions: [measure, inspect, maintain, reserve, trade, store]
+    unit: set
+    mass: 7.0
+    volume: 11.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, shock_protected, moisture_protected]
+    base_value: 78
+    acquisition_paths:
+      - {type: salvage, note: 从旧农场或学校回收并检查机械传感与刻度状态。}
+      - {type: trade, note: 采购无需网络服务的模拟观测设备。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 传感件老化、刻度漂移或外壳受损后数据不再可靠。}
+      - {type: lost, note: 野外观测点损失后退出设备记录。}
+      - {type: traded_away, note: 作为离线观测设备交易后失去本地信息入口。}
+    logistics_note: 运输时保护传感部件；必须与观测位置、读取人物和记录流程共同安排。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供可控但劳动密集的环境信息入口，避免自动联网预测成为无成本升级。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: restricted
+      wear_sources: [handling, impact, moisture, age]
+      failure_consequence: 传感或刻度状态异常时只能显示不可信读数，必须校验、保养或停用。
+
+  - id: item.electronic.offline_inventory_terminal
+    name: 离线库存终端
+    description: 使用本地固件和物理数据接口的单机记录终端，可辅助录入与查询，但不自动改变权威库存。
+    status: candidate_only
+    category: electronic_device
+    form: independent_item
+    tags: [electrical, terminal, local_firmware, physically_isolated, traceable]
+    resource_chains: [industry, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: regulated_batch, wealth_signal: medium}
+    actions: [operate, inspect, maintain, reserve, trade, store]
+    unit: piece
+    mass: 8.0
+    volume: 10.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, shock_protected, magnetic_shielded]
+    base_value: 118
+    acquisition_paths:
+      - {type: salvage, note: 从旧仓储设施回收并隔离外部网络接口、核验本地启动状态。}
+      - {type: mission, note: 作为行政援助取得并保留设备来源和固件记录。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 存储、供电或输入部件失效后不能可靠查询。}
+      - {type: confiscated, note: 来源或数据职责不清时可能被监管方查扣。}
+      - {type: destroyed, note: 数据安全无法保证时可能需要受控销毁载体。}
+    logistics_note: 终端记录只是辅助副本，必须与人工盘点和权威账册核对；设备入库不自动获得准确库存。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 用录入维护、审计和设备风险换取查询便利，避免电子终端替代库存承诺规则。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: restricted
+      wear_sources: [use, impact, moisture, heat, magnetic]
+      failure_consequence: 供电、存储或输入故障后终端数据不可作为库存依据，只能停用、核验或专案翻修。
+
+  - id: item.food.dried_legume
+    name: 干豆
+    description: 经干燥分级的豆类粮食，耐储但需要烹煮和洁净水，不冻结营养或烹调时间数值。
+    status: candidate_only
+    category: food_and_drink
+    form: bulk_material
+    tags: [edible, food_grade, legume, preserved]
+    resource_chains: [survival, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [consume, cook, reserve, trade, deliver, store]
+    unit: kilogram
+    mass: 1.0
+    volume: 1.3
+    stack_rule: {stackable: true, merge_keys: [batch_grade, freshness, contamination_state, ownership]}
+    storage_rule: [dry, food_safe, moisture_protected]
+    base_value: 4
+    acquisition_paths:
+      - {type: agriculture, note: 从适配田地采收、脱粒并完成干燥分级。}
+      - {type: trade, note: 以密封粮袋从农贸渠道购入。}
+    consumption_loss_paths:
+      - {type: consumed_directly, note: 经浸泡和烹煮后作为日常餐食消耗。}
+      - {type: delivered, note: 作为救济或粮食承诺交付。}
+      - {type: spoiled, note: 受潮、虫害或霉变后退出食品库存。}
+    logistics_note: 按收获批次干燥储存，开袋后优先使用并与种源分开。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供耐储粮食选择，同时以烹煮燃料、水和时间限制其即时可用性。
+
+  - id: item.food.root_vegetable
+    name: 根茎蔬菜
+    description: 较耐短期储藏的根茎类鲜食，可直接烹饪或进入发酵保存，不冻结具体作物品种。
+    status: candidate_only
+    category: food_and_drink
+    form: bulk_material
+    tags: [edible, food_grade, root_crop, perishable]
+    resource_chains: [survival, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [consume, cook, process, reserve, trade, deliver, store]
+    unit: kilogram
+    mass: 1.0
+    volume: 1.5
+    stack_rule: {stackable: true, merge_keys: [freshness, contamination_state, ownership]}
+    storage_rule: [food_safe, cool, ventilated]
+    base_value: 4
+    acquisition_paths:
+      - {type: agriculture, note: 从根茎作物地采收并去除明显病损。}
+      - {type: trade, note: 从短途农贸渠道按新鲜度购入。}
+    consumption_loss_paths:
+      - {type: consumed_directly, note: 作为基础烹饪原料消耗。}
+      - {type: consumed_by_recipe, note: 用于盐水发酵蔬菜。}
+      - {type: spoiled, note: 腐烂、冻伤或污染后退出食品用途。}
+    logistics_note: 阴凉通风保存并按损伤和新鲜度分批，远距离运输会缩短处理窗口。
+    interfaces: {produced_by: [], used_by: [recipe.c5_food.ferment_root_vegetable], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 在鲜食、延长保存期和政治交付之间形成带时间压力的选择。
+
+  - id: item.food.unrefined_sugar
+    name: 粗制糖料
+    description: 来源可核验的粗制糖晶或糖块，可用于食品和口服补液，不等于药品。
+    status: candidate_only
+    category: food_and_drink
+    form: bulk_material
+    tags: [edible, food_grade, sugar, preserved]
+    resource_chains: [survival, security, politics]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: medium}
+    actions: [consume, cook, process, reserve, trade, deliver, store]
+    unit: kilogram
+    mass: 1.0
+    volume: 0.9
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, food_safe, moisture_protected]
+    base_value: 9
+    acquisition_paths:
+      - {type: trade, note: 从具备糖料加工能力的聚落按食品批次采购。}
+      - {type: mission, note: 作为救济或医疗补给取得并记录用途。}
+    consumption_loss_paths:
+      - {type: consumed_directly, note: 作为食品配料按实际使用消耗。}
+      - {type: consumed_by_recipe, note: 与盐和洁净水配制口服补液。}
+      - {type: contaminated, note: 受潮、虫害或化学品混运后退出食品和医疗用途。}
+    logistics_note: 密封防潮并与工业化学品分开，医疗预留必须从普通食品库存扣除。
+    interfaces: {produced_by: [], used_by: [recipe.c5_medical.prepare_oral_rehydration], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让稀缺糖料在日常饮食、政治交付和医疗补液之间形成共享瓶颈。
+
+  - id: item.food.grain_flour
+    name: 粗磨面粉
+    description: 由原粮清理和磨制得到的基础粉料，缩短烹饪但提高受潮、虫害和粉尘风险。
+    status: candidate_only
+    category: food_and_drink
+    form: bulk_material
+    tags: [edible, food_grade, flour, dusty]
+    resource_chains: [survival, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [cook, process, reserve, trade, deliver, store]
+    unit: bag
+    mass: 10.0
+    volume: 14.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, freshness, contamination_state, ownership]}
+    storage_rule: [dry, food_safe, moisture_protected, ventilated]
+    base_value: 7
+    acquisition_paths:
+      - {type: manufacture, note: 在谷物磨坊清理原粮并磨制后按批次装袋。}
+      - {type: trade, note: 采购带磨制日期和来源标记的面粉袋。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 用于烘制基础扁饼。}
+      - {type: spoiled, note: 受潮、虫害或霉变后退出食品库存。}
+      - {type: delivered, note: 作为食品援助或主题承诺交付。}
+    logistics_note: 远离水汽和火源并按磨制批次先进先出，开袋后缩短使用窗口。
+    interfaces: {produced_by: [recipe.c5_food.mill_flour], used_by: [recipe.c5_food.bake_flatbread], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 用磨坊和人物时间换取更快烹饪，同时承担比原粮更高的储存损耗。
+
+  - id: item.food.basic_flatbread
+    name: 基础扁饼
+    description: 由面粉、水和盐制成的短期主食，便于分发但仍会变质，不等于长期保存口粮。
+    status: candidate_only
+    category: food_and_drink
+    form: bulk_material
+    tags: [edible, food_grade, bread, perishable]
+    resource_chains: [survival, security, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [consume, reserve, trade, deliver, store]
+    unit: packet
+    mass: 0.5
+    volume: 0.7
+    stack_rule: {stackable: true, merge_keys: [freshness, contamination_state, ownership]}
+    storage_rule: [food_safe, cool]
+    base_value: 5
+    acquisition_paths:
+      - {type: manufacture, note: 在基础厨房用面粉、洁净水、盐和燃料完成烘制。}
+      - {type: trade, note: 从短途食品商采购当期烘制批次。}
+    consumption_loss_paths:
+      - {type: consumed_directly, note: 作为日常、外出或公共分餐主食消耗。}
+      - {type: delivered, note: 作为即时救济或承诺餐食交付。}
+      - {type: spoiled, note: 超过短期保存窗口或污染后报废。}
+    logistics_note: 按烘制时段分批并优先分发，不能与长期保存口粮合并统计。
+    interfaces: {produced_by: [recipe.c5_food.bake_flatbread], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 以厨房和燃料换取即时可分发主食，并用短保质窗口阻止无成本囤积。
+
+  - id: item.food.dried_vegetable
+    name: 脱水蔬菜
+    description: 将新鲜蔬菜切分和低温脱水形成的耐储配料，损失部分新鲜用途但减少腐坏压力。
+    status: candidate_only
+    category: food_and_drink
+    form: bulk_material
+    tags: [edible, food_grade, dried_food, preserved]
+    resource_chains: [survival, security, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: low}
+    actions: [consume, cook, reserve, trade, deliver, store]
+    unit: packet
+    mass: 0.4
+    volume: 0.8
+    stack_rule: {stackable: true, merge_keys: [batch_grade, freshness, contamination_state, ownership]}
+    storage_rule: [dry, food_safe, moisture_protected]
+    base_value: 8
+    acquisition_paths:
+      - {type: manufacture, note: 在食品保存区将合格鲜菜切分、脱水和封装。}
+      - {type: trade, note: 采购封装完好且加工日期可查的脱水蔬菜。}
+    consumption_loss_paths:
+      - {type: consumed_directly, note: 复水或加入餐食后消耗。}
+      - {type: delivered, note: 作为远行或救济食品交付。}
+      - {type: spoiled, note: 包装受潮、霉变或污染后报废。}
+    logistics_note: 防潮密封并与新鲜蔬菜分批，包装破损后优先使用。
+    interfaces: {produced_by: [recipe.c5_food.dry_vegetable], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把鲜食、燃料和加工时间转化为远运储备，但不复制原料数量或新鲜用途。
+
+  - id: item.food.fermented_root_vegetable
+    name: 盐水发酵根菜
+    description: 以盐水受控发酵的根茎蔬菜批次，保存期较长但依赖容器、清洁和发酵状态。
+    status: candidate_only
+    category: food_and_drink
+    form: bulk_material
+    tags: [edible, food_grade, fermented, preserved]
+    resource_chains: [survival, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: low}
+    actions: [consume, cook, reserve, trade, deliver, store]
+    unit: bottle
+    mass: 1.2
+    volume: 1.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, freshness, contamination_state, ownership]}
+    storage_rule: [food_safe, cool, contamination_controlled]
+    base_value: 7
+    acquisition_paths:
+      - {type: manufacture, note: 在食品保存区用根菜、盐和洁净水完成受控发酵。}
+      - {type: trade, note: 采购封口和发酵日期可核验的瓶装批次。}
+    consumption_loss_paths:
+      - {type: consumed_directly, note: 作为日常餐食配菜按瓶消耗。}
+      - {type: delivered, note: 作为食品交付后离开库存。}
+      - {type: spoiled, note: 发酵异常、封口失败或污染后整批报废。}
+    logistics_note: 按发酵日期和封口状态阴凉存放，异常膨胀或渗漏批次立即隔离。
+    interfaces: {produced_by: [recipe.c5_food.ferment_root_vegetable], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 用盐、水、容器和等待窗口降低根菜腐坏，但引入批次失败风险。
+
+  - id: item.food.herbal_infusion
+    name: 草本浸泡饮品
+    description: 以干燥药草和洁净水制成的短期饮品，只提供饮用与照护情境，不声明药物治疗效果。
+    status: candidate_only
+    category: food_and_drink
+    form: bulk_material
+    tags: [potable, food_grade, beverage, medicinal_plant, perishable]
+    resource_chains: [survival, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: none, wealth_signal: low}
+    actions: [consume, reserve, trade, deliver, store]
+    unit: bottle
+    mass: 1.0
+    volume: 1.0
+    stack_rule: {stackable: true, merge_keys: [freshness, contamination_state, ownership]}
+    storage_rule: [food_safe, cool, contamination_controlled]
+    base_value: 3
+    acquisition_paths:
+      - {type: manufacture, note: 在基础厨房用干燥药草和洁净水完成浸泡、过滤和装瓶。}
+      - {type: trade, note: 从短途食品渠道采购当期饮品。}
+    consumption_loss_paths:
+      - {type: consumed_directly, note: 作为饮水变化、照护或社交饮品消耗。}
+      - {type: delivered, note: 作为日常慰问或公共餐食交付。}
+      - {type: spoiled, note: 超过短期饮用窗口或污染后报废。}
+    logistics_note: 冷却后按制作时段分批，不能与药品库存或长期饮水储备混同。
+    interfaces: {produced_by: [recipe.c5_food.brew_herbal_infusion], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让药草也可进入非治疗的饮食与社交用途，并与正式医疗原料竞争。
+
+  - id: item.medical.sterile_gauze_pad
+    name: 无菌纱布垫包
+    description: 封装的吸收性伤口覆盖材料，包装破损后失去无菌用途，不声明止血强度。
+    status: candidate_only
+    category: medicine_and_medical_supply
+    form: bulk_material
+    tags: [medical, textile, gauze, absorbent, traceable]
+    resource_chains: [survival, security]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: medium}
+    actions: [treat, reserve, trade, deliver, store]
+    unit: packet
+    mass: 0.2
+    volume: 0.5
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, legal_status, ownership]}
+    storage_rule: [dry, locked, contamination_controlled]
+    base_value: 12
+    acquisition_paths:
+      - {type: trade, note: 采购灭菌批次和封口状态可追溯的纱布垫。}
+      - {type: mission, note: 作为医疗援助取得并记录批次归属。}
+    consumption_loss_paths:
+      - {type: consumed_directly, note: 在伤口处理或换药中一次性消耗。}
+      - {type: contaminated, note: 包装破损或接触污染后退出无菌用途。}
+      - {type: delivered, note: 作为医疗援助交付。}
+    logistics_note: 按批次存放于清洁医疗柜，日常换药与战备预留不得重复计数。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供比绷带更细分的伤口覆盖耗材，同时保持无菌、批次和分配成本。
+
+  - id: item.medical.clean_splint_set
+    name: 清洁夹板组
+    description: 由整形木板、织物衬垫和固定件组成的清洁固定材料，需要合格人物判断伤情和安装。
+    status: candidate_only
+    category: medicine_and_medical_supply
+    form: bulk_material
+    tags: [medical, splint, textile, structural_material]
+    resource_chains: [survival, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: low}
+    actions: [treat, apply, reserve, trade, deliver, store]
+    unit: set
+    mass: 1.4
+    volume: 2.5
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, contamination_controlled]
+    base_value: 15
+    acquisition_paths:
+      - {type: manufacture, note: 在医疗清洁区将整形木板、织物和固定件裁配并封装。}
+      - {type: trade, note: 采购尺寸范围和清洁状态明确的夹板组。}
+    consumption_loss_paths:
+      - {type: consumed_directly, note: 用于肢体固定后随治疗周期占用或报废。}
+      - {type: contaminated, note: 接触体液或污物后未经重新处理不得回库。}
+      - {type: delivered, note: 作为野外救护物资交付。}
+    logistics_note: 按尺寸和清洁状态保存，不能因库存存在就自动判断或完成固定。
+    interfaces: {produced_by: [recipe.c5_medical.assemble_clean_splint], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把基础木材、织物和医疗人物时间连接到创伤照护，同时保留诊断与使用条件。
+
+  - id: item.medical.oral_rehydration_solution
+    name: 口服补液瓶
+    description: 按受控比例配制的糖盐水补液，必须匹配适用情境和患者状态，不声明统一恢复效果。
+    status: candidate_only
+    category: medicine_and_medical_supply
+    form: bulk_material
+    tags: [medical, hydration, potable, traceable]
+    resource_chains: [survival, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: low}
+    actions: [treat, consume, reserve, trade, deliver, store]
+    unit: bottle
+    mass: 1.1
+    volume: 1.0
+    stack_rule: {stackable: true, merge_keys: [concentration, contamination_state, legal_status, ownership]}
+    storage_rule: [food_safe, cool, contamination_controlled]
+    base_value: 4
+    acquisition_paths:
+      - {type: manufacture, note: 由医护人员用洁净水、糖和盐按批次配制并标记。}
+      - {type: trade, note: 采购封口和配制批次可查的补液瓶。}
+    consumption_loss_paths:
+      - {type: consumed_directly, note: 在适用照护情境下按医疗判断饮用消耗。}
+      - {type: contaminated, note: 封口破损、比例异常或污染后整瓶报废。}
+      - {type: delivered, note: 作为医疗或救灾补给交付。}
+    logistics_note: 按配制时间和封口状态阴凉保存，不与普通饮料合并，也不作为静脉制品。
+    interfaces: {produced_by: [recipe.c5_medical.prepare_oral_rehydration], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把食品糖盐、洁净水和医疗时间连接起来，并明确补液不是通用治疗。
+
+  - id: item.medical.hemostatic_dressing
+    name: 止血敷料包
+    description: 用于严重出血初步控制的受控一次性敷料，需要正确伤情判断和后续治疗，不冻结止血概率。
+    status: candidate_only
+    category: medicine_and_medical_supply
+    form: bulk_material
+    tags: [medical, hemostatic, absorbent, traceable]
+    resource_chains: [security, survival]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: medium}
+    actions: [treat, reserve, trade, deliver, store]
+    unit: packet
+    mass: 0.25
+    volume: 0.5
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, legal_status, ownership]}
+    storage_rule: [dry, locked, contamination_controlled]
+    base_value: 27
+    acquisition_paths:
+      - {type: trade, note: 通过受控医疗渠道按批次采购。}
+      - {type: mission, note: 作为战地医疗援助取得并附带用途记录。}
+    consumption_loss_paths:
+      - {type: consumed_directly, note: 在严重出血处置中一次性消耗。}
+      - {type: contaminated, note: 封装破损或污染后退出医疗用途。}
+      - {type: confiscated, note: 来源不明或违规转卖时可能被查扣。}
+    logistics_note: 日常诊所与战备预留分区上锁，使用后必须触发后续治疗而非视为伤情结束。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供高价值急救资源，并以稀缺、专业使用和后续治疗要求阻止万能消耗品化。
+
+  - id: item.medical.pain_relief_tablet_batch
+    name: 镇痛片剂批
+    description: 有批次和剂量标记的基础镇痛药物，只在匹配情境下缓解症状，不消除伤病原因。
+    status: candidate_only
+    category: medicine_and_medical_supply
+    form: bulk_material
+    tags: [medical, analgesic, traceable]
+    resource_chains: [survival, security]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: medium}
+    actions: [treat, reserve, trade, deliver, store]
+    unit: bottle
+    mass: 0.2
+    volume: 0.3
+    stack_rule: {stackable: true, merge_keys: [concentration, batch_grade, legal_status, ownership]}
+    storage_rule: [dry, cool, locked, light_protected]
+    base_value: 24
+    acquisition_paths:
+      - {type: trade, note: 通过受控药品渠道按有效批次采购。}
+      - {type: mission, note: 作为医疗补给取得并进入药品台账。}
+    consumption_loss_paths:
+      - {type: consumed_directly, note: 由合格人员根据症状、禁忌和后续观察决定使用。}
+      - {type: invalidated, note: 批次过期、标记不清或储存失效后退出可用药品。}
+      - {type: confiscated, note: 无记录持有或转卖可能被查扣。}
+    logistics_note: 按批次、浓度和有效状态上锁，人物自行持有与诊所库存必须分开记录。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 用症状缓解换取药品库存、专业判断和滥用风险，而不是直接恢复伤势。
+
+  - id: item.medical.antibiotic_course
+    name: 抗感染疗程包
+    description: 有完整批次和疗程标记的受控抗感染药物，只能在匹配诊断下使用，不冻结病原覆盖或治愈率。
+    status: candidate_only
+    category: medicine_and_medical_supply
+    form: bulk_material
+    tags: [medical, antibiotic, traceable]
+    resource_chains: [survival, security, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: medium}
+    actions: [treat, reserve, trade, deliver, store]
+    unit: packet
+    mass: 0.15
+    volume: 0.25
+    stack_rule: {stackable: true, merge_keys: [concentration, batch_grade, legal_status, ownership]}
+    storage_rule: [dry, cool, locked, light_protected]
+    base_value: 48
+    acquisition_paths:
+      - {type: trade, note: 通过受控医疗渠道按药物、批次和有效状态采购。}
+      - {type: mission, note: 作为公共卫生或战地医疗援助取得并记录分配限制。}
+    consumption_loss_paths:
+      - {type: consumed_directly, note: 由合格医护根据感染判断按完整疗程使用。}
+      - {type: invalidated, note: 过期、疗程包不完整或标记不清时退出可用库存。}
+      - {type: confiscated, note: 无处方记录、拆分转卖或来源异常时可能被查扣。}
+    logistics_note: 以完整疗程包而非散片分配，日常感染治疗、战备和公共卫生承诺不得重复计数。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 将高价值治疗机会绑定到诊断、完整疗程和受控来源，避免形成万能药或随意拆分库存。
+
+interface_extensions:
+  item.waste.metal_offcuts:
+    produced_by: [recipe.c5_component.assemble_bearing_kit, recipe.c5_tool.assemble_mechanic_set]
+  item.waste.sawdust:
+    produced_by: [recipe.c5_tool.assemble_mechanic_set, recipe.c5_medical.assemble_clean_splint]
+  item.waste.wood_ash:
+    produced_by: [recipe.c5_food.bake_flatbread]
+  item.waste.glass_fines:
+    produced_by: [recipe.c5_electronic.assemble_task_lantern]
+  item.material.copper_wire:
+    used_by: [recipe.c5_component.assemble_connectors, recipe.c5_component.assemble_power_regulator, recipe.c5_electronic.assemble_task_lantern]
+  item.material.reclaimed_rubber_strip:
+    used_by: [recipe.c5_component.assemble_connectors, recipe.c5_component.assemble_bearing_kit, recipe.c5_component.assemble_hose]
+  item.component.mechanical_spares:
+    used_by: [recipe.c5_component.assemble_bearing_kit]
+  item.material.reclaimed_steel_plate:
+    used_by: [recipe.c5_component.assemble_bearing_kit, recipe.c5_component.assemble_hose, recipe.c5_tool.assemble_mechanic_set]
+  item.component.recovered_electronics:
+    used_by: [recipe.c5_component.assemble_protected_relay, recipe.c5_component.assemble_power_regulator]
+  item.component.fastener_set:
+    used_by: [recipe.c5_component.assemble_hose, recipe.c5_tool.assemble_mechanic_set, recipe.c5_medical.assemble_clean_splint]
+  item.material.reclaimed_lumber:
+    used_by: [recipe.c5_tool.assemble_mechanic_set, recipe.c5_medical.assemble_clean_splint]
+  item.component.cable_harness:
+    used_by: [recipe.c5_electronic.assemble_field_telephone]
+  item.component.rechargeable_battery_module:
+    used_by: [recipe.c5_electronic.assemble_field_telephone, recipe.c5_electronic.assemble_task_lantern]
+  item.material.reclaimed_glass_sheet:
+    used_by: [recipe.c5_electronic.assemble_task_lantern]
+  item.food.raw_grain:
+    used_by: [recipe.c5_food.mill_flour]
+  item.water.clean_water:
+    used_by: [recipe.c5_food.bake_flatbread, recipe.c5_food.ferment_root_vegetable, recipe.c5_food.brew_herbal_infusion, recipe.c5_medical.prepare_oral_rehydration]
+  item.chemical.mineral_salt:
+    used_by: [recipe.c5_food.bake_flatbread, recipe.c5_food.ferment_root_vegetable, recipe.c5_medical.prepare_oral_rehydration]
+  item.material.dry_firewood:
+    used_by: [recipe.c5_food.bake_flatbread, recipe.c5_food.dry_vegetable, recipe.c5_food.brew_herbal_infusion]
+  item.food.fresh_vegetable:
+    used_by: [recipe.c5_food.dry_vegetable]
+  item.plant.dried_medicinal_herb:
+    used_by: [recipe.c5_food.brew_herbal_infusion]
+  item.material.woven_cloth:
+    used_by: [recipe.c5_medical.assemble_clean_splint]

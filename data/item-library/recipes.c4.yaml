@@ -1,0 +1,386 @@
+schema_version: 0.4.0
+library_status: candidate_only
+authority:
+  contract: docs/item-library/item-library-authoring-contract-v0.4.md
+  design: docs/design-docs/item-and-manufacturing-system-v0.1.md
+  design_sha256: 24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb
+scope_note: C4 的 15 个代表工艺连接材料、能源、过滤、基础设施与既有库存；不冻结运行时数值。
+
+recipes:
+  - id: recipe.c4_wood.saw_lumber
+    name: 原木锯切与整形
+    description: 将分级原木锯切、去除明显缺陷并整理为通用木板，同时收集干净木屑。
+    status: candidate_only
+    kind: material_processing
+    resource_chains: [industry, survival, security, politics]
+    inputs:
+      - {item: item.material.raw_timber, amount: 1.0, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [sawmill_bench]
+    tools: [forestry_tools, measuring_tools]
+    qualification: {minimum_role: lumber_worker, skill: woodworking, specialty: lumber_processing, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 4.0, max: 7.0}
+    logistics:
+      input_staging: 原木按含水、腐朽和长度送到木料台，搬运通道必须保持可达。
+      output_storage: 木板架空送入干燥区，木屑按污染状态立即装袋。
+    outputs:
+      - {item: item.material.reclaimed_lumber, min: 0.65, max: 0.8}
+    byproducts:
+      - {type: item, item: item.waste.sawdust, min: 0.1, max: 0.15}
+    risks:
+      - {id: material_variation, condition: 原木含水、腐朽或弯曲超过分级能力。, effect: 木板产量和品质上限下降。}
+      - {id: dust_exposure, condition: 锯切区缺少集尘和通风。, effect: 有效时间扩大并产生人员健康风险。}
+
+  - id: recipe.c4_wood.split_firewood
+    name: 原木劈分与柴薪干燥
+    description: 将不适合高等级板材或专门预留的原木劈分成标准柴薪，并收集细小木屑。
+    status: candidate_only
+    kind: material_processing
+    resource_chains: [survival, industry, security]
+    inputs:
+      - {item: item.material.raw_timber, amount: 1.0, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [sawmill_bench]
+    tools: [forestry_tools]
+    qualification: {minimum_role: lumber_worker, skill: woodworking, specialty: solid_fuel, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 3.0, max: 5.0}
+    logistics:
+      input_staging: 原木从料场送到劈分区，并确认没有被板材或结构订单预留。
+      output_storage: 柴薪进入通风干燥垛，木屑按清洁状态装袋。
+    outputs:
+      - {item: item.material.dry_firewood, min: 0.75, max: 0.9}
+    byproducts:
+      - {type: item, item: item.waste.sawdust, min: 0.05, max: 0.08}
+    risks:
+      - {id: worker_injury, condition: 木段未固定或劈分区与搬运通道重叠。, effect: 有效时间增加并产生撞击或割伤风险。}
+      - {id: quality_loss, condition: 柴薪未完成通风干燥就入库。, effect: 可用燃料产量下降并扩大霉变风险。}
+
+  - id: recipe.c4_wood.carbonize_charcoal
+    name: 柴薪受控制炭
+    description: 在窑炉中以受控缺氧条件将干燥柴薪转化为木炭，产生木灰和烟尘负担。
+    status: candidate_only
+    kind: material_processing
+    resource_chains: [industry, survival, security]
+    inputs:
+      - {item: item.material.dry_firewood, amount: 1.0, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [kiln]
+    tools: [kiln_tools]
+    qualification: {minimum_role: energy_technician, skill: energy_systems, specialty: solid_fuel, missing_effect: prohibited}
+    effective_time_hours: {min: 6.0, max: 10.0}
+    logistics:
+      input_staging: 干燥柴薪按批次送到窑炉，并确认生活燃料安全储备未被占用。
+      output_storage: 木炭完全冷却后密封入燃料区，木灰按来源单独装袋。
+    outputs:
+      - {item: item.material.charcoal, min: 0.35, max: 0.5}
+    byproducts:
+      - {type: item, item: item.waste.wood_ash, min: 0.05, max: 0.12}
+      - {type: burden, burden: smoke_and_dust, min: 0.5, max: 1.5}
+    risks:
+      - {id: fire, condition: 窑炉密封、冷却或可燃物隔离不合格。, effect: 批次损失并产生设施和人员风险。}
+      - {id: quality_loss, condition: 进气控制或柴薪含水状态不稳定。, effect: 木炭有效产量和后续过滤适用性下降。}
+
+  - id: recipe.c4_wood.compress_briquette
+    name: 木屑压块
+    description: 将干净干燥木屑筛分并压制为便于储运的生物质燃料块。
+    status: candidate_only
+    kind: material_processing
+    resource_chains: [survival, industry]
+    inputs:
+      - {item: item.waste.sawdust, amount: 1.0, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [sawmill_bench]
+    tools: [forestry_tools, measuring_tools]
+    qualification: {minimum_role: lumber_worker, skill: woodworking, specialty: solid_fuel, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 3.0, max: 5.0}
+    logistics:
+      input_staging: 木屑按污染和含水状态送到压制区，处理木粉不得混入。
+      output_storage: 压块冷却后防潮入库，粉尘残留完成清扫。
+    outputs:
+      - {item: item.material.biomass_briquette, min: 0.7, max: 0.85}
+    byproducts:
+      - {type: burden, burden: smoke_and_dust, min: 0.1, max: 0.4}
+    risks:
+      - {id: dust_exposure, condition: 筛分和压制区缺少集尘或静电控制。, effect: 工时扩大并增加火灾和健康风险。}
+      - {id: contamination, condition: 木屑混入涂层、油污或金属粉尘。, effect: 成品不得进入普通燃料库存。}
+
+  - id: recipe.c4_energy.refine_biofuel
+    name: 粗制生物燃料加工
+    description: 将植物油、工业酒精和基础碱料在通风条件下反应、沉降并转入合格燃料罐。
+    status: candidate_only
+    kind: chemical_processing
+    resource_chains: [industry, security, survival, politics]
+    inputs:
+      - {item: item.chemical.plant_oil, amount: 10.0, consumed: true}
+      - {item: item.chemical.industrial_alcohol, amount: 2.0, consumed: true}
+      - {item: item.chemical.alkaline_base, amount: 0.2, consumed: true}
+      - {item: item.component.sealed_fuel_canister, amount: 1.0, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [fuel_processing_bench]
+    tools: [fuel_processing_tools, chemical_measuring_tools]
+    qualification: {minimum_role: energy_technician, skill: chemistry, specialty: liquid_fuel, missing_effect: prohibited}
+    effective_time_hours: {min: 8.0, max: 12.0}
+    logistics:
+      input_staging: 原料与空罐送入通风危险品区，确认植物油未被食品或卫生工艺预留。
+      output_storage: 沉降和基础检查后转入标记燃料罐，送往二次承接储藏区。
+    outputs:
+      - {item: item.material.crude_biofuel, min: 1.0, max: 1.0}
+    byproducts:
+      - {type: burden, burden: chemical_residue, min: 1.0, max: 2.0}
+    risks:
+      - {id: fire, condition: 酒精蒸气、热源或静电没有隔离。, effect: 工艺被禁止并产生严重设施风险。}
+      - {id: fuel_leak, condition: 燃料罐密封、材料兼容或转移路径不合格。, effect: 成品退出可用库存并形成危险残留。}
+      - {id: chemical_exposure, condition: 碱料和酒精计量或防护不合格。, effect: 人物有效时间扩大并可能中止批次。}
+
+  - id: recipe.c4_nonferrous.sort_stock
+    name: 有色金属分拣与整形
+    description: 对混杂有色废料进行去污、材质识别和基础整形，分别产出铜料与铝料。
+    status: candidate_only
+    kind: material_processing
+    resource_chains: [industry, security, politics]
+    inputs:
+      - {item: item.material.mixed_nonferrous_scrap, amount: 1.0, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [sorting_yard, foundry]
+    tools: [metal_sorting_tools, casting_tools]
+    qualification: {minimum_role: recycler, skill: fabrication, specialty: nonferrous_recovery, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 7.0, max: 11.0}
+    logistics:
+      input_staging: 废料按来源和污染送到分拣场，密封件与电池残件先隔离。
+      output_storage: 铜料和铝料按材质等级分别上架，危险残留进入受控处置。
+    outputs:
+      - {item: item.material.reclaimed_copper_stock, min: 0.25, max: 0.4}
+      - {item: item.material.reclaimed_aluminum_stock, min: 0.25, max: 0.45}
+    byproducts:
+      - {type: burden, burden: chemical_residue, min: 0.2, max: 0.8}
+    risks:
+      - {id: heavy_metal_exposure, condition: 涂层、焊料或电池残件未在分拣前识别。, effect: 工艺中止并隔离污染批次。}
+      - {id: material_variation, condition: 输入材质比例和附着物超出识别能力。, effect: 两种主产出的区间同时下调。}
+
+  - id: recipe.c4_glass.melt_sheet
+    name: 回收玻璃熔制压片
+    description: 将分拣玻璃碎料重新熔制、除去明显夹杂并压制成通用玻璃片。
+    status: candidate_only
+    kind: material_processing
+    resource_chains: [industry, survival, security]
+    inputs:
+      - {item: item.material.glass_cullet, amount: 1.0, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [kiln, glass_bench]
+    tools: [kiln_tools, glassworking_tools]
+    qualification: {minimum_role: recycler, skill: fabrication, specialty: glass_recovery, missing_effect: prohibited}
+    effective_time_hours: {min: 8.0, max: 13.0}
+    logistics:
+      input_staging: 玻璃碎料按材质和污染送入防割区，陶瓷和金属夹杂先剔除。
+      output_storage: 成品缓慢冷却后竖直缓冲入库，细渣进入防穿刺容器。
+    outputs:
+      - {item: item.material.reclaimed_glass_sheet, min: 0.65, max: 0.8}
+    byproducts:
+      - {type: item, item: item.waste.glass_fines, min: 0.1, max: 0.2}
+      - {type: burden, burden: smoke_and_dust, min: 0.2, max: 0.8}
+    risks:
+      - {id: glass_cut, condition: 碎料装卸、压片或边缘处理缺少防割措施。, effect: 工时扩大并产生人员伤害风险。}
+      - {id: material_variation, condition: 不同玻璃体系或夹杂未分开。, effect: 成品裂纹风险和损耗上升。}
+
+  - id: recipe.c4_masonry.fire_brick
+    name: 黏土成形烧砖
+    description: 将筛分黏土成形并以干燥柴薪完成窑烧，产出标准砖和少量木灰。
+    status: candidate_only
+    kind: material_processing
+    resource_chains: [industry, survival, security]
+    inputs:
+      - {item: item.material.clay, amount: 1.0, consumed: true}
+      - {item: item.material.dry_firewood, amount: 0.5, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [kiln, masonry_bench]
+    tools: [kiln_tools, masonry_tools]
+    qualification: {minimum_role: mason, skill: masonry, specialty: masonry_materials, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 8.0, max: 14.0}
+    logistics:
+      input_staging: 黏土和柴薪分别送到窑炉，确认燃料没有被制炭或生活储备重复承诺。
+      output_storage: 砖完全冷却后按裂纹和烧结状态码放，木灰按燃料来源装袋。
+    outputs:
+      - {item: item.material.fired_brick, min: 0.8, max: 1.0}
+    byproducts:
+      - {type: item, item: item.waste.wood_ash, min: 0.03, max: 0.08}
+      - {type: burden, burden: smoke_and_dust, min: 0.3, max: 1.0}
+    risks:
+      - {id: fire, condition: 窑炉周边可燃物隔离或温度控制不合格。, effect: 批次和设施面临损失。}
+      - {id: quality_loss, condition: 黏土含水、成形或烧结过程不稳定。, effect: 完整砖产量和品质上限下降。}
+
+  - id: recipe.c4_masonry.calcine_quicklime
+    name: 石灰石煅烧
+    description: 以干燥柴薪在窑炉中煅烧石灰石，冷却并密封为高反应性生石灰。
+    status: candidate_only
+    kind: material_processing
+    resource_chains: [industry, survival, security]
+    inputs:
+      - {item: item.material.limestone, amount: 1.0, consumed: true}
+      - {item: item.material.dry_firewood, amount: 0.6, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [kiln]
+    tools: [kiln_tools, masonry_tools]
+    qualification: {minimum_role: mason, skill: masonry, specialty: masonry_materials, missing_effect: prohibited}
+    effective_time_hours: {min: 9.0, max: 15.0}
+    logistics:
+      input_staging: 石料和燃料按批次送到窑炉，成品密封容器提前准备。
+      output_storage: 生石灰冷却后立即防潮密封，木灰和粉尘残留分别处理。
+    outputs:
+      - {item: item.material.quicklime, min: 0.65, max: 0.8}
+    byproducts:
+      - {type: item, item: item.waste.wood_ash, min: 0.03, max: 0.08}
+      - {type: burden, burden: smoke_and_dust, min: 0.5, max: 1.2}
+    risks:
+      - {id: caustic_exposure, condition: 高温石灰和粉尘的防护、冷却或密封不合格。, effect: 工艺中止并产生人物伤害风险。}
+      - {id: fire, condition: 窑炉燃料和热源控制失效。, effect: 设施损坏并损失输入批次。}
+
+  - id: recipe.c4_masonry.mix_mortar
+    name: 石灰砂浆现配
+    description: 将生石灰、筛分砂和洁净水按施工窗口混合为短时可用砂浆。
+    status: candidate_only
+    kind: material_processing
+    resource_chains: [industry, survival, security]
+    inputs:
+      - {item: item.material.quicklime, amount: 0.2, consumed: true}
+      - {item: item.material.sand_aggregate, amount: 0.6, consumed: true}
+      - {item: item.water.clean_water, amount: 4.0, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [masonry_bench]
+    tools: [masonry_tools, measuring_tools]
+    qualification: {minimum_role: mason, skill: masonry, specialty: masonry_materials, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 2.0, max: 4.0}
+    logistics:
+      input_staging: 三种输入在施工开始前靠近砌筑台集结，并确认施工人物与位置可用。
+      output_storage: 成品直接送到关联施工点，取消或延误会产生硬化损失。
+    outputs:
+      - {item: item.material.mortar_mix, min: 0.9, max: 1.1}
+    byproducts: []
+    risks:
+      - {id: caustic_exposure, condition: 石灰加水和混合作业缺少防尘防溅措施。, effect: 人物有效时间扩大并可能中止配制。}
+      - {id: late_delivery, condition: 砂浆完成后施工位置或人物尚未就绪。, effect: 可用时间缩短并增加整批硬化风险。}
+
+  - id: recipe.c4_rubber.reclaim_strip
+    name: 橡胶废料分拣切制
+    description: 对混杂橡胶进行清理、柔韧检查和切制，产出可用于密封与缓冲的橡胶条。
+    status: candidate_only
+    kind: material_processing
+    resource_chains: [industry, survival, security]
+    inputs:
+      - {item: item.material.rubber_scrap, amount: 1.0, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [basic_workshop]
+    tools: [measuring_tools, metal_sorting_tools]
+    qualification: {minimum_role: recycler, skill: fabrication, specialty: rubber_recovery, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 4.0, max: 7.0}
+    logistics:
+      input_staging: 废料按油污、裂纹和来源送到工坊，未知化学残留先隔离。
+      output_storage: 橡胶条按柔韧和老化状态卷装避光，废弃部分受控处理。
+    outputs:
+      - {item: item.material.reclaimed_rubber_strip, min: 0.4, max: 0.65}
+    byproducts:
+      - {type: burden, burden: chemical_residue, min: 0.1, max: 0.5}
+    risks:
+      - {id: material_variation, condition: 输入橡胶种类、老化和化学残留差异过大。, effect: 成品产量和可用场景缩小。}
+      - {id: chemical_exposure, condition: 清理油污和未知残留时缺少通风与防护。, effect: 有效时间扩大并隔离批次。}
+
+  - id: recipe.c4_filter.activate_carbon
+    name: 木炭筛分与活化
+    description: 将合格木炭筛分并在受控条件下处理为过滤用活性炭，产生少量灰和粉尘。
+    status: candidate_only
+    kind: material_processing
+    resource_chains: [survival, industry, security]
+    inputs:
+      - {item: item.material.charcoal, amount: 1.0, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [kiln, filtration_bench]
+    tools: [kiln_tools, filtration_tools]
+    qualification: {minimum_role: water_technician, skill: chemistry, specialty: water_filtration, missing_effect: prohibited}
+    effective_time_hours: {min: 5.0, max: 8.0}
+    logistics:
+      input_staging: 木炭按燃料来源和污染状态送入过滤材料区，油污批次不得使用。
+      output_storage: 活性炭冷却并密封防潮，木灰单独标记来源。
+    outputs:
+      - {item: item.material.activated_carbon, min: 0.6, max: 0.8}
+    byproducts:
+      - {type: item, item: item.waste.wood_ash, min: 0.02, max: 0.08}
+      - {type: burden, burden: smoke_and_dust, min: 0.2, max: 0.6}
+    risks:
+      - {id: contamination, condition: 木炭来源含处理木、油污或未知化学残留。, effect: 整批退出水处理用途。}
+      - {id: fire, condition: 活化与冷却过程的热源和粉尘控制失效。, effect: 批次损失并产生设施风险。}
+
+  - id: recipe.c4_filter.blend_media
+    name: 分层过滤介质组配
+    description: 按粒径和污染标准将筛分砂与活性炭组配为可封装过滤介质。
+    status: candidate_only
+    kind: material_processing
+    resource_chains: [survival, industry, security, politics]
+    inputs:
+      - {item: item.material.activated_carbon, amount: 0.3, consumed: true}
+      - {item: item.material.sand_aggregate, amount: 0.7, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [filtration_bench]
+    tools: [filtration_tools, measuring_tools]
+    qualification: {minimum_role: water_technician, skill: chemistry, specialty: water_filtration, missing_effect: prohibited}
+    effective_time_hours: {min: 3.0, max: 5.0}
+    logistics:
+      input_staging: 两种材料在清洁隔离区按批次集结，确认未被其他订单预留。
+      output_storage: 介质按层级封袋并标记用途，保持干燥直到滤芯装配。
+    outputs:
+      - {item: item.material.layered_filter_media, min: 0.9, max: 1.0}
+    byproducts: []
+    risks:
+      - {id: contamination, condition: 工具、砂料或活性炭接触油污和未知化学物。, effect: 成品不能进入饮水过滤用途。}
+      - {id: quality_loss, condition: 粒径或层级比例未按批次核对。, effect: 过滤适用性下降并需要重新分级。}
+
+  - id: recipe.c4_filter.assemble_cartridge
+    name: 标准水过滤芯装配
+    description: 将分层过滤介质、铝制外壳材料和橡胶密封条封装为标准滤芯。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [survival, industry, security, politics]
+    inputs:
+      - {item: item.material.layered_filter_media, amount: 1.0, consumed: true}
+      - {item: item.material.reclaimed_aluminum_stock, amount: 0.1, consumed: true}
+      - {item: item.material.reclaimed_rubber_strip, amount: 0.2, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [filtration_bench, basic_workshop]
+    tools: [filtration_tools, measuring_tools, metalworking_tools]
+    qualification: {minimum_role: water_technician, skill: maintenance, specialty: water_filtration, missing_effect: prohibited}
+    effective_time_hours: {min: 4.0, max: 7.0}
+    logistics:
+      input_staging: 三种输入在清洁工位集结并核对适配尺寸和污染状态。
+      output_storage: 封装与基础密封检查后进入干燥受控耗材区。
+    outputs:
+      - {item: item.component.water_filter_cartridge, min: 1.0, max: 1.0}
+    byproducts: []
+    risks:
+      - {id: contamination, condition: 封装工位、介质或密封件不洁。, effect: 成品退出饮水过滤用途。}
+      - {id: pressure_burst, condition: 外壳或密封尺寸不匹配且仍被投入使用。, effect: 成品不得标记为可安装滤芯。}
+
+  - id: recipe.c4_battery.assemble_module
+    name: 可充电电池模块装配
+    description: 将铜料、铝料、橡胶密封材料和受控电解液装配为标准储能模块。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [industry, security, survival, politics]
+    inputs:
+      - {item: item.material.reclaimed_copper_stock, amount: 0.2, consumed: true}
+      - {item: item.material.reclaimed_aluminum_stock, amount: 0.3, consumed: true}
+      - {item: item.material.reclaimed_rubber_strip, amount: 0.2, consumed: true}
+      - {item: item.material.battery_electrolyte, amount: 1.0, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [battery_bench]
+    tools: [battery_tools, electrical_testing_tools, chemical_measuring_tools]
+    qualification: {minimum_role: energy_technician, skill: electronics, specialty: battery_assembly, missing_effect: prohibited}
+    effective_time_hours: {min: 8.0, max: 14.0}
+    logistics:
+      input_staging: 金属、密封材料和电解液在隔离电池工位集结，确认化学体系与批次兼容。
+      output_storage: 基础短路和密封检查后按荷电未知状态上锁储存，端子隔离。
+    outputs:
+      - {item: item.component.rechargeable_battery_module, min: 1.0, max: 1.0}
+    byproducts:
+      - {type: burden, burden: chemical_residue, min: 0.1, max: 0.4}
+    risks:
+      - {id: battery_short, condition: 极性、绝缘或端子隔离不合格。, effect: 工艺中止并隔离所有相关材料。}
+      - {id: caustic_exposure, condition: 电解液计量、注入或泄漏防护不合格。, effect: 人物受伤并产生危险残留。}
+      - {id: heavy_metal_exposure, condition: 回收金属来源和表面污染未完成检查。, effect: 成品不能进入可安装模块库存。}

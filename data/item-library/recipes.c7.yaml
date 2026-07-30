@@ -1,0 +1,263 @@
+schema_version: 0.7.0
+library_status: candidate_only
+authority:
+  contract: docs/item-library/item-library-authoring-contract-v0.7.md
+  design: docs/design-docs/item-and-manufacturing-system-v0.1.md
+  design_sha256: 24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb
+scope_note: C7 仅新增基础服饰、防护、家具与日用品候选工艺，不授权运行时导入。
+
+recipes:
+  - id: recipe.c7_clothing.sew_base_layer
+    name: 基础内层衣裤缝制
+    description: 将通用织物裁剪缝制为按尺寸管理的基础内层衣裤。
+    status: candidate_only
+    kind: tailoring
+    resource_chains: [survival, politics]
+    inputs: [{item: item.material.woven_cloth, amount: 1.2, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [textile_bench]
+    tools: [sewing_tools, measuring_tools]
+    qualification: {minimum_role: tailor, skill: tailoring, specialty: base_layer, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 3.0, max: 5.0}
+    logistics: {input_staging: 织物按清洁状态和目标尺寸裁片集结。, output_storage: 检查接缝、尺寸和成套状态后按尺码干燥保存。}
+    outputs: [{item: item.clothing.base_layer_set, min: 1.0, max: 1.0}]
+    byproducts: []
+    risks: [{id: quality_loss, condition: 裁片尺寸或接缝强度不合格。, effect: 成品不能进入可分配衣物库存。}, {id: contamination, condition: 织物或工作台不洁。, effect: 批次隔离并重新清洁检查。}]
+
+  - id: recipe.c7_clothing.sew_insulated_coat
+    name: 保温外套缝制
+    description: 将多层织物、植物纤维填充和紧固件缝制为寒冷环境外套。
+    status: candidate_only
+    kind: tailoring
+    resource_chains: [survival, security]
+    inputs: [{item: item.material.woven_cloth, amount: 2.5, consumed: true}, {item: item.material.plant_fiber, amount: 1.2, consumed: true}, {item: item.component.fastener_set, amount: 0.3, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [textile_bench]
+    tools: [sewing_tools, measuring_tools]
+    qualification: {minimum_role: tailor, skill: tailoring, specialty: cold_weather_clothing, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 7.0, max: 11.0}
+    logistics: {input_staging: 外层、内衬、干燥填充和紧固件按尺寸分套。, output_storage: 检查填充均匀度、闭合和干燥状态后悬挂保存。}
+    outputs: [{item: item.clothing.insulated_coat, min: 1.0, max: 1.0}]
+    byproducts: []
+    risks: [{id: quality_loss, condition: 填充分布、接缝或闭合不合格。, effect: 成品不能作为可靠寒冷外套。}, {id: contamination, condition: 填充受潮或接触污染物。, effect: 批次隔离并评估是否报废。}]
+
+  - id: recipe.c7_clothing.sew_rain_shell
+    name: 防雨罩衣缝制
+    description: 用织物、植物油处理层和紧固件制作轻型防雨罩衣。
+    status: candidate_only
+    kind: tailoring
+    resource_chains: [survival, industry]
+    inputs: [{item: item.material.woven_cloth, amount: 1.8, consumed: true}, {item: item.chemical.plant_oil, amount: 0.35, consumed: true}, {item: item.component.fastener_set, amount: 0.2, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [textile_bench, ventilated_chemical_bench]
+    tools: [sewing_tools, chemical_measuring_tools]
+    qualification: {minimum_role: tailor, skill: tailoring, specialty: rainwear, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 6.0, max: 9.0}
+    logistics: {input_staging: 织物、处理油和紧固件分区集结并保持通风。, output_storage: 处理层固化并检查接缝后避光、干燥保存。}
+    outputs: [{item: item.clothing.rain_shell, min: 1.0, max: 1.0}]
+    byproducts: []
+    risks: [{id: fire, condition: 植物油处理区接近明火或通风不足。, effect: 停止工艺并隔离易燃材料。}, {id: quality_loss, condition: 涂层不均、未固化或接缝漏水。, effect: 成品不能作为可靠雨具。}]
+
+  - id: recipe.c7_clothing.sew_work_gloves
+    name: 耐磨工作手套缝制
+    description: 将耐磨织物和植物纤维衬垫缝制为按尺寸成副的工作手套。
+    status: candidate_only
+    kind: tailoring
+    resource_chains: [industry, survival, security]
+    inputs: [{item: item.material.woven_cloth, amount: 0.45, consumed: true}, {item: item.material.plant_fiber, amount: 0.12, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [textile_bench]
+    tools: [sewing_tools, measuring_tools]
+    qualification: {minimum_role: tailor, skill: tailoring, specialty: work_gloves, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 2.0, max: 4.0}
+    logistics: {input_staging: 织物与衬垫按左右手和尺寸成组裁切。, output_storage: 检查指部活动、抓握面和成副状态后按尺码保存。}
+    outputs: [{item: item.clothing.work_gloves, min: 1.0, max: 1.0}]
+    byproducts: []
+    risks: [{id: quality_loss, condition: 尺寸、指部活动或接缝不合格。, effect: 成品不能作为完整工作手套分配。}, {id: worker_injury, condition: 厚层裁切和缝制缺少手部防护。, effect: 人员受伤并中止工艺。}]
+
+  - id: recipe.c7_clothing.make_work_boots
+    name: 加固工作靴制作
+    description: 用厚织物、回收橡胶条、钢件和紧固件装配成双工作靴。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [industry, survival, security]
+    inputs: [{item: item.material.woven_cloth, amount: 1.0, consumed: true}, {item: item.material.reclaimed_rubber_strip, amount: 0.8, consumed: true}, {item: item.material.reclaimed_steel_plate, amount: 0.35, consumed: true}, {item: item.component.fastener_set, amount: 0.35, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [textile_bench, basic_workshop]
+    tools: [sewing_tools, metalworking_tools, measuring_tools]
+    qualification: {minimum_role: tailor, skill: tailoring, specialty: work_boots, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 8.0, max: 13.0}
+    logistics: {input_staging: 厚织物、鞋底橡胶、包头钢件和紧固件按尺码成双集结。, output_storage: 完成鞋底、包头和成双检查后按尺码干燥保存。}
+    outputs: [{item: item.clothing.reinforced_work_boots, min: 1.0, max: 1.0}]
+    byproducts: []
+    risks: [{id: worker_injury, condition: 钢件整形或厚层缝制缺少固定防护。, effect: 人员受伤并中止装配。}, {id: quality_loss, condition: 鞋底、包头、尺码或成双状态不合格。, effect: 成品不能进入劳动防护库存。}]
+
+  - id: recipe.c7_clothing.make_dust_mask
+    name: 可更换防尘口罩制作
+    description: 将清洁织物、橡胶带和过滤介质装配为一般粉尘口罩。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [industry, survival, security]
+    inputs: [{item: item.material.woven_cloth, amount: 0.15, consumed: true}, {item: item.material.reclaimed_rubber_strip, amount: 0.08, consumed: true}, {item: item.material.layered_filter_media, amount: 0.12, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [clean_workbench, textile_bench]
+    tools: [sewing_tools, measuring_tools]
+    qualification: {minimum_role: tailor, skill: tailoring, specialty: dust_mask, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 1.5, max: 3.0}
+    logistics: {input_staging: 清洁织物、带体和过滤介质在无粉尘区分装。, output_storage: 检查密合、带体和滤层方向后密封防潮保存。}
+    outputs: [{item: item.clothing.dust_mask, min: 1.0, max: 1.0}]
+    byproducts: []
+    risks: [{id: contamination, condition: 滤层或装配区已受粉尘和化学残留污染。, effect: 批次隔离并退出呼吸防护库存。}, {id: quality_loss, condition: 带体、密合或滤层方向不合格。, effect: 成品不得作为防尘口罩使用。}]
+
+  - id: recipe.c7_clothing.make_safety_goggles
+    name: 密封护目镜装配
+    description: 将回收玻璃片、橡胶密封条和织物带装配为一般作业护目镜。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [industry, survival, security]
+    inputs: [{item: item.material.woven_cloth, amount: 0.08, consumed: true}, {item: item.material.reclaimed_rubber_strip, amount: 0.12, consumed: true}, {item: item.material.reclaimed_glass_sheet, amount: 0.18, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [glass_bench, basic_workshop]
+    tools: [glassworking_tools, measuring_tools]
+    qualification: {minimum_role: mechanic, skill: fabrication, specialty: eye_protection, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 3.0, max: 5.0}
+    logistics: {input_staging: 玻璃片去除锐边后与密封条和头带分套集结。, output_storage: 检查视窗、密封和带体后防刮防震保存。}
+    outputs: [{item: item.clothing.safety_goggles, min: 1.0, max: 1.0}]
+    byproducts: []
+    risks: [{id: glass_cut, condition: 玻璃裁切和磨边缺少固定与防护。, effect: 人员受伤并隔离碎片。}, {id: quality_loss, condition: 视窗划伤、密封或带体不合格。, effect: 成品不能进入眼部防护库存。}]
+
+  - id: recipe.c7_clothing.make_welding_apron
+    name: 厚质焊接围裙缝制
+    description: 将多层厚织物、植物纤维和紧固件制成热作业围裙。
+    status: candidate_only
+    kind: tailoring
+    resource_chains: [industry, security]
+    inputs: [{item: item.material.woven_cloth, amount: 2.2, consumed: true}, {item: item.material.plant_fiber, amount: 0.5, consumed: true}, {item: item.component.fastener_set, amount: 0.25, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [textile_bench, basic_workshop]
+    tools: [sewing_tools, measuring_tools]
+    qualification: {minimum_role: tailor, skill: tailoring, specialty: welding_protection, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 5.0, max: 8.0}
+    logistics: {input_staging: 厚织物、衬层和紧固件按覆盖范围裁片集结。, output_storage: 检查覆盖、带体和松散纤维后与普通围裙分柜。}
+    outputs: [{item: item.clothing.welding_apron, min: 1.0, max: 1.0}]
+    byproducts: []
+    risks: [{id: quality_loss, condition: 层间接缝、覆盖或带体固定不合格。, effect: 成品不能进入热作业防护库存。}, {id: fire, condition: 材料沾油或试验区域存在明火。, effect: 停止工艺并隔离污染材料。}]
+
+  - id: recipe.c7_clothing.sew_padded_trousers
+    name: 衬垫工作裤缝制
+    description: 用织物、植物纤维衬垫和紧固件制作耐磨工作裤。
+    status: candidate_only
+    kind: tailoring
+    resource_chains: [industry, survival]
+    inputs: [{item: item.material.woven_cloth, amount: 1.7, consumed: true}, {item: item.material.plant_fiber, amount: 0.45, consumed: true}, {item: item.component.fastener_set, amount: 0.2, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [textile_bench]
+    tools: [sewing_tools, measuring_tools]
+    qualification: {minimum_role: tailor, skill: tailoring, specialty: padded_trousers, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 5.0, max: 8.0}
+    logistics: {input_staging: 织物、衬垫和紧固件按尺码及膝部位置分套。, output_storage: 检查活动范围、衬垫位置和闭合后按尺码保存。}
+    outputs: [{item: item.clothing.padded_work_trousers, min: 1.0, max: 1.0}]
+    byproducts: []
+    risks: [{id: quality_loss, condition: 衬垫位置、尺码或接缝影响活动。, effect: 成品不能作为工作裤分配。}, {id: worker_injury, condition: 厚层裁切和缝制操作不当。, effect: 人员受伤并延长工时。}]
+
+  - id: recipe.c7_furniture.make_storage_shelf
+    name: 模块化储物架制作
+    description: 将回收木材和紧固件制作成可拆分搬运的储物架。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [industry, survival]
+    inputs: [{item: item.material.reclaimed_lumber, amount: 18.0, consumed: true}, {item: item.component.fastener_set, amount: 1.2, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [carpentry_bench]
+    tools: [woodworking_tools, measuring_tools]
+    qualification: {minimum_role: carpenter, skill: woodworking, specialty: storage_furniture, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 10.0, max: 16.0}
+    logistics: {input_staging: 木材按直度、裂纹和尺寸分级，紧固件成套集结。, output_storage: 检查结构、承载面和拆分部位后干燥平放。}
+    outputs: [{item: item.furniture.modular_storage_shelf, min: 1.0, max: 1.0}]
+    byproducts: [{type: item, item: item.waste.sawdust, min: 0.3, max: 0.7}]
+    risks: [{id: worker_injury, condition: 长件切割和翻转缺少固定协作。, effect: 人员受伤并中止制作。}, {id: quality_loss, condition: 结构偏斜、裂纹或紧固不足。, effect: 成品不能进入可部署家具库存。}]
+
+  - id: recipe.c7_furniture.make_communal_bench
+    name: 公共长凳制作
+    description: 将回收木材和紧固件制作成多人使用的公共长凳。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [survival, politics, industry]
+    inputs: [{item: item.material.reclaimed_lumber, amount: 14.0, consumed: true}, {item: item.component.fastener_set, amount: 0.9, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [carpentry_bench]
+    tools: [woodworking_tools, measuring_tools]
+    qualification: {minimum_role: carpenter, skill: woodworking, specialty: seating_furniture, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 8.0, max: 13.0}
+    logistics: {input_staging: 木材按长度、裂纹和接触面状态分级集结。, output_storage: 检查稳定、边角和多人载荷入口后干燥存放。}
+    outputs: [{item: item.furniture.communal_bench, min: 1.0, max: 1.0}]
+    byproducts: [{type: item, item: item.waste.sawdust, min: 0.25, max: 0.6}]
+    risks: [{id: worker_injury, condition: 长件切割或试载缺少安全空间。, effect: 人员受伤并停止作业。}, {id: quality_loss, condition: 支腿、横撑或表面边角不合格。, effect: 成品不能进入公共家具库存。}]
+
+  - id: recipe.c7_furniture.make_workshop_stool
+    name: 工坊高凳制作
+    description: 将回收木材和紧固件制作成面向精细工位的高凳。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [industry, survival]
+    inputs: [{item: item.material.reclaimed_lumber, amount: 7.0, consumed: true}, {item: item.component.fastener_set, amount: 0.55, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [carpentry_bench]
+    tools: [woodworking_tools, measuring_tools]
+    qualification: {minimum_role: carpenter, skill: woodworking, specialty: seating_furniture, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 5.0, max: 8.0}
+    logistics: {input_staging: 木材和紧固件按目标高度及工位空间集结。, output_storage: 检查稳定、脚撑和表面后与待部署家具同区保存。}
+    outputs: [{item: item.furniture.workshop_stool, min: 1.0, max: 1.0}]
+    byproducts: [{type: item, item: item.waste.sawdust, min: 0.12, max: 0.3}]
+    risks: [{id: worker_injury, condition: 小件切割或试坐时固定不足。, effect: 人员受伤并中止工艺。}, {id: quality_loss, condition: 高度、稳定性或脚撑不合格。, effect: 成品不能进入工坊家具库存。}]
+
+  - id: recipe.c7_daily.assemble_sewing_kit
+    name: 缝补工具组装配
+    description: 将织物收纳层、植物纤维线材和紧固件组装为便携缝补工具组。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [survival, industry, politics]
+    inputs: [{item: item.material.woven_cloth, amount: 0.2, consumed: true}, {item: item.material.plant_fiber, amount: 0.12, consumed: true}, {item: item.component.fastener_set, amount: 0.08, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [textile_bench]
+    tools: [sewing_tools, measuring_tools]
+    qualification: {minimum_role: tailor, skill: tailoring, specialty: sewing_kit, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 1.5, max: 3.0}
+    logistics: {input_staging: 收纳织物、线材和小型紧固件按套分格。, output_storage: 核对组件、锐件包覆和收纳闭合后按套保存。}
+    outputs: [{item: item.daily.sewing_mending_kit, min: 1.0, max: 1.0}]
+    byproducts: []
+    risks: [{id: quality_loss, condition: 组件缺失、锐件暴露或收纳闭合不合格。, effect: 工具组不能进入可分配库存。}, {id: worker_injury, condition: 小型锐件整理不当。, effect: 人员受伤并重新清点组件。}]
+
+  - id: recipe.c7_decoration.carve_wooden_figure
+    name: 木雕摆件制作
+    description: 将小段回收木材雕刻成保留制作者来源的装饰摆件。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [politics, industry]
+    inputs: [{item: item.material.reclaimed_lumber, amount: 0.8, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [carpentry_bench]
+    tools: [woodworking_tools, measuring_tools]
+    qualification: {minimum_role: carpenter, skill: woodworking, specialty: wood_carving, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 3.0, max: 7.0}
+    logistics: {input_staging: 小段木材按裂纹、纹理和来源记录后集结。, output_storage: 去除锐边并记录制作者和来源后防潮展示或保存。}
+    outputs: [{item: item.decoration.carved_wooden_figure, min: 1.0, max: 1.0}]
+    byproducts: [{type: item, item: item.waste.sawdust, min: 0.08, max: 0.2}]
+    risks: [{id: worker_injury, condition: 雕刻刀具滑脱或工件未固定。, effect: 人员受伤并停止雕刻。}, {id: quality_loss, condition: 木材开裂或细节严重破损。, effect: 成品不能按原计划用于展示或赠送。}]
+
+  - id: recipe.c7_decoration.sew_cloth_toy
+    name: 布艺玩具缝制
+    description: 将织物和清洁植物纤维填充缝制为可追溯制作者的布艺玩具。
+    status: candidate_only
+    kind: tailoring
+    resource_chains: [politics, survival]
+    inputs: [{item: item.material.woven_cloth, amount: 0.35, consumed: true}, {item: item.material.plant_fiber, amount: 0.25, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [textile_bench]
+    tools: [sewing_tools, measuring_tools]
+    qualification: {minimum_role: tailor, skill: tailoring, specialty: cloth_toy, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 2.5, max: 5.0}
+    logistics: {input_staging: 织物和清洁填充按单件分套并记录制作者。, output_storage: 检查接缝、松散纤维和清洁状态后防潮保存。}
+    outputs: [{item: item.decoration.cloth_toy, min: 1.0, max: 1.0}]
+    byproducts: []
+    risks: [{id: contamination, condition: 填充受潮、发霉或接触危险残留。, effect: 成品隔离并退出赠送与互动用途。}, {id: quality_loss, condition: 接缝或填充不合格。, effect: 成品不能进入可分配装饰物库存。}]

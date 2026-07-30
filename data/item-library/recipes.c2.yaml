@@ -1,0 +1,564 @@
+schema_version: 0.2.0
+library_status: candidate_only
+authority:
+  contract: docs/item-library/item-library-authoring-contract-v0.2.md
+  design: docs/design-docs/item-and-manufacturing-system-v0.1.md
+  design_sha256: 24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb
+scope_note: 15 个 C2 代表工艺；维修保留原实例，拆解消耗目标实例，装配继续使用 C1 工艺合同。
+
+recipes:
+  - id: recipe.c2_assembly.weapon_cleaning_kit
+    name: 武器清洁维护组封装
+    description: 将通用清洁布、清洁液和机械小件封装为可分配的军械维护工具组。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [security, industry]
+    inputs:
+      - {item: item.daily.cleaning_rags, amount: 1.0, consumed: true}
+      - {item: item.daily.cleaning_solution, amount: 0.5, consumed: true}
+      - {item: item.component.mechanical_spares, amount: 0.25, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [armory_bench]
+    tools: [gunsmith_tools, measuring_tools]
+    qualification:
+      minimum_role: armorer
+      skill: maintenance
+      specialty: firearm_maintenance
+      missing_effect: failure_risk_increased
+    effective_time_hours: {min: 1.5, max: 2.5}
+    logistics:
+      input_staging: 从清洁区和零件柜分别领取无污染布、普通清洁液与适配小件。
+      output_storage: 完成清单核对后送入军械工具柜或分配给指定外出队。
+    outputs:
+      - {item: item.weapon.cleaning_kit, min: 1.0, max: 1.0}
+    byproducts:
+      - {type: burden, burden: chemical_residue, min: 0.05, max: 0.1}
+    risks:
+      - id: contamination
+        condition: 清洁布已经接触工业油污或清洁液来源不明。
+        effect: 工具组不能用于军械内部清洁，需要重新分拣。
+      - id: ingredient_shortage
+        condition: 机械小件已被设施维修预留。
+        effect: 封装暂停并显示军械与工业维修的库存冲突。
+
+  - id: recipe.c2_assembly.field_bed
+    name: 折叠野战床装配
+    description: 以回收钢板、织物和紧固件装配可搬运床具，库存成品仍需搬运和安装才成为床位。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [survival, industry, politics]
+    inputs:
+      - {item: item.material.reclaimed_steel_plate, amount: 0.15, consumed: true}
+      - {item: item.material.woven_cloth, amount: 0.5, consumed: true}
+      - {item: item.component.fastener_set, amount: 0.5, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [carpentry_bench, basic_workshop]
+    tools: [woodworking_tools, metalworking_tools, sewing_tools]
+    qualification:
+      minimum_role: carpenter
+      skill: fabrication
+      specialty: furniture_making
+      missing_effect: quality_cap_reduced
+    effective_time_hours: {min: 5.0, max: 8.0}
+    logistics:
+      input_staging: 板材、布卷和紧固件在木作台附近集结，并确认未被维修、防护或医疗订单锁定。
+      output_storage: 折叠检查后送入干燥家具区；目标房间和安装时间另行承诺。
+    outputs:
+      - {item: item.furniture.field_bed, min: 1.0, max: 1.0}
+    byproducts:
+      - {type: burden, burden: smoke_and_dust, min: 0.1, max: 0.3}
+    risks:
+      - id: quality_loss
+        condition: 框架尺寸、布面张力或紧固件规格未按同一模板装配。
+        effect: 成品承重上限和可达完整度下降，不能直接标记为安全床位。
+      - id: worker_injury
+        condition: 大件框架搬运路径拥堵或缺少固定夹具。
+        effect: 有效时间增加并产生可预见的夹伤风险。
+
+  - id: recipe.c2_assembly.task_lamp
+    name: 有线工作灯装配
+    description: 将铜线、离线电子组件、标记线束和紧固件装配为本地供电的工作灯。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [industry, survival, security]
+    inputs:
+      - {item: item.material.copper_wire, amount: 0.2, consumed: true}
+      - {item: item.component.recovered_electronics, amount: 0.5, consumed: true}
+      - {item: item.component.cable_harness, amount: 0.5, consumed: true}
+      - {item: item.component.fastener_set, amount: 0.25, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [electrical_bench]
+    tools: [electrical_testing_tools, measuring_tools]
+    qualification:
+      minimum_role: electrician
+      skill: electronics
+      specialty: wired_security
+      missing_effect: prohibited
+    effective_time_hours: {min: 3.0, max: 5.0}
+    logistics:
+      input_staging: 所有回收组件先完成离线测试，并按目标工作位线路规格领取。
+      output_storage: 成品通电测试后送入防震家具区，安装线路与位置仍需单独安排。
+    outputs:
+      - {item: item.furniture.task_lamp, min: 1.0, max: 1.0}
+    byproducts:
+      - {type: burden, burden: chemical_residue, min: 0.05, max: 0.15}
+    risks:
+      - id: electrical_fault
+        condition: 电子组件、绝缘或线束接口未通过离线测试。
+        effect: 工艺被禁止或返工，不生成可安装成品。
+      - id: quality_loss
+        condition: 使用亮度或散热状态不一致的回收组件。
+        effect: 成品可靠性上限下降并扩大维护区间。
+
+  - id: recipe.repair.bolt_rifle_service
+    name: 栓动步枪维修
+    description: 保留武器实例、来源与分配记录，更换小件并完成清洁、检查和功能测试。
+    status: candidate_only
+    kind: repair
+    resource_chains: [security, industry, politics]
+    target:
+      item: item.weapon.bolt_rifle
+      allowed_from: [worn, damaged]
+      result_state: serviceable
+      target_consumed: false
+    inputs:
+      - {item: item.weapon.cleaning_kit, amount: 1.0, consumed: false}
+      - {item: item.component.mechanical_spares, amount: 0.5, consumed: true}
+      - {item: item.daily.cleaning_rags, amount: 0.5, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [armory_bench]
+    tools: [gunsmith_tools, measuring_tools]
+    qualification:
+      minimum_role: armorer
+      skill: maintenance
+      specialty: firearm_maintenance
+      missing_effect: prohibited
+    effective_time_hours: {min: 4.0, max: 7.0}
+    logistics:
+      input_staging: 目标武器解除防区分配并卸除弹药后，连同维护组与适配小件送到军械台。
+      output_storage: 功能测试通过后返回原实例记录，重新上锁或分配；未通过则保持损坏状态。
+    outputs: []
+    byproducts:
+      - {type: burden, burden: chemical_residue, min: 0.1, max: 0.3}
+    risks:
+      - id: accidental_discharge
+        condition: 武器未完成清膛和弹药分离就进入维修位。
+        effect: 工艺禁止开始并触发军械安全警告。
+      - id: quality_loss
+        condition: 备件规格不匹配或缺少军械维护专业经验。
+        effect: 不能恢复到可用状态，材料可能损耗且维修时间扩大。
+
+  - id: recipe.repair.pump_shotgun_service
+    name: 泵动霰弹枪维修
+    description: 保留原武器实例，清理积垢并更换供弹机构小件，维修结果不改变所有权与来源。
+    status: candidate_only
+    kind: repair
+    resource_chains: [security, industry, politics]
+    target:
+      item: item.weapon.pump_shotgun
+      allowed_from: [worn, damaged]
+      result_state: serviceable
+      target_consumed: false
+    inputs:
+      - {item: item.weapon.cleaning_kit, amount: 1.0, consumed: false}
+      - {item: item.component.mechanical_spares, amount: 0.5, consumed: true}
+      - {item: item.daily.cleaning_rags, amount: 0.5, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [armory_bench]
+    tools: [gunsmith_tools, measuring_tools]
+    qualification:
+      minimum_role: armorer
+      skill: maintenance
+      specialty: firearm_maintenance
+      missing_effect: prohibited
+    effective_time_hours: {min: 4.0, max: 7.0}
+    logistics:
+      input_staging: 目标武器卸弹并解除人物分配，备件按供弹机构规格集结。
+      output_storage: 完成空枪操作测试后返回原实例；弹药需要在防区重新领取。
+    outputs: []
+    byproducts:
+      - {type: burden, burden: chemical_residue, min: 0.1, max: 0.3}
+    risks:
+      - id: accidental_discharge
+        condition: 霰弹未与武器和维修位物理分离。
+        effect: 工艺禁止开始并触发安全违规记录。
+      - id: material_variation
+        condition: 回收供弹小件无法与目标型号适配。
+        effect: 维修保持暂停，不能用普通机械备件总量掩盖适配短缺。
+
+  - id: recipe.repair.mechanical_watch_service
+    name: 机械腕表精密维修
+    description: 使用精密样品作为非消耗参照，更换小件并恢复走时；保留原腕表及其来源。
+    status: candidate_only
+    kind: repair
+    resource_chains: [industry, politics, security]
+    target:
+      item: item.valuable.mechanical_watch
+      allowed_from: [worn, damaged]
+      result_state: serviceable
+      target_consumed: false
+    inputs:
+      - {item: item.rare.prewar_bearing_sample, amount: 1.0, consumed: false}
+      - {item: item.component.mechanical_spares, amount: 0.2, consumed: true}
+      - {item: item.daily.cleaning_solution, amount: 0.1, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [precision_bench]
+    tools: [watchmaker_tools, measuring_tools]
+    qualification:
+      minimum_role: mechanic
+      skill: maintenance
+      specialty: precision_timekeeping
+      missing_effect: prohibited
+    effective_time_hours: {min: 6.0, max: 12.0}
+    logistics:
+      input_staging: 腕表、精密参照样品和小件在防尘精密台集结，所有交接保留持有人记录。
+      output_storage: 走时检查通过后返回原具名实例并归还参照样品；未通过则保持损坏。
+    outputs: []
+    byproducts:
+      - {type: burden, burden: chemical_residue, min: 0.02, max: 0.08}
+    risks:
+      - id: provenance_loss
+        condition: 维修中替换具名外壳、表盘或来源标记。
+        effect: 工艺必须暂停并要求确认，不能把功能维修静默变成身份改写。
+      - id: quality_loss
+        condition: 缺少精密参照、钟表工具或对应专业经验。
+        effect: 不能恢复可靠走时，且可能扩大损坏状态。
+
+  - id: recipe.repair.offline_archive_drive
+    name: 离线档案盘维修
+    description: 更换接口与控制小件并尝试恢复读取，保留原介质和档案来源，任何写入都不在本工艺范围。
+    status: candidate_only
+    kind: repair
+    resource_chains: [industry, politics, security]
+    target:
+      item: item.data.offline_archive_drive
+      allowed_from: [worn, damaged]
+      result_state: serviceable
+      target_consumed: false
+    inputs:
+      - {item: item.component.recovered_electronics, amount: 0.5, consumed: true}
+      - {item: item.material.copper_wire, amount: 0.1, consumed: true}
+      - {item: item.daily.cleaning_rags, amount: 0.2, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [archive_desk, electrical_bench]
+    tools: [data_recovery_tools, electrical_testing_tools]
+    qualification:
+      minimum_role: archivist
+      skill: archival
+      specialty: data_recovery
+      missing_effect: prohibited
+    effective_time_hours: {min: 8.0, max: 16.0}
+    logistics:
+      input_staging: 原盘在防震档案区交接，只允许离线诊断；替换件先单独测试。
+      output_storage: 读取测试后原盘返回防磁档案柜，诊断日志与工作副本分开保存。
+    outputs: []
+    byproducts:
+      - {type: burden, burden: chemical_residue, min: 0.05, max: 0.2}
+    risks:
+      - id: data_loss
+        condition: 未做只读诊断、供电异常或介质已经物理损伤。
+        effect: 内容可能进一步不可读；工艺必须公开风险后才能确认。
+      - id: unauthorized_access
+        condition: 档案内容受控但没有授权读者或交接记录。
+        effect: 工艺暂停并产生政治与证据风险，不得以维修名义绕过访问控制。
+
+  - id: recipe.repair.field_bed
+    name: 折叠野战床维修
+    description: 保留床具实例，更换损坏布面、紧固件或少量框架材料，恢复可安全部署状态。
+    status: candidate_only
+    kind: repair
+    resource_chains: [survival, industry]
+    target:
+      item: item.furniture.field_bed
+      allowed_from: [worn, damaged]
+      result_state: serviceable
+      target_consumed: false
+    inputs:
+      - {item: item.material.woven_cloth, amount: 0.2, consumed: true}
+      - {item: item.component.fastener_set, amount: 0.25, consumed: true}
+      - {item: item.material.reclaimed_steel_plate, amount: 0.05, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [carpentry_bench, basic_workshop]
+    tools: [woodworking_tools, sewing_tools, metalworking_tools]
+    qualification:
+      minimum_role: carpenter
+      skill: maintenance
+      specialty: furniture_making
+      missing_effect: quality_cap_reduced
+    effective_time_hours: {min: 2.5, max: 5.0}
+    logistics:
+      input_staging: 床具先从房间卸下并折叠送到维修位，材料按损坏部位领取。
+      output_storage: 承重检查通过后返回原实例，再由搬运任务送回目标房间安装。
+    outputs: []
+    byproducts:
+      - {type: burden, burden: smoke_and_dust, min: 0.05, max: 0.2}
+    risks:
+      - id: quality_loss
+        condition: 只修补表面布料而未检查弯曲框架。
+        effect: 不能恢复安全床位状态，必须继续维修或拆解。
+      - id: ingredient_shortage
+        condition: 织物或金属已被医疗、防护或设施维修锁定。
+        effect: 床具继续退出可用床位并占用维修区。
+
+  - id: recipe.repair.task_lamp
+    name: 有线工作灯维修
+    description: 保留灯具实例，更换导体、电子小件和线束后完成离线通电测试。
+    status: candidate_only
+    kind: repair
+    resource_chains: [industry, survival, security]
+    target:
+      item: item.furniture.task_lamp
+      allowed_from: [worn, damaged]
+      result_state: serviceable
+      target_consumed: false
+    inputs:
+      - {item: item.component.recovered_electronics, amount: 0.25, consumed: true}
+      - {item: item.material.copper_wire, amount: 0.1, consumed: true}
+      - {item: item.component.cable_harness, amount: 0.25, consumed: true}
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [electrical_bench]
+    tools: [electrical_testing_tools, measuring_tools]
+    qualification:
+      minimum_role: electrician
+      skill: electronics
+      specialty: wired_security
+      missing_effect: prohibited
+    effective_time_hours: {min: 2.0, max: 4.0}
+    logistics:
+      input_staging: 灯具先断电卸下，替换件按接口和线路规格在电气台集结。
+      output_storage: 离线通电测试后返回原实例，再安排目标工作位的重新安装。
+    outputs: []
+    byproducts:
+      - {type: burden, burden: chemical_residue, min: 0.02, max: 0.1}
+    risks:
+      - id: electrical_fault
+        condition: 未断电、绝缘状态未知或替换接口不匹配。
+        effect: 工艺禁止开始或保持损坏状态，避免用维修制造隐性电气风险。
+      - id: quality_loss
+        condition: 回收电子件的散热和亮度状态未测试。
+        effect: 不能恢复标准可靠性，只能标记为受限使用。
+
+  - id: recipe.dismantle.bolt_rifle
+    name: 栓动步枪拆解回收
+    description: 永久终止武器实例与分配，回收部分机械件和金属；来源记录只作为历史保留。
+    status: candidate_only
+    kind: dismantle
+    resource_chains: [industry, security, politics]
+    target:
+      item: item.weapon.bolt_rifle
+      allowed_from: [serviceable, worn, damaged, broken]
+      result_state: dismantled
+      target_consumed: true
+    inputs: []
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [armory_bench]
+    tools: [gunsmith_tools, metal_sorting_tools]
+    qualification:
+      minimum_role: armorer
+      skill: maintenance
+      specialty: firearm_maintenance
+      missing_effect: prohibited
+    effective_time_hours: {min: 3.0, max: 5.0}
+    logistics:
+      input_staging: 目标武器清膛、解除分配和证据保全要求后送入军械拆解位。
+      output_storage: 可用机械件入零件柜，板材与边角料分流；序列和来源保留为历史记录。
+    outputs:
+      - {item: item.component.mechanical_spares, min: 0.4, max: 0.8}
+      - {item: item.material.reclaimed_steel_plate, min: 0.05, max: 0.12}
+      - {item: item.waste.metal_offcuts, min: 0.5, max: 1.2}
+    byproducts:
+      - {type: burden, burden: chemical_residue, min: 0.05, max: 0.2}
+    risks:
+      - id: accidental_discharge
+        condition: 武器或工作区仍存在未分离弹药。
+        effect: 拆解禁止开始并触发军械安全违规。
+      - id: evidence_loss
+        condition: 武器关联案件、战利品争议或来源调查尚未关闭。
+        effect: 拆解需要额外确认，否则会不可逆破坏证据。
+
+  - id: recipe.dismantle.pump_shotgun
+    name: 泵动霰弹枪拆解回收
+    description: 消耗原霰弹枪实例，按状态回收机械件、少量板材和边角料，不允许无损还原。
+    status: candidate_only
+    kind: dismantle
+    resource_chains: [industry, security, politics]
+    target:
+      item: item.weapon.pump_shotgun
+      allowed_from: [serviceable, worn, damaged, broken]
+      result_state: dismantled
+      target_consumed: true
+    inputs: []
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [armory_bench]
+    tools: [gunsmith_tools, metal_sorting_tools]
+    qualification:
+      minimum_role: armorer
+      skill: maintenance
+      specialty: firearm_maintenance
+      missing_effect: prohibited
+    effective_time_hours: {min: 3.0, max: 5.0}
+    logistics:
+      input_staging: 武器卸弹、解除分配并确认不存在待保全的归属证据。
+      output_storage: 机械件、板材和边角料按清洁与规格分区入库。
+    outputs:
+      - {item: item.component.mechanical_spares, min: 0.3, max: 0.7}
+      - {item: item.material.reclaimed_steel_plate, min: 0.04, max: 0.1}
+      - {item: item.waste.metal_offcuts, min: 0.5, max: 1.0}
+    byproducts:
+      - {type: burden, burden: chemical_residue, min: 0.05, max: 0.2}
+    risks:
+      - id: accidental_discharge
+        condition: 弹仓、工作位或运输容器仍有霰弹。
+        effect: 拆解禁止开始并触发安全检查。
+      - id: evidence_loss
+        condition: 来源或序列记录仍处于争议状态。
+        effect: 必须先完成证据复制和授权，不能以回收价值覆盖政治风险。
+
+  - id: recipe.dismantle.mechanical_watch
+    name: 机械腕表拆解回收
+    description: 不可逆拆解具名腕表，回收少量精密机械件和金属，同时永久消除计时、身份与来源价值。
+    status: candidate_only
+    kind: dismantle
+    resource_chains: [industry, politics]
+    target:
+      item: item.valuable.mechanical_watch
+      allowed_from: [serviceable, worn, damaged, broken]
+      result_state: dismantled
+      target_consumed: true
+    inputs: []
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [precision_bench]
+    tools: [watchmaker_tools, measuring_tools]
+    qualification:
+      minimum_role: mechanic
+      skill: maintenance
+      specialty: precision_timekeeping
+      missing_effect: quality_cap_reduced
+    effective_time_hours: {min: 2.0, max: 4.0}
+    logistics:
+      input_staging: 腕表解除个人分配并确认所有权、纪念和证据状态后送到精密台。
+      output_storage: 可用小件进入机械零件柜，普通金属进入边角料箱；来源记录只读保留。
+    outputs:
+      - {item: item.component.mechanical_spares, min: 0.05, max: 0.15}
+      - {item: item.waste.metal_offcuts, min: 0.02, max: 0.08}
+    byproducts: []
+    risks:
+      - id: provenance_loss
+        condition: 腕表仍有持有人、赠送记录、家族标记或任务证据价值。
+        effect: 拆解要求不可逆确认，且回收价值不得隐藏来源损失。
+      - id: quality_loss
+        condition: 缺少精密工具或人员经验。
+        effect: 大部分零件无法作为合格机械备件入库。
+
+  - id: recipe.dismantle.offline_archive_drive
+    name: 离线档案盘拆解
+    description: 永久放弃原始数据和档案实例，回收部分电子组件与铜线。
+    status: candidate_only
+    kind: dismantle
+    resource_chains: [industry, politics, security]
+    target:
+      item: item.data.offline_archive_drive
+      allowed_from: [serviceable, worn, damaged, broken]
+      result_state: dismantled
+      target_consumed: true
+    inputs: []
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [archive_desk, electrical_bench]
+    tools: [data_recovery_tools, electrical_testing_tools]
+    qualification:
+      minimum_role: archivist
+      skill: archival
+      specialty: data_recovery
+      missing_effect: prohibited
+    effective_time_hours: {min: 2.0, max: 4.0}
+    logistics:
+      input_staging: 原盘先完成数据价值、所有权和证据状态确认，再进入隔离拆解位。
+      output_storage: 电子件与铜线通过离线测试后入库，介质残片进入受控销毁负担。
+    outputs:
+      - {item: item.component.recovered_electronics, min: 0.3, max: 0.7}
+      - {item: item.material.copper_wire, min: 0.05, max: 0.15}
+    byproducts:
+      - {type: burden, burden: chemical_residue, min: 0.1, max: 0.3}
+    risks:
+      - id: data_loss
+        condition: 没有可靠副本或内容尚未完成评估。
+        effect: 拆解将永久消除可能不可替代的数据，必须单独确认。
+      - id: evidence_loss
+        condition: 原盘仍承担案件、产权或来源证据职责。
+        effect: 工艺暂停，直到证据保全或用户明确接受损失。
+
+  - id: recipe.dismantle.field_bed
+    name: 折叠野战床拆解
+    description: 消耗床具实例，按当前状态回收少量板材、织物和紧固件，不恢复完整制造投入。
+    status: candidate_only
+    kind: dismantle
+    resource_chains: [survival, industry]
+    target:
+      item: item.furniture.field_bed
+      allowed_from: [serviceable, worn, damaged, broken]
+      result_state: dismantled
+      target_consumed: true
+    inputs: []
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [carpentry_bench]
+    tools: [woodworking_tools, sewing_tools, metal_sorting_tools]
+    qualification:
+      minimum_role: carpenter
+      skill: maintenance
+      specialty: furniture_making
+      missing_effect: quality_cap_reduced
+    effective_time_hours: {min: 1.5, max: 3.0}
+    logistics:
+      input_staging: 床具从房间卸下、清洁并送到家具拆解位。
+      output_storage: 可用材料按污染和完整度分别送入金属、纺织和小件区。
+    outputs:
+      - {item: item.material.reclaimed_steel_plate, min: 0.03, max: 0.08}
+      - {item: item.material.woven_cloth, min: 0.1, max: 0.25}
+      - {item: item.component.fastener_set, min: 0.1, max: 0.25}
+    byproducts:
+      - {type: burden, burden: smoke_and_dust, min: 0.05, max: 0.15}
+    risks:
+      - id: contamination
+        condition: 床具来自医疗隔离区或存在未知污染。
+        effect: 织物不能返回普通库存，拆解需要污染处理路径。
+      - id: quality_loss
+        condition: 框架锈蚀、布面撕裂或紧固件变形严重。
+        effect: 回收产量区间下降，不能按原始制造投入返还。
+
+  - id: recipe.dismantle.task_lamp
+    name: 有线工作灯拆解
+    description: 消耗灯具实例，回收通过测试的电子件、铜线和线束，失效件进入处理负担。
+    status: candidate_only
+    kind: dismantle
+    resource_chains: [industry, survival, security]
+    target:
+      item: item.furniture.task_lamp
+      allowed_from: [serviceable, worn, damaged, broken]
+      result_state: dismantled
+      target_consumed: true
+    inputs: []
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [electrical_bench]
+    tools: [electrical_testing_tools, metal_sorting_tools]
+    qualification:
+      minimum_role: electrician
+      skill: electronics
+      specialty: wired_security
+      missing_effect: failure_risk_increased
+    effective_time_hours: {min: 1.5, max: 3.0}
+    logistics:
+      input_staging: 灯具从工作位断电卸下，确认没有接入其他关键线路后送到电气台。
+      output_storage: 通过测试的组件按接口入库，失效绝缘和发光部件进入化学残留负担。
+    outputs:
+      - {item: item.component.recovered_electronics, min: 0.1, max: 0.35}
+      - {item: item.material.copper_wire, min: 0.03, max: 0.1}
+      - {item: item.component.cable_harness, min: 0.05, max: 0.15}
+    byproducts:
+      - {type: burden, burden: chemical_residue, min: 0.05, max: 0.2}
+    risks:
+      - id: electrical_fault
+        condition: 灯具仍带电或含有未识别储能组件。
+        effect: 拆解禁止开始并要求完成断电检查。
+      - id: material_variation
+        condition: 回收电子件已经热损伤或接口腐蚀。
+        effect: 可用产出区间下降，更多组件进入处理负担。

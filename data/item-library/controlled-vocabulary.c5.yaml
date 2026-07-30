@@ -1,0 +1,68 @@
+schema_version: 0.5.0
+status: candidate_only
+authority:
+  contract: docs/item-library/item-library-authoring-contract-v0.5.md
+  design: docs/design-docs/item-and-manufacturing-system-v0.1.md
+  design_sha256: 24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb
+
+enums:
+  facilities:
+    grain_mill: 谷物磨坊
+    food_preservation_station: 食品保存工作区
+    medical_clean_station: 医疗清洁工作区
+
+  tools:
+    milling_tools: 磨粉工具
+    preservation_tools: 食品保存工具
+    medical_packing_tools: 医疗封装工具
+    soldering_tools: 焊接工具
+
+  specialties:
+    electrical_connectors: 电气连接件
+    mechanical_components: 机械组件
+    protected_control: 防护控制件
+    hose_fitting: 软管接头
+    hand_tool_assembly: 手工具装配
+    wired_communications: 有线通信
+    portable_lighting: 便携照明
+    grain_milling: 谷物磨制
+    flatbread_baking: 饼食烘制
+    food_dehydration: 食品脱水
+    food_fermentation: 食品发酵
+    herbal_brewing: 草本饮品
+    hydration_care: 补液照护
+    splinting: 固定与夹板
+
+  risks:
+    packaging_failure: 包装失效
+    dosage_error: 剂量错误
+    foodborne_illness: 食源性疾病
+
+  tags:
+    connector: 连接件
+    bearing: 轴承
+    relay: 继电
+    power_control: 电源控制
+    fuse: 熔断保护
+    hose: 软管
+    hand_tool: 手工具
+    preservation: 食品保存
+    medical_instrument: 医疗器械
+    soldering: 焊接
+    telephone: 电话
+    weather: 气象
+    terminal: 终端
+    legume: 豆类
+    root_crop: 根茎作物
+    sugar: 糖料
+    flour: 面粉
+    bread: 饼食
+    dried_food: 脱水食品
+    fermented: 发酵食品
+    beverage: 饮品
+    hydration: 补液
+    splint: 夹板
+    gauze: 纱布
+    hemostatic: 止血
+    analgesic: 镇痛
+    antibiotic: 抗感染药物

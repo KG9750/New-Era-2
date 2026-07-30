@@ -1,0 +1,83 @@
+schema_version: 0.7.0
+status: candidate_only
+authority:
+  contract: docs/item-library/item-library-authoring-contract-v0.7.md
+  design: docs/design-docs/item-and-manufacturing-system-v0.1.md
+  design_sha256: 24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb
+
+enums:
+  protection_roles:
+    weather: 天候防护
+    work: 劳动防护
+    respiratory: 呼吸防护
+    eye: 眼部防护
+    chemical: 化学防护
+    ballistic: 弹道防护
+    impact: 冲击防护
+    medical: 医疗隔离
+    fire: 消防防护
+
+  body_regions:
+    torso: 躯干
+    arms: 手臂
+    hands: 手部
+    legs: 腿部
+    feet: 足部
+    head: 头部
+    face: 面部
+    eyes: 眼部
+
+  specialties:
+    base_layer: 基础内层
+    cold_weather_clothing: 寒冷服饰
+    rainwear: 防雨服饰
+    work_gloves: 工作手套
+    work_boots: 工作靴
+    dust_mask: 防尘口罩
+    eye_protection: 眼部防护
+    welding_protection: 焊接防护
+    padded_trousers: 衬垫裤装
+    storage_furniture: 储藏家具
+    seating_furniture: 座具
+    sewing_kit: 缝补工具组
+    wood_carving: 木雕
+    cloth_toy: 布艺玩具
+
+  tags:
+    daily_supply: 日常用品
+    base_layer: 基础内层
+    rainwear: 防雨
+    gloves: 手套
+    boots: 靴
+    hat: 帽
+    respiratory: 呼吸防护
+    goggles: 护目
+    apron: 围裙
+    trousers: 裤装
+    leather: 皮革
+    ballistic: 弹道防护
+    helmet: 头盔
+    shield: 盾
+    arm_guard: 护臂
+    knee_pad: 护膝
+    isolation: 隔离
+    firefighting: 消防
+    shelf: 货架
+    bench: 长凳
+    wash: 清洗
+    stool: 凳
+    mess_kit: 餐具
+    sewing_kit: 缝补
+    personal_hygiene: 个人卫生
+    stationery: 文具
+    carving: 雕刻
+    drum: 鼓
+    toy: 玩具
+    pendant: 吊坠
+    brooch: 胸针
+    surgical: 外科
+    optics: 光学
+    machine_control: 机床控制
+    ceremonial: 礼仪
+    high_density: 高密度
+    readonly_evidence: 只读证据

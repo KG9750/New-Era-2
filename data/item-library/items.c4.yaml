@@ -1,0 +1,904 @@
+schema_version: 0.4.0
+library_status: candidate_only
+authority:
+  contract: docs/item-library/item-library-authoring-contract-v0.4.md
+  design: docs/design-docs/item-and-manufacturing-system-v0.1.md
+  design_sha256: 24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb
+scope_note: C4 新增 30 个材料、能源、水处理与基础设施库存物品；累计目录定义 120，不授权运行时导入。
+
+items:
+  - id: item.material.raw_timber
+    name: 原木段
+    description: 经初步去枝和长度分级的木料，可加工为板材或劈成燃料；含水和腐朽状态会限制用途。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [wood, lumber, structural_material, combustible]
+    resource_chains: [industry, survival, security, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: high, traceability: none, wealth_signal: low}
+    actions: [process, reserve, trade, deliver, store]
+    unit: bundle
+    mass: 35.0
+    volume: 45.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [ambient, ventilated]
+    base_value: 14
+    acquisition_paths:
+      - {type: agriculture, note: 从受控林地或聚落木材地采伐并完成初步分级。}
+      - {type: salvage, note: 从倒木、废弃结构或清障作业回收可用木段。}
+      - {type: trade, note: 从林业聚落或商队购入。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 锯切为板材或劈分为干燥柴薪。}
+      - {type: contaminated, note: 腐朽、虫害或化学污染会使部分木段退出结构用途。}
+      - {type: traded_away, note: 作为通用木料出售或交付。}
+    logistics_note: 体积大，应在通风料场按含水和腐朽状态分垛，并预留搬运路线。
+    interfaces: {produced_by: [], used_by: [recipe.c4_wood.saw_lumber, recipe.c4_wood.split_firewood], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 同一批原木在住房、家具、燃料和防御结构之间形成直接竞争。
+
+  - id: item.material.reclaimed_lumber
+    name: 整形木板
+    description: 由原木锯切、去缺陷和分级得到的通用木板，可用于结构、家具和设备外壳。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [wood, lumber, structural_material, manufacturing]
+    resource_chains: [industry, survival, security, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: high, traceability: none, wealth_signal: medium}
+    actions: [reserve, trade, deliver, process, repair, store]
+    unit: bundle
+    mass: 24.0
+    volume: 28.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, ventilated, moisture_protected]
+    base_value: 24
+    acquisition_paths:
+      - {type: manufacture, note: 由原木完成锯切、干燥检查和尺寸分级。}
+      - {type: salvage, note: 从旧建筑中拆出并清除钉件、腐朽和污染部分。}
+      - {type: trade, note: 采购已经标注尺寸与含水状态的木板捆。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 用于后续家具、容器、工具柄或结构装配。}
+      - {type: installed, note: 进入设施维修或建设后从库存移出。}
+      - {type: traded_away, note: 作为高通用性结构材料交易。}
+    logistics_note: 平放或架空干燥储存，按尺寸、含水和来源分批，避免与燃料木混用。
+    interfaces: {produced_by: [recipe.c4_wood.saw_lumber], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把木料加工时间转化为更高通用性，同时成为家居、生产和安全结构的共享瓶颈。
+
+  - id: item.material.dry_firewood
+    name: 干燥柴薪
+    description: 经劈分和通风干燥的标准燃料木捆，可用于窑炉和日常热源，不冻结热值。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [wood, fuel, solid_fuel, energy, combustible]
+    resource_chains: [survival, industry, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: high, traceability: none, wealth_signal: low}
+    actions: [burn, reserve, trade, deliver, store]
+    unit: bundle
+    mass: 16.0
+    volume: 24.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, ventilated, away_from_food]
+    base_value: 11
+    acquisition_paths:
+      - {type: manufacture, note: 从原木劈分并完成通风干燥。}
+      - {type: forage, note: 收集可识别枯枝并排除污染和严重腐朽。}
+      - {type: trade, note: 从木料供应者购入标准燃料捆。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 用于制炭、烧砖或煅烧石灰。}
+      - {type: consumed_directly, note: 在受控热源中燃烧以提供候选热能。}
+      - {type: contaminated, note: 受潮、油污或化学处理木不得进入普通燃烧。}
+    logistics_note: 需要大体积干燥储存并与火源保持距离，窑炉承诺和生活储备分开显示。
+    interfaces: {produced_by: [recipe.c4_wood.split_firewood], used_by: [recipe.c4_wood.carbonize_charcoal, recipe.c4_masonry.fire_brick, recipe.c4_masonry.calcine_quicklime], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让日常取暖与工业窑炉竞争同一燃料储备，并暴露搬运和火灾成本。
+
+  - id: item.material.charcoal
+    name: 木炭
+    description: 木料在受控缺氧条件下转化的高密度固体燃料，也可继续加工为过滤用活性炭。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [fuel, solid_fuel, energy, filtration, combustible]
+    resource_chains: [industry, survival, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: medium}
+    actions: [burn, process, reserve, trade, deliver, store]
+    unit: bag
+    mass: 10.0
+    volume: 16.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, ventilated, away_from_food]
+    base_value: 18
+    acquisition_paths:
+      - {type: manufacture, note: 由干燥柴薪在窑炉中完成受控炭化。}
+      - {type: trade, note: 从具备制炭能力的聚落购入。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 进一步处理为活性炭。}
+      - {type: consumed_directly, note: 作为工业或烹饪候选燃料燃烧。}
+      - {type: contaminated, note: 吸附油污或化学品后不能进入食品和过滤用途。}
+    logistics_note: 按粉尘和污染状态密封储存，远离明火；过滤预留与燃料预留不得重复计算。
+    interfaces: {produced_by: [recipe.c4_wood.carbonize_charcoal], used_by: [recipe.c4_filter.activate_carbon], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 在即时燃料价值和长期水处理能力之间形成清晰分流。
+
+  - id: item.material.biomass_briquette
+    name: 生物质压块
+    description: 将干燥木屑压制成便于搬运的固体燃料单位，密度提高但仍受潮湿和粉尘影响。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [fuel, solid_fuel, energy, combustible, reclaimed]
+    resource_chains: [survival, industry]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [burn, reserve, trade, deliver, store]
+    unit: bundle
+    mass: 12.0
+    volume: 10.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, moisture_protected, away_from_food]
+    base_value: 10
+    acquisition_paths:
+      - {type: manufacture, note: 将干燥木屑筛分并压制成型。}
+      - {type: trade, note: 从木工或燃料加工点购入。}
+    consumption_loss_paths:
+      - {type: consumed_directly, note: 在适配炉具中燃烧。}
+      - {type: contaminated, note: 受潮、霉变或混入处理木粉后退出普通燃料用途。}
+      - {type: traded_away, note: 作为低成本固体燃料交易。}
+    logistics_note: 比散装木屑更易搬运，但必须防潮并与食物、药草和明火隔离。
+    interfaces: {produced_by: [recipe.c4_wood.compress_briquette], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把副产木屑和工坊时间转化为可储燃料，降低浪费但不创造无成本能量。
+
+  - id: item.material.crude_biofuel
+    name: 罐装粗制生物燃料
+    description: 由植物油、酒精和碱料加工并封入标准燃料罐的受控液体燃料，只表示候选能源载体，不冻结设备兼容或热值。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [fuel, liquid_fuel, energy, chemical, flammable]
+    resource_chains: [industry, security, survival, politics]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: medium}
+    actions: [burn, reserve, trade, deliver, store]
+    unit: piece
+    mass: 11.0
+    volume: 12.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership, concentration]}
+    storage_rule: [locked, hazardous, ventilated, away_from_food]
+    base_value: 70
+    acquisition_paths:
+      - {type: manufacture, note: 在通风燃料台由植物油、酒精和碱料完成分离与沉降。}
+      - {type: trade, note: 采购有批次标记和容器状态记录的液体燃料。}
+    consumption_loss_paths:
+      - {type: consumed_directly, note: 在适配且获授权的燃烧设备中消耗。}
+      - {type: contaminated, note: 进水、混油或反应残留超限后退出设备燃料用途。}
+      - {type: destroyed, note: 泄漏、火灾或不安全处置会永久损失批次。}
+    logistics_note: 每个库存单位包含一只已承诺的标准燃料罐，按批次和封口状态置于二次承接区，不能与饮用水、药品或普通植物油共储。
+    interfaces: {produced_by: [recipe.c4_energy.refine_biofuel], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 将可食用或工业植物油、化学品和熟练时间转向能源，形成生存与工业冲突。
+
+  - id: item.material.mixed_nonferrous_scrap
+    name: 混杂有色金属废料
+    description: 含铜、铝和未知附着物的混合废料，必须分拣和去污后才能进入电气或结构用途。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [nonferrous, reclaimed, salvage_only, contamination_risk]
+    resource_chains: [industry, security, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: high, traceability: none, wealth_signal: medium}
+    actions: [process, recycle, reserve, trade, deliver, store]
+    unit: crate
+    mass: 22.0
+    volume: 14.0
+    stack_rule: {stackable: true, merge_keys: [contamination_state, ownership]}
+    storage_rule: [ambient, ventilated, away_from_food]
+    base_value: 20
+    acquisition_paths:
+      - {type: salvage, note: 从旧电器、车辆、线路和结构件回收，未完成材质分离。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 进入有色金属分拣与基础整形。}
+      - {type: contaminated, note: 含油、重金属粉尘或未知密封件的批次需要隔离。}
+      - {type: traded_away, note: 作为低等级回收料出售。}
+    logistics_note: 按来源和污染状态分箱，尖锐件、密封件和电池残件不得直接送入普通工坊。
+    interfaces: {produced_by: [], used_by: [recipe.c4_nonferrous.sort_stock], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 以广泛来源换取高分拣成本，并把有色金属回收与污染处置绑定。
+
+  - id: item.material.reclaimed_copper_stock
+    name: 回收铜料
+    description: 经分拣、去污和基础整形的铜质原料，可用于电气连接和电池组件，但不等于绝缘铜线。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [nonferrous, copper, reclaimed, conductive, manufacturing]
+    resource_chains: [industry, security, politics]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: medium}
+    actions: [process, reserve, trade, deliver, store]
+    unit: bar
+    mass: 5.0
+    volume: 1.2
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, locked]
+    base_value: 28
+    acquisition_paths:
+      - {type: manufacture, note: 由混杂有色废料完成分拣和基础整形。}
+      - {type: salvage, note: 从大型纯铜部件中单独回收并验证材质。}
+      - {type: trade, note: 采购标注纯度等级的铜料。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 用于电池模块或后续电气组件。}
+      - {type: installed, note: 进入设施电气维修后退出库存。}
+      - {type: traded_away, note: 作为高需求有色金属交易。}
+    logistics_note: 小体积高价值，应上锁并按纯度和来源分批，不能与绝缘铜线重复统计。
+    interfaces: {produced_by: [recipe.c4_nonferrous.sort_stock], used_by: [recipe.c4_battery.assemble_module], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 成为电池、线路和交易之间的高价值共享材料。
+
+  - id: item.material.reclaimed_aluminum_stock
+    name: 回收铝料
+    description: 经分拣和整形的轻质铝材，可用于外壳、过滤组件和电池模块，不冻结合金强度。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [nonferrous, aluminum, reclaimed, structural_material, manufacturing]
+    resource_chains: [industry, security, survival]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: medium}
+    actions: [process, reserve, trade, deliver, store]
+    unit: bar
+    mass: 3.0
+    volume: 2.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry]
+    base_value: 22
+    acquisition_paths:
+      - {type: manufacture, note: 从混杂有色废料分拣并去除附着物。}
+      - {type: salvage, note: 从旧外壳或结构件回收可识别铝材。}
+      - {type: trade, note: 采购已分级的轻质铝料。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 用于滤芯外壳和电池模块装配。}
+      - {type: installed, note: 进入轻质结构或设备外壳维修。}
+      - {type: traded_away, note: 作为轻质结构材料交易。}
+    logistics_note: 按材质等级和污染状态分架储存，薄料需防止压损。
+    interfaces: {produced_by: [recipe.c4_nonferrous.sort_stock], used_by: [recipe.c4_filter.assemble_cartridge, recipe.c4_battery.assemble_module], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 在水处理、储能、设备外壳和贸易之间形成轻质金属瓶颈。
+
+  - id: item.material.glass_cullet
+    name: 分拣玻璃碎料
+    description: 按颜色、污染和材质分出的玻璃碎片，可重新熔制，但仍具有割伤和夹杂风险。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [glass, reclaimed, salvage_only, contamination_risk]
+    resource_chains: [industry, survival]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [process, recycle, reserve, trade, store]
+    unit: crate
+    mass: 18.0
+    volume: 10.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, locked, away_from_food]
+    base_value: 10
+    acquisition_paths:
+      - {type: salvage, note: 从破损窗材、容器和旧设备中回收并完成初步分拣。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 进入玻璃熔制与压片工艺。}
+      - {type: contaminated, note: 混入陶瓷、金属或化学残留后需要重新分拣。}
+      - {type: traded_away, note: 作为低等级玻璃回收料出售。}
+    logistics_note: 使用防割容器并按材质和污染分箱，禁止与食品或普通碎石混放。
+    interfaces: {produced_by: [], used_by: [recipe.c4_glass.melt_sheet], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供低技术透明材料来源，同时用分拣、燃料和伤害风险限制无限回收。
+
+  - id: item.material.reclaimed_glass_sheet
+    name: 回收玻璃片
+    description: 由分拣玻璃重新熔制并压平的通用片材，可用于窗、灯罩和观察口，不冻结光学品质。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [glass, reclaimed, structural_material, manufacturing]
+    resource_chains: [industry, survival, security]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: high, traceability: none, wealth_signal: medium}
+    actions: [install, reserve, trade, deliver, store]
+    unit: sheet
+    mass: 4.0
+    volume: 3.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, shock_protected, locked]
+    base_value: 21
+    acquisition_paths:
+      - {type: manufacture, note: 由分拣玻璃碎料重新熔制和压片。}
+      - {type: salvage, note: 从完整旧窗或设备面板中拆取并检查裂纹。}
+      - {type: trade, note: 采购按尺寸和裂纹状态分级的玻璃片。}
+    consumption_loss_paths:
+      - {type: installed, note: 安装到窗、灯具或观察口后从库存移出。}
+      - {type: destroyed, note: 冲击或热应力导致破裂后转为待分拣碎料。}
+      - {type: traded_away, note: 作为稀缺透明片材交易。}
+    logistics_note: 竖直缓冲储存并按尺寸、裂纹和来源标记，搬运需要防割保护。
+    interfaces: {produced_by: [recipe.c4_glass.melt_sheet], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把高温工艺和燃料投入转成建筑、照明和设备共享片材。
+
+  - id: item.material.sand_aggregate
+    name: 筛分砂料
+    description: 经筛分和基础清洗的通用砂料，可用于砂浆和过滤层，但两种用途要求不同污染标准。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [masonry, filtration, contamination_risk]
+    resource_chains: [industry, survival, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: high, traceability: none, wealth_signal: low}
+    actions: [process, reserve, trade, deliver, store]
+    unit: bag
+    mass: 25.0
+    volume: 14.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [ambient, contamination_controlled]
+    base_value: 7
+    acquisition_paths:
+      - {type: forage, note: 从许可砂源采集并筛除有机物、盐和明显污染。}
+      - {type: trade, note: 采购按粒径和污染状态标记的砂料。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 用于砂浆配制或过滤介质混合。}
+      - {type: contaminated, note: 接触油污、盐或未知化学物后退出水过滤用途。}
+      - {type: traded_away, note: 作为低价值大宗材料交易。}
+    logistics_note: 重量大，应靠近砌筑或过滤工位分批储存，食品级和工业级用途必须隔离。
+    interfaces: {produced_by: [], used_by: [recipe.c4_masonry.mix_mortar, recipe.c4_filter.blend_media], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让建筑和水处理竞争同一大宗材料，同时用污染等级阻止无条件替代。
+
+  - id: item.material.clay
+    name: 可塑黏土
+    description: 经筛除粗杂物的湿润黏土，可成形烧制为砖或其他耐热粗制件。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [masonry, manufacturing]
+    resource_chains: [industry, survival]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: high, traceability: none, wealth_signal: low}
+    actions: [process, reserve, trade, deliver, store]
+    unit: bag
+    mass: 20.0
+    volume: 12.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [ambient, contamination_controlled]
+    base_value: 8
+    acquisition_paths:
+      - {type: forage, note: 从可用黏土层采集并完成基础筛分。}
+      - {type: trade, note: 从陶工或砌筑材料供应者购入。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 成形并烧制为砖。}
+      - {type: contaminated, note: 混入油污、盐或过量有机物后退出结构烧制。}
+      - {type: traded_away, note: 作为基础砌筑原料交易。}
+    logistics_note: 保持适当湿度并按来源分堆，防止与砂料、石灰或化学品混杂。
+    interfaces: {produced_by: [], used_by: [recipe.c4_masonry.fire_brick], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供本地建筑材料入口，但需要燃料、窑炉和熟练时间才能形成耐用件。
+
+  - id: item.material.limestone
+    name: 石灰石块
+    description: 经分拣的含碳酸盐石料，可煅烧为生石灰；粉尘和杂质会影响后续用途。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [masonry, manufacturing, dusty]
+    resource_chains: [industry, survival]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: high, traceability: none, wealth_signal: low}
+    actions: [process, reserve, trade, deliver, store]
+    unit: crate
+    mass: 30.0
+    volume: 16.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [ambient, dry, ventilated]
+    base_value: 9
+    acquisition_paths:
+      - {type: forage, note: 从可识别石灰石来源开采并分拣。}
+      - {type: trade, note: 从采石或砌筑材料供应者购入。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 在窑炉中煅烧为生石灰。}
+      - {type: contaminated, note: 混入不明矿石或工业残渣后需要重新分拣。}
+      - {type: traded_away, note: 作为砌筑原料交易。}
+    logistics_note: 重量大并产生粉尘，应靠近窑炉储存且避免阻塞通道。
+    interfaces: {produced_by: [], used_by: [recipe.c4_masonry.calcine_quicklime], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把采集和窑炉燃料连接到建筑、防潮和卫生基础材料。
+
+  - id: item.material.fired_brick
+    name: 烧结砖
+    description: 黏土经成形和窑烧得到的标准砌筑单位，可用于炉体、墙体和设施维修。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [masonry, structural_material, manufacturing]
+    resource_chains: [industry, survival, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: high, traceability: none, wealth_signal: medium}
+    actions: [install, reserve, trade, deliver, store]
+    unit: bundle
+    mass: 24.0
+    volume: 15.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, ownership]}
+    storage_rule: [ambient, dry]
+    base_value: 17
+    acquisition_paths:
+      - {type: manufacture, note: 由黏土成形并在窑炉中烧结。}
+      - {type: salvage, note: 从旧结构中拆取完整砖并清除附着物。}
+      - {type: trade, note: 采购按裂纹和烧结状态分级的砖捆。}
+    consumption_loss_paths:
+      - {type: installed, note: 进入墙体、炉体或设施维修后从库存移出。}
+      - {type: destroyed, note: 破碎或热裂后只能作为低等级填料。}
+      - {type: traded_away, note: 作为通用砌筑材料交易。}
+    logistics_note: 重且易崩角，应靠近施工点码放并按完整度分批。
+    interfaces: {produced_by: [recipe.c4_masonry.fire_brick], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 用燃料和窑炉时间换取耐久结构材料，竞争生活燃料与工业排期。
+
+  - id: item.material.quicklime
+    name: 生石灰
+    description: 石灰石煅烧得到的高反应性碱性材料，可配制砂浆但需要防潮和防腐蚀暴露。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [masonry, chemical, caustic, contamination_risk]
+    resource_chains: [industry, survival, security]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: medium}
+    actions: [process, reserve, trade, deliver, store]
+    unit: bag
+    mass: 15.0
+    volume: 10.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, hazardous, moisture_protected, away_from_food]
+    base_value: 19
+    acquisition_paths:
+      - {type: manufacture, note: 石灰石在窑炉中完成受控煅烧并冷却密封。}
+      - {type: trade, note: 采购有防潮包装和批次标记的生石灰。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 与砂、水配制为砂浆。}
+      - {type: contaminated, note: 受潮结块或混入未知材料后退出标准配制。}
+      - {type: destroyed, note: 不安全泄漏或处置使批次永久损失。}
+    logistics_note: 密封防潮并远离食品和酸性材料，搬运需要防尘与防腐蚀保护。
+    interfaces: {produced_by: [recipe.c4_masonry.calcine_quicklime], used_by: [recipe.c4_masonry.mix_mortar], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把窑炉能力转为高通用砌筑材料，同时引入储存和人员安全成本。
+
+  - id: item.material.mortar_mix
+    name: 现配砂浆
+    description: 由生石灰、筛分砂和水配制的短时可用砌筑材料，必须靠近施工点使用。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [masonry, structural_material, perishable]
+    resource_chains: [industry, survival, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [install, repair, deliver]
+    unit: bag
+    mass: 20.0
+    volume: 12.0
+    stack_rule: {stackable: true, merge_keys: [freshness, batch_grade, ownership]}
+    storage_rule: [ambient, moisture_protected]
+    base_value: 12
+    acquisition_paths:
+      - {type: manufacture, note: 在砌筑台按批次混合生石灰、砂和洁净水。}
+      - {type: trade, note: 仅能在短距离和明确施工窗口内取得。}
+    consumption_loss_paths:
+      - {type: installed, note: 用于砌筑或设施修补后从库存移出。}
+      - {type: spoiled, note: 超过施工窗口或含水失衡后硬化报废。}
+      - {type: contaminated, note: 混入油污或未知粉料后不能用于受力结构。}
+    logistics_note: 现配现用，施工地点、人物时间和材料到达必须同步，不能作为长期储备。
+    interfaces: {produced_by: [recipe.c4_masonry.mix_mortar], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把原料库存转化为时间敏感承诺，暴露计划、搬运和施工窗口耦合。
+
+  - id: item.material.rubber_scrap
+    name: 混杂橡胶废料
+    description: 来自轮胎、密封件和软管的混合橡胶件，材质和老化状态不一，需要分拣后再利用。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [rubber, reclaimed, salvage_only, contamination_risk]
+    resource_chains: [industry, survival, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [process, recycle, reserve, trade, store]
+    unit: crate
+    mass: 14.0
+    volume: 18.0
+    stack_rule: {stackable: true, merge_keys: [contamination_state, ownership]}
+    storage_rule: [dry, away_from_food]
+    base_value: 11
+    acquisition_paths:
+      - {type: salvage, note: 从旧车辆、泵、软管和设备密封件中回收。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 分拣并切制为可用橡胶条。}
+      - {type: contaminated, note: 油污、热裂或未知化学腐蚀使部分废料不可再用。}
+      - {type: traded_away, note: 作为低等级回收材料出售。}
+    logistics_note: 按油污、老化和来源分箱，远离明火和食品。
+    interfaces: {produced_by: [], used_by: [recipe.c4_rubber.reclaim_strip], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供稀缺密封材料来源，同时以材质不确定和清理时间限制通用性。
+
+  - id: item.material.reclaimed_rubber_strip
+    name: 回收橡胶条
+    description: 从合格橡胶废料切制和清理的通用密封、缓冲材料，不冻结压力等级。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [rubber, reclaimed, manufacturing]
+    resource_chains: [industry, survival, security]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: none, wealth_signal: medium}
+    actions: [install, repair, reserve, trade, store]
+    unit: roll
+    mass: 2.0
+    volume: 2.5
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, cool, light_protected]
+    base_value: 16
+    acquisition_paths:
+      - {type: manufacture, note: 由分拣橡胶废料完成清理、切制和状态分级。}
+      - {type: salvage, note: 从尺寸和状态合格的大型密封件中直接裁取。}
+      - {type: trade, note: 采购按柔韧和老化状态分级的橡胶条。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 用于滤芯和电池模块装配。}
+      - {type: installed, note: 用作设备密封和缓冲后退出库存。}
+      - {type: worn_out, note: 压缩、热和老化会使已安装部分失效。}
+    logistics_note: 卷装避光储存并按材质和老化状态分批，避免与油污废料混放。
+    interfaces: {produced_by: [recipe.c4_rubber.reclaim_strip], used_by: [recipe.c4_filter.assemble_cartridge, recipe.c4_battery.assemble_module], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 成为水处理、电池、泵和设施维修之间的小体积关键材料。
+
+  - id: item.material.activated_carbon
+    name: 活性炭料
+    description: 木炭经筛分和受控活化得到的吸附材料，可进入过滤介质但不能直接保证饮水安全。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [filtration, chemical, contamination_risk]
+    resource_chains: [survival, industry, security]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: none, wealth_signal: medium}
+    actions: [filter, process, reserve, trade, store]
+    unit: bag
+    mass: 5.0
+    volume: 8.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, contamination_controlled, away_from_food]
+    base_value: 20
+    acquisition_paths:
+      - {type: manufacture, note: 木炭完成筛分、受控加热和批次封装。}
+      - {type: trade, note: 采购标注用途和污染状态的吸附料。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 与砂料混合成过滤介质。}
+      - {type: contaminated, note: 提前吸附油污或化学品后退出水处理用途。}
+      - {type: traded_away, note: 作为水处理或工业吸附材料交易。}
+    logistics_note: 密封防潮并远离挥发性化学品，按用途和污染状态分批。
+    interfaces: {produced_by: [recipe.c4_filter.activate_carbon], used_by: [recipe.c4_filter.blend_media], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让固体燃料库存与水处理储备竞争，并把污染隔离变成实际成本。
+
+  - id: item.material.layered_filter_media
+    name: 分层过滤介质
+    description: 由合格砂料和活性炭按层级组配的过滤填料，只能作为净水流程输入，不能直接视为洁净水。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [filtration, water_system, contamination_risk]
+    resource_chains: [survival, industry, security, politics]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: medium}
+    actions: [filter, reserve, trade, deliver, store]
+    unit: bag
+    mass: 12.0
+    volume: 9.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, contamination_controlled, away_from_food]
+    base_value: 23
+    acquisition_paths:
+      - {type: manufacture, note: 在过滤台按粒径和污染状态组配砂料与活性炭。}
+      - {type: trade, note: 采购有用途标记和封装状态的过滤介质。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 封装进标准水过滤芯。}
+      - {type: contaminated, note: 受潮、破袋或提前接触污染物后退出洁净水用途。}
+      - {type: traded_away, note: 作为受控水处理耗材交易。}
+    logistics_note: 密封分层封装并按污染标准管理，公共供水预留与贸易承诺分开显示。
+    interfaces: {produced_by: [recipe.c4_filter.blend_media], used_by: [recipe.c4_filter.assemble_cartridge], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 将低价值砂料、高价值活性炭和水处理时间压缩为关键耗材瓶颈。
+
+  - id: item.material.battery_electrolyte
+    name: 电池电解液
+    description: 经浓度和污染标记的腐蚀性电解液批次，用于候选电池模块装配，不冻结化学体系或容量。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [battery, electrolyte, chemical, caustic, toxic]
+    resource_chains: [industry, security, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: medium}
+    actions: [process, reserve, trade, deliver, store]
+    unit: bottle
+    mass: 1.2
+    volume: 1.0
+    stack_rule: {stackable: true, merge_keys: [concentration, contamination_state, ownership]}
+    storage_rule: [locked, hazardous, ventilated, away_from_food]
+    base_value: 26
+    acquisition_paths:
+      - {type: salvage, note: 从状态可核验的旧电池中受控回收并重新分级。}
+      - {type: trade, note: 采购有化学体系、浓度和容器记录的电解液。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 注入标准电池模块并从液体库存扣除。}
+      - {type: contaminated, note: 进水、混入异种化学体系或容器腐蚀后隔离处置。}
+      - {type: destroyed, note: 泄漏或不安全中和造成永久损失。}
+    logistics_note: 使用耐腐蚀二次承接和专用搬运，严禁与食品、水和普通清洁化学品混放。
+    interfaces: {produced_by: [], used_by: [recipe.c4_battery.assemble_module], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把储能能力连接到危险化学品、来源可信度和专业装配时间。
+
+  - id: item.waste.sawdust
+    name: 木屑
+    description: 木料锯切和劈分产生的可燃细料，干净批次可压制燃料，污染批次只能受控处理。
+    status: candidate_only
+    category: byproduct_and_waste
+    form: bulk_material
+    tags: [wood, combustible, reclaimed, contamination_risk]
+    resource_chains: [industry, survival]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [process, recycle, burn, store]
+    unit: bag
+    mass: 4.0
+    volume: 14.0
+    stack_rule: {stackable: true, merge_keys: [contamination_state, ownership]}
+    storage_rule: [dry, ventilated, away_from_food]
+    base_value: 2
+    acquisition_paths:
+      - {type: manufacture, note: 锯切和劈分原木时收集的副产细料。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 干净木屑压制为生物质燃料。}
+      - {type: contaminated, note: 混入涂层、油污或金属粉尘后退出普通燃料用途。}
+      - {type: consumed_directly, note: 在受控条件下作为低等级燃料或处置物燃烧。}
+    logistics_note: 粉尘和火灾风险高，应密封防潮并快速区分干净与污染批次。
+    interfaces: {produced_by: [recipe.c4_wood.saw_lumber, recipe.c4_wood.split_firewood], used_by: [recipe.c4_wood.compress_briquette], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让木料加工损耗可以被再利用，但以粉尘、污染和储存空间为代价。
+
+  - id: item.waste.wood_ash
+    name: 木灰
+    description: 制炭和窑烧产生的碱性灰分，来源清楚的批次可能再利用，污染批次形成处理负担。
+    status: candidate_only
+    category: byproduct_and_waste
+    form: bulk_material
+    tags: [chemical, caustic, contamination_risk]
+    resource_chains: [industry, survival]
+    availability: common
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: none, wealth_signal: low}
+    actions: [process, recycle, store]
+    unit: bag
+    mass: 6.0
+    volume: 8.0
+    stack_rule: {stackable: true, merge_keys: [contamination_state, ownership]}
+    storage_rule: [dry, hazardous, away_from_food]
+    base_value: 1
+    acquisition_paths:
+      - {type: manufacture, note: 制炭、烧砖、煅烧石灰和活化炭料时收集的固体副产物。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 未来可进入经验证的碱料或土壤处理工艺，本批次不冻结。}
+      - {type: contaminated, note: 混入重金属、处理木或未知燃料残留后必须隔离。}
+      - {type: destroyed, note: 受控处置后退出库存。}
+    logistics_note: 密封防尘并按燃料来源分批，未确认来源的灰不能进入农业或卫生用途。
+    interfaces: {produced_by: [recipe.c4_wood.carbonize_charcoal, recipe.c4_masonry.fire_brick, recipe.c4_masonry.calcine_quicklime, recipe.c4_filter.activate_carbon], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 将固体燃料使用的环境和仓储代价显式化，防止燃烧只有收益没有负担。
+
+  - id: item.waste.glass_fines
+    name: 玻璃细渣
+    description: 玻璃熔制、筛分和边缘处理产生的尖锐细渣，当前只作为需隔离的回收副产物。
+    status: candidate_only
+    category: byproduct_and_waste
+    form: bulk_material
+    tags: [glass, contamination_risk]
+    resource_chains: [industry, security]
+    availability: common
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: none, wealth_signal: low}
+    actions: [recycle, store]
+    unit: crate
+    mass: 8.0
+    volume: 5.0
+    stack_rule: {stackable: true, merge_keys: [contamination_state, ownership]}
+    storage_rule: [locked, dry, away_from_food]
+    base_value: 1
+    acquisition_paths:
+      - {type: manufacture, note: 玻璃重新熔制和压片时产生的筛下料与边缘细渣。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 未来可在验证损耗后重新进入玻璃回收，本批次不定义闭环。}
+      - {type: contaminated, note: 混入陶瓷、金属或化学物后只能受控处置。}
+      - {type: destroyed, note: 安全封装处置后退出库存。}
+    logistics_note: 使用防穿刺容器和明显标记，搬运时避免扬尘与割伤。
+    interfaces: {produced_by: [recipe.c4_glass.melt_sheet], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让玻璃回收保留真实材料损失和安全处置成本。
+
+  - id: item.component.sealed_fuel_canister
+    name: 密封燃料罐
+    description: 带标记和可检查封口的标准液体燃料容器，提供储运边界但不产生燃料。
+    status: candidate_only
+    category: component
+    form: bulk_material
+    tags: [container, fuel, liquid_fuel, maintenance_supply]
+    resource_chains: [industry, security, survival]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: medium}
+    actions: [reserve, deliver, trade, clean, store]
+    unit: piece
+    mass: 2.5
+    volume: 6.0
+    stack_rule: {stackable: true, merge_keys: [contamination_state, ownership]}
+    storage_rule: [locked, ventilated, away_from_food]
+    base_value: 20
+    acquisition_paths:
+      - {type: salvage, note: 从旧燃料设施回收并完成密封、腐蚀和残留检查。}
+      - {type: trade, note: 采购有容积和材料标记的标准燃料罐。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 作为包装被并入一单位罐装粗制生物燃料。}
+      - {type: worn_out, note: 腐蚀、凹陷或封口损坏后退出液体燃料用途。}
+      - {type: contaminated, note: 未知残留或混装使容器必须清洁和重新标记。}
+      - {type: traded_away, note: 作为受控容器交易。}
+    logistics_note: 空罐仍按危险残留管理，实罐与空罐状态不得合并。
+    interfaces: {produced_by: [], used_by: [recipe.c4_energy.refine_biofuel], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把液体燃料产量限制在安全容器和可追踪储运能力之内。
+
+  - id: item.component.rechargeable_battery_module
+    name: 可充电电池模块
+    description: 由回收金属、电解液和密封材料装配的标准储能组件，只声明可安装与维护入口。
+    status: candidate_only
+    category: component
+    form: bulk_material
+    tags: [battery, energy, electrical, maintenance_supply]
+    resource_chains: [industry, security, survival, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: medium}
+    actions: [install, charge, discharge, reserve, trade, store]
+    unit: piece
+    mass: 8.0
+    volume: 6.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, charge_state, contamination_state, ownership]}
+    storage_rule: [locked, cool, ventilated, shock_protected]
+    base_value: 58
+    acquisition_paths:
+      - {type: manufacture, note: 在电池台完成材料匹配、密封和基础短路检查。}
+      - {type: salvage, note: 从旧设备回收并隔离未知荷电和化学状态。}
+      - {type: trade, note: 采购有化学体系和状态标记的模块。}
+    consumption_loss_paths:
+      - {type: installed, note: 安装到设备或储能系统后从可用库存移出。}
+      - {type: worn_out, note: 循环、腐蚀或密封失效后退出可用模块库存。}
+      - {type: destroyed, note: 短路、热失控或不安全处置会永久损失。}
+    logistics_note: 按化学体系、荷电和完整度分开上锁，端子防短路并远离热源。
+    interfaces: {produced_by: [recipe.c4_battery.assemble_module], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 将铜、铝、橡胶、危险化学品和专业时间汇聚为跨生产与安全的储能瓶颈。
+
+  - id: item.component.water_filter_cartridge
+    name: 标准水过滤芯
+    description: 将分层过滤介质封装在可安装外壳中的耗材组件，必须装入适配设备并按状态更换。
+    status: candidate_only
+    category: component
+    form: bulk_material
+    tags: [filtration, water_system, maintenance_supply]
+    resource_chains: [survival, industry, security, politics]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: medium}
+    actions: [install, filter, reserve, trade, deliver, store]
+    unit: piece
+    mass: 3.0
+    volume: 3.5
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, contamination_controlled, away_from_food]
+    base_value: 34
+    acquisition_paths:
+      - {type: manufacture, note: 在过滤台将合格介质、外壳和密封条完成封装。}
+      - {type: trade, note: 采购有适配族和封装状态标记的滤芯。}
+    consumption_loss_paths:
+      - {type: installed, note: 安装到适配过滤设备后从备用库存移出。}
+      - {type: worn_out, note: 达到污染或压差边界后转为待处置滤芯。}
+      - {type: contaminated, note: 封装破损或提前接触污染物后不能用于饮水处理。}
+    logistics_note: 密封防污染储存并标记适配设备族，公共供水、医疗和贸易预留分开显示。
+    interfaces: {produced_by: [recipe.c4_filter.assemble_cartridge], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把水处理能力压缩为可计划耗材，同时保留设备适配和更换劳动。
+
+  - id: item.tool.manual_transfer_pump
+    name: 手摇转运泵
+    description: 便携低技术液体转运工具，可连接适配软管进行人工泵送，不冻结扬程、流量或液体兼容。
+    status: candidate_only
+    category: tool
+    form: independent_item
+    tags: [water_system, portable, mechanical, repair]
+    resource_chains: [survival, industry, security]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: medium}
+    actions: [pump, maintain, reserve, trade, store]
+    unit: piece
+    mass: 6.0
+    volume: 10.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, contamination_controlled]
+    base_value: 46
+    acquisition_paths:
+      - {type: salvage, note: 从旧农场、车辆或水处理设施回收并检查密封和残留。}
+      - {type: trade, note: 采购有接口和适用液体标记的手摇泵。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 密封磨损、腐蚀和干转会使泵失去安全转运能力。}
+      - {type: contaminated, note: 转运未知化学品后不能直接用于洁净水。}
+      - {type: lost, note: 外出或分散作业时遗失后退出工具分配。}
+    logistics_note: 单件登记接口、残留液体和最后用途；水、燃料和化学品用途不得无清洁直接切换。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供断电条件下的液体物流选择，同时用人物时间、接口和污染隔离限制通用性。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: restricted
+      wear_sources: [use, impact, moisture, corrosion]
+      failure_consequence: 密封或机构失效后不能安全泵送，只能保养、专案翻修或隔离。
+
+  - id: item.electronic.portable_multimeter
+    name: 便携万用表
+    description: 用于基础电压、通断和线路诊断的便携仪表，必须由合格人员连接并解释读数。
+    status: candidate_only
+    category: electronic_device
+    form: independent_item
+    tags: [electrical, diagnostic, portable, maintenance_supply]
+    resource_chains: [industry, security, survival]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: medium}
+    actions: [measure, inspect, maintain, reserve, trade, store]
+    unit: piece
+    mass: 0.8
+    volume: 1.2
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, shock_protected, magnetic_shielded]
+    base_value: 62
+    acquisition_paths:
+      - {type: salvage, note: 从旧工坊或维修车辆回收并完成探针、显示和基础校准检查。}
+      - {type: trade, note: 采购有量程和状态记录的诊断仪表。}
+    consumption_loss_paths:
+      - {type: worn_out, note: 探针、内部保护或显示故障会使读数不可信。}
+      - {type: destroyed, note: 错误接入高能回路或受潮可能永久损坏仪表。}
+      - {type: lost, note: 外勤检修时遗失后退出工具分配。}
+    logistics_note: 单件记录校准状态、探针和持有人；仪表存在不等于故障已经被诊断。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 用稀缺诊断设备和熟练人员时间缩小电气故障不确定性，而非提供自动修复。
+    durability_profile:
+      tracked: true
+      repairability: maintain_only
+      dismantle_policy: restricted
+      wear_sources: [use, impact, moisture, heat, magnetic]
+      failure_consequence: 校准、探针或保护失效后读数不能用于维修决策，必须停用并复核。
+
+interface_extensions:
+  item.chemical.plant_oil:
+    used_by: [recipe.c4_energy.refine_biofuel]
+  item.chemical.industrial_alcohol:
+    used_by: [recipe.c4_energy.refine_biofuel]
+  item.chemical.alkaline_base:
+    used_by: [recipe.c4_energy.refine_biofuel]
+  item.water.clean_water:
+    used_by: [recipe.c4_masonry.mix_mortar]

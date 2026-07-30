@@ -1,0 +1,93 @@
+schema_version: 0.4.0
+status: candidate_only
+authority:
+  contract: docs/item-library/item-library-authoring-contract-v0.4.md
+  design: docs/design-docs/item-and-manufacturing-system-v0.1.md
+  design_sha256: 24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb
+
+enums:
+  actions:
+    burn: 燃烧
+    filter: 过滤
+    pump: 泵送
+    measure: 测量
+    charge: 充电
+    discharge: 放电
+
+  units:
+    sheet: 片
+
+  facilities:
+    sawmill_bench: 木料加工台
+    kiln: 窑炉
+    foundry: 熔铸区
+    glass_bench: 玻璃加工台
+    masonry_bench: 砌筑材料台
+    filtration_bench: 过滤材料台
+    battery_bench: 电池工作台
+    fuel_processing_bench: 燃料加工台
+
+  tools:
+    forestry_tools: 木料工具
+    kiln_tools: 窑炉工具
+    casting_tools: 熔铸工具
+    glassworking_tools: 玻璃工具
+    masonry_tools: 砌筑工具
+    filtration_tools: 过滤工具
+    battery_tools: 电池工具
+    fuel_processing_tools: 燃料加工工具
+
+  roles:
+    lumber_worker: 木料工
+    mason: 泥瓦工
+    energy_technician: 能源技术员
+    water_technician: 水处理技术员
+
+  skills:
+    woodworking: 木作
+    masonry: 砌筑
+    energy_systems: 能源系统
+
+  specialties:
+    lumber_processing: 木料加工
+    solid_fuel: 固体燃料
+    liquid_fuel: 液体燃料
+    nonferrous_recovery: 有色金属回收
+    glass_recovery: 玻璃回收
+    masonry_materials: 砌筑材料
+    rubber_recovery: 橡胶回收
+    water_filtration: 水过滤
+    battery_assembly: 电池装配
+
+  risks:
+    fuel_leak: 燃料泄漏
+    pressure_burst: 压力破裂
+    caustic_exposure: 腐蚀性暴露
+    heavy_metal_exposure: 重金属暴露
+    battery_short: 电池短路
+    dust_exposure: 粉尘暴露
+    glass_cut: 玻璃割伤
+
+  tags:
+    wood: 木材
+    lumber: 板材
+    fuel: 燃料
+    solid_fuel: 固体燃料
+    liquid_fuel: 液体燃料
+    energy: 能源
+    nonferrous: 有色金属
+    copper: 铜
+    aluminum: 铝
+    glass: 玻璃
+    masonry: 砌筑
+    rubber: 橡胶
+    filtration: 过滤
+    battery: 电池
+    electrolyte: 电解液
+    container: 容器
+    water_system: 水系统
+    diagnostic: 诊断
+    portable: 便携
+    combustible: 可燃
+    caustic: 腐蚀性
+    dusty: 多尘

@@ -1,0 +1,693 @@
+schema_version: 0.3.0
+library_status: candidate_only
+authority:
+  contract: docs/item-library/item-library-authoring-contract-v0.3.md
+  design: docs/design-docs/item-and-manufacturing-system-v0.1.md
+  design_sha256: 24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb
+scope_note: C3 新增 6 个库存物品与 24 个非库存实体或记录；累计 90 个目录定义，不授权运行时导入。
+
+definitions:
+  - id: item.seed.specialized_grain_seed
+    name: 专业谷物种源
+    description: 按播种批次保存的耐储谷物种子，用于建立以原粮为主要收获目标的田块，不代表已种植面积或未来产量。
+    status: candidate_only
+    category: plant_and_seed
+    form: bulk_material
+    tags: [agricultural_input, seed_stock, grain_crop]
+    resource_chains: [survival, industry, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: low}
+    actions: [sow, reserve, trade, deliver, store]
+    unit: packet
+    mass: 0.8
+    volume: 1.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, cool, moisture_protected]
+    base_value: 12
+    acquisition_paths:
+      - {type: agriculture, note: 从通过筛选的成熟谷物批次留种并完成干燥和发芽检查。}
+      - {type: trade, note: 从农场或商队按来源批次购入。}
+    consumption_loss_paths:
+      - {type: sown, note: 播种时按田块规模扣除，进入生长实体而非继续留在库存。}
+      - {type: spoiled, note: 受潮、虫害或保存过久会降低发芽能力并退出种源库存。}
+      - {type: traded_away, note: 作为农业投入出售或交付。}
+    logistics_note: 按来源、发芽检查和污染状态分批，播种前送到田块暂存点并防止与食用粮混用。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 在直接食用、留种和扩大种植面积之间形成跨周期资源取舍。
+
+  - id: item.seed.fiber_crop_seed
+    name: 纤维作物种源
+    description: 用于建立纤维作物田的专用种子批次，目标是获得植物纤维而非食品，不自动产生织物或衣物。
+    status: candidate_only
+    category: plant_and_seed
+    form: bulk_material
+    tags: [agricultural_input, seed_stock, fiber_crop]
+    resource_chains: [survival, industry, security, politics]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: low}
+    actions: [sow, reserve, trade, deliver, store]
+    unit: packet
+    mass: 0.6
+    volume: 0.9
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, cool, moisture_protected]
+    base_value: 15
+    acquisition_paths:
+      - {type: agriculture, note: 从完成成熟周期的纤维作物中留种并筛除霉变批次。}
+      - {type: trade, note: 从纺织产区或农业商队购入有来源标记的种源。}
+    consumption_loss_paths:
+      - {type: sown, note: 播种后转入纤维作物生长周期。}
+      - {type: spoiled, note: 受潮或霉变会使种源失去栽培价值。}
+      - {type: traded_away, note: 作为稀缺工业农业投入交易。}
+    logistics_note: 需要与食用种子分柜保管，并在播种窗口前送到已确认轮作安排的田块。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把有限耕地从当期食品转向织物、医疗和防护材料，形成清晰的生存与工业竞争。
+
+  - id: item.seed.medicinal_herb_seed
+    name: 药草种源
+    description: 用于建立小规模药草圃的混合种源批次，需要更严格的来源和污染管理，不等于可直接治疗的药品。
+    status: candidate_only
+    category: plant_and_seed
+    form: bulk_material
+    tags: [agricultural_input, seed_stock, medicinal_plant, medical]
+    resource_chains: [survival, industry, politics]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: medium}
+    actions: [sow, reserve, trade, deliver, store]
+    unit: packet
+    mass: 0.2
+    volume: 0.4
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, cool, moisture_protected, contamination_controlled]
+    base_value: 24
+    acquisition_paths:
+      - {type: agriculture, note: 从完成鉴别的药用植株留种并记录来源。}
+      - {type: trade, note: 从医师、采集者或专门种植者处受控购入。}
+    consumption_loss_paths:
+      - {type: sown, note: 播种后进入药草圃生长实体。}
+      - {type: contaminated, note: 与未知植物或化学品混放后退出受控药草种源。}
+      - {type: traded_away, note: 作为医疗农业投入受控交易。}
+    logistics_note: 与普通种子分开密封和标记，播种前由种植者与医疗人员共同确认来源和田块。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 用稀缺耕地和鉴别时间换取后续医疗原料，同时保留误种和污染风险。
+
+  - id: item.seed.fodder_crop_seed
+    name: 饲料作物种源
+    description: 用于建立饲料地的耐粗放种子批次，收获物主要供动物照护，不直接计入人物食品库存。
+    status: candidate_only
+    category: plant_and_seed
+    form: bulk_material
+    tags: [agricultural_input, seed_stock, fodder, animal_feed]
+    resource_chains: [survival, industry, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: none, wealth_signal: low}
+    actions: [sow, reserve, trade, deliver, store]
+    unit: packet
+    mass: 1.0
+    volume: 1.4
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, moisture_protected]
+    base_value: 10
+    acquisition_paths:
+      - {type: agriculture, note: 从成熟饲料作物留种并干燥保存。}
+      - {type: trade, note: 从畜牧聚落或普通农业商队购入。}
+    consumption_loss_paths:
+      - {type: sown, note: 播种后转入饲料地生长周期。}
+      - {type: spoiled, note: 虫害或受潮使批次不再适合播种。}
+      - {type: traded_away, note: 作为畜牧链农业投入交易。}
+    logistics_note: 在播种窗口前送往牧地附近田块，防止被误作人物口粮或普通草料直接消耗。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让聚落必须在种人物食品和维持动物能力之间分配土地、水与劳动。
+
+  - id: item.plant.dried_medicinal_herb
+    name: 干燥药草
+    description: 经鉴别、清理和干燥的药草原料，可进入后续药品或照护工艺，但未经配制不能视为标准治疗剂。
+    status: candidate_only
+    category: plant_and_seed
+    form: bulk_material
+    tags: [medicinal_plant, medical, preserved]
+    resource_chains: [survival, industry, politics]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: medium}
+    actions: [process, reserve, trade, deliver, store]
+    unit: bundle
+    mass: 0.4
+    volume: 1.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, cool, light_protected, contamination_controlled]
+    base_value: 18
+    acquisition_paths:
+      - {type: agriculture, note: 从药草圃收获后完成鉴别和低温干燥。}
+      - {type: forage, note: 由有经验采集者采得并经医疗人员复核。}
+      - {type: trade, note: 从药师或受控商队购入标记批次。}
+    consumption_loss_paths:
+      - {type: consumed_by_recipe, note: 作为未来药品、敷料或照护配方的原料消耗。}
+      - {type: contaminated, note: 受潮、霉变或来源混淆后退出医疗用途。}
+      - {type: traded_away, note: 作为有限医疗原料交易。}
+    logistics_note: 按物种、来源和干燥日期分批密封，远离化学品与普通饲料。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供医疗链的可储原料，同时用鉴别、污染和后续配制限制直接万能使用。
+
+  - id: item.animal.feed_bundle
+    name: 饲料捆
+    description: 由干草、粗粮副料和可识别补充成分组成的标准动物饲料单位，用于安置与持续照护而非生成动物。
+    status: candidate_only
+    category: daily_supply
+    form: bulk_material
+    tags: [fodder, animal_feed, preserved]
+    resource_chains: [survival, industry, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [reserve, trade, deliver, store]
+    unit: bundle
+    mass: 12.0
+    volume: 18.0
+    stack_rule: {stackable: true, merge_keys: [freshness, contamination_state, ownership]}
+    storage_rule: [dry, ventilated, away_from_food]
+    base_value: 9
+    acquisition_paths:
+      - {type: agriculture, note: 从饲料地收获并干燥打捆。}
+      - {type: trade, note: 从农场或畜牧聚落购入标准饲料捆。}
+    consumption_loss_paths:
+      - {type: consumed_directly, note: 在动物接收和持续照护中按周期消耗。}
+      - {type: spoiled, note: 受潮、霉变或虫害后不能继续饲喂。}
+      - {type: traded_away, note: 作为畜牧保障物资出售或交付。}
+    logistics_note: 体积大且怕潮，应靠近畜棚分批存放，同时与人物食品和药草原料隔离。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把伙伴动物的持续价值连接到土地、仓储、搬运和日常供给，而非无成本被动加成。
+
+  - id: entity.placed.field_bed
+    name: 已部署野战床
+    description: 从库存折叠床安装到指定住宿位置后形成的可使用睡眠设施；库存原件在部署期间不再可分配。
+    status: candidate_only
+    category: furniture
+    form: placed_entity
+    tags: [furniture, sleep, placed]
+    resource_chains: [survival, security, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [operate, uninstall]
+    decision_role: 用有限室内位置和搬运时间换取可用床位，并暴露住宿分配差异。
+    transition_id: transition.deploy.field_bed
+    placed_profile:
+      source_item: item.furniture.field_bed
+      capability: 提供一个候选睡眠位置
+      ongoing_input_items: []
+      uninstall_result: returns_item
+      effect_note: 只有完成安装且位置可达时才提供床位；不冻结休息数值。
+
+  - id: entity.placed.lockable_storage_chest
+    name: 已部署上锁储物箱
+    description: 在指定储藏区固定并登记归属的上锁箱体，提供局部受控储藏而非增加全局库存。
+    status: candidate_only
+    category: furniture
+    form: placed_entity
+    tags: [furniture, storage, placed, access_control]
+    resource_chains: [industry, security, politics]
+    availability: common
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: medium}
+    actions: [operate, uninstall, audit]
+    decision_role: 用访问限制保护高风险物资，同时增加搬运距离、钥匙管理和归属争议。
+    transition_id: transition.deploy.lockable_storage_chest
+    placed_profile:
+      source_item: item.furniture.lockable_storage_chest
+      capability: 提供一个候选受控储藏点
+      ongoing_input_items: []
+      uninstall_result: returns_item
+      effect_note: 只有登记访问权限且实际放入物资后才产生储藏作用。
+
+  - id: entity.placed.communal_table
+    name: 已部署公共长桌
+    description: 在公共区域完成摆放和稳定检查的长桌，为会议、用餐或协作提供地点，但不自动改善关系。
+    status: candidate_only
+    category: furniture
+    form: placed_entity
+    tags: [furniture, social, placed]
+    resource_chains: [survival, industry, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: high, traceability: none, wealth_signal: low}
+    actions: [operate, uninstall]
+    decision_role: 占用公共空间换取集中活动地点，活动效果仍取决于人物参与和具体安排。
+    transition_id: transition.deploy.communal_table
+    placed_profile:
+      source_item: item.furniture.communal_table
+      capability: 提供一个候选公共活动地点
+      ongoing_input_items: []
+      uninstall_result: returns_item
+      effect_note: 放置本身不生成士气、关系或产能加成。
+
+  - id: entity.placed.task_lamp
+    name: 已部署有线工作灯
+    description: 安装在具体工位并接入可用线路的工作灯，为局部作业提供照明候选能力。
+    status: candidate_only
+    category: furniture
+    form: placed_entity
+    tags: [furniture, lighting, electrical, placed]
+    resource_chains: [industry, survival, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [operate, uninstall, repair]
+    decision_role: 让照明收益依赖具体工位、线路和维护，而非仓库中持有灯具就全局生效。
+    transition_id: transition.deploy.task_lamp
+    placed_profile:
+      source_item: item.furniture.task_lamp
+      capability: 为一个候选工位提供局部照明
+      ongoing_input_items: []
+      uninstall_result: returns_item
+      effect_note: 必须接入有效线路；C3 不冻结供电数值或工时加成。
+
+  - id: entity.placed.wired_alarm_unit
+    name: 已部署有线预警单元
+    description: 在警戒点安装并接入物理线路的预警单元，只提供局部监测入口，不等于整个聚落已被覆盖。
+    status: candidate_only
+    category: electronic_device
+    form: placed_entity
+    tags: [electrical, wired_control, physically_isolated, sensor, alarm, placed]
+    resource_chains: [security, industry, politics]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: medium}
+    actions: [operate, uninstall, repair, audit]
+    decision_role: 以布线、位置和误报风险换取局部预警，避免把库存电子件直接计入防御覆盖。
+    transition_id: transition.deploy.wired_alarm_unit
+    placed_profile:
+      source_item: item.electronic.wired_alarm_unit
+      capability: 为一个候选警戒点提供有线预警入口
+      ongoing_input_items: []
+      uninstall_result: returns_item
+      effect_note: 只有线路、传感位置与值守流程同时有效时才可能提供预警。
+
+  - id: entity.placed.settlement_banner_display
+    name: 聚落旗帜展示
+    description: 在公共可见位置悬挂并登记的聚落旗帜展示，承载身份表达而非自动产生合法性。
+    status: candidate_only
+    category: decoration_and_instrument
+    form: placed_entity
+    tags: [display, memorial, placed]
+    resource_chains: [politics, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: high, traceability: local_markings, wealth_signal: low}
+    actions: [display, uninstall]
+    decision_role: 让公开身份表达同时可能凝聚成员、暴露立场或触发外部关注。
+    transition_id: transition.deploy.settlement_banner_display
+    placed_profile:
+      source_item: item.decoration.settlement_banner
+      capability: 提供一个候选公共身份展示点
+      ongoing_input_items: []
+      uninstall_result: returns_item
+      effect_note: 展示效果取决于场合、受众和叙事，不提供固定全局数值。
+
+  - id: entity.growing.grain_field
+    name: 谷物田
+    description: 由专业谷物种源播种形成的生长田块，经历离散阶段后才可能收获原粮和部分新种源。
+    status: candidate_only
+    category: plant_and_seed
+    form: growing_entity
+    tags: [grain_crop, growing, agricultural_input]
+    resource_chains: [survival, industry, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: high, traceability: none, wealth_signal: low}
+    actions: [tend, harvest]
+    decision_role: 把种源、水、化肥、土地和人物时间锁定到未来食品回报，暴露延迟与失败风险。
+    transition_id: transition.cultivate.grain_field
+    growing_profile:
+      source_item: item.seed.specialized_grain_seed
+      growth_stages: [sown, germinating, growing, harvest_ready, failed]
+      care_input_items: [item.water.clean_water, item.agriculture.compound_fertilizer]
+      harvest_output_items: [item.food.raw_grain, item.seed.specialized_grain_seed]
+      effect_note: C3 只声明输入输出关系，不冻结生长天数、产量或品质。
+
+  - id: entity.growing.fiber_crop_field
+    name: 纤维作物田
+    description: 由纤维作物种源建立的田块，成熟后提供植物纤维和留种机会，但会竞争食品耕地。
+    status: candidate_only
+    category: plant_and_seed
+    form: growing_entity
+    tags: [fiber_crop, growing, agricultural_input]
+    resource_chains: [survival, industry, security, politics]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: high, traceability: none, wealth_signal: low}
+    actions: [tend, harvest]
+    decision_role: 用耕地和灌溉换取纺织、医疗和防护材料，牺牲一部分当期食品生产。
+    transition_id: transition.cultivate.fiber_crop_field
+    growing_profile:
+      source_item: item.seed.fiber_crop_seed
+      growth_stages: [sown, germinating, growing, harvest_ready, failed]
+      care_input_items: [item.water.clean_water, item.agriculture.compound_fertilizer]
+      harvest_output_items: [item.material.plant_fiber, item.seed.fiber_crop_seed]
+      effect_note: 收获仍需后续加工才成为织物，不提供被动工业产能。
+
+  - id: entity.growing.medicinal_herb_plot
+    name: 药草圃
+    description: 由受控药草种源建立的小型生长区，需要来源鉴别和污染隔离，成熟后才产生可干燥药草。
+    status: candidate_only
+    category: plant_and_seed
+    form: growing_entity
+    tags: [medicinal_plant, growing, medical]
+    resource_chains: [survival, industry, politics]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: medium}
+    actions: [tend, harvest, audit]
+    decision_role: 用较高鉴别和照料要求换取本地医疗原料，并保留误种、污染和来源争议。
+    transition_id: transition.cultivate.medicinal_herb_plot
+    growing_profile:
+      source_item: item.seed.medicinal_herb_seed
+      growth_stages: [sown, germinating, growing, harvest_ready, failed]
+      care_input_items: [item.water.clean_water, item.agriculture.compound_fertilizer]
+      harvest_output_items: [item.plant.dried_medicinal_herb, item.seed.medicinal_herb_seed]
+      effect_note: 收获后的鉴别和干燥仍是必要工作；植物本体不等于药品。
+
+  - id: entity.growing.fodder_field
+    name: 饲料地
+    description: 由饲料作物种源建立的田块，目标是形成可干燥饲料而非人物食品，支撑动物长期照护。
+    status: candidate_only
+    category: plant_and_seed
+    form: growing_entity
+    tags: [fodder, animal_feed, growing]
+    resource_chains: [survival, industry, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: high, traceability: none, wealth_signal: low}
+    actions: [tend, harvest]
+    decision_role: 让动物能力持续占用土地、水、收获劳动和仓储，而不是免费存在。
+    transition_id: transition.cultivate.fodder_field
+    growing_profile:
+      source_item: item.seed.fodder_crop_seed
+      growth_stages: [sown, germinating, growing, harvest_ready, failed]
+      care_input_items: [item.water.clean_water]
+      harvest_output_items: [item.animal.feed_bundle, item.seed.fodder_crop_seed]
+      effect_note: 收获量、季节和干燥损耗留待植物系统验证。
+
+  - id: entity.character.watch_dog
+    name: 警戒犬
+    description: 经接收、健康观察和归属建立后进入聚落的犬类角色，候选用途是环境警戒而非自动战斗单位。
+    status: candidate_only
+    category: companion_and_work_animal
+    form: character_entity
+    tags: [companion, work_animal, guard]
+    resource_chains: [security, survival, politics]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: high, traceability: local_markings, wealth_signal: medium}
+    actions: [care, assign]
+    decision_role: 用持续照护、人物适配和误报风险换取候选警戒能力。
+    transition_id: transition.intake.watch_dog
+    character_profile:
+      species: dog
+      service_roles: [guard]
+      upkeep_items: [item.animal.feed_bundle, item.water.clean_water]
+      autonomy_note: 个体保留需求与拒绝行为；C3 不假定已训练、服从或参与战斗。
+      loss_note: 死亡、走失或照护转移会终止当前归属，不能返还为库存物品。
+
+  - id: entity.character.barn_cat
+    name: 谷仓猫
+    description: 在谷仓附近安置并建立照护归属的猫科角色，候选用途是捕鼠与陪伴，不提供固定粮食损耗减免。
+    status: candidate_only
+    category: companion_and_work_animal
+    form: character_entity
+    tags: [companion, pest_control]
+    resource_chains: [survival, industry]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [care, assign]
+    decision_role: 以照护和不确定行为换取低技术害兽控制候选能力。
+    transition_id: transition.intake.barn_cat
+    character_profile:
+      species: cat
+      service_roles: [pest_control]
+      upkeep_items: [item.animal.feed_bundle, item.water.clean_water]
+      autonomy_note: 猫的活动范围和捕猎行为不由库存指令保证；C3 不冻结效率。
+      loss_note: 走失、疾病或照护转移会改变归属和用途状态。
+
+  - id: entity.character.homing_pigeon
+    name: 信鸽
+    description: 完成接收、鸽舍归属和返巢确认的鸽类角色，候选用途是低带宽实体通讯。
+    status: candidate_only
+    category: companion_and_work_animal
+    form: character_entity
+    tags: [companion, work_animal, messenger]
+    resource_chains: [security, industry, politics]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: medium}
+    actions: [care, assign]
+    decision_role: 以鸽舍、训练前置和丢失风险换取离线通讯候选能力。
+    transition_id: transition.intake.homing_pigeon
+    character_profile:
+      species: pigeon
+      service_roles: [message]
+      upkeep_items: [item.animal.feed_bundle, item.water.clean_water]
+      autonomy_note: 接收不等于已建立可靠路线；C3 不冻结返巢率、载荷或通讯速度。
+      loss_note: 放飞后失踪、捕食或转移会终止当前可用性。
+
+  - id: entity.character.pack_goat
+    name: 驮运山羊
+    description: 经检疫和畜棚安置的山羊角色，候选用途是短距负重，不等于已训练或获得固定载重量。
+    status: candidate_only
+    category: companion_and_work_animal
+    form: character_entity
+    tags: [work_animal, pack_animal]
+    resource_chains: [survival, industry, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: high, traceability: local_markings, wealth_signal: medium}
+    actions: [care, assign]
+    decision_role: 用饲料、畜棚和照护时间换取崎岖地形运输候选能力。
+    transition_id: transition.intake.pack_goat
+    character_profile:
+      species: goat
+      service_roles: [pack]
+      upkeep_items: [item.animal.feed_bundle, item.water.clean_water]
+      autonomy_note: 接收只建立归属；负重训练、路径适配和载荷上限留待后续验证。
+      loss_note: 伤病、走失或照护交接会终止当前运输分配。
+
+  - id: entity.character.laying_hen
+    name: 蛋鸡
+    description: 在禽舍安置并建立日常照护的鸡类角色，候选用途是产蛋，不保证每日产出。
+    status: candidate_only
+    category: companion_and_work_animal
+    form: character_entity
+    tags: [work_animal, egg_production]
+    resource_chains: [survival, industry]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [care, assign]
+    decision_role: 以持续饲料、卫生和禽舍空间换取小规模食品产出候选。
+    transition_id: transition.intake.laying_hen
+    character_profile:
+      species: chicken
+      service_roles: [eggs]
+      upkeep_items: [item.animal.feed_bundle, item.water.clean_water]
+      autonomy_note: 接收不产生固定蛋量；健康、季节和照护规则尚未冻结。
+      loss_note: 疾病、捕食或照护转移会改变当前产出候选状态。
+
+  - id: entity.character.dairy_goat
+    name: 奶山羊
+    description: 经健康观察和牧地归属建立的山羊角色，候选用途是产奶，不自动生成可饮用产品。
+    status: candidate_only
+    category: companion_and_work_animal
+    form: character_entity
+    tags: [work_animal, dairy]
+    resource_chains: [survival, industry, politics]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: high, traceability: local_markings, wealth_signal: medium}
+    actions: [care, assign]
+    decision_role: 用饲料、卫生、挤奶劳动和食品安全风险换取乳品候选来源。
+    transition_id: transition.intake.dairy_goat
+    character_profile:
+      species: goat
+      service_roles: [dairy]
+      upkeep_items: [item.animal.feed_bundle, item.water.clean_water]
+      autonomy_note: 角色归属不等于处于泌乳期；产量、繁殖与乳品处理规则未冻结。
+      loss_note: 健康下降、照护转移或死亡会终止当前乳品候选能力。
+
+  - id: entity.character.search_rescue_dog
+    name: 搜救犬
+    description: 具有潜在搜救背景、经接收和归属确认的犬类角色；能力必须另行评估，不因名称自动成立。
+    status: candidate_only
+    category: companion_and_work_animal
+    form: character_entity
+    tags: [companion, work_animal, search_and_rescue, high_wealth_exposure]
+    resource_chains: [security, survival, politics]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: high, traceability: local_markings, wealth_signal: high}
+    actions: [care, assign]
+    decision_role: 用高照护和适配成本换取灾害搜索候选能力，并保留名不副实与来源争议。
+    transition_id: transition.intake.search_rescue_dog
+    character_profile:
+      species: dog
+      service_roles: [search_and_rescue]
+      upkeep_items: [item.animal.feed_bundle, item.water.clean_water]
+      autonomy_note: C3 不冻结训练等级、成功率或战斗用途，接收后仍需独立能力验证。
+      loss_note: 应激、伤病、走失或照护转移会终止任务适配。
+
+  - id: entity.character.fiber_rabbit
+    name: 纤维兔
+    description: 在兔舍接收并建立照护归属的兔类角色，候选用途是周期性获取纤维，不等于库存纤维包。
+    status: candidate_only
+    category: companion_and_work_animal
+    form: character_entity
+    tags: [companion, work_animal, fiber_production]
+    resource_chains: [survival, industry]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: medium}
+    actions: [care, assign]
+    decision_role: 以饲料、温度管理和梳理劳动换取可再生纤维候选来源。
+    transition_id: transition.intake.fiber_rabbit
+    character_profile:
+      species: rabbit
+      service_roles: [fiber]
+      upkeep_items: [item.animal.feed_bundle, item.water.clean_water]
+      autonomy_note: 接收不生成纤维库存；生长周期、品质和动物福利规则留待后续验证。
+      loss_note: 疾病、应激、走失或照护转移会终止当前纤维候选能力。
+
+  - id: record.right.border_passage
+    name: 边境通行权
+    description: 由通行证册核验并关联到持有人或聚落的可撤销权利记录，纸面证件本身不等于边境放行。
+    status: candidate_only
+    category: document_and_credential
+    form: rights_record
+    tags: [credential, rights, passage, identity, traceable]
+    resource_chains: [politics, security, survival]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: medium}
+    actions: [invoke, suspend, revoke, audit]
+    decision_role: 用可追踪身份和撤销风险换取候选通行资格。
+    transition_id: transition.rights.border_passage
+    rights_profile:
+      bearer_scope: person
+      issuer_class: border_authority
+      validity_states: [inactive, active, suspended, revoked]
+      revocable: true
+      physical_evidence_item: item.document.travel_permit_booklet
+      effect_note: 是否放行仍取决于签发方状态、检查点和持有人匹配。
+
+  - id: record.right.ration_entitlement
+    name: 配给领取权
+    description: 由配给券册和登记名单共同激活的领取资格，必须避免同一券册重复生成多个有效记录。
+    status: candidate_only
+    category: document_and_credential
+    form: rights_record
+    tags: [credential, rights, rationing, traceable]
+    resource_chains: [survival, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: low}
+    actions: [invoke, suspend, revoke, audit]
+    decision_role: 让稀缺食品分配依赖可审计资格，同时暴露排除、伪造和撤销争议。
+    transition_id: transition.rights.ration_entitlement
+    rights_profile:
+      bearer_scope: person
+      issuer_class: ration_cooperative
+      validity_states: [inactive, active, suspended, revoked]
+      revocable: true
+      physical_evidence_item: item.document.ration_coupon_book
+      effect_note: 有效记录只允许进入配给裁定，不自动扣库或发放物资。
+
+  - id: record.right.workshop_position_qualification
+    name: 工坊岗位资格
+    description: 由工坊资格证核验并关联到具体人物的岗位资格记录，不等于该人物已排班或拥有充足技能。
+    status: candidate_only
+    category: document_and_credential
+    form: rights_record
+    tags: [credential, rights, qualification, traceable]
+    resource_chains: [industry, politics, security]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: medium}
+    actions: [invoke, suspend, revoke, audit]
+    decision_role: 在安全准入与劳动力短缺之间形成可追踪约束。
+    transition_id: transition.rights.workshop_position_qualification
+    rights_profile:
+      bearer_scope: person
+      issuer_class: workshop_board
+      validity_states: [inactive, active, suspended, revoked]
+      revocable: true
+      physical_evidence_item: item.document.workshop_qualification_certificate
+      effect_note: 资格只满足准入条件之一，技能、健康、工具和排班仍需独立确认。
+
+  - id: record.right.disputed_property_claim
+    name: 争议产权主张
+    description: 由争议产权契据建立的可审计主张记录，初始即处于争议状态，不等于所有权已经裁定。
+    status: candidate_only
+    category: document_and_credential
+    form: rights_record
+    tags: [rights, ownership_record, disputed, traceable, high_wealth_exposure]
+    resource_chains: [politics, industry, security]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: regulated_batch, wealth_signal: high}
+    actions: [invoke, suspend, revoke, audit]
+    decision_role: 让利用资产的收益与公开争议、证据保全和关系成本同时存在。
+    transition_id: transition.rights.disputed_property_claim
+    rights_profile:
+      bearer_scope: property
+      issuer_class: property_registry
+      validity_states: [inactive, disputed, suspended, revoked]
+      revocable: true
+      physical_evidence_item: item.document.disputed_property_deed
+      effect_note: 记录只保存主张和证据链，不能自动把争议资产计入可用库存。
+
+  - id: record.right.silicon_access
+    name: 硅基访问权
+    description: 由硅基访问令牌认证并建立的系统访问记录，载体存在、身份匹配和系统授权缺一不可。
+    status: candidate_only
+    category: rare_and_special
+    form: rights_record
+    tags: [rights, silicon_technology, access_control, rare, traceable, high_wealth_exposure]
+    resource_chains: [industry, security, politics]
+    availability: unique
+    legal_profile: silicon_jurisdiction
+    exposure_profile: {visibility: low, traceability: networked, wealth_signal: high}
+    actions: [invoke, suspend, revoke, audit, authenticate]
+    decision_role: 用高度可追踪和被撤销风险换取候选旧系统访问能力。
+    transition_id: transition.rights.silicon_access
+    rights_profile:
+      bearer_scope: person
+      issuer_class: silicon_system
+      validity_states: [inactive, active, suspended, revoked]
+      revocable: true
+      physical_evidence_item: item.rare.silicon_access_token
+      effect_note: 令牌认证只建立访问记录；目标系统在线、权限范围和审计结果另行决定。
+
+  - id: record.right.seed_vault_custody
+    name: 种源匣保管权
+    description: 由密封种源匣、交接记录和委员会确认共同建立的保管责任与开封权限记录。
+    status: candidate_only
+    category: rare_and_special
+    form: rights_record
+    tags: [rights, custody, sealed, rare, seed_stock, traceable, high_wealth_exposure]
+    resource_chains: [survival, politics, security]
+    availability: unique
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: high}
+    actions: [invoke, suspend, revoke, audit]
+    decision_role: 在长期种源安全、公开责任和当期启用价值之间形成治理取舍。
+    transition_id: transition.rights.seed_vault_custody
+    rights_profile:
+      bearer_scope: settlement
+      issuer_class: custodian_council
+      validity_states: [inactive, active, suspended, revoked]
+      revocable: true
+      physical_evidence_item: item.rare.sealed_seed_vault
+      effect_note: 保管权不等于可任意开封；开封、分配和种源有效性需要独立流程。

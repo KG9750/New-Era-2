@@ -1,0 +1,1318 @@
+schema_version: 0.1.0
+library_status: candidate_only
+authority:
+  contract: docs/item-library/item-library-authoring-contract-v0.1.md
+  design: docs/design-docs/item-and-manufacturing-system-v0.1.md
+  design_sha256: 24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb
+scope_note: 首批 30 项种子内容，仅用于结构与产业链检查，不授权运行时导入。
+
+items:
+  - id: item.agriculture.compound_fertilizer
+    name: 复合化肥
+    description: 提高作物周期产量区间的受控农业投入；若未按时送达农田，库存存在也不会产生效果。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [agricultural_input, chemical, contamination_risk, traceable]
+    resource_chains: [survival, politics]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile:
+      visibility: medium
+      traceability: regulated_batch
+      wealth_signal: low
+    actions: [apply, reserve, trade, deliver, store]
+    unit: bag
+    mass: 20.0
+    volume: 28.0
+    stack_rule:
+      stackable: true
+      merge_keys: [batch_grade, contamination_state, legal_status]
+    storage_rule: [dry, hazardous, away_from_food]
+    base_value: 28
+    acquisition_paths:
+      - type: trade
+        note: 从持有农业化学品配额的商队取得，批次来源可被审计。
+      - type: mission
+        note: 作为农业援助或配额任务交付，通常附带用途承诺。
+    consumption_loss_paths:
+      - type: consumed_by_recipe
+        note: 在混合农田作物周期中按袋施用并从可用库存扣除。
+      - type: contaminated
+        note: 受潮或与食品混放后转为不可用化学废料负担。
+    logistics_note: 必须在播种窗口前送到灌溉农田的危险品暂存点，不能与食品同车厢散放。
+    interfaces:
+      produced_by: []
+      used_by: [recipe.agriculture.mixed_field_crop_cycle]
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 把有限化学品同时连接粮食稳定与受监管的政治承诺，形成早期可解释的库存机会成本。
+
+  - id: item.plant.mixed_crop_seed
+    name: 混合作物种子
+    description: 适合小型混作田的谷物与蔬菜种源；批次纯度与受潮状态会影响能否合并。
+    status: candidate_only
+    category: plant_and_seed
+    form: bulk_material
+    tags: [seed_stock, agricultural_input, food_grade]
+    resource_chains: [survival, politics]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: low
+      traceability: local_markings
+      wealth_signal: low
+    actions: [sow, reserve, trade, deliver, store]
+    unit: packet
+    mass: 1.0
+    volume: 1.5
+    stack_rule:
+      stackable: true
+      merge_keys: [batch_grade, freshness, contamination_state, ownership]
+    storage_rule: [dry, cool, moisture_protected]
+    base_value: 18
+    acquisition_paths:
+      - type: agriculture
+        note: 从上一收获周期中保留经筛选的种源，牺牲一部分可食用产出。
+      - type: trade
+        note: 从邻近聚落交换经过标记的种子批次。
+    consumption_loss_paths:
+      - type: consumed_by_recipe
+        note: 播种后转化为农田中的生长实体，不再属于仓库库存。
+      - type: spoiled
+        note: 受潮或存放过久后发芽率下降并退出可播种库存。
+    logistics_note: 需要在播种前从干燥种子柜送到农田，运输中必须防潮并保持批次标签。
+    interfaces:
+      produced_by: []
+      used_by: [recipe.agriculture.mixed_field_crop_cycle]
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 迫使玩家在当期食用、贸易交付与下期生产能力之间保留种源。
+
+  - id: item.food.raw_grain
+    name: 原粮
+    description: 可直接进入基础口粮，也可加工为耐储备粮；潮湿与虫害会迅速削弱其储备价值。
+    status: candidate_only
+    category: food_and_drink
+    form: bulk_material
+    tags: [edible, food_grade]
+    resource_chains: [survival, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: medium
+      traceability: none
+      wealth_signal: low
+    actions: [consume, cook, reserve, trade, deliver, store]
+    unit: kilogram
+    mass: 1.0
+    volume: 1.4
+    stack_rule:
+      stackable: true
+      merge_keys: [batch_grade, freshness, contamination_state, ownership]
+    storage_rule: [dry, food_safe, moisture_protected]
+    base_value: 3
+    acquisition_paths:
+      - type: agriculture
+        note: 完成混合农田作物周期后收获并运入粮仓。
+      - type: trade
+        note: 以标准粮袋从商队或邻邦采购。
+    consumption_loss_paths:
+      - type: consumed_directly
+        note: 经基础烹煮后作为日常饮食消耗。
+      - type: consumed_by_recipe
+        note: 用于制作耐储备的保存口粮。
+      - type: spoiled
+        note: 受潮、虫害或污染后转为不可食用损耗。
+    logistics_note: 从农田收获点运往干燥粮仓；开袋后应优先使用，避免形成过多新鲜度批次。
+    interfaces:
+      produced_by: [recipe.agriculture.mixed_field_crop_cycle]
+      used_by: [recipe.food.preserved_ration_batch]
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 在日常食用、长期储备、政治交付和下一步食品加工之间形成最基础的粮食分流。
+
+  - id: item.water.clean_water
+    name: 洁净水
+    description: 饮用、烹饪、清洁和基础化学工艺共享的洁净水；用途不同但必须占用同一可用库存。
+    status: candidate_only
+    category: food_and_drink
+    form: bulk_material
+    tags: [potable, food_grade, hygiene]
+    resource_chains: [survival, industry, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: low
+      traceability: none
+      wealth_signal: low
+    actions: [consume, cook, clean, reserve, deliver, store]
+    unit: liter
+    mass: 1.0
+    volume: 1.0
+    stack_rule:
+      stackable: true
+      merge_keys: [contamination_state, ownership]
+    storage_rule: [food_safe, contamination_controlled]
+    base_value: 1
+    acquisition_paths:
+      - type: manufacture
+        note: 由聚落净水设施处理后进入食品级储水容器。
+      - type: trade
+        note: 以密封水桶采购，交接时检查容器与污染标记。
+    consumption_loss_paths:
+      - type: consumed_directly
+        note: 作为人物日常饮水消耗。
+      - type: consumed_by_recipe
+        note: 被农业、食品、清洁、消毒或制皂工艺占用。
+      - type: contaminated
+        note: 容器破损或与化学品混运后退出洁净水库存。
+    logistics_note: 水源、食品级容器和工艺暂存桶必须分开记账；运输距离直接占用搬运时间。
+    interfaces:
+      produced_by: []
+      used_by:
+        - recipe.agriculture.mixed_field_crop_cycle
+        - recipe.food.preserved_ration_batch
+        - recipe.chemistry.mix_cleaning_solution
+        - recipe.chemistry.prepare_basic_antiseptic
+        - recipe.chemistry.make_soap
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 作为五类工艺共用的高频瓶颈，阻止饮水、卫生、医疗和生产各自拥有隐形水源。
+
+  - id: item.food.fresh_vegetable
+    name: 新鲜蔬菜
+    description: 营养价值较高但容易腐坏的混作田产出，可改善日常饮食或进入保存口粮。
+    status: candidate_only
+    category: food_and_drink
+    form: bulk_material
+    tags: [edible, perishable, food_grade]
+    resource_chains: [survival, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: medium
+      traceability: none
+      wealth_signal: low
+    actions: [consume, cook, reserve, trade, deliver, store]
+    unit: kilogram
+    mass: 1.0
+    volume: 1.8
+    stack_rule:
+      stackable: true
+      merge_keys: [freshness, contamination_state, ownership]
+    storage_rule: [food_safe, cool]
+    base_value: 4
+    acquisition_paths:
+      - type: agriculture
+        note: 完成混合农田作物周期后采收并按新鲜度分批。
+      - type: trade
+        note: 从短途商队采购，抵达时已经消耗一部分保鲜窗口。
+    consumption_loss_paths:
+      - type: consumed_directly
+        note: 进入当期餐食并优先消耗临近腐坏批次。
+      - type: consumed_by_recipe
+        note: 与原粮一同加工为保存口粮。
+      - type: spoiled
+        note: 超过保鲜窗口后转为有机处理负担。
+    logistics_note: 收获后需尽快送入阴凉食品区；远距离搬运会缩短可用保鲜期。
+    interfaces:
+      produced_by: [recipe.agriculture.mixed_field_crop_cycle]
+      used_by: [recipe.food.preserved_ration_batch]
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 用腐坏压力迫使玩家在立即改善饮食、加工储备与政治交付之间及时选择。
+
+  - id: item.food.preserved_ration
+    name: 保存口粮
+    description: 牺牲部分口感与加工时间换取稳定保质期的标准口粮，适合冬储、商队和紧急行动。
+    status: candidate_only
+    category: food_and_drink
+    form: bulk_material
+    tags: [edible, preserved, food_grade]
+    resource_chains: [survival, security, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: medium
+      traceability: local_markings
+      wealth_signal: low
+    actions: [consume, reserve, trade, deliver, store]
+    unit: packet
+    mass: 0.6
+    volume: 0.8
+    stack_rule:
+      stackable: true
+      merge_keys: [batch_grade, freshness, contamination_state, ownership]
+    storage_rule: [dry, food_safe, cool]
+    base_value: 8
+    acquisition_paths:
+      - type: manufacture
+        note: 在基础厨房完成保存口粮批次并封装。
+      - type: trade
+        note: 购买带有生产日期和来源标记的标准包。
+    consumption_loss_paths:
+      - type: consumed_directly
+        note: 作为日常储备、商队补给或安全行动口粮消耗。
+      - type: delivered
+        note: 作为救济或主题承诺交付后离开聚落库存。
+      - type: spoiled
+        note: 包装受潮或破损后保质期快速下降。
+    logistics_note: 可常温集中堆放，但应按批次日期先进先出，并与战备预留分区显示。
+    interfaces:
+      produced_by: [recipe.food.preserved_ration_batch]
+      used_by: []
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 把粮食、厨房时间和容器化劳动转化为可远运的安全与政治资源，同时减少即时食物供给。
+
+  - id: item.material.scrap_steel
+    name: 混杂废钢
+    description: 来自废墟和旧设备的未分类钢料，来源广但材质差异大，必须分拣后才能承担可靠结构用途。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [metal, reclaimed, manufacturing]
+    resource_chains: [industry, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: high
+      traceability: none
+      wealth_signal: low
+    actions: [process, reserve, trade, recycle, store]
+    unit: bundle
+    mass: 25.0
+    volume: 18.0
+    stack_rule:
+      stackable: true
+      merge_keys: [batch_grade, contamination_state, ownership]
+    storage_rule: [ambient, dry]
+    base_value: 12
+    acquisition_paths:
+      - type: salvage
+        note: 从废弃建筑、车辆和无法修复的机械中分类回收。
+      - type: trade
+        note: 按混杂废钢捆采购，材质未经保证。
+    consumption_loss_paths:
+      - type: consumed_by_recipe
+        note: 在回收分拣与整形中转为回收金属板和边角料。
+      - type: traded_away
+        note: 作为低价值大宗回收料出售，占用较多运力。
+    logistics_note: 体积和质量都高，应靠近分拣场堆放；尖锐边缘需要专用搬运路径。
+    interfaces:
+      produced_by: []
+      used_by: [recipe.metal.reclaim_steel_plate]
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 提供广泛但不可靠的金属来源，让回收时间和材料分级成为工业链的真实前置成本。
+
+  - id: item.material.reclaimed_steel_plate
+    name: 回收金属板
+    description: 经分拣与整形的通用钢板，可用于维修、工具和粗制防护，但不能替代精密或高强度专用材料。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [metal, reclaimed, structural_material, manufacturing]
+    resource_chains: [industry, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: high
+      traceability: none
+      wealth_signal: medium
+    actions: [process, reserve, trade, repair, store]
+    unit: bundle
+    mass: 18.0
+    volume: 8.0
+    stack_rule:
+      stackable: true
+      merge_keys: [batch_grade, contamination_state, ownership]
+    storage_rule: [ambient, dry]
+    base_value: 26
+    acquisition_paths:
+      - type: manufacture
+        note: 由混杂废钢完成分拣、除污和整形后产出。
+      - type: trade
+        note: 采购已经标记厚度与材质等级的板材捆。
+    consumption_loss_paths:
+      - type: consumed_by_recipe
+        note: 被加工成紧固件或粗制防护插板。
+      - type: consumed_directly
+        note: 用于设施外壳和结构维修时按板材量扣除。
+      - type: traded_away
+        note: 作为通用工业材料出售或交付。
+    logistics_note: 应靠近工坊平放储存，搬运时需要两人或推车，预留状态必须显示具体订单。
+    interfaces:
+      produced_by: [recipe.metal.reclaim_steel_plate]
+      used_by:
+        - recipe.metal.form_fasteners
+        - recipe.metal.assemble_reinforced_plate
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 在水泵与设施维修、工具生产和安全防护之间形成首批最清晰的共享材料瓶颈。
+
+  - id: item.component.fastener_set
+    name: 通用紧固件组
+    description: 螺栓、铆钉与垫片组成的标准维修消耗组，体积小但会被多数装配和维修订单竞争。
+    status: candidate_only
+    category: component
+    form: bulk_material
+    tags: [metal, fastener, repair, manufacturing]
+    resource_chains: [industry, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: low
+      traceability: none
+      wealth_signal: low
+    actions: [repair, process, reserve, trade, store]
+    unit: set
+    mass: 0.8
+    volume: 0.7
+    stack_rule:
+      stackable: true
+      merge_keys: [batch_grade, contamination_state]
+    storage_rule: [dry, moisture_protected]
+    base_value: 9
+    acquisition_paths:
+      - type: manufacture
+        note: 由回收金属板在基础工坊成形并按规格分组。
+      - type: salvage
+        note: 从旧设备拆出并检查螺纹与变形后重新组套。
+    consumption_loss_paths:
+      - type: consumed_by_recipe
+        note: 被维修包、防护板、服装与有线预警装配消耗。
+      - type: worn_out
+        note: 多次拆装后因变形或锈蚀退出可用库存。
+    logistics_note: 存放于带标签的小件柜；缺少分装会增加取料时间和错配风险。
+    interfaces:
+      produced_by: [recipe.metal.form_fasteners]
+      used_by:
+        - recipe.metal.assemble_field_repair_kit
+        - recipe.metal.assemble_reinforced_plate
+        - recipe.textile.sew_work_clothes
+        - recipe.textile.sew_padded_vest
+        - recipe.electrical.assemble_wired_alarm_unit
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 以低单位价值制造跨工业、服饰和安全订单的共同短缺，避免“大件材料足够就必然能开工”。
+
+  - id: item.component.mechanical_spares
+    name: 通用机械备件
+    description: 经检查的弹簧、衬套和小型传动件组合，适合现场抢修但不保证精密设备的长期可靠性。
+    status: candidate_only
+    category: component
+    form: bulk_material
+    tags: [mechanical, repair, reclaimed]
+    resource_chains: [industry, survival, security]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: low
+      traceability: local_markings
+      wealth_signal: medium
+    actions: [repair, reserve, trade, store]
+    unit: set
+    mass: 2.5
+    volume: 2.0
+    stack_rule:
+      stackable: true
+      merge_keys: [batch_grade, contamination_state, ownership]
+    storage_rule: [dry, moisture_protected]
+    base_value: 32
+    acquisition_paths:
+      - type: salvage
+        note: 从报废机械中拆取、清洁并通过基本尺寸检查。
+      - type: trade
+        note: 从维修商队采购按设备族分类的备件组。
+    consumption_loss_paths:
+      - type: consumed_by_recipe
+        note: 被封装进现场维修包并随维修任务消耗。
+      - type: consumed_directly
+        note: 用于水泵或发电设备抢修时按适配件扣除。
+    logistics_note: 应按设备族放入防潮零件柜；错误分区会让库存存在却无法及时匹配维修任务。
+    interfaces:
+      produced_by: []
+      used_by: [recipe.metal.assemble_field_repair_kit]
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 把回收判断和维修适配性带入库存，不让所有金属材料无条件替代关键零件。
+
+  - id: item.armor.reinforced_plate
+    name: 粗制防护插板
+    description: 以回收钢板和织物缓冲层制作的单件防护插板，能提供有限身体防护但较重且品质上限明确。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [protective, armor_component, reclaimed, wearable]
+    resource_chains: [security, industry]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile:
+      visibility: medium
+      traceability: local_markings
+      wealth_signal: medium
+    actions: [equip, reserve, trade, repair, dismantle, store]
+    unit: piece
+    mass: 4.5
+    volume: 3.0
+    stack_rule:
+      stackable: false
+      merge_keys: []
+    storage_rule: [dry, locked]
+    base_value: 70
+    acquisition_paths:
+      - type: manufacture
+        note: 在基础工坊以回收金属板、织物和紧固件组装。
+      - type: salvage
+        note: 从损坏护具中回收后必须逐件检查完整度。
+    consumption_loss_paths:
+      - type: worn_out
+        note: 承受冲击或长期受潮后完整度下降，需要维修或退役。
+      - type: dismantled
+        note: 拆解后只能回收部分板材、织物和紧固件。
+      - type: confiscated
+        note: 在受控地区公开携带可能被查扣。
+    logistics_note: 单件追踪品质、完整度和分配状态；装备前需送往人物或防区，不得只算仓库总数。
+    interfaces:
+      produced_by: [recipe.metal.assemble_reinforced_plate]
+      used_by: []
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 把民生维修材料转成受控安全资产，并用重量、品质上限与政治暴露限制无脑量产。
+
+  - id: item.tool.field_repair_kit
+    name: 现场维修包
+    description: 把常用备件、紧固件和清洁布封装为一次现场维修机会，缩短取料但会提前占用公共零件。
+    status: candidate_only
+    category: tool
+    form: independent_item
+    tags: [repair, mechanical, manufacturing]
+    resource_chains: [industry, survival, security]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: low
+      traceability: local_markings
+      wealth_signal: medium
+    actions: [repair, reserve, trade, dismantle, store]
+    unit: set
+    mass: 5.0
+    volume: 7.0
+    stack_rule:
+      stackable: false
+      merge_keys: []
+    storage_rule: [dry, moisture_protected]
+    base_value: 58
+    acquisition_paths:
+      - type: manufacture
+        note: 由机械工把备件、紧固件和清洁布按现场任务需求封装。
+      - type: trade
+        note: 从维修商队购买，但内容适配性需要开包检查。
+    consumption_loss_paths:
+      - type: consumed_directly
+        note: 执行一次水泵、发电或防区设备现场维修后转为空包和已使用零件。
+      - type: dismantled
+        note: 取消预留后可拆包返还尚未使用的零件，但产生重新分拣时间。
+      - type: worn_out
+        note: 长期携带或受潮导致部分内容失效。
+    logistics_note: 必须在任务前送到维修人员或设备附近；封装后从公共零件可用量中移除。
+    interfaces:
+      produced_by: [recipe.metal.assemble_field_repair_kit]
+      used_by: []
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 以预先占用材料换取抢修速度，把维修准备变成可撤销但有成本的库存承诺。
+
+  - id: item.waste.metal_offcuts
+    name: 金属边角料
+    description: 金属整形与装配产生的可回收小料，可再次进入回收流程，但混杂和氧化会降低回收效率。
+    status: candidate_only
+    category: byproduct_and_waste
+    form: bulk_material
+    tags: [metal, reclaimed, manufacturing]
+    resource_chains: [industry, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: low
+      traceability: none
+      wealth_signal: low
+    actions: [recycle, trade, store]
+    unit: kilogram
+    mass: 1.0
+    volume: 0.8
+    stack_rule:
+      stackable: true
+      merge_keys: [batch_grade, contamination_state]
+    storage_rule: [ambient, dry]
+    base_value: 2
+    acquisition_paths:
+      - type: manufacture
+        note: 在钢板回收、紧固件成形和防护板装配中作为库存型副产物产生。
+      - type: salvage
+        note: 从工坊清理和拆除现场集中收集。
+    consumption_loss_paths:
+      - type: consumed_by_recipe
+        note: 未来可与混杂废钢合并进入再分拣，本轮不定义循环配方以避免无限产出。
+      - type: traded_away
+        note: 以低价值回收料批量出售。
+    logistics_note: 单独使用带边缘防护的回收箱，积压会占用工坊空间并增加工伤风险。
+    interfaces:
+      produced_by:
+        - recipe.metal.reclaim_steel_plate
+        - recipe.metal.form_fasteners
+        - recipe.metal.assemble_reinforced_plate
+      used_by: []
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 让金属加工产生可见但不值得无限微操的回收价值和空间处理负担。
+
+  - id: item.material.plant_fiber
+    name: 植物纤维
+    description: 清理和晾干后的通用纤维原料，可织布或作为软质填充，受潮后容易霉变。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [fiber, textile, agricultural_input]
+    resource_chains: [survival, industry, security, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: medium
+      traceability: none
+      wealth_signal: low
+    actions: [process, reserve, trade, deliver, store]
+    unit: bundle
+    mass: 5.0
+    volume: 18.0
+    stack_rule:
+      stackable: true
+      merge_keys: [batch_grade, contamination_state, ownership]
+    storage_rule: [dry, ventilated, moisture_protected]
+    base_value: 8
+    acquisition_paths:
+      - type: agriculture
+        note: 从纤维作物或农业副产物中剥取、清理并晾干。
+      - type: forage
+        note: 采集可用野生纤维，品质与污染状态差异较大。
+    consumption_loss_paths:
+      - type: consumed_by_recipe
+        note: 被织布或填充粗制防护服的工艺消耗。
+      - type: contaminated
+        note: 受潮霉变后退出医疗和服装用途。
+      - type: delivered
+        note: 作为纺织主题或贸易原料交付。
+    logistics_note: 体积大而质量低，适合靠近纺织台的干燥通风区；运输效率受容器体积限制。
+    interfaces:
+      produced_by: []
+      used_by:
+        - recipe.textile.weave_cloth
+        - recipe.textile.sew_padded_vest
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 让服装、医疗、防护和政治交付争夺同一低技术上游，而非各有专属布料。
+
+  - id: item.material.woven_cloth
+    name: 通用织物
+    description: 由植物纤维织成的标准布卷，可制作服装、清洁布、绷带和防护内衬。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [textile, manufacturing, absorbent]
+    resource_chains: [survival, industry, security, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: medium
+      traceability: none
+      wealth_signal: low
+    actions: [process, reserve, trade, deliver, store]
+    unit: roll
+    mass: 4.0
+    volume: 10.0
+    stack_rule:
+      stackable: true
+      merge_keys: [batch_grade, contamination_state, ownership]
+    storage_rule: [dry, ventilated, moisture_protected]
+    base_value: 20
+    acquisition_paths:
+      - type: manufacture
+        note: 在纺织台把植物纤维清理、纺线并织成标准布卷。
+      - type: trade
+        note: 从纺织商队采购按材质和清洁状态标记的布卷。
+    consumption_loss_paths:
+      - type: consumed_by_recipe
+        note: 被服装、防护、清洁布和无菌绷带工艺裁切消耗。
+      - type: contaminated
+        note: 接触油污或病原后不能直接进入服装和医疗工艺。
+      - type: delivered
+        note: 作为民生或主题交付品离开库存。
+    logistics_note: 按清洁等级分区存放；医疗用布必须避免与工坊油污布卷合并。
+    interfaces:
+      produced_by: [recipe.textile.weave_cloth]
+      used_by:
+        - recipe.metal.assemble_reinforced_plate
+        - recipe.textile.sew_work_clothes
+        - recipe.textile.sew_padded_vest
+        - recipe.hygiene.prepare_cleaning_rags
+        - recipe.medical.sterilize_bandage
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 作为纺织链中心瓶颈，把基础服饰、卫生、医疗和安全防护放进同一材料池。
+
+  - id: item.medical.sterile_bandage
+    name: 无菌绷带包
+    description: 经裁切、消毒和密封的基础医疗耗材；包装破损后会退化为普通清洁布而非继续保持无菌。
+    status: candidate_only
+    category: medicine_and_medical_supply
+    form: bulk_material
+    tags: [medical, textile, antiseptic, absorbent]
+    resource_chains: [survival, security]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: low
+      traceability: local_markings
+      wealth_signal: medium
+    actions: [treat, reserve, trade, deliver, store]
+    unit: packet
+    mass: 0.3
+    volume: 0.7
+    stack_rule:
+      stackable: true
+      merge_keys: [batch_grade, contamination_state, ownership]
+    storage_rule: [dry, contamination_controlled]
+    base_value: 14
+    acquisition_paths:
+      - type: manufacture
+        note: 在清洁工作台用织物和基础消毒剂完成裁切、处理与密封。
+      - type: trade
+        note: 采购封口完好且批次可追溯的医疗包。
+    consumption_loss_paths:
+      - type: consumed_directly
+        note: 用于日常治疗或战场救护后一次性消耗。
+      - type: contaminated
+        note: 包装破损或接触污物后失去无菌用途。
+      - type: delivered
+        note: 作为医疗援助或公共卫生承诺交付。
+    logistics_note: 存放于清洁医疗柜并保持批次封口；战备预留需要从普通医疗库存中明确扣除。
+    interfaces:
+      produced_by: [recipe.medical.sterilize_bandage]
+      used_by: []
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 把清洁织物、消毒剂和医疗人员时间同时绑定到日常治疗与安全储备。
+
+  - id: item.clothing.work_clothes
+    name: 耐磨工作服
+    description: 适合农田与工坊的基础服装，降低普通污损和擦伤，但不能替代专用护具。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [clothing, wearable, protective, textile]
+    resource_chains: [survival, industry, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: medium
+      traceability: local_markings
+      wealth_signal: low
+    actions: [wear, reserve, trade, deliver, repair, dismantle, store]
+    unit: piece
+    mass: 1.5
+    volume: 4.0
+    stack_rule:
+      stackable: false
+      merge_keys: []
+    storage_rule: [dry, ventilated]
+    base_value: 32
+    acquisition_paths:
+      - type: manufacture
+        note: 在纺织台以通用织物和紧固件按人物尺寸缝制。
+      - type: trade
+        note: 采购标准尺码后仍需分配或改制。
+    consumption_loss_paths:
+      - type: worn_out
+        note: 连续重体力劳动和污损降低完整度，最终需要修补或退役。
+      - type: delivered
+        note: 作为劳动保障或政治主题交付给指定人群。
+      - type: dismantled
+        note: 退役后回收少量清洁布和紧固件。
+    logistics_note: 单件记录尺码、完整度与持有人；库存总数不能替代人物适配和实际分配。
+    interfaces:
+      produced_by: [recipe.textile.sew_work_clothes]
+      used_by: [recipe.hygiene.prepare_cleaning_rags]
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 让基础劳动保障、工坊效率与公共承诺共享织物和裁缝时间，而非成为无条件全局增益。
+
+  - id: item.armor.padded_vest
+    name: 软质防护背心
+    description: 用多层织物和植物纤维填充的轻型防护服，可减轻擦碰与碎屑伤害，但不抵挡高能穿透。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [protective, wearable, textile, armor_component]
+    resource_chains: [security, survival]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: medium
+      traceability: local_markings
+      wealth_signal: medium
+    actions: [equip, wear, reserve, trade, repair, dismantle, store]
+    unit: piece
+    mass: 2.2
+    volume: 6.0
+    stack_rule:
+      stackable: false
+      merge_keys: []
+    storage_rule: [dry, ventilated, moisture_protected]
+    base_value: 48
+    acquisition_paths:
+      - type: manufacture
+        note: 在纺织台将织物、纤维填充和紧固件按人体尺寸缝合。
+      - type: trade
+        note: 从劳保或安防商队采购后逐件检查潮湿和压实状态。
+    consumption_loss_paths:
+      - type: worn_out
+        note: 受潮、压实或受击后防护能力下降并需要修补。
+      - type: dismantled
+        note: 退役后只能回收部分未污染织物和紧固件。
+      - type: confiscated
+        note: 在部分受控场景中成套携带可能被视为战备物资。
+    logistics_note: 单件记录尺码、完整度和分配；长期压放会降低填充状态。
+    interfaces:
+      produced_by: [recipe.textile.sew_padded_vest]
+      used_by: []
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 提供低技术、低上限的身体防护选择，并直接挤占衣物、绷带和公共纺织交付。
+
+  - id: item.daily.cleaning_rags
+    name: 清洁布组
+    description: 由干净织物裁成的可重复使用清洁布，能支持卫生与维修，但污染后必须分流处理。
+    status: candidate_only
+    category: daily_supply
+    form: bulk_material
+    tags: [cleaning, hygiene, textile, absorbent]
+    resource_chains: [survival, industry]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: low
+      traceability: none
+      wealth_signal: low
+    actions: [clean, repair, reserve, store]
+    unit: set
+    mass: 0.5
+    volume: 1.0
+    stack_rule:
+      stackable: true
+      merge_keys: [contamination_state, ownership]
+    storage_rule: [dry, contamination_controlled]
+    base_value: 4
+    acquisition_paths:
+      - type: manufacture
+        note: 从清洁织物裁切，或在织布中收集足够大的干净边料。
+      - type: salvage
+        note: 从退役服装中挑出未污染部分并清洗。
+    consumption_loss_paths:
+      - type: consumed_by_recipe
+        note: 封装现场维修包时作为清洁和吸油耗材。
+      - type: contaminated
+        note: 接触病原、油污或化学品后转入对应污染处理。
+      - type: worn_out
+        note: 多次洗涤后纤维破损，不再具备有效吸收能力。
+    logistics_note: 清洁布、医疗布和已污染抹布必须物理分区；取用后要有明确回收容器。
+    interfaces:
+      produced_by:
+        - recipe.textile.weave_cloth
+        - recipe.textile.sew_work_clothes
+        - recipe.textile.sew_padded_vest
+        - recipe.hygiene.prepare_cleaning_rags
+      used_by: [recipe.metal.assemble_field_repair_kit]
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 把看似低价值的日用品连接卫生与设备维护，并用污染分流阻止无限循环使用。
+
+  - id: item.chemical.industrial_alcohol
+    name: 工业酒精
+    description: 可用于清洁和基础消毒配制的易燃溶剂；浓度与来源决定用途，不能无条件当作饮品。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [chemical, flammable, toxic, cleaning, antiseptic, traceable]
+    resource_chains: [survival, industry, security]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile:
+      visibility: medium
+      traceability: regulated_batch
+      wealth_signal: medium
+    actions: [process, clean, disinfect, reserve, trade, store]
+    unit: liter
+    mass: 0.8
+    volume: 1.0
+    stack_rule:
+      stackable: true
+      merge_keys: [concentration, contamination_state, legal_status, ownership]
+    storage_rule: [cool, locked, hazardous, ventilated, away_from_food]
+    base_value: 12
+    acquisition_paths:
+      - type: trade
+        note: 从化工或医疗商队采购有浓度和批次标记的密封容器。
+      - type: salvage
+        note: 从旧医疗点或工坊回收，必须先确认浓度和污染。
+    consumption_loss_paths:
+      - type: consumed_by_recipe
+        note: 用于清洁液和基础消毒剂配制。
+      - type: contaminated
+        note: 混入未知溶剂后退出医疗用途。
+      - type: confiscated
+        note: 无批次来源的大量储存可能被监管方查扣。
+    logistics_note: 使用防火柜和密封容器，远离食品与火源；配制前按浓度分批取料。
+    interfaces:
+      produced_by: []
+      used_by:
+        - recipe.chemistry.mix_cleaning_solution
+        - recipe.chemistry.prepare_basic_antiseptic
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 让工坊清洁、公共卫生和医疗消毒争夺同一受控易燃原料。
+
+  - id: item.chemical.mineral_salt
+    name: 矿物盐
+    description: 经筛分的通用盐料，可用于食品保存和基础消毒配制；食品级批次不能与工业污染批次合并。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [chemical, food_grade, preserved]
+    resource_chains: [survival, industry]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: low
+      traceability: none
+      wealth_signal: low
+    actions: [cook, process, reserve, trade, store]
+    unit: kilogram
+    mass: 1.0
+    volume: 0.8
+    stack_rule:
+      stackable: true
+      merge_keys: [batch_grade, contamination_state, ownership]
+    storage_rule: [dry, food_safe, moisture_protected]
+    base_value: 3
+    acquisition_paths:
+      - type: trade
+        note: 采购标明食品级或工业级的盐料袋。
+      - type: forage
+        note: 从盐碱地或蒸发池采集后筛分，初始纯度较低。
+    consumption_loss_paths:
+      - type: consumed_by_recipe
+        note: 进入保存口粮或基础消毒剂配制。
+      - type: contaminated
+        note: 与工业粉尘混合后退出食品用途。
+      - type: traded_away
+        note: 作为低体积保存原料出售。
+    logistics_note: 按食品级和工业级分柜防潮存放，开袋后保持批次标签。
+    interfaces:
+      produced_by: []
+      used_by:
+        - recipe.food.preserved_ration_batch
+        - recipe.chemistry.prepare_basic_antiseptic
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 以低价值小宗材料连接日常食品保存和医疗卫生，制造容易被忽视的共享短缺。
+
+  - id: item.chemical.alkaline_base
+    name: 基础碱料
+    description: 用于去污和制皂的碱性原料，处理不当会灼伤人员并污染食品区。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [chemical, alkali, toxic, contamination_risk, traceable]
+    resource_chains: [survival, industry]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile:
+      visibility: low
+      traceability: regulated_batch
+      wealth_signal: low
+    actions: [process, clean, reserve, trade, store]
+    unit: kilogram
+    mass: 1.0
+    volume: 0.9
+    stack_rule:
+      stackable: true
+      merge_keys: [batch_grade, concentration, contamination_state, legal_status]
+    storage_rule: [dry, locked, hazardous, away_from_food]
+    base_value: 7
+    acquisition_paths:
+      - type: trade
+        note: 从化工商队采购标明浓度和防护要求的密封袋。
+      - type: manufacture
+        note: 未来可由灰碱提纯链产出，本轮不定义该上游工艺。
+    consumption_loss_paths:
+      - type: consumed_by_recipe
+        note: 用于配制清洁液和制作肥皂。
+      - type: contaminated
+        note: 吸湿结块或混入未知化学品后转为残留处理负担。
+    logistics_note: 在危险品柜防潮上锁存放，取料必须使用化学计量工具并避开食品路径。
+    interfaces:
+      produced_by: []
+      used_by:
+        - recipe.chemistry.mix_cleaning_solution
+        - recipe.chemistry.make_soap
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 为廉价卫生用品引入明确的化学风险、资格与仓储成本，避免清洁能力凭空生成。
+
+  - id: item.chemical.plant_oil
+    name: 粗制植物油
+    description: 可食用等级不稳定的植物油料，本轮主要作为制皂脂质来源；存放过久会酸败。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [oil, chemical, flammable]
+    resource_chains: [survival, industry]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: low
+      traceability: none
+      wealth_signal: low
+    actions: [process, reserve, trade, store]
+    unit: liter
+    mass: 0.9
+    volume: 1.0
+    stack_rule:
+      stackable: true
+      merge_keys: [batch_grade, freshness, contamination_state]
+    storage_rule: [cool, dry, away_from_food]
+    base_value: 6
+    acquisition_paths:
+      - type: agriculture
+        note: 由含油作物压榨获得，食品级与工业级批次分开。
+      - type: trade
+        note: 从农业商队采购密封油桶。
+    consumption_loss_paths:
+      - type: consumed_by_recipe
+        note: 与碱料和洁净水反应制作基础肥皂。
+      - type: spoiled
+        note: 酸败后失去制皂品质上限并形成异味处理负担。
+      - type: traded_away
+        note: 作为化工或燃料原料出售。
+    logistics_note: 使用阴凉密封容器并远离明火；食品级油料不得与工坊回收油混合。
+    interfaces:
+      produced_by: []
+      used_by: [recipe.chemistry.make_soap]
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 把农业油料在食用潜力与公共卫生之间分流，并暴露保鲜和防火成本。
+
+  - id: item.daily.cleaning_solution
+    name: 通用清洁液
+    description: 适合地面、工具和非侵入性表面的基础清洁液，不能替代医疗消毒剂。
+    status: candidate_only
+    category: daily_supply
+    form: bulk_material
+    tags: [cleaning, hygiene, chemical]
+    resource_chains: [survival, industry, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: low
+      traceability: local_markings
+      wealth_signal: low
+    actions: [clean, reserve, trade, deliver, store]
+    unit: bottle
+    mass: 1.1
+    volume: 1.2
+    stack_rule:
+      stackable: true
+      merge_keys: [concentration, contamination_state, ownership]
+    storage_rule: [cool, away_from_food]
+    base_value: 7
+    acquisition_paths:
+      - type: manufacture
+        note: 在通风化学台用工业酒精、碱料和洁净水按基础配方稀释。
+      - type: trade
+        note: 采购标明用途与浓度的通用清洁液。
+    consumption_loss_paths:
+      - type: consumed_directly
+        note: 清洁生活区、工坊台面和非医疗工具时按瓶消耗。
+      - type: delivered
+        note: 作为公共卫生承诺交付。
+      - type: contaminated
+        note: 与未知化学品混装后转为化学残留负担。
+    logistics_note: 与医疗消毒剂使用不同标签和柜位，避免人物误用；使用后空瓶进入容器回收。
+    interfaces:
+      produced_by: [recipe.chemistry.mix_cleaning_solution]
+      used_by: []
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 给公共卫生提供低成本常用品，同时明确它不能替代更稀缺的医疗消毒能力。
+
+  - id: item.medical.basic_antiseptic
+    name: 基础消毒剂
+    description: 以受控浓度配制的外用消毒剂，可处理伤口周边和制作无菌绷带，但不等于抗生素或完整治疗。
+    status: candidate_only
+    category: medicine_and_medical_supply
+    form: bulk_material
+    tags: [medical, antiseptic, chemical, flammable, traceable]
+    resource_chains: [survival, security]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile:
+      visibility: low
+      traceability: regulated_batch
+      wealth_signal: medium
+    actions: [disinfect, treat, reserve, trade, deliver, store]
+    unit: bottle
+    mass: 0.6
+    volume: 0.7
+    stack_rule:
+      stackable: true
+      merge_keys: [concentration, contamination_state, legal_status, ownership]
+    storage_rule: [cool, locked, contamination_controlled]
+    base_value: 16
+    acquisition_paths:
+      - type: manufacture
+        note: 由具备灭菌经验的人员在清洁工作台按浓度配制并标记批次。
+      - type: trade
+        note: 从医疗商队采购封口完好且来源可查的瓶装消毒剂。
+    consumption_loss_paths:
+      - type: consumed_directly
+        note: 外伤处理时按剂量消耗。
+      - type: consumed_by_recipe
+        note: 用于无菌绷带的处理与封装。
+      - type: confiscated
+        note: 大量无来源批次可能因医疗物资管制被查扣。
+    logistics_note: 与普通清洁液分柜上锁，按浓度和批次先进先出；战备预留必须可追溯。
+    interfaces:
+      produced_by: [recipe.chemistry.prepare_basic_antiseptic]
+      used_by: [recipe.medical.sterilize_bandage]
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 把工业酒精、洁净水和专业时间转化为医疗能力，并与日常清洁争夺同一上游。
+
+  - id: item.daily.soap_bar
+    name: 基础肥皂
+    description: 由植物油与碱料制作的耐储清洁用品，适合人物和织物清洗，但不能执行医疗灭菌。
+    status: candidate_only
+    category: daily_supply
+    form: bulk_material
+    tags: [hygiene, cleaning, chemical]
+    resource_chains: [survival, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: low
+      traceability: none
+      wealth_signal: low
+    actions: [clean, reserve, trade, deliver, store]
+    unit: bar
+    mass: 0.2
+    volume: 0.3
+    stack_rule:
+      stackable: true
+      merge_keys: [batch_grade, contamination_state, ownership]
+    storage_rule: [dry, away_from_food]
+    base_value: 5
+    acquisition_paths:
+      - type: manufacture
+        note: 在通风化学台以植物油、碱料和洁净水完成皂化并固化。
+      - type: trade
+        note: 从日用品商队采购普通皂块。
+    consumption_loss_paths:
+      - type: consumed_directly
+        note: 人物卫生、织物清洗和生活区清洁中逐步消耗。
+      - type: delivered
+        note: 作为公共卫生或救济物资交付。
+      - type: contaminated
+        note: 接触工业油污后不再用于人物卫生。
+    logistics_note: 固化后在干燥区存放；公共配给与主题交付应分别预留。
+    interfaces:
+      produced_by: [recipe.chemistry.make_soap]
+      used_by: []
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 把低价值日用品变成可计划的公共卫生与政治交付对象，同时不越权提供医疗效果。
+
+  - id: item.material.copper_wire
+    name: 回收铜线
+    description: 从旧电机和建筑线路中回收的导体，绝缘状态不一，必须测试后才能进入可靠有线设备。
+    status: candidate_only
+    category: material
+    form: bulk_material
+    tags: [electrical, conductive, reclaimed]
+    resource_chains: [industry, security]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: low
+      traceability: none
+      wealth_signal: medium
+    actions: [process, reserve, trade, repair, store]
+    unit: spool
+    mass: 3.0
+    volume: 2.5
+    stack_rule:
+      stackable: true
+      merge_keys: [batch_grade, contamination_state, ownership]
+    storage_rule: [dry, moisture_protected]
+    base_value: 24
+    acquisition_paths:
+      - type: salvage
+        note: 从废弃电机、建筑线路和损坏设备中剥离并分级。
+      - type: trade
+        note: 采购标明线径和绝缘状态的回收线盘。
+    consumption_loss_paths:
+      - type: consumed_by_recipe
+        note: 用于组装有线预警单元的信号与供电线路。
+      - type: consumed_directly
+        note: 维修照明、发电或通信线路时按长度消耗。
+      - type: traded_away
+        note: 作为高价值小体积回收金属出售。
+    logistics_note: 按线径和绝缘状态分盘防潮存放，散线必须重新卷盘才便于搬运和计量。
+    interfaces:
+      produced_by: []
+      used_by: [recipe.electrical.assemble_wired_alarm_unit]
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 让电力维修、生活照明和安全预警竞争同一种高价值导体。
+
+  - id: item.component.recovered_electronics
+    name: 回收电子组件
+    description: 经离线检查的继电器、蜂鸣器和基础传感器组合，性能有限但无需联网控制。
+    status: candidate_only
+    category: component
+    form: bulk_material
+    tags: [electrical, reclaimed, local_firmware, physically_isolated, sensor]
+    resource_chains: [industry, security]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile:
+      visibility: low
+      traceability: local_markings
+      wealth_signal: medium
+    actions: [process, reserve, trade, repair, store]
+    unit: set
+    mass: 1.2
+    volume: 1.8
+    stack_rule:
+      stackable: true
+      merge_keys: [batch_grade, contamination_state, legal_status, ownership]
+    storage_rule: [dry, shock_protected, moisture_protected]
+    base_value: 36
+    acquisition_paths:
+      - type: salvage
+        note: 从旧家电、车辆和控制柜拆取后进行离线通断测试。
+      - type: trade
+        note: 采购不依赖云端授权的旧式通用组件。
+    consumption_loss_paths:
+      - type: consumed_by_recipe
+        note: 作为有线预警单元的传感、继电和蜂鸣组件。
+      - type: consumed_directly
+        note: 维修本地控制设备时按功能件消耗。
+      - type: confiscated
+        note: 来源不明的传感组件在受控地区可能被查扣。
+    logistics_note: 使用防震防潮小件箱并保持测试标签；联网锁定件不得混入可用离线组件。
+    interfaces:
+      produced_by: []
+      used_by: [recipe.electrical.assemble_wired_alarm_unit]
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 以稀缺离线控制件限制自动化和预警扩张，并体现摆脱联网依赖的材料代价。
+
+  - id: item.component.cable_harness
+    name: 标记线束
+    description: 已按用途标记并带基础绝缘的预制线束，可缩短现场安装时间，但错误标记会造成排障困难。
+    status: candidate_only
+    category: component
+    form: bulk_material
+    tags: [electrical, insulated, wired_control, repair]
+    resource_chains: [industry, security]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile:
+      visibility: low
+      traceability: local_markings
+      wealth_signal: medium
+    actions: [install, repair, reserve, trade, store]
+    unit: set
+    mass: 1.5
+    volume: 2.0
+    stack_rule:
+      stackable: true
+      merge_keys: [batch_grade, ownership]
+    storage_rule: [dry, moisture_protected, shock_protected]
+    base_value: 30
+    acquisition_paths:
+      - type: salvage
+        note: 从拆除设备中完整取出并重新标记通过通断测试的线束。
+      - type: trade
+        note: 采购适配常见控制接口的离线线束组。
+    consumption_loss_paths:
+      - type: consumed_by_recipe
+        note: 作为有线预警单元内部与外部接口的一次性装配输入。
+      - type: installed
+        note: 直接用于设施维修后转为设施组成部分。
+      - type: worn_out
+        note: 绝缘破损或接头腐蚀后退出可靠库存。
+    logistics_note: 按接口和长度分格存放，搬运时保持标签与接头防护；不可按总重量替代适配性。
+    interfaces:
+      produced_by: []
+      used_by: [recipe.electrical.assemble_wired_alarm_unit]
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 把“有铜线”与“能及时安装”区分开，使预制、适配和现场时间成为真实条件。
+
+  - id: item.electronic.wired_alarm_unit
+    name: 有线预警单元
+    description: 使用物理线路和本地继电控制的单件预警设备，可部署到防区或关键设施，不依赖外部网络。
+    status: candidate_only
+    category: electronic_device
+    form: independent_item
+    tags: [electrical, wired_control, physically_isolated, sensor, alarm, high_wealth_exposure]
+    resource_chains: [security, industry, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile:
+      visibility: medium
+      traceability: local_markings
+      wealth_signal: high
+    actions: [install, reserve, trade, repair, dismantle, store]
+    unit: set
+    mass: 6.0
+    volume: 9.0
+    stack_rule:
+      stackable: false
+      merge_keys: []
+    storage_rule: [dry, locked, shock_protected, moisture_protected]
+    base_value: 110
+    acquisition_paths:
+      - type: manufacture
+        note: 由电工在电气工作台用铜线、回收电子组件、标记线束和紧固件装配测试。
+      - type: salvage
+        note: 从旧设施完整拆取后逐件检查本地控制与传感状态。
+    consumption_loss_paths:
+      - type: installed
+        note: 部署后转为地图放置实体并占用防区线路与维护能力。
+      - type: worn_out
+        note: 传感器漂移、接头腐蚀或供电故障降低可靠性。
+      - type: dismantled
+        note: 拆解可返还部分电子组件与铜线，但失去完整设备。
+      - type: confiscated
+        note: 未申报的预警网络可能被监管方认定为受控安防设施。
+    logistics_note: 单件记录测试状态、安装地点和责任人；安装前需将线路与设备同时送到目标防区。
+    interfaces:
+      produced_by: [recipe.electrical.assemble_wired_alarm_unit]
+      used_by: []
+      repair_recipes: []
+      dismantle_recipes: []
+    decision_role: 以离线可靠性换取铜线、电子件、电工时间和政治暴露，连接工业维护与安全预警。

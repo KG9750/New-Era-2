@@ -1,0 +1,179 @@
+schema_version: 0.2.0
+status: candidate_only
+authority:
+  contract: docs/item-library/item-library-authoring-contract-v0.2.md
+  design: docs/design-docs/item-and-manufacturing-system-v0.1.md
+  design_sha256: 24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb
+
+enums:
+  actions:
+    fire: 发射
+    maintain: 保养
+    read: 阅读
+    present: 出示
+    redeem: 兑付
+    display: 展示
+    play: 演奏
+    activate: 激活
+    authenticate: 验证
+    inspect: 检查
+
+  units:
+    box: 盒
+    copy: 册
+    token: 枚
+
+  storage_rules:
+    ammunition_locked: 弹药上锁
+    archive_safe: 档案安全
+    fireproof: 防火
+    magnetic_shielded: 防磁
+    light_protected: 避光
+
+  merge_keys:
+    caliber: 口径
+    issue_authority: 签发机构
+    charge_state: 装药状态
+
+  loss_types:
+    invalidated: 失效
+    lost: 遗失
+    destroyed: 销毁
+
+  recipe_kinds:
+    repair: 维修
+    dismantle: 拆解
+
+  facilities:
+    armory_bench: 军械工作台
+    carpentry_bench: 木作台
+    archive_desk: 档案工作台
+    precision_bench: 精密工作台
+
+  tools:
+    gunsmith_tools: 枪械维护工具
+    woodworking_tools: 木工工具
+    data_recovery_tools: 数据恢复工具
+    watchmaker_tools: 钟表工具
+
+  roles:
+    armorer: 军械维护员
+    carpenter: 木工
+    archivist: 档案员
+
+  skills:
+    archival: 档案
+
+  specialties:
+    firearm_maintenance: 枪械维护
+    precision_timekeeping: 精密计时
+    data_recovery: 数据恢复
+    furniture_making: 家具制作
+
+  risks:
+    accidental_discharge: 意外击发
+    provenance_loss: 来源损失
+    data_loss: 数据损失
+    evidence_loss: 证据损失
+    unauthorized_access: 未授权访问
+
+  tags:
+    weapon: 武器
+    firearm: 枪械
+    melee: 近战
+    ammunition: 弹药
+    rifle_caliber: 步枪口径
+    shotgun_caliber: 霰弹口径
+    training: 训练
+    signal: 信号
+    maintenance_supply: 维护耗材
+    readable: 可阅读
+    knowledge: 知识
+    offline_data: 离线数据
+    furniture: 家具
+    sleep: 睡眠
+    storage: 储藏
+    social: 社交
+    lighting: 照明
+    display: 展示
+    music: 音乐
+    memorial: 纪念
+    valuable: 贵重
+    personal: 个人
+    timekeeping: 计时
+    trade_value: 储值
+    credential: 凭证
+    identity: 身份
+    rationing: 配给
+    qualification: 资格
+    ownership_record: 所有权记录
+    disputed: 争议
+    rare: 稀有
+    old_world: 旧世界
+    sealed: 密封
+    silicon_technology: 硅基技术
+    access_control: 访问控制
+
+  wear_sources:
+    use: 使用
+    impact: 冲击
+    moisture: 受潮
+    corrosion: 腐蚀
+    fouling: 积垢
+    heat: 高温
+    light: 光照
+    magnetic: 磁场
+    compression: 压放
+    handling: 搬运
+    age: 老化
+
+  repairability:
+    repairable: 可维修
+    maintain_only: 仅保养
+    nonrepairable: 不可维修
+
+  dismantle_policies:
+    allowed: 允许
+    restricted: 受限
+    none: 不适用
+
+  condition_states:
+    serviceable: 可用
+    worn: 磨损
+    damaged: 损坏
+    broken: 故障
+    dismantled: 已拆解
+
+  equipment_roles:
+    weapon_platform: 武器平台
+    ammunition: 弹药
+    maintenance_supply: 维护耗材
+    signal_supply: 信号耗材
+
+  ammo_families:
+    none: 无
+    rifle: 步枪弹
+    shotgun: 霰弹
+    blank: 空包弹
+    flare: 信号弹
+
+  knowledge_domains:
+    agriculture: 农业
+    medicine: 医疗
+    maintenance: 维修
+    history: 历史档案
+
+  footprints:
+    small: 小
+    medium: 中
+    large: 大
+
+  uninstall_results:
+    returns_item: 返回物品
+    returns_materials: 返回材料
+
+  ownership_profiles:
+    public: 公共
+    personal: 个人
+    disputed: 争议
+    unknown: 未知

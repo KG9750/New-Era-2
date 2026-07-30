@@ -1,0 +1,166 @@
+schema_version: 0.3.0
+status: candidate_only
+authority:
+  contract: docs/item-library/item-library-authoring-contract-v0.3.md
+  design: docs/design-docs/item-and-manufacturing-system-v0.1.md
+  design_sha256: 24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb
+
+enums:
+  actions:
+    operate: 使用
+    uninstall: 拆卸
+    tend: 照料
+    harvest: 收获
+    assign: 分派
+    care: 照护
+    invoke: 行使
+    suspend: 暂停
+    revoke: 撤销
+    audit: 稽核
+
+  loss_types:
+    sown: 播种
+
+  facilities:
+    field_plot: 露地田块
+    herb_plot: 药草圃
+    settlement_space: 聚落放置区
+    electrical_grid: 有线电网
+    animal_intake_pen: 活体接收栏
+    barn: 畜棚
+    dovecote: 鸽舍
+    pasture: 牧地
+    poultry_coop: 禽舍
+    kennel: 犬舍
+    rabbit_hutch: 兔舍
+    administration_desk: 行政登记台
+    access_terminal: 访问终端
+    seed_vault: 种源保管库
+
+  tools:
+    placement_tools: 放置工具
+    handling_gear: 活体安置工具
+    animal_care_kit: 动物照护工具
+    record_seal: 登记印鉴
+
+  roles:
+    installer: 安装员
+    animal_handler: 动物照护员
+    registrar: 登记员
+
+  skills:
+    animal_care: 动物照护
+    administration: 行政
+
+  specialties:
+    placement: 场地部署
+    crop_rotation: 作物轮作
+    herb_cultivation: 药草栽培
+    livestock_handling: 役畜安置
+    canine_handling: 犬只安置
+    avian_handling: 鸟禽安置
+    rights_verification: 权利核验
+    secure_access: 安全访问
+
+  risks:
+    bad_site: 场地不适
+    seed_failure: 种源失效
+    animal_stress: 动物应激
+    escape: 逃逸
+    false_claim: 虚假主张
+    revocation: 权利撤销
+    duplicate_activation: 重复激活
+
+  tags:
+    grain_crop: 谷物作物
+    fiber_crop: 纤维作物
+    medicinal_plant: 药用植物
+    fodder: 饲料
+    animal_feed: 动物饲料
+    placed: 已放置
+    growing: 生长中
+    companion: 伙伴
+    work_animal: 役用动物
+    guard: 警戒
+    pest_control: 捕鼠
+    messenger: 通讯
+    pack_animal: 驮运
+    egg_production: 产蛋
+    dairy: 产奶
+    search_and_rescue: 搜救
+    fiber_production: 产纤维
+    rights: 权利
+    passage: 通行
+    custody: 保管
+
+  transition_kinds:
+    deploy: 部署
+    cultivate: 栽培
+    live_intake: 活体接收
+    right_activation: 权利激活
+
+  transition_source_kinds:
+    inventory_item: 库存物品
+    external_intake: 外部活体交接
+
+  live_intake_types:
+    live_animal_handover: 活体动物交接
+
+  source_dispositions:
+    installed: 安装并移出库存
+    sown: 播种并消耗数量
+    accepted_to_custody: 接收入角色归属
+    retained_and_linked: 保留载体并排他关联
+
+  rollback_results:
+    source_returned: 来源物品返回库存
+    materials_returned: 返回部分材料
+    irreversible_after_sowing: 播种后不可无损撤回
+    custody_transfer_required: 必须完成照护交接
+    record_deactivated: 权利记录停用
+
+  growth_stages:
+    sown: 已播种
+    germinating: 萌发
+    growing: 生长
+    harvest_ready: 可收获
+    failed: 失效
+
+  animal_species:
+    dog: 犬
+    cat: 猫
+    pigeon: 鸽
+    goat: 山羊
+    chicken: 鸡
+    rabbit: 兔
+
+  animal_service_roles:
+    guard: 警戒
+    pest_control: 捕鼠
+    message: 通讯
+    pack: 驮运
+    eggs: 产蛋
+    dairy: 产奶
+    search_and_rescue: 搜救
+    fiber: 产纤维
+
+  bearer_scopes:
+    person: 个人
+    settlement: 聚落
+    property: 财产
+    position: 岗位
+
+  issuer_classes:
+    border_authority: 边境机构
+    ration_cooperative: 配给合作组织
+    workshop_board: 工坊委员会
+    property_registry: 产权登记方
+    silicon_system: 硅基系统
+    custodian_council: 保管委员会
+
+  validity_states:
+    inactive: 未激活
+    active: 有效
+    suspended: 暂停
+    revoked: 已撤销
+    disputed: 争议中

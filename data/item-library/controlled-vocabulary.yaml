@@ -1,0 +1,283 @@
+schema_version: 0.1.0
+status: candidate_only
+authority:
+  document: docs/design-docs/item-and-manufacturing-system-v0.1.md
+  sha256: 24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb
+
+enums:
+  categories:
+    material: 材料
+    component: 零部件
+    tool: 工具
+    electronic_device: 电子用具
+    food_and_drink: 食品与饮料
+    medicine_and_medical_supply: 药品与医疗用品
+    weapon_and_ammunition: 武器与弹药
+    armor_and_clothing: 防具与服饰
+    book_and_data: 书籍与数据载体
+    furniture: 家具
+    daily_supply: 日常用品
+    decoration_and_instrument: 装饰与乐器
+    jewelry_and_valuable: 珠宝与贵重品
+    plant_and_seed: 植物与种源
+    companion_and_work_animal: 伙伴与役用动物
+    document_and_credential: 文件与凭证
+    rare_and_special: 稀有与特殊物品
+    byproduct_and_waste: 副产物与废弃物
+
+  forms:
+    bulk_material: 批量物资
+    independent_item: 独立物品
+    placed_entity: 放置实体
+    growing_entity: 生长实体
+    character_entity: 角色实体
+    rights_record: 权利记录
+
+  resource_chains:
+    survival: 生存
+    industry: 工业
+    security: 安全
+    politics: 政治
+
+  availability:
+    common: 常见
+    limited: 有限
+    controlled: 受控
+    unique: 唯一
+
+  legal_profiles:
+    default_legal: 默认合法
+    controlled: 受控
+    prohibited: 违禁
+    silicon_jurisdiction: 受硅基管辖
+
+  visibility:
+    low: 低
+    medium: 中
+    high: 高
+
+  traceability:
+    none: 无
+    local_markings: 本地标记
+    regulated_batch: 受监管批次
+    networked: 联网可追踪
+
+  wealth_signal:
+    low: 低
+    medium: 中
+    high: 高
+
+  actions:
+    consume: 食用或消耗
+    apply: 施用
+    reserve: 预留
+    trade: 交易
+    deliver: 交付
+    process: 加工
+    cook: 烹饪
+    equip: 装备
+    wear: 穿戴
+    install: 安装
+    repair: 维修
+    dismantle: 拆解
+    clean: 清洁
+    disinfect: 消毒
+    treat: 治疗
+    sow: 播种
+    store: 储存
+    recycle: 回收
+
+  units:
+    bag: 袋
+    packet: 包
+    kilogram: 千克
+    liter: 升
+    crate: 箱
+    bundle: 捆
+    set: 套
+    piece: 件
+    roll: 卷
+    bottle: 瓶
+    bar: 块
+    spool: 盘
+
+  storage_rules:
+    ambient: 常温
+    dry: 干燥
+    food_safe: 食品级
+    cool: 阴凉
+    refrigerated: 冷藏
+    locked: 上锁
+    hazardous: 危险品
+    away_from_food: 远离食品
+    ventilated: 通风
+    moisture_protected: 防潮
+    shock_protected: 防震
+    contamination_controlled: 污染受控
+
+  merge_keys:
+    batch_grade: 批次等级
+    freshness: 新鲜度
+    contamination_state: 污染状态
+    legal_status: 合法状态
+    ownership: 所有权
+    concentration: 浓度
+
+  acquisition_types:
+    agriculture: 农业生产
+    manufacture: 制造
+    salvage: 回收
+    trade: 交易
+    forage: 采集
+    mission: 任务
+    allocation: 配给
+
+  loss_types:
+    consumed_directly: 直接消耗
+    consumed_by_recipe: 被工艺消耗
+    installed: 安装
+    worn_out: 磨损
+    spoiled: 腐坏
+    contaminated: 污染
+    delivered: 交付
+    traded_away: 交易流出
+    confiscated: 查扣
+    dismantled: 拆解
+
+  recipe_kinds:
+    agriculture: 农业
+    food_processing: 食品加工
+    material_processing: 材料加工
+    assembly: 装配
+    tailoring: 纺织与缝制
+    chemical_processing: 化学加工
+    medical_processing: 医疗耗材加工
+
+  facilities:
+    irrigated_field: 灌溉农田
+    basic_kitchen: 基础厨房
+    sorting_yard: 回收分拣场
+    basic_workshop: 基础工坊
+    textile_bench: 纺织台
+    clean_workbench: 清洁工作台
+    ventilated_chemical_bench: 通风化学台
+    electrical_bench: 电气工作台
+
+  tools:
+    field_tools: 农事工具
+    cooking_set: 炊事工具
+    metal_sorting_tools: 金属分拣工具
+    metalworking_tools: 金工工具
+    measuring_tools: 测量工具
+    sewing_tools: 缝制工具
+    sterilization_tools: 灭菌工具
+    chemical_measuring_tools: 化学计量工具
+    electrical_testing_tools: 电气测试工具
+
+  roles:
+    general_worker: 普通劳作者
+    farm_worker: 农业劳作者
+    cook: 炊事员
+    recycler: 回收工
+    mechanic: 机械工
+    tailor: 裁缝
+    sanitation_worker: 卫生员
+    medic: 医疗人员
+    electrician: 电工
+
+  skills:
+    agriculture: 农业
+    cooking: 烹饪
+    fabrication: 制造
+    maintenance: 维修
+    tailoring: 缝制
+    chemistry: 化学
+    medicine: 医疗
+    electronics: 电子
+
+  specialties:
+    none: 无
+    crop_management: 作物管理
+    preservation: 保存食品
+    metal_recovery: 金属回收
+    precision_fitting: 精密装配
+    protective_equipment: 防护装备
+    garment_making: 服装制作
+    sterilization: 灭菌
+    formulation: 配制
+    wired_security: 有线安防
+
+  missing_effects:
+    prohibited: 禁止执行
+    quality_cap_reduced: 降低品质上限
+    failure_risk_increased: 扩大失败风险
+
+  substitution_consequences:
+    quality_cap_reduced: 降低品质上限
+    time_increased: 增加有效时间
+    yield_reduced: 降低产量区间
+    failure_risk_increased: 扩大失败风险
+
+  burdens:
+    wastewater: 污水处理负担
+    chemical_residue: 化学残留负担
+    smoke_and_dust: 烟尘处理负担
+
+  risks:
+    late_delivery: 延迟送达
+    ingredient_shortage: 原料短缺
+    contamination: 污染
+    spoilage: 腐坏
+    material_variation: 材料差异
+    tool_wear: 工具磨损
+    facility_wear: 设施磨损
+    worker_injury: 工伤
+    quality_loss: 品质下降
+    chemical_exposure: 化学暴露
+    fire: 火灾
+    electrical_fault: 电气故障
+    false_alarm: 误报
+
+  tags:
+    agricultural_input: 农业投入
+    edible: 食用
+    potable: 可饮用
+    seed_stock: 种源
+    perishable: 易腐
+    preserved: 保存食品
+    chemical: 化学品
+    toxic: 有毒
+    flammable: 易燃
+    contamination_risk: 污染风险
+    food_grade: 食品级
+    metal: 金属
+    reclaimed: 回收
+    structural_material: 结构材料
+    fastener: 紧固
+    mechanical: 纯机械
+    repair: 维修
+    manufacturing: 制造
+    protective: 防护
+    armor_component: 护甲部件
+    textile: 织物
+    fiber: 纤维
+    medical: 医疗
+    hygiene: 卫生
+    cleaning: 清洁
+    clothing: 服饰
+    wearable: 可穿戴
+    absorbent: 吸收
+    antiseptic: 消毒
+    oil: 油料
+    alkali: 碱性
+    salvage_only: 仅回收
+    electrical: 电气
+    conductive: 导电
+    insulated: 绝缘
+    local_firmware: 本地固件
+    wired_control: 有线专控
+    physically_isolated: 物理隔离
+    sensor: 传感
+    alarm: 预警
+    traceable: 可追踪
+    high_wealth_exposure: 高财富暴露

@@ -1,0 +1,724 @@
+schema_version: 0.1.0
+library_status: candidate_only
+authority:
+  contract: docs/item-library/item-library-authoring-contract-v0.1.md
+  design: docs/design-docs/item-and-manufacturing-system-v0.1.md
+  design_sha256: 24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb
+scope_note: 15 个代表工艺用于检查原料、设施、工具、人物有效时间、资格、物流、产出区间、副产物与风险的连接。
+
+recipes:
+  - id: recipe.agriculture.mixed_field_crop_cycle
+    name: 混合农田作物周期
+    description: 在灌溉农田完成播种、施肥、照料和采收；库存投入只有按时送达并兑现人物时间后才转成产出。
+    status: candidate_only
+    kind: agriculture
+    resource_chains: [survival, politics]
+    inputs:
+      - item: item.plant.mixed_crop_seed
+        amount: 1.0
+        consumed: true
+      - item: item.agriculture.compound_fertilizer
+        amount: 1.0
+        consumed: true
+      - item: item.water.clean_water
+        amount: 40.0
+        consumed: true
+    substitution_policy:
+      allowed: false
+      rules: []
+    facilities: [irrigated_field]
+    tools: [field_tools]
+    qualification:
+      minimum_role: farm_worker
+      skill: agriculture
+      specialty: crop_management
+      missing_effect: failure_risk_increased
+    effective_time_hours:
+      min: 18.0
+      max: 24.0
+    logistics:
+      input_staging: 种子与化肥必须在播种窗口前送到农田暂存点，洁净水需要可达的灌溉容器。
+      output_storage: 原粮送入干燥粮仓，新鲜蔬菜送入阴凉食品区并分别记录新鲜度。
+    outputs:
+      - item: item.food.raw_grain
+        min: 18.0
+        max: 26.0
+      - item: item.food.fresh_vegetable
+        min: 8.0
+        max: 14.0
+    byproducts:
+      - type: burden
+        burden: wastewater
+        min: 0.5
+        max: 1.5
+    risks:
+      - id: late_delivery
+        condition: 种子、化肥或洁净水在播种窗口后才到达农田。
+        effect: 有效活动块减少，产量区间下调且未施用投入退回库存。
+      - id: ingredient_shortage
+        condition: 灌溉水不足以覆盖完整作物周期。
+        effect: 订单不能按满额确认，必须缩小种植面积或补充水源。
+
+  - id: recipe.food.preserved_ration_batch
+    name: 保存口粮批次
+    description: 将原粮、新鲜蔬菜、盐和洁净水加工并封装为耐储口粮，消耗厨房时间换取更长物流窗口。
+    status: candidate_only
+    kind: food_processing
+    resource_chains: [survival, security, politics]
+    inputs:
+      - item: item.food.raw_grain
+        amount: 6.0
+        consumed: true
+      - item: item.food.fresh_vegetable
+        amount: 2.0
+        consumed: true
+      - item: item.chemical.mineral_salt
+        amount: 0.3
+        consumed: true
+      - item: item.water.clean_water
+        amount: 3.0
+        consumed: true
+    substitution_policy:
+      allowed: false
+      rules: []
+    facilities: [basic_kitchen]
+    tools: [cooking_set, measuring_tools]
+    qualification:
+      minimum_role: cook
+      skill: cooking
+      specialty: preservation
+      missing_effect: quality_cap_reduced
+    effective_time_hours:
+      min: 4.0
+      max: 6.0
+    logistics:
+      input_staging: 优先领取临近腐坏的蔬菜批次，食品级盐和洁净水必须从食品区集结。
+      output_storage: 成品冷却并标记日期后送入干燥食品储备区，战备与公共交付预留分开显示。
+    outputs:
+      - item: item.food.preserved_ration
+        min: 10.0
+        max: 12.0
+    byproducts:
+      - type: burden
+        burden: wastewater
+        min: 0.5
+        max: 1.0
+    risks:
+      - id: spoilage
+        condition: 使用已超过安全新鲜度的蔬菜或封装后未及时降温。
+        effect: 成品产量区间和保存期限下降，问题批次被单独标记。
+      - id: contamination
+        condition: 食品工具或容器与工业化学品共用且未完成清洁。
+        effect: 整批口粮退出可食用库存并形成处理负担。
+
+  - id: recipe.metal.reclaim_steel_plate
+    name: 废钢分拣与整形
+    description: 对混杂废钢进行除污、材质分拣和基础整形，产出可用于通用结构与维修的板材。
+    status: candidate_only
+    kind: material_processing
+    resource_chains: [industry, security]
+    inputs:
+      - item: item.material.scrap_steel
+        amount: 1.0
+        consumed: true
+    substitution_policy:
+      allowed: false
+      rules: []
+    facilities: [sorting_yard, basic_workshop]
+    tools: [metal_sorting_tools, metalworking_tools]
+    qualification:
+      minimum_role: recycler
+      skill: fabrication
+      specialty: metal_recovery
+      missing_effect: failure_risk_increased
+    effective_time_hours:
+      min: 5.0
+      max: 8.0
+    logistics:
+      input_staging: 废钢捆送到分拣场并按污染和来源拆分，不得把未知密封件直接送入工坊。
+      output_storage: 合格板材按等级平放入金属区，边角料进入带防护的回收箱。
+    outputs:
+      - item: item.material.reclaimed_steel_plate
+        min: 0.7
+        max: 1.0
+    byproducts:
+      - type: item
+        item: item.waste.metal_offcuts
+        min: 2.0
+        max: 5.0
+      - type: burden
+        burden: smoke_and_dust
+        min: 0.5
+        max: 1.5
+    risks:
+      - id: material_variation
+        condition: 输入废钢批次的材质和厚度差异超过分拣能力。
+        effect: 板材产量和可达品质上限下降，更多物料转为边角料。
+      - id: worker_injury
+        condition: 分拣场缺少安全通道或尖锐废钢未固定。
+        effect: 工时区间扩大并产生可预见的割伤风险。
+
+  - id: recipe.metal.form_fasteners
+    name: 通用紧固件成形
+    description: 将一部分回收金属板切割并成形为标准螺栓、铆钉和垫片组。
+    status: candidate_only
+    kind: material_processing
+    resource_chains: [industry, security]
+    inputs:
+      - item: item.material.reclaimed_steel_plate
+        amount: 0.25
+        consumed: true
+    substitution_policy:
+      allowed: false
+      rules: []
+    facilities: [basic_workshop]
+    tools: [metalworking_tools, measuring_tools]
+    qualification:
+      minimum_role: mechanic
+      skill: fabrication
+      specialty: precision_fitting
+      missing_effect: quality_cap_reduced
+    effective_time_hours:
+      min: 3.0
+      max: 5.0
+    logistics:
+      input_staging: 领取厚度和材质等级已经标记的板材，开工前确认小件柜有空位。
+      output_storage: 紧固件按规格组套并送入干燥小件柜，边角料回到工坊回收箱。
+    outputs:
+      - item: item.component.fastener_set
+        min: 6.0
+        max: 8.0
+    byproducts:
+      - type: item
+        item: item.waste.metal_offcuts
+        min: 0.5
+        max: 1.0
+    risks:
+      - id: quality_loss
+        condition: 测量工具缺校准或板材厚度差异未在开工前识别。
+        effect: 部分紧固件不能进入受力装配，成品品质上限下降。
+      - id: tool_wear
+        condition: 刀具和模具已接近维护阈值。
+        effect: 有效时间增加并产生更多边角料。
+
+  - id: recipe.metal.assemble_field_repair_kit
+    name: 现场维修包封装
+    description: 将适配的机械备件、紧固件和清洁布按任务族封装，提前占用库存以缩短现场取料时间。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [industry, survival, security]
+    inputs:
+      - item: item.component.mechanical_spares
+        amount: 1.0
+        consumed: true
+      - item: item.component.fastener_set
+        amount: 1.0
+        consumed: true
+      - item: item.daily.cleaning_rags
+        amount: 1.0
+        consumed: true
+    substitution_policy:
+      allowed: false
+      rules: []
+    facilities: [basic_workshop]
+    tools: [measuring_tools, metal_sorting_tools]
+    qualification:
+      minimum_role: mechanic
+      skill: maintenance
+      specialty: precision_fitting
+      missing_effect: failure_risk_increased
+    effective_time_hours:
+      min: 1.5
+      max: 2.5
+    logistics:
+      input_staging: 备件必须按目标设备族从零件柜集结，不能用库存总量替代适配性检查。
+      output_storage: 封装后送到任务暂存区并关联具体维修承诺；取消时需要重新分拣。
+    outputs:
+      - item: item.tool.field_repair_kit
+        min: 1.0
+        max: 1.0
+    byproducts: []
+    risks:
+      - id: ingredient_shortage
+        condition: 备件库存存在但没有适配目标设备的规格。
+        effect: 工艺不能确认，必须更换任务范围或等待正确零件。
+      - id: quality_loss
+        condition: 未由机械工核对封装清单。
+        effect: 现场维修包可用性下降并扩大抢修耗时区间。
+
+  - id: recipe.metal.assemble_reinforced_plate
+    name: 粗制防护插板装配
+    description: 将回收金属板、通用织物和紧固件装配为低技术防护插板，明确受材料和工坊能力上限限制。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [security, industry]
+    inputs:
+      - item: item.material.reclaimed_steel_plate
+        amount: 0.25
+        consumed: true
+      - item: item.material.woven_cloth
+        amount: 0.2
+        consumed: true
+      - item: item.component.fastener_set
+        amount: 0.5
+        consumed: true
+    substitution_policy:
+      allowed: false
+      rules: []
+    facilities: [basic_workshop]
+    tools: [metalworking_tools, measuring_tools]
+    qualification:
+      minimum_role: mechanic
+      skill: fabrication
+      specialty: protective_equipment
+      missing_effect: prohibited
+    effective_time_hours:
+      min: 4.0
+      max: 7.0
+    logistics:
+      input_staging: 板材与织物必须按批次送到工坊并确认没有被设施维修或医疗工艺预留。
+      output_storage: 完成尺寸和完整度检查后逐件登记，送入受控装备柜或分配给指定人物。
+    outputs:
+      - item: item.armor.reinforced_plate
+        min: 1.0
+        max: 1.0
+    byproducts:
+      - type: item
+        item: item.waste.metal_offcuts
+        min: 0.5
+        max: 1.5
+    risks:
+      - id: material_variation
+        condition: 回收板材厚度或裂纹状态未通过最低检查。
+        effect: 工艺被禁止或成品不能标记为可装备防护件。
+      - id: quality_loss
+        condition: 赶工或缺少防护装备专业经验。
+        effect: 品质上限降低，边缘处理和穿戴负担风险增加。
+
+  - id: recipe.textile.weave_cloth
+    name: 植物纤维织布
+    description: 将干燥植物纤维清理、纺线并织为通用布卷，同时保留足够大的干净边料作为清洁布。
+    status: candidate_only
+    kind: tailoring
+    resource_chains: [survival, industry, security, politics]
+    inputs:
+      - item: item.material.plant_fiber
+        amount: 2.0
+        consumed: true
+    substitution_policy:
+      allowed: false
+      rules: []
+    facilities: [textile_bench]
+    tools: [sewing_tools]
+    qualification:
+      minimum_role: tailor
+      skill: tailoring
+      specialty: garment_making
+      missing_effect: quality_cap_reduced
+    effective_time_hours:
+      min: 8.0
+      max: 12.0
+    logistics:
+      input_staging: 纤维先按潮湿和霉变状态分批送到纺织台，污染批次不得进入医疗级布卷。
+      output_storage: 布卷按清洁等级送入干燥纺织区，干净边料进入清洁布柜。
+    outputs:
+      - item: item.material.woven_cloth
+        min: 1.0
+        max: 1.4
+    byproducts:
+      - type: item
+        item: item.daily.cleaning_rags
+        min: 0.2
+        max: 0.5
+    risks:
+      - id: contamination
+        condition: 输入纤维有霉变或纺织台与油污工件共用。
+        effect: 成品不能进入医疗工艺并需要单独标记污染状态。
+      - id: quality_loss
+        condition: 纤维长度差异过大或缺少裁缝经验。
+        effect: 布卷品质上限和有效产量下降。
+
+  - id: recipe.textile.sew_work_clothes
+    name: 耐磨工作服缝制
+    description: 按人物尺寸将通用织物和紧固件缝制为基础工作服，尺码与完整度需要单件记录。
+    status: candidate_only
+    kind: tailoring
+    resource_chains: [survival, industry, politics]
+    inputs:
+      - item: item.material.woven_cloth
+        amount: 0.5
+        consumed: true
+      - item: item.component.fastener_set
+        amount: 0.25
+        consumed: true
+    substitution_policy:
+      allowed: false
+      rules: []
+    facilities: [textile_bench]
+    tools: [sewing_tools, measuring_tools]
+    qualification:
+      minimum_role: tailor
+      skill: tailoring
+      specialty: garment_making
+      missing_effect: quality_cap_reduced
+    effective_time_hours:
+      min: 4.0
+      max: 7.0
+    logistics:
+      input_staging: 开工前确认目标人物尺寸和织物清洁状态，公共交付订单必须另列尺码分布。
+      output_storage: 成品逐件标记尺码与制作者，送入服装区或直接分配给目标人物。
+    outputs:
+      - item: item.clothing.work_clothes
+        min: 1.0
+        max: 1.0
+    byproducts:
+      - type: item
+        item: item.daily.cleaning_rags
+        min: 0.2
+        max: 0.4
+    risks:
+      - id: quality_loss
+        condition: 未量取尺寸或使用品质差异过大的布片赶工拼接。
+        effect: 穿戴适配性和完整度上限下降，不能自动视为已满足人物需求。
+      - id: ingredient_shortage
+        condition: 紧固件组被工坊维修或防护订单预留。
+        effect: 缝制订单暂停或改用临时绑带并降低品质上限。
+
+  - id: recipe.textile.sew_padded_vest
+    name: 软质防护背心缝制
+    description: 将多层织物、植物纤维填充和紧固件缝合为低技术防护背心。
+    status: candidate_only
+    kind: tailoring
+    resource_chains: [security, survival]
+    inputs:
+      - item: item.material.woven_cloth
+        amount: 0.6
+        consumed: true
+      - item: item.material.plant_fiber
+        amount: 0.5
+        consumed: true
+      - item: item.component.fastener_set
+        amount: 0.25
+        consumed: true
+    substitution_policy:
+      allowed: false
+      rules: []
+    facilities: [textile_bench]
+    tools: [sewing_tools, measuring_tools]
+    qualification:
+      minimum_role: tailor
+      skill: tailoring
+      specialty: protective_equipment
+      missing_effect: prohibited
+    effective_time_hours:
+      min: 6.0
+      max: 10.0
+    logistics:
+      input_staging: 织物和填充纤维必须保持干燥，且确认未被医疗或工作服订单预留。
+      output_storage: 背心逐件检查填充均匀度和尺码后送入干燥装备区。
+    outputs:
+      - item: item.armor.padded_vest
+        min: 1.0
+        max: 1.0
+    byproducts:
+      - type: item
+        item: item.daily.cleaning_rags
+        min: 0.1
+        max: 0.3
+    risks:
+      - id: quality_loss
+        condition: 填充受潮、分布不均或缺少防护装备专业经验。
+        effect: 成品不得达到标准防护品质，且穿戴负担增加。
+      - id: ingredient_shortage
+        condition: 通用织物已被绷带或公共服装订单锁定。
+        effect: 防护订单不能开工，安全预测必须显示短缺来源。
+
+  - id: recipe.hygiene.prepare_cleaning_rags
+    name: 清洁布裁制
+    description: 将干净通用织物裁为标准清洁布；允许拆用退役工作服，但会增加分拣时间并降低产量。
+    status: candidate_only
+    kind: tailoring
+    resource_chains: [survival, industry]
+    inputs:
+      - item: item.material.woven_cloth
+        amount: 0.2
+        consumed: true
+    substitution_policy:
+      allowed: true
+      rules:
+        - input: item.material.woven_cloth
+          alternatives:
+            - item: item.clothing.work_clothes
+              ratio: 1.0
+          consequence: time_increased
+          note: 只能使用已经退役且无油污、病原污染的工作服，需拆线和分拣。
+    facilities: [textile_bench]
+    tools: [sewing_tools]
+    qualification:
+      minimum_role: general_worker
+      skill: tailoring
+      specialty: none
+      missing_effect: quality_cap_reduced
+    effective_time_hours:
+      min: 0.5
+      max: 1.5
+    logistics:
+      input_staging: 织物或退役工作服先在清洁区确认污染状态，不从医疗污染回收区直接取料。
+      output_storage: 成品送入清洁布柜，按公共卫生和维修用途分别预留。
+    outputs:
+      - item: item.daily.cleaning_rags
+        min: 1.0
+        max: 1.5
+    byproducts: []
+    risks:
+      - id: contamination
+        condition: 替代工作服来源不明或未完成污染检查。
+        effect: 整批清洁布不能用于生活区和现场维修包。
+      - id: quality_loss
+        condition: 裁切尺寸不一致或织物已经严重磨损。
+        effect: 有效产量区间下降，吸收能力不足的布片退出库存。
+
+  - id: recipe.chemistry.mix_cleaning_solution
+    name: 通用清洁液配制
+    description: 在通风条件下稀释工业酒精和基础碱料，配制只用于普通表面清洁的溶液。
+    status: candidate_only
+    kind: chemical_processing
+    resource_chains: [survival, industry, politics]
+    inputs:
+      - item: item.chemical.industrial_alcohol
+        amount: 0.2
+        consumed: true
+      - item: item.chemical.alkaline_base
+        amount: 0.05
+        consumed: true
+      - item: item.water.clean_water
+        amount: 0.8
+        consumed: true
+    substitution_policy:
+      allowed: false
+      rules: []
+    facilities: [ventilated_chemical_bench]
+    tools: [chemical_measuring_tools]
+    qualification:
+      minimum_role: sanitation_worker
+      skill: chemistry
+      specialty: formulation
+      missing_effect: failure_risk_increased
+    effective_time_hours:
+      min: 1.0
+      max: 2.0
+    logistics:
+      input_staging: 从危险品柜领取酒精和碱料，从食品级水区领取已标记的工艺用水。
+      output_storage: 成品使用与医疗消毒剂不同的瓶型和标签，送入日用品化学柜。
+    outputs:
+      - item: item.daily.cleaning_solution
+        min: 0.9
+        max: 1.0
+    byproducts:
+      - type: burden
+        burden: wastewater
+        min: 0.1
+        max: 0.2
+    risks:
+      - id: chemical_exposure
+        condition: 缺少通风、计量工具或基础化学资格。
+        effect: 工艺风险扩大并可能产生不可用批次与人员刺激伤害。
+      - id: quality_loss
+        condition: 配比偏差或使用污染水源。
+        effect: 成品清洁能力下降且不能按标准批次入库。
+
+  - id: recipe.chemistry.prepare_basic_antiseptic
+    name: 基础消毒剂配制
+    description: 以工业酒精、洁净水和矿物盐配制受控浓度的外用消毒剂，并完成批次标记。
+    status: candidate_only
+    kind: medical_processing
+    resource_chains: [survival, security]
+    inputs:
+      - item: item.chemical.industrial_alcohol
+        amount: 0.5
+        consumed: true
+      - item: item.water.clean_water
+        amount: 0.45
+        consumed: true
+      - item: item.chemical.mineral_salt
+        amount: 0.02
+        consumed: true
+    substitution_policy:
+      allowed: false
+      rules: []
+    facilities: [clean_workbench]
+    tools: [sterilization_tools, chemical_measuring_tools]
+    qualification:
+      minimum_role: medic
+      skill: medicine
+      specialty: sterilization
+      missing_effect: prohibited
+    effective_time_hours:
+      min: 1.5
+      max: 2.5
+    logistics:
+      input_staging: 所有容器、酒精浓度和水源批次在清洁区完成核对后才能开工。
+      output_storage: 成品密封、标记浓度与制作者后送入上锁医疗柜。
+    outputs:
+      - item: item.medical.basic_antiseptic
+        min: 0.9
+        max: 1.0
+    byproducts:
+      - type: burden
+        burden: wastewater
+        min: 0.05
+        max: 0.15
+    risks:
+      - id: contamination
+        condition: 容器、工作台或水源未满足清洁要求。
+        effect: 整批不能进入医疗库存，只能降级为普通清洁用途或处理负担。
+      - id: fire
+        condition: 配制区存在明火或酒精敞口存放。
+        effect: 工艺被禁止并触发明确的消防风险警告。
+
+  - id: recipe.chemistry.make_soap
+    name: 基础肥皂制作
+    description: 让植物油与碱料在通风化学台完成皂化、成形和固化，产出耐储的日常清洁用品。
+    status: candidate_only
+    kind: chemical_processing
+    resource_chains: [survival, politics]
+    inputs:
+      - item: item.chemical.plant_oil
+        amount: 1.0
+        consumed: true
+      - item: item.chemical.alkaline_base
+        amount: 0.2
+        consumed: true
+      - item: item.water.clean_water
+        amount: 0.3
+        consumed: true
+    substitution_policy:
+      allowed: false
+      rules: []
+    facilities: [ventilated_chemical_bench]
+    tools: [chemical_measuring_tools]
+    qualification:
+      minimum_role: sanitation_worker
+      skill: chemistry
+      specialty: formulation
+      missing_effect: failure_risk_increased
+    effective_time_hours:
+      min: 3.0
+      max: 5.0
+    logistics:
+      input_staging: 油料、碱料和工艺用水在危险品侧集结，避免经过食品加工台。
+      output_storage: 皂块完成固化后转入干燥日用品区，未固化批次留在通风区。
+    outputs:
+      - item: item.daily.soap_bar
+        min: 5.0
+        max: 6.0
+    byproducts:
+      - type: burden
+        burden: chemical_residue
+        min: 0.2
+        max: 0.5
+    risks:
+      - id: chemical_exposure
+        condition: 碱料计量错误或人员缺少基础防护。
+        effect: 工伤风险和不可用化学残留增加。
+      - id: quality_loss
+        condition: 油料酸败或固化时间不足。
+        effect: 产量区间下降，成品不能进入人物卫生配给。
+
+  - id: recipe.medical.sterilize_bandage
+    name: 无菌绷带制作
+    description: 在清洁工作台裁切通用织物、使用基础消毒剂处理并密封为医疗耗材。
+    status: candidate_only
+    kind: medical_processing
+    resource_chains: [survival, security]
+    inputs:
+      - item: item.material.woven_cloth
+        amount: 0.15
+        consumed: true
+      - item: item.medical.basic_antiseptic
+        amount: 0.2
+        consumed: true
+    substitution_policy:
+      allowed: false
+      rules: []
+    facilities: [clean_workbench]
+    tools: [sterilization_tools, sewing_tools]
+    qualification:
+      minimum_role: medic
+      skill: medicine
+      specialty: sterilization
+      missing_effect: prohibited
+    effective_time_hours:
+      min: 2.0
+      max: 3.5
+    logistics:
+      input_staging: 只从清洁纺织区领取无污染布卷，从医疗柜领取批次有效的消毒剂。
+      output_storage: 完成密封检查后送入清洁医疗柜，战备包与日常治疗库存分别预留。
+    outputs:
+      - item: item.medical.sterile_bandage
+        min: 4.0
+        max: 5.0
+    byproducts:
+      - type: burden
+        burden: wastewater
+        min: 0.1
+        max: 0.2
+    risks:
+      - id: contamination
+        condition: 布卷、工作台或包装未通过清洁检查。
+        effect: 成品降级为普通清洁布，不能进入医疗库存。
+      - id: ingredient_shortage
+        condition: 消毒剂已被伤员治疗或战备承诺锁定。
+        effect: 绷带工艺暂停并在医疗预测中显示承诺冲突。
+
+  - id: recipe.electrical.assemble_wired_alarm_unit
+    name: 有线预警单元装配
+    description: 用回收铜线、离线电子组件、标记线束和紧固件组装并测试单件本地预警设备。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [security, industry, politics]
+    inputs:
+      - item: item.material.copper_wire
+        amount: 0.5
+        consumed: true
+      - item: item.component.recovered_electronics
+        amount: 1.0
+        consumed: true
+      - item: item.component.cable_harness
+        amount: 1.0
+        consumed: true
+      - item: item.component.fastener_set
+        amount: 0.5
+        consumed: true
+    substitution_policy:
+      allowed: false
+      rules: []
+    facilities: [electrical_bench]
+    tools: [electrical_testing_tools, measuring_tools]
+    qualification:
+      minimum_role: electrician
+      skill: electronics
+      specialty: wired_security
+      missing_effect: prohibited
+    effective_time_hours:
+      min: 6.0
+      max: 10.0
+    logistics:
+      input_staging: 所有组件先在电气工作台完成离线测试，铜线与线束按目标防区距离领取。
+      output_storage: 成品逐件记录测试状态并送入受控设备柜；部署时设备和线路必须共同运达目标点。
+    outputs:
+      - item: item.electronic.wired_alarm_unit
+        min: 1.0
+        max: 1.0
+    byproducts:
+      - type: burden
+        burden: chemical_residue
+        min: 0.1
+        max: 0.3
+    risks:
+      - id: electrical_fault
+        condition: 回收电子组件未通过离线通断和绝缘测试。
+        effect: 工艺被禁止或成品可靠性上限下降并需要返工。
+      - id: false_alarm
+        condition: 传感器未按目标环境校准或线束标记错误。
+        effect: 安装后误报风险公开增加，消耗额外值守与排障时间。

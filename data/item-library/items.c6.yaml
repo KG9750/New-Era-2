@@ -1,0 +1,802 @@
+schema_version: 0.6.0
+library_status: candidate_only
+authority:
+  contract: docs/item-library/item-library-authoring-contract-v0.6.md
+  design: docs/design-docs/item-and-manufacturing-system-v0.1.md
+  design_sha256: 24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb
+scope_note: C6 新增食品医疗、武器弹药、种源与知识文件候选，不授权战斗、植物、阅读或权利运行时。
+
+items:
+  - id: item.weapon.hunting_bow
+    name: 狩猎弓
+    description: 由木材和纤维制成的低技术远程平台，依赖匹配箭矢、弦体状态和受训人物。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: independent_item
+    tags: [weapon, bow, mechanical]
+    resource_chains: [security, survival]
+    availability: common
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: low}
+    actions: [equip, fire, maintain, reserve, trade, store]
+    unit: piece
+    mass: 1.4
+    volume: 6.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, moisture_protected]
+    base_value: 38
+    acquisition_paths: [{type: manufacture, note: 在弓具台完成木材整形、弦体安装和基础拉力检查。}, {type: trade, note: 从猎手或木工作坊采购。}]
+    consumption_loss_paths: [{type: worn_out, note: 弦体疲劳、弓臂开裂或受潮后失去可靠用途。}, {type: lost, note: 狩猎或撤离时遗失。}, {type: confiscated, note: 无授权公开携带时可能被查扣。}]
+    logistics_note: 弓、箭和持有人分别分配；库存有弓不等于已经形成远程能力。
+    interfaces: {produced_by: [recipe.c6_weapon.make_hunting_bow], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 以可本地制作换取训练、弦体维护、箭矢和天气敏感性。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, moisture, impact, age], failure_consequence: 弓臂或弦体状态不合格时禁止装备，只能保养或专案翻修。}
+    equipment_profile: {role: weapon_platform, ammo_family: bow, use_constraints: 需要匹配箭矢、射术训练、合格弦体和明确狩猎或防务授权。}
+
+  - id: item.weapon.light_crossbow
+    name: 轻型弩
+    description: 使用机械锁止和短弩矢的远程平台，训练门槛较低但装填、维护和零件适配更复杂。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: independent_item
+    tags: [weapon, crossbow, mechanical]
+    resource_chains: [security, industry]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: medium}
+    actions: [equip, fire, maintain, reserve, trade, store]
+    unit: piece
+    mass: 3.2
+    volume: 6.5
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, moisture_protected]
+    base_value: 67
+    acquisition_paths: [{type: manufacture, note: 在弓具台用木材、钢件、机械件和纤维完成装配。}, {type: trade, note: 从具备弩具维护能力的商队购入。}]
+    consumption_loss_paths: [{type: worn_out, note: 弦体、锁止、弩臂或导轨失效后不能发射。}, {type: lost, note: 外勤遗失后退出分配。}, {type: confiscated, note: 受控地区无授权持有可能被查扣。}]
+    logistics_note: 必须与短弩矢、维护工具和合格射手共同预留。
+    interfaces: {produced_by: [recipe.c6_weapon.make_light_crossbow], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 用机械复杂度换取较稳定的瞄准入口，并占用工业零件。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, impact, moisture, corrosion], failure_consequence: 锁止或弦体异常时禁止装备，只能保养或专案翻修。}
+    equipment_profile: {role: weapon_platform, ammo_family: crossbow, use_constraints: 需要匹配弩矢、装填训练、机械状态检查和受控携带。}
+
+  - id: item.weapon.hunting_spear
+    name: 狩猎矛
+    description: 木柄与金属矛头组成的狩猎和近距防卫工具，兼具距离优势与搬运负担。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: independent_item
+    tags: [weapon, melee, spear, mechanical]
+    resource_chains: [security, survival]
+    availability: common
+    legal_profile: controlled
+    exposure_profile: {visibility: high, traceability: none, wealth_signal: low}
+    actions: [equip, maintain, reserve, trade, store]
+    unit: piece
+    mass: 2.3
+    volume: 10.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, moisture_protected]
+    base_value: 29
+    acquisition_paths: [{type: manufacture, note: 在工坊完成矛头整形、木柄装配和固定检查。}, {type: trade, note: 从猎手或守卫装备渠道购入。}]
+    consumption_loss_paths: [{type: worn_out, note: 矛头松脱、柄部裂纹或腐蚀后不能装备。}, {type: lost, note: 狩猎、投掷或撤离时遗失。}, {type: confiscated, note: 在限制区公开携带可能被查扣。}]
+    logistics_note: 长度限制室内携行和运输，必须与持有人及任务环境共同分配。
+    interfaces: {produced_by: [recipe.c6_weapon.make_hunting_spear], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供低技术防卫和狩猎入口，但不在狭窄环境中成为无条件最优。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, impact, moisture, corrosion], failure_consequence: 柄部或矛头失效后不能安全装备。}
+    equipment_profile: {role: weapon_platform, ammo_family: none, use_constraints: 需要近战或狩猎训练、足够携行空间和明确持有人。}
+
+  - id: item.weapon.compact_revolver
+    name: 紧凑型转轮手枪
+    description: 便携但受严格管制的旧式随身枪械，依赖匹配弹药、维护和近距离安全训练。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: independent_item
+    tags: [weapon, firearm, sidearm, traceable]
+    resource_chains: [security, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: regulated_batch, wealth_signal: medium}
+    actions: [equip, fire, maintain, reserve, trade, store]
+    unit: piece
+    mass: 1.1
+    volume: 2.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, ammunition_locked]
+    base_value: 104
+    acquisition_paths: [{type: salvage, note: 从旧执法设施回收并核对序列、枪管和转轮状态。}, {type: trade, note: 通过受控军械渠道登记取得。}]
+    consumption_loss_paths: [{type: worn_out, note: 积垢、腐蚀或机械磨损后退出战备。}, {type: confiscated, note: 无登记携带或交易时被查扣。}, {type: lost, note: 遗失会同时产生安全和来源风险。}]
+    logistics_note: 枪械、弹药和持有人分开上锁记录，便携性提高丢失与滥用风险。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 以低携行负担换取严格合法性、弹药和内部安全成本。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, fouling, moisture, corrosion], failure_consequence: 机械状态不合格时封存，不能装备或发射。}
+    equipment_profile: {role: weapon_platform, ammo_family: revolver, use_constraints: 需要匹配转轮枪弹、近距安全训练、登记和明确岗位授权。}
+
+  - id: item.weapon.patrol_carbine
+    name: 巡逻卡宾枪
+    description: 适合移动警戒的受控长枪平台，便携性高于步枪但仍依赖专用弹药、维护和训练。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: independent_item
+    tags: [weapon, firearm, carbine, traceable]
+    resource_chains: [security, politics, industry]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: high, traceability: regulated_batch, wealth_signal: medium}
+    actions: [equip, fire, maintain, reserve, trade, store]
+    unit: piece
+    mass: 3.1
+    volume: 7.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, ammunition_locked]
+    base_value: 142
+    acquisition_paths: [{type: salvage, note: 从旧安防或军用设施回收并核验来源与闭锁状态。}, {type: mission, note: 作为受审计防务援助取得。}]
+    consumption_loss_paths: [{type: worn_out, note: 发射磨损、积垢和腐蚀降低可靠性。}, {type: confiscated, note: 未授权部署或转让时被查扣。}, {type: lost, note: 巡逻中遗失造成高安全风险。}]
+    logistics_note: 与匹配弹药、持有人和巡逻路线共同锁定，不按枪械总数计算战备。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供移动防务选择，同时扩大弹药、政治暴露和维护压力。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, fouling, impact, corrosion], failure_consequence: 闭锁或供弹状态异常时封存。}
+    equipment_profile: {role: weapon_platform, ammo_family: carbine, use_constraints: 需要匹配卡宾枪弹、受训人物、登记和巡逻授权。}
+
+  - id: item.weapon.flare_launcher
+    name: 信号弹发射器
+    description: 用于远距离求援和区域标记的受控发射平台，不等于常规攻击武器。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: independent_item
+    tags: [weapon, launcher, signal, traceable]
+    resource_chains: [security, survival, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: regulated_batch, wealth_signal: medium}
+    actions: [equip, fire, maintain, reserve, trade, store]
+    unit: piece
+    mass: 1.4
+    volume: 3.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, ammunition_locked]
+    base_value: 76
+    acquisition_paths: [{type: salvage, note: 从救援站或船只回收并检查膛室和击发机构。}, {type: trade, note: 通过受控救援装备渠道购入。}]
+    consumption_loss_paths: [{type: worn_out, note: 击发、闭锁或腐蚀问题使设备退出可用库存。}, {type: confiscated, note: 无授权持有或使用可能被查扣。}, {type: lost, note: 外勤遗失后退出分配。}]
+    logistics_note: 与信号弹批和明确的信号规则共同预留，发射会暴露位置并有火灾风险。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把远距求援与位置暴露、受控弹药和火灾风险绑定。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, fouling, moisture, corrosion], failure_consequence: 击发或闭锁状态异常时禁止使用。}
+    equipment_profile: {role: weapon_platform, ammo_family: flare, use_constraints: 仅用于受控信号与救援，需要匹配信号弹和防火规则。}
+
+  - id: item.weapon.breaching_sledge
+    name: 破障大锤
+    description: 可用于拆障、救援和近距自卫的重型工具武器，携行与疲劳成本显著。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: independent_item
+    tags: [weapon, melee, breaching, hand_tool]
+    resource_chains: [security, industry, survival]
+    availability: common
+    legal_profile: controlled
+    exposure_profile: {visibility: high, traceability: none, wealth_signal: low}
+    actions: [equip, maintain, reserve, trade, store]
+    unit: piece
+    mass: 6.5
+    volume: 8.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked]
+    base_value: 42
+    acquisition_paths: [{type: manufacture, note: 由钢件和木柄在工坊完成重型装配。}, {type: salvage, note: 从施工或消防设施回收。}]
+    consumption_loss_paths: [{type: worn_out, note: 锤头松脱、柄部裂纹或腐蚀后不能使用。}, {type: lost, note: 救援或撤离时遗失。}, {type: confiscated, note: 在敏感区域携带可能被认定为破障威胁。}]
+    logistics_note: 重量占用携行和人物体力，不能同时承担高速撤离与长时间警戒。
+    interfaces: {produced_by: [recipe.c6_weapon.make_breaching_sledge], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把救援破障和近战用途结合，同时用重量与政治风险限制兼用。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, impact, moisture, corrosion], failure_consequence: 柄部或锤头不可靠时禁止分配。}
+    equipment_profile: {role: weapon_platform, ammo_family: none, use_constraints: 需要体力、破障训练、足够携行余量和明确任务授权。}
+
+  - id: item.weapon.weighted_staff
+    name: 配重长棍
+    description: 木制长棍加设固定配重的非刃近战平台，适合警戒和控制但不冻结战斗效果。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: independent_item
+    tags: [weapon, melee, staff, mechanical]
+    resource_chains: [security, politics]
+    availability: common
+    legal_profile: controlled
+    exposure_profile: {visibility: high, traceability: none, wealth_signal: low}
+    actions: [equip, maintain, reserve, trade, store]
+    unit: piece
+    mass: 2.0
+    volume: 8.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, moisture_protected]
+    base_value: 22
+    acquisition_paths: [{type: manufacture, note: 将整形木材和紧固配重装成标准长棍。}, {type: trade, note: 从民防或训练渠道购入。}]
+    consumption_loss_paths: [{type: worn_out, note: 木体裂纹或配重松脱后不能装备。}, {type: lost, note: 警戒或训练中遗失。}, {type: confiscated, note: 在限制区可能被查扣。}]
+    logistics_note: 长度影响室内使用和运输，必须与岗位空间共同判断。
+    interfaces: {produced_by: [recipe.c6_weapon.make_weighted_staff], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供较低致命性的警戒候选，但不绕过训练、空间和持有规则。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, impact, moisture, age], failure_consequence: 结构或配重异常时停止装备。}
+    equipment_profile: {role: weapon_platform, ammo_family: none, use_constraints: 需要控制训练、明确警戒岗位和足够操作空间。}
+
+  - id: item.weapon.weighted_capture_net
+    name: 配重捕捉网
+    description: 由纤维网体和边缘配重组成的限制与捕捉工具，使用困难且容易损坏。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: independent_item
+    tags: [weapon, net, fiber, mechanical]
+    resource_chains: [security, survival]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [equip, maintain, reserve, trade, store]
+    unit: set
+    mass: 3.0
+    volume: 5.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, moisture_protected]
+    base_value: 31
+    acquisition_paths: [{type: manufacture, note: 在纺织与工坊条件下完成网体编结和配重固定。}, {type: trade, note: 从猎捕或民防渠道购入。}]
+    consumption_loss_paths: [{type: worn_out, note: 网结断裂、缠绕或配重脱落后不能可靠使用。}, {type: lost, note: 投掷或捕捉失败时遗失。}, {type: confiscated, note: 在限制区可能被查扣。}]
+    logistics_note: 使用后需要展开检查和清洁，不能在两个捕捉任务间同时分配。
+    interfaces: {produced_by: [recipe.c6_weapon.make_capture_net], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供非枪械限制工具，但用训练、距离、网体维护和失败风险形成代价。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, impact, moisture, handling], failure_consequence: 网体或配重损坏后不能作为捕捉装备。}
+    equipment_profile: {role: weapon_platform, ammo_family: none, use_constraints: 需要投网训练、合适距离、展开空间和明确捕捉目标。}
+
+  - id: item.ammunition.hunting_arrow_bundle
+    name: 狩猎箭束
+    description: 与狩猎弓匹配的标准箭束，箭杆、箭头和尾羽状态共同决定是否可用。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: bulk_material
+    tags: [ammunition, arrow, bow]
+    resource_chains: [security, survival]
+    availability: common
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: low}
+    actions: [fire, reserve, trade, store]
+    unit: bundle
+    mass: 1.0
+    volume: 2.5
+    stack_rule: {stackable: true, merge_keys: [batch_grade, legal_status, ownership]}
+    storage_rule: [dry, locked, moisture_protected]
+    base_value: 14
+    acquisition_paths: [{type: manufacture, note: 由木杆、金属箭头和纤维尾羽配制成束。}, {type: trade, note: 按长度和弓具适配采购。}]
+    consumption_loss_paths: [{type: consumed_directly, note: 发射、损坏或无法回收后从箭束扣除。}, {type: lost, note: 野外使用后未找回。}, {type: confiscated, note: 无授权运输时可能被查扣。}]
+    logistics_note: 按长度、直度和用途分束，训练、狩猎和战备预留不得重复。
+    interfaces: {produced_by: [recipe.c6_ammo.make_hunting_arrows], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让低技术远程能力仍受持续耗材、回收时间和运输体积限制。
+    equipment_profile: {role: ammunition, ammo_family: bow, use_constraints: 只能供匹配弓具使用，训练与实地箭束分开承诺。}
+
+  - id: item.ammunition.crossbow_bolt_bundle
+    name: 轻弩矢束
+    description: 与轻型弩匹配的短矢批次，刚度和尺寸不允许用普通箭束替代。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: bulk_material
+    tags: [ammunition, bolt, crossbow]
+    resource_chains: [security, industry]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: low}
+    actions: [fire, reserve, trade, store]
+    unit: bundle
+    mass: 1.2
+    volume: 2.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, legal_status, ownership]}
+    storage_rule: [dry, locked, moisture_protected]
+    base_value: 18
+    acquisition_paths: [{type: manufacture, note: 在弓具台按弩槽尺寸制作短矢。}, {type: trade, note: 按弩具族采购。}]
+    consumption_loss_paths: [{type: consumed_directly, note: 发射、折损或无法回收后消耗。}, {type: lost, note: 野外射击后遗失。}, {type: confiscated, note: 受控运输违规时被查扣。}]
+    logistics_note: 按长度和弩具适配分束，不得与狩猎箭混装。
+    interfaces: {produced_by: [recipe.c6_ammo.make_crossbow_bolts], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让弩具的机械便利换来更严格的弹药适配和制造要求。
+    equipment_profile: {role: ammunition, ammo_family: crossbow, use_constraints: 只能供匹配轻弩使用，必须检查尺寸、直度和箭头状态。}
+
+  - id: item.ammunition.practice_arrow_bundle
+    name: 训练箭束
+    description: 使用钝头和醒目标记的弓术训练箭，仍有危险且不能计入狩猎或战备箭束。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: bulk_material
+    tags: [ammunition, arrow, bow, training]
+    resource_chains: [security, politics]
+    availability: common
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: low}
+    actions: [fire, reserve, trade, store]
+    unit: bundle
+    mass: 0.9
+    volume: 2.5
+    stack_rule: {stackable: true, merge_keys: [batch_grade, legal_status, ownership]}
+    storage_rule: [dry, locked, moisture_protected]
+    base_value: 9
+    acquisition_paths: [{type: manufacture, note: 用木杆、纤维和醒目织物制作钝头训练箭。}, {type: trade, note: 从训练渠道购入。}]
+    consumption_loss_paths: [{type: consumed_directly, note: 训练中折损或磨损后消耗。}, {type: lost, note: 靶场清点未找回。}, {type: destroyed, note: 裂纹或钝头脱落批次受控报废。}]
+    logistics_note: 使用不同标记和箭袋，与实用箭束分柜分账。
+    interfaces: {produced_by: [recipe.c6_ammo.make_practice_arrows], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 允许以较低资源成本训练基础操作，同时不能伪装成实际远征储备。
+    equipment_profile: {role: ammunition, ammo_family: bow, use_constraints: 仅用于受控靶场训练，不得计入狩猎或战备承诺。}
+
+  - id: item.ammunition.revolver_cartridge_batch
+    name: 转轮手枪弹批
+    description: 与紧凑型转轮手枪匹配的受控弹药批次，不冻结口径性能或单发伤害。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: bulk_material
+    tags: [ammunition, revolver_caliber, traceable]
+    resource_chains: [security, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: regulated_batch, wealth_signal: medium}
+    actions: [fire, reserve, trade, store]
+    unit: box
+    mass: 0.8
+    volume: 0.6
+    stack_rule: {stackable: true, merge_keys: [caliber, batch_grade, legal_status, ownership]}
+    storage_rule: [dry, locked, ammunition_locked, away_from_food]
+    base_value: 29
+    acquisition_paths: [{type: trade, note: 通过受控军械渠道按口径和批号采购。}, {type: mission, note: 作为审计防务物资取得。}]
+    consumption_loss_paths: [{type: consumed_directly, note: 训练或防务发射后消耗。}, {type: confiscated, note: 无来源或超授权储存时被查扣。}, {type: destroyed, note: 受潮、变形或来源不明批次受控销毁。}]
+    logistics_note: 与枪械分柜并按批号、口径和用途承诺分区。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把便携枪械能力绑定到小批次、可追踪且受严格审计的弹药。
+    equipment_profile: {role: ammunition, ammo_family: revolver, use_constraints: 只能供匹配转轮手枪使用，训练、防守和任务预留不得重复。}
+
+  - id: item.ammunition.carbine_cartridge_batch
+    name: 卡宾枪弹批
+    description: 与巡逻卡宾枪匹配的受控弹药批次，运输和审计成本高于普通物资。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: bulk_material
+    tags: [ammunition, carbine_caliber, traceable]
+    resource_chains: [security, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: regulated_batch, wealth_signal: medium}
+    actions: [fire, reserve, trade, store]
+    unit: box
+    mass: 1.2
+    volume: 0.9
+    stack_rule: {stackable: true, merge_keys: [caliber, batch_grade, legal_status, ownership]}
+    storage_rule: [dry, locked, ammunition_locked, away_from_food]
+    base_value: 37
+    acquisition_paths: [{type: trade, note: 通过受控军械渠道按口径和批号采购。}, {type: allocation, note: 由防务机构按任务配发。}]
+    consumption_loss_paths: [{type: consumed_directly, note: 训练或防务发射后消耗。}, {type: confiscated, note: 无授权持有或转让时被查扣。}, {type: destroyed, note: 受潮、变形或来源异常批次销毁。}]
+    logistics_note: 与其他步枪弹族分开，按巡逻、训练和防区承诺锁柜。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 为移动防务增加独立且不能被其他弹药替代的物流瓶颈。
+    equipment_profile: {role: ammunition, ammo_family: carbine, use_constraints: 只能供匹配卡宾枪使用，需要批号、口径和合法来源一致。}
+
+  - id: item.ammunition.flare_round_batch
+    name: 发射器信号弹批
+    description: 与信号弹发射器匹配的受控求援和标记弹批，会暴露位置并产生火灾风险。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: bulk_material
+    tags: [ammunition, signal, traceable]
+    resource_chains: [security, survival, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: regulated_batch, wealth_signal: medium}
+    actions: [fire, reserve, trade, store]
+    unit: box
+    mass: 0.9
+    volume: 1.0
+    stack_rule: {stackable: true, merge_keys: [caliber, batch_grade, charge_state, legal_status]}
+    storage_rule: [dry, locked, ammunition_locked, away_from_food]
+    base_value: 32
+    acquisition_paths: [{type: trade, note: 通过受控救援装备渠道采购。}, {type: mission, note: 作为搜救或撤离援助取得。}]
+    consumption_loss_paths: [{type: consumed_directly, note: 受控信号发射后消耗。}, {type: confiscated, note: 无授权持有或使用时被查扣。}, {type: destroyed, note: 受潮、破损或过期批次受控销毁。}]
+    logistics_note: 按颜色、批号和信号规则分柜，不能与手持信号弹或实弹混同。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把远距求援绑定到稀缺弹药、暴露和防火决策。
+    equipment_profile: {role: ammunition, ammo_family: flare, use_constraints: 只能供匹配发射器使用，需明确颜色含义、射界和防火条件。}
+
+  - id: item.ammunition.smoke_marker_canister_batch
+    name: 手持烟雾标记罐批
+    description: 用于撤离、区域识别和求援的手持受控标记耗材，不定义战斗遮蔽数值。
+    status: candidate_only
+    category: weapon_and_ammunition
+    form: bulk_material
+    tags: [ammunition, signal, marker, traceable]
+    resource_chains: [security, survival, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: regulated_batch, wealth_signal: medium}
+    actions: [activate, reserve, trade, store]
+    unit: box
+    mass: 1.5
+    volume: 1.6
+    stack_rule: {stackable: true, merge_keys: [batch_grade, charge_state, legal_status, ownership]}
+    storage_rule: [dry, locked, hazardous, ventilated, away_from_food]
+    base_value: 35
+    acquisition_paths: [{type: trade, note: 通过受控救援或军械渠道按颜色和批号取得。}, {type: allocation, note: 由救援机构按任务配发。}]
+    consumption_loss_paths: [{type: consumed_directly, note: 激活标记后一次性消耗。}, {type: confiscated, note: 无授权携带或使用时被查扣。}, {type: destroyed, note: 受潮、破损或来源异常时受控销毁。}]
+    logistics_note: 按颜色和用途分区，远离食品与热源；启动会暴露位置。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供非联网位置标记入口，同时用暴露、火灾和合法性形成代价。
+    equipment_profile: {role: signal_supply, ammo_family: none, use_constraints: 仅用于受控求援、撤离和区域标记，需要颜色规则、防火和投放授权。}
+
+  - id: item.food.fresh_fruit
+    name: 新鲜水果
+    description: 高度易腐的鲜果批次，可直接食用或脱水保存，不冻结营养与品种。
+    status: candidate_only
+    category: food_and_drink
+    form: bulk_material
+    tags: [edible, food_grade, fresh_fruit, perishable]
+    resource_chains: [survival, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [consume, process, reserve, trade, deliver, store]
+    unit: kilogram
+    mass: 1.0
+    volume: 1.7
+    stack_rule: {stackable: true, merge_keys: [freshness, contamination_state, ownership]}
+    storage_rule: [food_safe, cool, ventilated]
+    base_value: 5
+    acquisition_paths: [{type: agriculture, note: 从现有果树或短期采收来源取得并按成熟度分批。}, {type: trade, note: 从短途农贸渠道采购。}]
+    consumption_loss_paths: [{type: consumed_directly, note: 作为鲜食消耗。}, {type: consumed_by_recipe, note: 用于制作果干。}, {type: spoiled, note: 碰伤、过熟或污染后报废。}]
+    logistics_note: 按成熟度优先处理，远距离搬运会缩短脱水和食用窗口。
+    interfaces: {produced_by: [], used_by: [recipe.c6_food.dry_fruit], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 以高腐坏压力换取即时饮食与加工选择。
+
+  - id: item.food.dried_fruit
+    name: 脱水果干
+    description: 将鲜果切分脱水形成的便携食品，减少腐坏但消耗燃料和加工时间。
+    status: candidate_only
+    category: food_and_drink
+    form: bulk_material
+    tags: [edible, food_grade, dried_fruit, preserved, travel_food]
+    resource_chains: [survival, security, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: low}
+    actions: [consume, reserve, trade, deliver, store]
+    unit: packet
+    mass: 0.3
+    volume: 0.5
+    stack_rule: {stackable: true, merge_keys: [batch_grade, freshness, contamination_state, ownership]}
+    storage_rule: [dry, food_safe, moisture_protected]
+    base_value: 9
+    acquisition_paths: [{type: manufacture, note: 在食品保存区完成切分、脱水和封装。}, {type: trade, note: 采购加工日期和封口可查的批次。}]
+    consumption_loss_paths: [{type: consumed_directly, note: 作为日常或外出食品消耗。}, {type: delivered, note: 作为救济或行粮交付。}, {type: spoiled, note: 受潮、霉变或包装失效后报废。}]
+    logistics_note: 防潮先进先出，开包后缩短使用窗口。
+    interfaces: {produced_by: [recipe.c6_food.dry_fruit], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把易腐鲜果转为便携储备，同时承担当期燃料和加工机会成本。
+
+  - id: item.food.bean_root_stew
+    name: 豆根炖食
+    description: 干豆、根菜和洁净水制成的公共熟食，必须及时分餐或冷却保存。
+    status: candidate_only
+    category: food_and_drink
+    form: bulk_material
+    tags: [edible, food_grade, prepared_meal, perishable]
+    resource_chains: [survival, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: none, wealth_signal: low}
+    actions: [consume, deliver, store]
+    unit: liter
+    mass: 1.0
+    volume: 1.0
+    stack_rule: {stackable: true, merge_keys: [freshness, contamination_state, ownership]}
+    storage_rule: [food_safe, refrigerated, contamination_controlled]
+    base_value: 6
+    acquisition_paths: [{type: manufacture, note: 在基础厨房完成浸泡、炖煮和分装。}]
+    consumption_loss_paths: [{type: consumed_directly, note: 作为公共餐食消耗。}, {type: delivered, note: 作为即时救济餐食交付。}, {type: spoiled, note: 温控、分餐或污染失控后报废。}]
+    logistics_note: 按烹制时段分批并快速分餐，不能作为常温长期储备。
+    interfaces: {produced_by: [recipe.c6_food.cook_bean_root_stew], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 将耐储原料转为即时餐食，并暴露厨房、燃料、温控和分配能力。
+
+  - id: item.food.travel_biscuit
+    name: 硬质行粮饼
+    description: 以面粉、糖、水和燃料制作的耐携行干饼，保质稳定但口感和即时水需求较高。
+    status: candidate_only
+    category: food_and_drink
+    form: bulk_material
+    tags: [edible, food_grade, travel_food, preserved]
+    resource_chains: [survival, security, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: low}
+    actions: [consume, reserve, trade, deliver, store]
+    unit: packet
+    mass: 0.5
+    volume: 0.6
+    stack_rule: {stackable: true, merge_keys: [batch_grade, freshness, contamination_state, ownership]}
+    storage_rule: [dry, food_safe, moisture_protected]
+    base_value: 8
+    acquisition_paths: [{type: manufacture, note: 在厨房低含水烘制并完成防潮封装。}, {type: trade, note: 采购生产日期和封口明确的行粮。}]
+    consumption_loss_paths: [{type: consumed_directly, note: 作为远行和紧急储备消耗。}, {type: delivered, note: 作为行动补给交付。}, {type: spoiled, note: 受潮、虫害或包装破损后报废。}]
+    logistics_note: 按生产日期防潮堆放，与短期扁饼分开承诺。
+    interfaces: {produced_by: [recipe.c6_food.bake_travel_biscuit], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 用厨房与燃料把面粉转为远征资源，同时占用糖和洁净水。
+
+  - id: item.medical.wound_irrigation_saline
+    name: 伤口冲洗盐水
+    description: 由洁净水和食品级盐按医疗清洁要求配制的短期冲洗液，不等于消毒剂或静脉制品。
+    status: candidate_only
+    category: medicine_and_medical_supply
+    form: bulk_material
+    tags: [medical, saline, hygiene, traceable]
+    resource_chains: [survival, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: low}
+    actions: [treat, clean, reserve, deliver, store]
+    unit: bottle
+    mass: 1.1
+    volume: 1.0
+    stack_rule: {stackable: true, merge_keys: [concentration, contamination_state, legal_status, ownership]}
+    storage_rule: [locked, contamination_controlled, cool]
+    base_value: 4
+    acquisition_paths: [{type: manufacture, note: 由医护人员在清洁区按批次配制和封装。}]
+    consumption_loss_paths: [{type: consumed_directly, note: 在适用伤口冲洗中一次性消耗。}, {type: contaminated, note: 封口、浓度或清洁状态异常后报废。}, {type: delivered, note: 作为救护物资交付。}]
+    logistics_note: 按配制时间和浓度标记，不能当作饮水、消毒剂或静脉液。
+    interfaces: {produced_by: [recipe.c6_medical.prepare_irrigation_saline], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让伤口清洁占用洁净水、盐、容器和医疗时间。
+
+  - id: item.medical.field_wound_care_pack
+    name: 野外伤口护理包
+    description: 将无菌绷带、纱布和基础消毒剂按一次野外伤口处置需求封装，不替代诊断或后续治疗。
+    status: candidate_only
+    category: medicine_and_medical_supply
+    form: bulk_material
+    tags: [medical, wound_care, gauze, antiseptic, traceable]
+    resource_chains: [survival, security]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: medium}
+    actions: [treat, reserve, trade, deliver, store]
+    unit: packet
+    mass: 0.1
+    volume: 0.2
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, legal_status, ownership]}
+    storage_rule: [dry, locked, contamination_controlled]
+    base_value: 22
+    acquisition_paths: [{type: manufacture, note: 在医疗清洁区将既有无菌耗材和消毒剂按任务封装。}, {type: trade, note: 采购内容和无菌批次可追溯的护理包。}]
+    consumption_loss_paths: [{type: consumed_directly, note: 在合格人员判断下执行一次基础伤口处置。}, {type: contaminated, note: 封装破损后退出无菌用途。}, {type: confiscated, note: 来源或资质异常时被查扣。}]
+    logistics_note: 封装后从普通医疗库存扣除，存在护理包不等于伤口已经得到完整治疗。
+    interfaces: {produced_by: [recipe.c6_medical.pack_field_wound_care], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 以提前占用多种无菌耗材换取野外取用速度，并保留专业判断和后续治疗条件。
+
+  - id: item.medical.burn_dressing_pack
+    name: 烧伤敷料包
+    description: 用于烧伤初步覆盖和污染控制的受控敷料，必须匹配伤情并持续观察。
+    status: candidate_only
+    category: medicine_and_medical_supply
+    form: bulk_material
+    tags: [medical, burn_care, gauze, traceable]
+    resource_chains: [survival, security]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: medium}
+    actions: [treat, reserve, trade, deliver, store]
+    unit: packet
+    mass: 0.3
+    volume: 0.6
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, legal_status, ownership]}
+    storage_rule: [dry, locked, contamination_controlled, cool]
+    base_value: 26
+    acquisition_paths: [{type: manufacture, note: 在医疗清洁区将无菌纱布、织物和基础消毒剂封装。}, {type: trade, note: 采购批次可追溯的烧伤敷料。}]
+    consumption_loss_paths: [{type: consumed_directly, note: 在烧伤覆盖与换药中一次性消耗。}, {type: contaminated, note: 封装破损或温控异常后报废。}, {type: delivered, note: 作为急救物资交付。}]
+    logistics_note: 与普通纱布分柜并按伤情用途预留，不能替代完整烧伤治疗。
+    interfaces: {produced_by: [recipe.c6_medical.pack_burn_dressing], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把特殊创伤照护与通用无菌材料和医疗时间竞争起来。
+
+  - id: item.medical.fever_relief_course
+    name: 发热缓解疗程包
+    description: 有批次和剂量标记的对症药物，只缓解匹配症状，不处理未知病因。
+    status: candidate_only
+    category: medicine_and_medical_supply
+    form: bulk_material
+    tags: [medical, fever, analgesic, traceable]
+    resource_chains: [survival, security]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: medium}
+    actions: [treat, reserve, trade, deliver, store]
+    unit: packet
+    mass: 0.1
+    volume: 0.2
+    stack_rule: {stackable: true, merge_keys: [concentration, batch_grade, legal_status, ownership]}
+    storage_rule: [dry, cool, locked, light_protected]
+    base_value: 27
+    acquisition_paths: [{type: trade, note: 通过受控药品渠道按批次采购。}, {type: mission, note: 作为公共卫生援助取得。}]
+    consumption_loss_paths: [{type: consumed_directly, note: 由合格人员根据症状和禁忌使用。}, {type: invalidated, note: 过期、标记不清或疗程包不完整后失效。}, {type: confiscated, note: 无记录持有或转卖时被查扣。}]
+    logistics_note: 按完整疗程和有效状态上锁，不能以缓解症状替代诊断。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供有限对症照护，同时保留病因不明和药品分配风险。
+
+  - id: item.seed.orchard_cutting_bundle
+    name: 果树插条束
+    description: 可用于未来果树栽培的活性插条批次，离开适当湿度和温度后会迅速失效。
+    status: candidate_only
+    category: plant_and_seed
+    form: bulk_material
+    tags: [seed_stock, orchard, growing, perishable]
+    resource_chains: [survival, politics]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: medium}
+    actions: [sow, reserve, trade, deliver, store]
+    unit: bundle
+    mass: 1.0
+    volume: 2.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, freshness, contamination_state, ownership]}
+    storage_rule: [cool, moisture_protected, light_protected]
+    base_value: 17
+    acquisition_paths: [{type: agriculture, note: 从健康母株修剪并按来源分批。}, {type: trade, note: 从果园聚落短途采购。}]
+    consumption_loss_paths: [{type: sown, note: 进入未来移栽任务后退出库存。}, {type: spoiled, note: 脱水、霉变或活性丧失后报废。}, {type: delivered, note: 作为农业援助交付。}]
+    logistics_note: 保持短期活性并按母株来源分批；C6 不生成果树实体。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供长期食物与地方认同候选，但以高损耗和长兑现周期限制囤积。
+
+  - id: item.seed.edible_mushroom_spawn
+    name: 食用菌种包
+    description: 用于未来受控菌类栽培的菌种载体，对污染、温度和基质条件敏感。
+    status: candidate_only
+    category: plant_and_seed
+    form: bulk_material
+    tags: [seed_stock, fungal, growing, food_grade, perishable, traceable]
+    resource_chains: [survival, industry]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: medium}
+    actions: [sow, reserve, trade, store]
+    unit: packet
+    mass: 0.6
+    volume: 0.8
+    stack_rule: {stackable: true, merge_keys: [batch_grade, freshness, contamination_state, legal_status]}
+    storage_rule: [cool, contamination_controlled, light_protected]
+    base_value: 21
+    acquisition_paths: [{type: trade, note: 从具备洁净培养能力的聚落按批次采购。}, {type: mission, note: 作为农业或食品援助取得。}]
+    consumption_loss_paths: [{type: sown, note: 进入未来接种任务后退出库存。}, {type: contaminated, note: 杂菌污染后整批隔离报废。}, {type: spoiled, note: 活性窗口结束后失效。}]
+    logistics_note: 冷凉洁净运输并保持批次，C6 不生成菌床或生长实体。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 以小体积种源换取高洁净要求和栽培依赖，不把菌种包当作即时食品。
+
+  - id: item.book.electrical_safety_handbook
+    name: 离线电气安全手册
+    description: 纸质或离线印刷的电气隔离、测量和事故处置参考，需要阅读与实际训练。
+    status: candidate_only
+    category: book_and_data
+    form: independent_item
+    tags: [readable, knowledge, electrical, safety]
+    resource_chains: [industry, security, politics]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: medium}
+    actions: [read, reserve, trade, deliver, store]
+    unit: copy
+    mass: 0.8
+    volume: 1.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, archive_safe, fireproof]
+    base_value: 32
+    acquisition_paths: [{type: salvage, note: 从旧工校或电气设施档案中回收。}, {type: trade, note: 从技术教育渠道购入。}]
+    consumption_loss_paths: [{type: worn_out, note: 水损、缺页或标注污染降低可读性。}, {type: lost, note: 借阅未归还后退出公共库存。}, {type: destroyed, note: 火灾或严重损坏后销毁。}]
+    logistics_note: 记录语言、版本和借阅人，入库不自动授予电工资格。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 支撑安全训练和事故解释，但需要人物时间、理解与实践验证。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [handling, moisture, light, age], failure_consequence: 缺页或不可读时不能作为安全参考。}
+    knowledge_profile: {domain: electrical_safety, requires_reader: true, effect_note: 只有人物阅读、理解并在合格训练和设备条件下应用时才影响电气决策。}
+
+  - id: item.book.food_preservation_manual
+    name: 食品保存手册
+    description: 记录脱水、发酵、封装和污染识别的离线手册，不自动延长食品保质期。
+    status: candidate_only
+    category: book_and_data
+    form: independent_item
+    tags: [readable, knowledge, preservation]
+    resource_chains: [survival, industry, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: none, wealth_signal: low}
+    actions: [read, reserve, trade, deliver, store]
+    unit: copy
+    mass: 0.7
+    volume: 0.9
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, archive_safe, moisture_protected]
+    base_value: 24
+    acquisition_paths: [{type: salvage, note: 从旧厨房、学校或农场档案中回收。}, {type: trade, note: 从食品加工聚落购入。}]
+    consumption_loss_paths: [{type: worn_out, note: 油污、水损或缺页降低可读性。}, {type: lost, note: 借阅未归还。}, {type: destroyed, note: 严重污染后销毁。}]
+    logistics_note: 与厨房污物分开保存，记录版本和语言；入库不自动解锁工艺。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让食品保存知识依赖阅读、试做和卫生条件，而不是一次拾取解锁。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [handling, moisture, light, age], failure_consequence: 污染、缺页或不可读时失去参考价值。}
+    knowledge_profile: {domain: food_preservation, requires_reader: true, effect_note: 只有读者理解并在合格食品设施、工具和批次条件下实践时才影响工艺。}
+
+  - id: item.document.emergency_medical_supply_ledger
+    name: 紧急医疗物资台账
+    description: 记录医疗批次、领用责任和应急预留的物理账册，纸面存在不等于领用权有效。
+    status: candidate_only
+    category: document_and_credential
+    form: independent_item
+    tags: [credential, ledger, medical, traceable]
+    resource_chains: [survival, security, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: medium}
+    actions: [read, present, authenticate, audit, reserve, store]
+    unit: copy
+    mass: 0.6
+    volume: 0.8
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, archive_safe, fireproof]
+    base_value: 18
+    acquisition_paths: [{type: allocation, note: 由医疗或行政负责人签发并登记。}]
+    consumption_loss_paths: [{type: invalidated, note: 新台账替代、签发方撤销或关键页失效。}, {type: lost, note: 遗失后产生审计和领用争议。}, {type: destroyed, note: 受控销毁后物理证据终止。}]
+    logistics_note: 与实际医疗库存和领用记录核对，C6 不生成权利记录。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让医疗预留和应急领用可审计，同时保留文件、库存和权利三者差异。
+    durability_profile: {tracked: true, repairability: nonrepairable, dismantle_policy: none, wear_sources: [handling, moisture, light, age], failure_consequence: 关键页、印章或连续编号损坏后不能作为有效领用证据。}
+    record_transition: {creates_rights_record: true, authority_scope: 紧急医疗物资领用与审计, revocation_note: 签发机构撤销、替换台账或结束应急状态后，纸面仍可能存在但相应权利失效。}
+
+  - id: item.document.armory_issue_logbook
+    name: 军械领用日志册
+    description: 记录武器、弹药、持有人和归还状态的物理日志，不能替代实际锁柜和点验。
+    status: candidate_only
+    category: document_and_credential
+    form: independent_item
+    tags: [credential, ledger, weapon, traceable]
+    resource_chains: [security, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: medium}
+    actions: [read, present, authenticate, audit, reserve, store]
+    unit: copy
+    mass: 0.7
+    volume: 0.9
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, archive_safe, fireproof]
+    base_value: 20
+    acquisition_paths: [{type: allocation, note: 由军械或行政负责人签发并连续编号。}]
+    consumption_loss_paths: [{type: invalidated, note: 换册、撤销或编号链中断后失效。}, {type: lost, note: 遗失导致武器归属和审计争议。}, {type: destroyed, note: 受控销毁后物理证据终止。}]
+    logistics_note: 与锁柜点验和持有人确认共同使用，C6 不激活军械权利记录。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 将军械分配和归还变成可审计承诺，而不是只看库存总数。
+    durability_profile: {tracked: true, repairability: nonrepairable, dismantle_policy: none, wear_sources: [handling, moisture, light, age], failure_consequence: 关键页、印章或连续编号损坏后不能作为有效军械证据。}
+    record_transition: {creates_rights_record: true, authority_scope: 军械领用、归还与责任审计, revocation_note: 签发机构撤销、换册或结束授权后，旧日志仍是物理证据但不再授予领用权。}
+
+interface_extensions:
+  item.waste.sawdust:
+    produced_by: [recipe.c6_weapon.make_hunting_bow, recipe.c6_weapon.make_light_crossbow, recipe.c6_weapon.make_breaching_sledge, recipe.c6_weapon.make_weighted_staff]
+  item.waste.wood_ash:
+    produced_by: [recipe.c6_food.cook_bean_root_stew, recipe.c6_food.bake_travel_biscuit]
+  item.material.dry_firewood:
+    used_by: [recipe.c6_food.dry_fruit, recipe.c6_food.cook_bean_root_stew, recipe.c6_food.bake_travel_biscuit]
+  item.water.clean_water:
+    used_by: [recipe.c6_food.cook_bean_root_stew, recipe.c6_food.bake_travel_biscuit, recipe.c6_medical.prepare_irrigation_saline]
+  item.chemical.mineral_salt:
+    used_by: [recipe.c6_food.cook_bean_root_stew, recipe.c6_medical.prepare_irrigation_saline]
+  item.food.dried_legume:
+    used_by: [recipe.c6_food.cook_bean_root_stew]
+  item.food.root_vegetable:
+    used_by: [recipe.c6_food.cook_bean_root_stew]
+  item.food.grain_flour:
+    used_by: [recipe.c6_food.bake_travel_biscuit]
+  item.food.unrefined_sugar:
+    used_by: [recipe.c6_food.bake_travel_biscuit]
+  item.material.woven_cloth:
+    used_by: [recipe.c6_medical.pack_burn_dressing, recipe.c6_ammo.make_practice_arrows]
+  item.medical.basic_antiseptic:
+    used_by: [recipe.c6_medical.pack_field_wound_care, recipe.c6_medical.pack_burn_dressing]
+  item.medical.sterile_gauze_pad:
+    used_by: [recipe.c6_medical.pack_field_wound_care, recipe.c6_medical.pack_burn_dressing]
+  item.medical.sterile_bandage:
+    used_by: [recipe.c6_medical.pack_field_wound_care]
+  item.material.reclaimed_lumber:
+    used_by: [recipe.c6_weapon.make_hunting_bow, recipe.c6_weapon.make_light_crossbow, recipe.c6_weapon.make_hunting_spear, recipe.c6_weapon.make_breaching_sledge, recipe.c6_weapon.make_weighted_staff, recipe.c6_ammo.make_hunting_arrows, recipe.c6_ammo.make_crossbow_bolts, recipe.c6_ammo.make_practice_arrows]
+  item.material.plant_fiber:
+    used_by: [recipe.c6_weapon.make_hunting_bow, recipe.c6_weapon.make_light_crossbow, recipe.c6_weapon.make_capture_net, recipe.c6_ammo.make_hunting_arrows, recipe.c6_ammo.make_practice_arrows]
+  item.material.reclaimed_steel_plate:
+    used_by: [recipe.c6_weapon.make_light_crossbow, recipe.c6_weapon.make_hunting_spear, recipe.c6_weapon.make_breaching_sledge]
+  item.component.mechanical_spares:
+    used_by: [recipe.c6_weapon.make_light_crossbow]
+  item.component.fastener_set:
+    used_by: [recipe.c6_weapon.make_hunting_spear, recipe.c6_weapon.make_weighted_staff, recipe.c6_weapon.make_capture_net, recipe.c6_ammo.make_crossbow_bolts]
+  item.waste.metal_offcuts:
+    produced_by: [recipe.c6_weapon.make_light_crossbow, recipe.c6_weapon.make_hunting_spear, recipe.c6_weapon.make_breaching_sledge]
+    used_by: [recipe.c6_ammo.make_hunting_arrows, recipe.c6_ammo.make_crossbow_bolts]

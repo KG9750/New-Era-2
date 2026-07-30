@@ -1,0 +1,1061 @@
+schema_version: 0.7.0
+library_status: candidate_only
+authority:
+  contract: docs/item-library/item-library-authoring-contract-v0.7.md
+  design: docs/design-docs/item-and-manufacturing-system-v0.1.md
+  design_sha256: 24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb
+scope_note: C7 补齐防具服饰、家具日用装饰珠宝和稀有特殊配额，不授权运行时导入。
+
+items:
+  - id: item.clothing.base_layer_set
+    name: 基础内层衣裤
+    description: 贴身基础衣裤，提供日常穿着和叠穿入口，不冻结舒适或保温数值。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [clothing, wearable, textile, base_layer]
+    resource_chains: [survival, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: none, wealth_signal: low}
+    actions: [wear, maintain, clean, reserve, trade, store]
+    unit: set
+    mass: 0.8
+    volume: 1.5
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, moisture_protected]
+    base_value: 14
+    acquisition_paths: [{type: manufacture, note: 由通用织物裁剪缝制。}, {type: trade, note: 从服装渠道按尺寸采购。}]
+    consumption_loss_paths: [{type: worn_out, note: 摩擦、清洗和撕裂后退出穿着。}, {type: contaminated, note: 严重污染后隔离。}, {type: lost, note: 个人携带中遗失。}]
+    logistics_note: 按尺寸、清洁状态和持有人保存，同一套不能同时分配给多人。
+    interfaces: {produced_by: [recipe.c7_clothing.sew_base_layer], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 作为叠穿基础与个人衣物，和织物、洗涤及分配公平相连。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, moisture, handling, age], failure_consequence: 严重破损或污染后不能穿着。}
+    protection_profile: {role: weather, regions: [torso, arms, legs], use_constraints: 只有尺寸合适、清洁并实际穿着时才提供基础环境适应入口。, tradeoff_note: 单独穿着的防风、防雨和冲击能力有限。}
+
+  - id: item.clothing.insulated_coat
+    name: 保温外套
+    description: 使用多层织物和填充形成的寒冷环境外套，体积和热负担限制暖季使用。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [clothing, wearable, textile, insulated]
+    resource_chains: [survival, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [wear, maintain, clean, reserve, trade, store]
+    unit: piece
+    mass: 2.2
+    volume: 5.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, moisture_protected]
+    base_value: 32
+    acquisition_paths: [{type: manufacture, note: 以织物、植物纤维和紧固件完成多层缝制。}, {type: trade, note: 按尺寸和填充状态采购。}]
+    consumption_loss_paths: [{type: worn_out, note: 填充塌陷、撕裂或受潮后失效。}, {type: contaminated, note: 无法清洁的污染后隔离。}, {type: lost, note: 外勤中遗失。}]
+    logistics_note: 高体积占用携行和干燥空间，按尺寸与清洁状态分配。
+    interfaces: {produced_by: [recipe.c7_clothing.sew_insulated_coat], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 以织物、填充和携行体积换取寒冷环境穿着入口。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, moisture, compression, age], failure_consequence: 填充或外层严重失效后不能作为寒冷外套。}
+    protection_profile: {role: weather, regions: [torso, arms], use_constraints: 需要尺寸合适、干燥并实际穿着。, tradeoff_note: 体积大、暖季热负担高且受潮后性能下降。}
+
+  - id: item.clothing.rain_shell
+    name: 防雨罩衣
+    description: 以涂层织物和密封接缝形成的轻型雨具，不提供弹道或化学防护。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [clothing, wearable, textile, rainwear]
+    resource_chains: [survival, industry]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: low}
+    actions: [wear, maintain, clean, reserve, trade, store]
+    unit: piece
+    mass: 1.1
+    volume: 2.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, cool, light_protected]
+    base_value: 28
+    acquisition_paths: [{type: manufacture, note: 用织物、植物油处理层和紧固件缝制。}, {type: trade, note: 采购接缝与涂层状态明确的雨具。}]
+    consumption_loss_paths: [{type: worn_out, note: 涂层、接缝或扣件失效。}, {type: contaminated, note: 接触危险化学品后退出普通雨具用途。}, {type: lost, note: 外出遗失。}]
+    logistics_note: 干燥后折叠保存，湿态密封会加速霉变和涂层失效。
+    interfaces: {produced_by: [recipe.c7_clothing.sew_rain_shell], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 降低雨天作业门槛，同时消耗涂层材料并增加热湿负担。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, moisture, light, age], failure_consequence: 接缝或涂层失效后不能作为可靠雨具。}
+    protection_profile: {role: weather, regions: [torso, arms, legs], use_constraints: 只有罩衣闭合、状态完好并实际穿着时才生效。, tradeoff_note: 透气性和灵活性受限，不提供冲击、化学或弹道防护。}
+
+  - id: item.clothing.work_gloves
+    name: 耐磨工作手套
+    description: 为搬运、木工和一般维修提供手部磨损隔离，不适合精密操作或高温化学作业。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [clothing, wearable, gloves, protective]
+    resource_chains: [industry, survival, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: none, wealth_signal: low}
+    actions: [wear, maintain, clean, reserve, trade, store]
+    unit: set
+    mass: 0.4
+    volume: 0.7
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, contamination_controlled]
+    base_value: 12
+    acquisition_paths: [{type: manufacture, note: 以耐磨织物和衬垫缝制。}, {type: trade, note: 按尺寸和用途采购。}]
+    consumption_loss_paths: [{type: worn_out, note: 穿孔、接缝或抓握面磨损。}, {type: contaminated, note: 接触危险残留后隔离。}, {type: lost, note: 作业中遗失单只或整副。}]
+    logistics_note: 按尺寸、左右和污染状态成副保存，缺一只即不能作为完整手套。
+    interfaces: {produced_by: [recipe.c7_clothing.sew_work_gloves], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 降低一般手部作业风险，但牺牲精细触感并需要清洁更换。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, impact, moisture, handling], failure_consequence: 穿孔、污染或缺只后不能作为完整手部防护。}
+    protection_profile: {role: work, regions: [hands], use_constraints: 需要尺寸匹配、成副并针对一般机械磨损使用。, tradeoff_note: 降低触感和精密操作能力，不适合高温、化学或医疗无菌用途。}
+
+  - id: item.clothing.reinforced_work_boots
+    name: 加固工作靴
+    description: 具有硬底和基础包头的劳动鞋靴，重量和尺寸适配影响长时间穿着。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [clothing, wearable, boots, protective, textile, rubber]
+    resource_chains: [industry, survival, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [wear, maintain, clean, reserve, trade, store]
+    unit: set
+    mass: 2.0
+    volume: 3.5
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, ventilated]
+    base_value: 35
+    acquisition_paths: [{type: manufacture, note: 由厚织物、橡胶条、钢件和紧固件装配。}, {type: trade, note: 按尺码采购。}]
+    consumption_loss_paths: [{type: worn_out, note: 鞋底、缝线或包头失效。}, {type: contaminated, note: 危险污染无法清除后隔离。}, {type: lost, note: 遗失单只或整双。}]
+    logistics_note: 按尺码成双保存并保持干燥，不能仅按总双数分配。
+    interfaces: {produced_by: [recipe.c7_clothing.make_work_boots], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 用材料和重量换取一般脚部劳动防护，并制造尺码短缺。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, impact, moisture, age], failure_consequence: 鞋底、包头或成双状态失效后不能分配。}
+    protection_profile: {role: work, regions: [feet], use_constraints: 需要尺码匹配、成双且鞋底和包头完好。, tradeoff_note: 较重、干燥慢并增加长距离行走负担。}
+
+  - id: item.clothing.sun_hat
+    name: 宽檐遮阳帽
+    description: 用于日晒和轻微天气暴露的宽檐帽，不提供冲击或弹道防护。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [clothing, wearable, hat, textile]
+    resource_chains: [survival]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: none, wealth_signal: low}
+    actions: [wear, maintain, clean, trade, store]
+    unit: piece
+    mass: 0.3
+    volume: 1.2
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, moisture_protected]
+    base_value: 8
+    acquisition_paths: [{type: trade, note: 从服装或农具渠道采购。}, {type: salvage, note: 从农场衣物中回收并清洁。}]
+    consumption_loss_paths: [{type: worn_out, note: 帽檐塌陷、撕裂或汗渍老化。}, {type: contaminated, note: 严重污染后报废。}, {type: lost, note: 户外作业中遗失。}]
+    logistics_note: 按尺寸和清洁状态保存，体积虽大但不能替代头盔。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供轻量日晒适应选择，并与更重头部防护形成情境取舍。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, moisture, light, age], failure_consequence: 帽檐或主体严重损坏后不能提供遮阳入口。}
+    protection_profile: {role: weather, regions: [head, face], use_constraints: 需要尺寸合适并实际穿戴。, tradeoff_note: 体积影响狭窄空间，且不提供冲击、火焰或弹道防护。}
+
+  - id: item.clothing.cold_weather_cap
+    name: 保温软帽
+    description: 覆盖头部的软质保温帽，适合寒冷日常但会限制散热。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [clothing, wearable, hat, insulated]
+    resource_chains: [survival, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: none, wealth_signal: low}
+    actions: [wear, maintain, clean, trade, store]
+    unit: piece
+    mass: 0.25
+    volume: 0.6
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, moisture_protected]
+    base_value: 9
+    acquisition_paths: [{type: trade, note: 从服装渠道采购。}, {type: salvage, note: 从冬季衣物中回收并清洁。}]
+    consumption_loss_paths: [{type: worn_out, note: 弹性、织物或保温层失效。}, {type: contaminated, note: 无法清洁后隔离。}, {type: lost, note: 个人携带中遗失。}]
+    logistics_note: 按尺寸和清洁状态保存，不能与硬质头盔同时无条件叠加。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 以低体积改善寒冷穿着入口，但和头盔、散热及个人分配竞争。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, moisture, handling, age], failure_consequence: 保温层或弹性失效后不能作为寒冷软帽。}
+    protection_profile: {role: weather, regions: [head], use_constraints: 需要清洁、干燥和实际穿戴。, tradeoff_note: 暖季热负担高，且与部分头盔和面罩存在适配冲突。}
+
+  - id: item.clothing.dust_mask
+    name: 可更换防尘口罩
+    description: 用于一般粉尘作业的面部过滤口罩，不适用于毒气、缺氧或未知化学暴露。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [wearable, respiratory, filtration, textile]
+    resource_chains: [industry, survival, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: low}
+    actions: [wear, maintain, clean, reserve, trade, store]
+    unit: piece
+    mass: 0.15
+    volume: 0.3
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, contamination_controlled]
+    base_value: 11
+    acquisition_paths: [{type: manufacture, note: 用清洁织物和过滤介质制作可更换口罩。}, {type: trade, note: 按适用粉尘类型采购。}]
+    consumption_loss_paths: [{type: worn_out, note: 滤层阻塞、带体松弛或密合失效。}, {type: contaminated, note: 接触未知化学物后隔离。}, {type: lost, note: 作业中遗失。}]
+    logistics_note: 记录使用环境和滤层状态，不能跨污染区直接复用。
+    interfaces: {produced_by: [recipe.c7_clothing.make_dust_mask], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 降低一般粉尘作业门槛，同时用滤层状态和用途限制防止万能呼吸防护。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, moisture, handling, age], failure_consequence: 滤层或密合失效后禁止作为防尘口罩。}
+    protection_profile: {role: respiratory, regions: [face], use_constraints: 仅用于已知一般粉尘，需密合、滤层可用且人物实际佩戴。, tradeoff_note: 增加呼吸负担和沟通困难，不适用于毒气、缺氧或高危化学环境。}
+
+  - id: item.clothing.respirator_mask
+    name: 全面式呼吸面罩
+    description: 带可更换滤芯接口的受控呼吸面罩，只在匹配滤芯和已知环境下提供入口。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [wearable, respiratory, filtration, traceable]
+    resource_chains: [industry, security, survival]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: regulated_batch, wealth_signal: medium}
+    actions: [wear, maintain, clean, reserve, trade, store]
+    unit: piece
+    mass: 1.0
+    volume: 2.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, contamination_controlled, shock_protected]
+    base_value: 74
+    acquisition_paths: [{type: trade, note: 通过受控职业防护渠道采购。}, {type: salvage, note: 从工业设施回收并检查密封和阀体。}]
+    consumption_loss_paths: [{type: worn_out, note: 密封、阀体或视窗失效。}, {type: contaminated, note: 未知污染无法去除后隔离。}, {type: confiscated, note: 受控区域无授权持有时可能被查扣。}]
+    logistics_note: 面罩、适配滤芯和人物贴合检查共同预留；库存有面罩不等于环境可进入。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供高风险环境候选入口，同时绑定滤芯、清洁、适配和专业判断。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, impact, moisture, age], failure_consequence: 密封、阀体或视窗异常时禁止使用。}
+    protection_profile: {role: respiratory, regions: [face, eyes], use_constraints: 需要匹配滤芯、贴合检查、已知污染物和合格使用者。, tradeoff_note: 视野、沟通和呼吸负担增加，不能应对缺氧或未知环境。}
+
+  - id: item.clothing.safety_goggles
+    name: 密封护目镜
+    description: 用于飞屑、粉尘和轻微飞溅的眼部防护，不替代全面罩或弹道面罩。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [wearable, goggles, protective]
+    resource_chains: [industry, survival, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: none, wealth_signal: low}
+    actions: [wear, maintain, clean, reserve, trade, store]
+    unit: piece
+    mass: 0.25
+    volume: 0.6
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, shock_protected, contamination_controlled]
+    base_value: 14
+    acquisition_paths: [{type: manufacture, note: 用回收玻璃片、橡胶条和织物带装配。}, {type: trade, note: 采购视窗和密封状态明确的护目镜。}]
+    consumption_loss_paths: [{type: worn_out, note: 视窗划伤、密封或带体失效。}, {type: contaminated, note: 危险污染无法清除后隔离。}, {type: lost, note: 作业中遗失。}]
+    logistics_note: 防刮防震保存并按污染区分配，视窗清晰度需要实际检查。
+    interfaces: {produced_by: [recipe.c7_clothing.make_safety_goggles], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 用小型关键防护件降低作业中断风险，同时增加视野和起雾取舍。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, impact, handling, age], failure_consequence: 视窗或密封失效后不能作为护目镜。}
+    protection_profile: {role: eye, regions: [eyes], use_constraints: 需要视窗清晰、密封合格并针对已知飞屑或轻微飞溅。, tradeoff_note: 可能起雾、限制周边视野且不能替代呼吸或弹道面罩。}
+
+  - id: item.clothing.welding_apron
+    name: 厚质焊接围裙
+    description: 以多层厚织物形成的躯干火花防护围裙，不适合持续明火或化学泼溅。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [wearable, apron, textile, protective]
+    resource_chains: [industry, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [wear, maintain, clean, reserve, trade, store]
+    unit: piece
+    mass: 1.8
+    volume: 3.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, ventilated]
+    base_value: 29
+    acquisition_paths: [{type: manufacture, note: 由多层厚织物和紧固件缝制。}, {type: trade, note: 从金属加工渠道采购。}]
+    consumption_loss_paths: [{type: worn_out, note: 烧蚀、硬化或带体失效。}, {type: contaminated, note: 油污或化学残留无法清除后隔离。}, {type: lost, note: 工坊流转中遗失。}]
+    logistics_note: 与普通厨房围裙分柜，使用后检查烧蚀和油污。
+    interfaces: {produced_by: [recipe.c7_clothing.make_welding_apron], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 支撑热作业入口，同时用重量、热负担和用途专一性限制日常穿着。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, heat, handling, age], failure_consequence: 烧蚀或带体失效后不能用于焊接防护。}
+    protection_profile: {role: work, regions: [torso, legs], use_constraints: 仅用于飞溅火花和一般热作业，需完整覆盖并远离浸油状态。, tradeoff_note: 重、热且限制动作，不提供持续火焰、化学或弹道防护。}
+
+  - id: item.clothing.chemical_apron
+    name: 化学防溅围裙
+    description: 针对部分已知化学飞溅的受控围裙，材料兼容性必须匹配，不能泛化为全身防化服。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [wearable, apron, chemical, protective, traceable]
+    resource_chains: [industry, survival, security]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: regulated_batch, wealth_signal: medium}
+    actions: [wear, maintain, clean, reserve, trade, store]
+    unit: piece
+    mass: 1.4
+    volume: 2.5
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, hazardous, ventilated]
+    base_value: 58
+    acquisition_paths: [{type: trade, note: 按材料兼容性通过受控职业防护渠道采购。}, {type: salvage, note: 从化工设施回收并核验接触史。}]
+    consumption_loss_paths: [{type: worn_out, note: 涂层、接缝或带体失效。}, {type: contaminated, note: 接触不兼容或未知化学物后隔离。}, {type: confiscated, note: 来源不清的受控防护用品可能被查扣。}]
+    logistics_note: 按兼容化学体系和接触史分区，未知污染围裙不得回到可用库存。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 允许受控化学作业入口，同时把材料兼容和去污能力变成前置条件。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, moisture, heat, age], failure_consequence: 涂层、接缝或兼容性不明时禁止使用。}
+    protection_profile: {role: chemical, regions: [torso, legs], use_constraints: 仅用于明确兼容的飞溅情境，需搭配手、眼和呼吸防护。, tradeoff_note: 覆盖不完整、热负担高且去污困难，不是全身防化能力。}
+
+  - id: item.clothing.padded_work_trousers
+    name: 衬垫工作裤
+    description: 在膝部和大腿增加衬垫的耐磨裤装，适合跪姿作业但更重更热。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [clothing, wearable, trousers, protective, textile]
+    resource_chains: [industry, survival]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: none, wealth_signal: low}
+    actions: [wear, maintain, clean, reserve, trade, store]
+    unit: piece
+    mass: 1.5
+    volume: 2.8
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, moisture_protected]
+    base_value: 24
+    acquisition_paths: [{type: manufacture, note: 用织物、植物纤维和紧固件缝制。}, {type: trade, note: 按尺码采购。}]
+    consumption_loss_paths: [{type: worn_out, note: 膝部、缝线或衬垫磨损。}, {type: contaminated, note: 无法清洁后隔离。}, {type: lost, note: 个人分配中遗失。}]
+    logistics_note: 按尺码与清洁状态分配，衬垫受潮后需要充分干燥。
+    interfaces: {produced_by: [recipe.c7_clothing.sew_padded_trousers], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 用织物和热负担换取跪姿与一般搬运防护入口。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, impact, moisture, compression], failure_consequence: 衬垫或主体严重磨损后不能作为工作裤。}
+    protection_profile: {role: work, regions: [legs], use_constraints: 需要尺码匹配、衬垫完好并针对一般磨损和跪姿作业。, tradeoff_note: 较重、较热且不提供尖锐、化学或弹道防护。}
+
+  - id: item.clothing.leather_jacket
+    name: 厚皮外套
+    description: 耐磨皮革外套，可应对轻微擦碰和风雨，但重量、保养和尺码限制明显。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [clothing, wearable, leather, protective]
+    resource_chains: [survival, security, politics]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: medium}
+    actions: [wear, maintain, clean, reserve, trade, store]
+    unit: piece
+    mass: 2.4
+    volume: 4.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, ventilated, light_protected]
+    base_value: 48
+    acquisition_paths: [{type: trade, note: 从皮革工坊按尺码采购。}, {type: salvage, note: 从旧骑行或劳动衣物回收并检查。}]
+    consumption_loss_paths: [{type: worn_out, note: 皮面开裂、接缝或扣件失效。}, {type: contaminated, note: 油污或化学污染无法处理后隔离。}, {type: lost, note: 个人携带中遗失。}]
+    logistics_note: 避光通风保存并定期保养，按尺码和持有人管理。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供耐磨与身份表达，但占用高价值材料并增加热负担。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, moisture, light, age], failure_consequence: 皮面或接缝严重失效后不能作为完整外套。}
+    protection_profile: {role: impact, regions: [torso, arms], use_constraints: 仅用于轻微擦碰和天气暴露，需尺码合适并保养。, tradeoff_note: 重、热、干燥慢且不提供弹道、化学或消防防护。}
+
+  - id: item.armor.ballistic_vest
+    name: 受控弹道背心
+    description: 有来源和状态记录的躯干弹道防护载体，不冻结防护等级、覆盖或伤害减免。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [armor_component, wearable, ballistic, traceable, high_wealth_exposure]
+    resource_chains: [security, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: high, traceability: regulated_batch, wealth_signal: high}
+    actions: [wear, equip, maintain, reserve, trade, store]
+    unit: piece
+    mass: 5.5
+    volume: 7.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, shock_protected]
+    base_value: 180
+    acquisition_paths: [{type: trade, note: 通过受控防务渠道按来源和状态取得。}, {type: mission, note: 作为审计防务援助取得。}]
+    consumption_loss_paths: [{type: worn_out, note: 冲击、结构损伤或老化后退出战备。}, {type: confiscated, note: 无授权持有或交易时被查扣。}, {type: lost, note: 战斗或撤离中遗失。}]
+    logistics_note: 单件记录来源、冲击史、尺寸和持有人；库存数量不等于可用防护人数。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供高价值躯干防护候选，同时提高重量、财富暴露和政治审计。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [impact, moisture, heat, age], failure_consequence: 来源、冲击史或结构状态不明时不得进入战备。}
+    protection_profile: {role: ballistic, regions: [torso], use_constraints: 需要尺寸、来源、结构和冲击史合格并由受训人员实际穿戴。, tradeoff_note: 重、热、限制灵活性且覆盖有限，不保证免伤。}
+
+  - id: item.armor.metal_helmet
+    name: 金属防护头盔
+    description: 带衬垫和固定带的硬质头部防护，提供冲击与碎屑防护入口，不冻结弹道等级。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [armor_component, wearable, helmet, metal]
+    resource_chains: [security, industry]
+    availability: limited
+    legal_profile: controlled
+    exposure_profile: {visibility: high, traceability: local_markings, wealth_signal: medium}
+    actions: [wear, equip, maintain, reserve, trade, store]
+    unit: piece
+    mass: 1.8
+    volume: 3.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, shock_protected]
+    base_value: 64
+    acquisition_paths: [{type: trade, note: 从防务或工业防护渠道采购。}, {type: salvage, note: 从旧工事回收并检查凹陷和衬垫。}]
+    consumption_loss_paths: [{type: worn_out, note: 凹陷、裂纹、衬垫或固定带失效。}, {type: confiscated, note: 受控区域无授权携带时被查扣。}, {type: lost, note: 外勤中遗失。}]
+    logistics_note: 按尺寸、冲击史和衬垫状态逐件记录，不能与软帽无条件叠加。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 用重量、视听影响和尺寸限制换取硬质头部防护入口。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [impact, moisture, corrosion, age], failure_consequence: 壳体、衬垫或固定带异常时不得装备。}
+    protection_profile: {role: impact, regions: [head], use_constraints: 需要尺寸匹配、壳体和衬垫完好并实际佩戴。, tradeoff_note: 增加重量、热负担并影响听觉和部分视野，不保证弹道防护。}
+
+  - id: item.armor.riot_shield
+    name: 手持防暴盾
+    description: 面向冲击和投掷物的手持防护板，需要单手占用和队形训练。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [armor_component, shield, protective, traceable]
+    resource_chains: [security, politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: high, traceability: regulated_batch, wealth_signal: medium}
+    actions: [equip, maintain, reserve, trade, store]
+    unit: piece
+    mass: 6.0
+    volume: 9.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, shock_protected]
+    base_value: 92
+    acquisition_paths: [{type: trade, note: 通过受控公共安全渠道取得。}, {type: salvage, note: 从旧安防设施回收并检查视窗和握把。}]
+    consumption_loss_paths: [{type: worn_out, note: 裂纹、握把或边缘失效。}, {type: confiscated, note: 未授权部署时被查扣。}, {type: lost, note: 冲突或撤离中遗失。}]
+    logistics_note: 单件占用持有者一只手和大量携行体积，需与任务编组共同锁定。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 以显著负重和攻击能力让渡换取定向冲击防护。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [impact, handling, heat, age], failure_consequence: 板体、视窗或握把失效后不得装备。}
+    protection_profile: {role: impact, regions: [torso, face], use_constraints: 需要握把完整、方向正确、队形训练并实际手持。, tradeoff_note: 占用一只手、限制视野与移动，侧后方覆盖有限。}
+
+  - id: item.armor.forearm_guard_pair
+    name: 前臂护具
+    description: 用于一般擦碰和轻微冲击的成对前臂护具，不提供全臂或弹道防护。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [armor_component, wearable, arm_guard, protective]
+    resource_chains: [security, industry]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [wear, maintain, clean, reserve, trade, store]
+    unit: set
+    mass: 0.8
+    volume: 1.2
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, moisture_protected]
+    base_value: 19
+    acquisition_paths: [{type: trade, note: 从劳动或训练防护渠道采购。}, {type: salvage, note: 从旧运动和工坊防护中回收。}]
+    consumption_loss_paths: [{type: worn_out, note: 壳体、带体或衬垫失效。}, {type: contaminated, note: 危险污染后隔离。}, {type: lost, note: 遗失单只或整副。}]
+    logistics_note: 按左右和尺寸成副保存，缺只不能计为完整护具。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供局部劳动和近距训练防护，同时增加热负担与手臂限制。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, impact, moisture, age], failure_consequence: 缺只、壳体或固定带失效后不能作为完整护臂。}
+    protection_profile: {role: impact, regions: [arms], use_constraints: 需要尺寸匹配、成副并实际佩戴。, tradeoff_note: 覆盖局部、限制腕臂活动且不提供化学或弹道防护。}
+
+  - id: item.armor.knee_pad_pair
+    name: 工业护膝
+    description: 为跪姿维修和搬运提供膝部衬垫，长时间穿戴会影响灵活性。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [armor_component, wearable, knee_pad, protective]
+    resource_chains: [industry, survival]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: none, wealth_signal: low}
+    actions: [wear, maintain, clean, reserve, trade, store]
+    unit: set
+    mass: 0.7
+    volume: 1.3
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, contamination_controlled]
+    base_value: 16
+    acquisition_paths: [{type: trade, note: 从劳动防护渠道采购。}, {type: salvage, note: 从工坊或运动装备中回收。}]
+    consumption_loss_paths: [{type: worn_out, note: 衬垫压缩、壳体或带体失效。}, {type: contaminated, note: 污染无法清除后隔离。}, {type: lost, note: 遗失单只或整副。}]
+    logistics_note: 成副按尺寸保存，佩戴与衬垫工作裤的兼容性需实际检查。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 改善跪姿作业入口，但占用穿戴时间并降低灵活性。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, impact, compression, moisture], failure_consequence: 衬垫、壳体或成副状态失效后不能分配。}
+    protection_profile: {role: work, regions: [legs], use_constraints: 需要尺寸和带体合适并针对跪姿和一般冲击使用。, tradeoff_note: 限制膝部活动、增加热负担且覆盖范围小。}
+
+  - id: item.clothing.medical_isolation_gown
+    name: 医疗隔离衣
+    description: 用于已知基础污染隔离的受控罩衣，必须正确穿脱并配合其他防护。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [wearable, isolation, medical, traceable]
+    resource_chains: [survival, security]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: medium}
+    actions: [wear, disinfect, maintain, reserve, trade, store]
+    unit: piece
+    mass: 0.8
+    volume: 1.5
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, contamination_controlled]
+    base_value: 36
+    acquisition_paths: [{type: trade, note: 通过受控医疗防护渠道采购。}, {type: mission, note: 作为公共卫生援助取得。}]
+    consumption_loss_paths: [{type: worn_out, note: 表层、接缝或系带失效。}, {type: contaminated, note: 达到不可复用污染条件后退出库存。}, {type: confiscated, note: 来源或用途异常时被查扣。}]
+    logistics_note: 清洁与已用隔离衣严格分区，库存存在不等于可以进入未知病原环境。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把医疗隔离能力绑定到正确穿脱、污染分区和其他防护用品。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, moisture, handling, age], failure_consequence: 表层、接缝或污染状态不合格时禁止使用。}
+    protection_profile: {role: medical, regions: [torso, arms, legs], use_constraints: 仅用于已知基础隔离情境，需正确穿脱并搭配手、脸和呼吸防护。, tradeoff_note: 热负担高、易产生交叉污染且不提供化学、火焰或弹道防护。}
+
+  - id: item.clothing.firefighter_coat
+    name: 消防防护外套
+    description: 面向短时热暴露和火花的受控外套，不代表可进入持续明火或未知烟气环境。
+    status: candidate_only
+    category: armor_and_clothing
+    form: independent_item
+    tags: [wearable, firefighting, insulated, traceable, high_wealth_exposure]
+    resource_chains: [security, survival, industry]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: high, traceability: regulated_batch, wealth_signal: high}
+    actions: [wear, maintain, clean, reserve, trade, store]
+    unit: piece
+    mass: 4.5
+    volume: 8.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, ventilated, contamination_controlled]
+    base_value: 155
+    acquisition_paths: [{type: trade, note: 通过受控消防装备渠道采购。}, {type: salvage, note: 从旧消防站回收并检查热损伤和污染。}]
+    consumption_loss_paths: [{type: worn_out, note: 热损伤、衬层、接缝或扣件失效。}, {type: contaminated, note: 烟尘或化学污染无法去除后隔离。}, {type: confiscated, note: 来源或持有授权异常时被查扣。}]
+    logistics_note: 单件记录热暴露史、污染和尺寸；需要与呼吸、头手足防护共同预留。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供消防行动候选入口，同时绑定整套装备、训练、清洁和高负重。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [heat, moisture, use, age], failure_consequence: 热损伤、污染或衬层状态不明时不得用于消防。}
+    protection_profile: {role: fire, regions: [torso, arms], use_constraints: 仅用于受训人员的短时热暴露，需搭配完整消防与呼吸防护。, tradeoff_note: 极重、极热、限制行动，不能应对持续明火、缺氧或未知化学烟气。}
+
+  - id: item.furniture.modular_storage_shelf
+    name: 模块化储物架
+    description: 可拆分搬运的木制储物架，部署后提供分区入口但不自动增加抽象库存容量。
+    status: candidate_only
+    category: furniture
+    form: independent_item
+    tags: [furniture, storage, shelf, lumber]
+    resource_chains: [industry, survival]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [install, uninstall, maintain, reserve, trade, store]
+    unit: set
+    mass: 18.0
+    volume: 28.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, moisture_protected]
+    base_value: 34
+    acquisition_paths: [{type: manufacture, note: 由整形木板和紧固件装配。}, {type: trade, note: 从木工作坊采购。}]
+    consumption_loss_paths: [{type: installed, note: 部署后退出库存并等待未来放置实体。}, {type: worn_out, note: 层板、支撑或连接件失效。}, {type: dismantled, note: 专案拆解后原实例终止。}]
+    logistics_note: 部署需要搬运、墙地面条件和可达空间，库存存在不等于已经上架物品。
+    interfaces: {produced_by: [recipe.c7_furniture.make_storage_shelf], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 将储存秩序与木料、空间、安装时间和搬运相连。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, impact, moisture, age], failure_consequence: 支撑或连接失效后不能部署。}
+    deployment_profile: {converts_to_placed_entity: true, installation_required: true, footprint: medium, uninstall_result: returns_item}
+
+  - id: item.furniture.communal_bench
+    name: 公共长凳
+    description: 面向公共用餐和集会的长凳，需要与桌面、空间和活动安排共同使用。
+    status: candidate_only
+    category: furniture
+    form: independent_item
+    tags: [furniture, social, bench, lumber]
+    resource_chains: [survival, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: none, wealth_signal: low}
+    actions: [install, uninstall, maintain, reserve, trade, store]
+    unit: piece
+    mass: 16.0
+    volume: 24.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, moisture_protected]
+    base_value: 29
+    acquisition_paths: [{type: manufacture, note: 由整形木板和紧固件装配。}, {type: trade, note: 从木工作坊采购。}]
+    consumption_loss_paths: [{type: installed, note: 部署后进入未来放置职责。}, {type: worn_out, note: 座面、支撑或连接失效。}, {type: dismantled, note: 专案拆解后原实例终止。}]
+    logistics_note: 需要足够通道和地面稳定性，单独放置不自动产生社交效果。
+    interfaces: {produced_by: [recipe.c7_furniture.make_communal_bench], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供公共活动空间入口，但效果依赖人物、时间、桌面和事件。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, impact, moisture, age], failure_consequence: 座面或支撑不稳时禁止部署。}
+    deployment_profile: {converts_to_placed_entity: true, installation_required: true, footprint: medium, uninstall_result: returns_item}
+
+  - id: item.furniture.washstand_cabinet
+    name: 洗漱柜台
+    description: 组合台面、盆位和封闭储藏的卫生家具，不自动提供净水或清洁效果。
+    status: candidate_only
+    category: furniture
+    form: independent_item
+    tags: [furniture, wash, storage, hygiene]
+    resource_chains: [survival, industry]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: medium}
+    actions: [install, uninstall, maintain, clean, reserve, trade, store]
+    unit: set
+    mass: 22.0
+    volume: 32.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, contamination_controlled]
+    base_value: 52
+    acquisition_paths: [{type: trade, note: 从卫生家具或木工作坊采购。}, {type: salvage, note: 从旧诊所或住宅回收并检查污染。}]
+    consumption_loss_paths: [{type: installed, note: 部署后等待未来放置实体。}, {type: worn_out, note: 台面、柜体或密封失效。}, {type: contaminated, note: 危险污染无法清除后隔离。}]
+    logistics_note: 部署还需洁净水、排水、清洁用品和人物维护，家具本身不生成这些资源。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把卫生空间改善绑定到家具、管线、清洁和日常维护。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, moisture, handling, age], failure_consequence: 台面、柜体或污染状态不合格时不能部署。}
+    deployment_profile: {converts_to_placed_entity: true, installation_required: true, footprint: medium, uninstall_result: returns_item}
+
+  - id: item.furniture.workshop_stool
+    name: 工坊高凳
+    description: 面向精细工位的高凳，改善坐姿入口但不自动提高工艺效率。
+    status: candidate_only
+    category: furniture
+    form: independent_item
+    tags: [furniture, stool, manufacturing, lumber]
+    resource_chains: [industry, survival]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: none, wealth_signal: low}
+    actions: [install, uninstall, maintain, reserve, trade, store]
+    unit: piece
+    mass: 6.0
+    volume: 9.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, moisture_protected]
+    base_value: 18
+    acquisition_paths: [{type: manufacture, note: 由整形木板和紧固件装配。}, {type: trade, note: 从木工作坊采购。}]
+    consumption_loss_paths: [{type: installed, note: 部署后进入工位空间。}, {type: worn_out, note: 座面、腿部或连接失效。}, {type: dismantled, note: 专案拆解后原实例终止。}]
+    logistics_note: 需要与工位高度、人物和通道匹配，库存有凳不等于工位已改善。
+    interfaces: {produced_by: [recipe.c7_furniture.make_workshop_stool], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 用小量材料和空间改善工位姿势入口，但不替代工具或资格。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, impact, moisture, age], failure_consequence: 结构不稳时禁止部署。}
+    deployment_profile: {converts_to_placed_entity: true, installation_required: true, footprint: small, uninstall_result: returns_item}
+
+  - id: item.daily.mess_tin_set
+    name: 个人餐具盒
+    description: 可重复使用的餐盒、杯和餐具组，需要清洗和个人分配，不自动生成食物。
+    status: candidate_only
+    category: daily_supply
+    form: independent_item
+    tags: [daily_supply, mess_kit, container, personal]
+    resource_chains: [survival, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: low}
+    actions: [consume, clean, maintain, reserve, trade, store]
+    unit: set
+    mass: 0.8
+    volume: 1.2
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, food_safe, contamination_controlled]
+    base_value: 13
+    acquisition_paths: [{type: trade, note: 从日用品渠道采购。}, {type: salvage, note: 从营地用品回收并清洁。}]
+    consumption_loss_paths: [{type: worn_out, note: 变形、锈蚀或缺件后退出完整餐具组。}, {type: contaminated, note: 无法清洁后隔离。}, {type: lost, note: 外出或个人持有中遗失。}]
+    logistics_note: 按持有人和清洁状态管理，外出配发会减少聚落可用餐具。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让公共进餐和远行补给需要可清洗、可归还的个人容器。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, impact, corrosion, handling], failure_consequence: 缺件、变形或污染后不能作为完整个人餐具。}
+
+  - id: item.daily.sewing_mending_kit
+    name: 便携缝补工具包
+    description: 包含针、线、扣件和小型裁切件的缝补工具包，允许基础维护但不替代纺织工位。
+    status: candidate_only
+    category: daily_supply
+    form: independent_item
+    tags: [daily_supply, sewing_kit, repair, portable]
+    resource_chains: [survival, industry, security]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: local_markings, wealth_signal: low}
+    actions: [repair, maintain, reserve, trade, store]
+    unit: set
+    mass: 0.6
+    volume: 0.8
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, moisture_protected]
+    base_value: 17
+    acquisition_paths: [{type: manufacture, note: 将织物、纤维和紧固件封装为工具包。}, {type: trade, note: 从服装渠道采购。}]
+    consumption_loss_paths: [{type: worn_out, note: 针具、线料或扣件耗尽和缺失。}, {type: lost, note: 外勤中遗失。}, {type: dismantled, note: 拆包后返回部分内容但原工具包终止。}]
+    logistics_note: 单包记录缺件和责任人，工具包存在不等于有合格裁缝时间。
+    interfaces: {produced_by: [recipe.c7_daily.assemble_sewing_kit], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 以预封装耗材换取现场衣物维护速度，并占用公共纺织材料。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, impact, moisture, handling], failure_consequence: 关键针具、线料或扣件缺失后不能作为完整缝补包。}
+
+  - id: item.daily.personal_hygiene_pack
+    name: 个人卫生耗材包
+    description: 由肥皂、清洁布和基础个人清洁耗材组成的标准包，会在使用中消耗。
+    status: candidate_only
+    category: daily_supply
+    form: bulk_material
+    tags: [daily_supply, personal_hygiene, hygiene, cleaning]
+    resource_chains: [survival, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: none, wealth_signal: low}
+    actions: [clean, consume, reserve, trade, deliver, store]
+    unit: packet
+    mass: 0.7
+    volume: 1.0
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, away_from_food, contamination_controlled]
+    base_value: 8
+    acquisition_paths: [{type: trade, note: 从日用品渠道采购。}, {type: allocation, note: 由公共卫生库存按人物分配。}]
+    consumption_loss_paths: [{type: consumed_directly, note: 个人清洁中逐项消耗。}, {type: contaminated, note: 包装破损或污染后报废。}, {type: delivered, note: 作为卫生援助交付。}]
+    logistics_note: 按人物或公共储备分区，发放后从中央库存扣除。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 将个人卫生变成会消耗、需公平分配的日常资源。
+
+  - id: item.daily.stationery_pack
+    name: 文具耗材包
+    description: 包含纸张、铅笔、标签和封签的行政耗材包，用于记录但不自动提高管理能力。
+    status: candidate_only
+    category: daily_supply
+    form: bulk_material
+    tags: [daily_supply, stationery, ledger]
+    resource_chains: [industry, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: none, wealth_signal: low}
+    actions: [read, audit, reserve, trade, deliver, store]
+    unit: packet
+    mass: 0.8
+    volume: 1.2
+    stack_rule: {stackable: true, merge_keys: [batch_grade, contamination_state, ownership]}
+    storage_rule: [dry, archive_safe, fireproof]
+    base_value: 10
+    acquisition_paths: [{type: trade, note: 从行政和教育渠道采购。}, {type: salvage, note: 从旧办公室回收可用耗材。}]
+    consumption_loss_paths: [{type: consumed_directly, note: 记录、标签和封签使用中消耗。}, {type: destroyed, note: 水损、火灾或污染后报废。}, {type: delivered, note: 作为行政援助交付。}]
+    logistics_note: 与正式账册分开管理，文具存在不等于记录真实或权利有效。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让审计、库存标记和教育活动消耗真实低值物资。
+
+  - id: item.decoration.carved_wooden_figure
+    name: 手雕木像
+    description: 由当地木材雕成的小型人物或动物形象，可展示、赠送或纪念，但不自动增加心情。
+    status: candidate_only
+    category: decoration_and_instrument
+    form: independent_item
+    tags: [display, carving, memorial, lumber]
+    resource_chains: [politics, survival]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: low}
+    actions: [display, present, trade, store]
+    unit: piece
+    mass: 0.6
+    volume: 0.8
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, light_protected]
+    base_value: 16
+    acquisition_paths: [{type: manufacture, note: 由整形木板在木作台手工雕制。}, {type: trade, note: 从手工艺者采购。}]
+    consumption_loss_paths: [{type: worn_out, note: 开裂、褪色或破损后失去展示价值。}, {type: delivered, note: 作为礼物或纪念交付。}, {type: lost, note: 搬运中遗失。}]
+    logistics_note: 记录制作者、题材和赠送关系，来源会改变纪念意义。
+    interfaces: {produced_by: [recipe.c7_decoration.carve_wooden_figure], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 把低量木材和人物时间转化为关系与地方文化载体。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [impact, moisture, light, age], failure_consequence: 严重破损后不能作为完整展示或礼物。}
+
+  - id: item.instrument.hand_drum
+    name: 手鼓
+    description: 适合小型集会和节奏活动的便携乐器，需要演奏者和活动时间。
+    status: candidate_only
+    category: decoration_and_instrument
+    form: independent_item
+    tags: [music, drum, social, personal]
+    resource_chains: [politics, survival]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: medium}
+    actions: [play, present, maintain, trade, store]
+    unit: piece
+    mass: 1.5
+    volume: 3.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, moisture_protected]
+    base_value: 28
+    acquisition_paths: [{type: trade, note: 从乐器或手工艺渠道采购。}, {type: salvage, note: 从旧文化设施回收并检查鼓面。}]
+    consumption_loss_paths: [{type: worn_out, note: 鼓面、框体或固定件失效。}, {type: delivered, note: 作为文化礼物交付。}, {type: lost, note: 活动或搬运中遗失。}]
+    logistics_note: 保持鼓面干燥并记录持有人，库存有鼓不等于自动发生娱乐。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 支撑特定人物和集会互动，同时占用时间、空间并可能产生噪声。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, impact, moisture, age], failure_consequence: 鼓面或框体失效后不能演奏。}
+
+  - id: item.decoration.cloth_toy
+    name: 手缝布玩具
+    description: 由织物和纤维填充缝制的个人玩具，可用于赠送和人物故事，不产生统一心情加成。
+    status: candidate_only
+    category: decoration_and_instrument
+    form: independent_item
+    tags: [toy, personal, textile, memorial]
+    resource_chains: [survival, politics]
+    availability: common
+    legal_profile: default_legal
+    exposure_profile: {visibility: low, traceability: none, wealth_signal: low}
+    actions: [present, display, maintain, trade, store]
+    unit: piece
+    mass: 0.3
+    volume: 0.7
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, contamination_controlled]
+    base_value: 12
+    acquisition_paths: [{type: manufacture, note: 用织物和植物纤维手工缝制。}, {type: trade, note: 从手工艺者采购。}]
+    consumption_loss_paths: [{type: worn_out, note: 接缝、填充或表面严重损坏。}, {type: contaminated, note: 无法清洁后隔离。}, {type: delivered, note: 赠送后离开公共库存。}]
+    logistics_note: 记录制作者、持有人和赠送经历，不能按普通低值织物回收忽略来源。
+    interfaces: {produced_by: [recipe.c7_decoration.sew_cloth_toy], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 用少量材料承载个人关系和纪念意义，并制造分配选择。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, moisture, handling, age], failure_consequence: 严重破损或污染后不能作为完整个人玩具。}
+
+  - id: item.valuable.copper_pendant
+    name: 手工铜吊坠
+    description: 以回收铜料制作的小型个人饰物，价值来自来源、赠送和身份表达。
+    status: candidate_only
+    category: jewelry_and_valuable
+    form: independent_item
+    tags: [valuable, personal, pendant, copper]
+    resource_chains: [politics, industry]
+    availability: limited
+    legal_profile: default_legal
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: medium}
+    actions: [wear, present, display, trade, store]
+    unit: piece
+    mass: 0.08
+    volume: 0.1
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked]
+    base_value: 26
+    acquisition_paths: [{type: trade, note: 从当地金工或持有人取得。}, {type: mission, note: 作为人物礼物或任务纪念获得。}]
+    consumption_loss_paths: [{type: worn_out, note: 链扣、表面或结构损坏。}, {type: delivered, note: 赠送或交易后离开库存。}, {type: lost, note: 个人佩戴中遗失。}]
+    logistics_note: 单件记录制作者、前任持有人和赠送关系，小体积需上锁。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供低体积关系与储值载体，同时增加盗窃和归属争议。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, impact, corrosion, handling], failure_consequence: 链扣或主体严重损坏后不能佩戴。}
+    provenance_profile: {ownership: personal, source: 当地回收铜料与手工制作者, significance: 制作者和赠送关系会改变人物态度、交易与拆解决定。}
+
+  - id: item.valuable.engraved_brooch
+    name: 铭刻身份胸针
+    description: 带地方或家族铭刻的贵重胸针，可用于身份表达但不自动产生法律资格。
+    status: candidate_only
+    category: jewelry_and_valuable
+    form: independent_item
+    tags: [valuable, personal, brooch, identity, traceable]
+    resource_chains: [politics]
+    availability: controlled
+    legal_profile: controlled
+    exposure_profile: {visibility: high, traceability: regulated_batch, wealth_signal: medium}
+    actions: [wear, present, authenticate, display, trade, store]
+    unit: piece
+    mass: 0.06
+    volume: 0.1
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, archive_safe]
+    base_value: 54
+    acquisition_paths: [{type: mission, note: 由特定家族、聚落或组织授予。}, {type: trade, note: 通过可核验来源转让。}]
+    consumption_loss_paths: [{type: invalidated, note: 签发者否认或铭刻失去身份意义。}, {type: delivered, note: 赠送或归还后离开库存。}, {type: confiscated, note: 冒用身份时被查扣。}]
+    logistics_note: 与正式凭证分开保存，胸针只能作为身份线索或象征。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 连接身份、关系和来源验证，同时明确不替代权利记录。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, impact, corrosion, handling], failure_consequence: 铭刻、扣针或来源证据损坏后失去身份表达价值。}
+    provenance_profile: {ownership: personal, source: 由具名家族或地方组织铭刻授予, significance: 来源决定其身份象征是否被承认，冒用会引发政治后果。}
+
+  - id: item.rare.sterile_surgical_instrument_chest
+    name: 完整外科器械箱
+    description: 来源可核验的旧世界外科器械整箱，只有在合格人员、设施和无菌流程下才有用途。
+    status: candidate_only
+    category: rare_and_special
+    form: independent_item
+    tags: [rare, old_world, medical, surgical, traceable, high_wealth_exposure]
+    resource_chains: [survival, security, politics]
+    availability: unique
+    legal_profile: controlled
+    exposure_profile: {visibility: high, traceability: regulated_batch, wealth_signal: high}
+    actions: [treat, inspect, maintain, reserve, trade, store]
+    unit: set
+    mass: 12.0
+    volume: 16.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, contamination_controlled, shock_protected]
+    base_value: 260
+    acquisition_paths: [{type: mission, note: 从封存医院或特定援助任务取得。}]
+    consumption_loss_paths: [{type: worn_out, note: 缺件、腐蚀或精度失效。}, {type: contaminated, note: 无法恢复清洁状态后隔离。}, {type: confiscated, note: 受控医疗资产可能被征用。}]
+    logistics_note: 逐件清点、清洁和保管，整箱存在不等于可以实施手术。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供高端医疗候选入口，同时制造人员、设施、清洁和政治争夺。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, corrosion, impact, handling], failure_consequence: 缺件、精度或清洁状态不合格时不能作为完整外科器械箱。}
+    provenance_profile: {ownership: disputed, source: 封存旧世界医疗设施或具名援助方, significance: 来源决定保管、征用和医疗分配责任，拆散会破坏整箱价值。}
+
+  - id: item.rare.prewar_optical_rangefinder
+    name: 战前光学测距仪
+    description: 不依赖网络的精密光学测距设备，可用于观测和测绘但不冻结战斗命中效果。
+    status: candidate_only
+    category: rare_and_special
+    form: independent_item
+    tags: [rare, old_world, optics, physically_isolated, high_wealth_exposure]
+    resource_chains: [security, industry, politics]
+    availability: unique
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: local_markings, wealth_signal: high}
+    actions: [measure, inspect, maintain, reserve, trade, store]
+    unit: piece
+    mass: 2.5
+    volume: 3.5
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, shock_protected]
+    base_value: 230
+    acquisition_paths: [{type: salvage, note: 从测绘、航海或军用设施回收。}, {type: mission, note: 作为高价值观测资产取得。}]
+    consumption_loss_paths: [{type: worn_out, note: 光学件、刻度或调焦机构失效。}, {type: confiscated, note: 受控观测设备可能被查扣。}, {type: lost, note: 野外测绘中遗失。}]
+    logistics_note: 单件防震并记录校准状态，库存有设备不等于人物会正确测量。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供离线精密观测候选，同时增加校准、训练和财富暴露。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [impact, moisture, handling, age], failure_consequence: 光学、刻度或校准状态不明时读数不可作为决策依据。}
+    provenance_profile: {ownership: disputed, source: 战前测绘或军用设施, significance: 来源和原用途会改变持有合法性、外交与拆解研究价值。}
+
+  - id: item.rare.offline_machine_controller
+    name: 离线精密机床控制器
+    description: 物理隔离的旧世界机床控制组件，需要兼容机床、技术人员和验证，不自动解锁制造。
+    status: candidate_only
+    category: rare_and_special
+    form: independent_item
+    tags: [rare, old_world, machine_control, local_firmware, physically_isolated, traceable, high_wealth_exposure]
+    resource_chains: [industry, security, politics]
+    availability: unique
+    legal_profile: controlled
+    exposure_profile: {visibility: medium, traceability: regulated_batch, wealth_signal: high}
+    actions: [inspect, install, maintain, reserve, trade, store]
+    unit: piece
+    mass: 9.0
+    volume: 12.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, shock_protected, magnetic_shielded]
+    base_value: 320
+    acquisition_paths: [{type: salvage, note: 从封存机床或工业设施回收并隔离接口。}, {type: mission, note: 作为工艺研究资产取得。}]
+    consumption_loss_paths: [{type: installed, note: 接入未来兼容机床后退出库存。}, {type: worn_out, note: 存储、接口或控制部件失效。}, {type: confiscated, note: 受控旧世界工业资产可能被征用。}]
+    logistics_note: 保持接口、固件和来源记录；设备存在不等于有兼容机床或工艺知识。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 制造研究、使用、交易或隐藏的高价值选择，而不是无条件工业升级。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [impact, moisture, heat, magnetic], failure_consequence: 接口、固件或存储状态不明时禁止接入设备。}
+    provenance_profile: {ownership: disputed, source: 封存旧世界精密机床系统, significance: 来源决定征用和研究风险，拆解可能失去无法复制的完整控制样本。}
+
+  - id: item.rare.disputed_ceremonial_sword
+    name: 争议礼仪长剑
+    description: 工艺精良且带具名历史的礼仪武器，战斗价值不自动高于实用品，归属争议更重要。
+    status: candidate_only
+    category: rare_and_special
+    form: independent_item
+    tags: [rare, old_world, ceremonial, weapon, melee, traceable, high_wealth_exposure]
+    resource_chains: [politics, security]
+    availability: unique
+    legal_profile: controlled
+    exposure_profile: {visibility: high, traceability: regulated_batch, wealth_signal: high}
+    actions: [equip, present, display, maintain, reserve, trade, store]
+    unit: piece
+    mass: 1.8
+    volume: 6.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, archive_safe]
+    base_value: 280
+    acquisition_paths: [{type: mission, note: 在继承、外交或战后任务中取得。}]
+    consumption_loss_paths: [{type: worn_out, note: 刃体、护手或鞘具损伤。}, {type: confiscated, note: 权利主张方可能要求归还。}, {type: delivered, note: 归还或外交交付后离开库存。}]
+    logistics_note: 单件保存铭刻、持有人和事件记录，拆解会销毁主要政治价值。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 让武器成为归属、外交和纪念选择，而不是单纯高数值装备。
+    durability_profile: {tracked: true, repairability: maintain_only, dismantle_policy: restricted, wear_sources: [use, impact, corrosion, handling], failure_consequence: 刃体、铭刻或来源链损坏后失去完整礼仪和证据价值。}
+    provenance_profile: {ownership: disputed, source: 具名家族或历史组织的礼仪资产, significance: 归还、展示、装备或拆解会触发不同关系和合法性后果。}
+
+  - id: item.rare.high_density_battery_sample
+    name: 高密度电池样品
+    description: 状态未知的硅基制造高密度电池样品，可能高效也可能被锁定、追踪或失效。
+    status: candidate_only
+    category: rare_and_special
+    form: independent_item
+    tags: [rare, silicon_technology, battery, high_density, traceable, high_wealth_exposure]
+    resource_chains: [industry, security, politics]
+    availability: unique
+    legal_profile: silicon_jurisdiction
+    exposure_profile: {visibility: medium, traceability: networked, wealth_signal: high}
+    actions: [inspect, charge, discharge, reserve, trade, store]
+    unit: piece
+    mass: 4.0
+    volume: 3.0
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [locked, cool, ventilated, shock_protected, magnetic_shielded]
+    base_value: 350
+    acquisition_paths: [{type: mission, note: 从受保护资产、外交或特殊事件中取得。}]
+    consumption_loss_paths: [{type: worn_out, note: 荷电、密封或内部状态失效。}, {type: confiscated, note: 硅基管辖或追踪触发征用。}, {type: destroyed, note: 不稳定时需要受控处置。}]
+    logistics_note: 隔离存放并禁止直接接入电网或设备，先处理追踪、兼容和安全未知。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 提供研究、使用、隐藏或交还的高风险选择，而不是线性电池升级。
+    durability_profile: {tracked: true, repairability: nonrepairable, dismantle_policy: restricted, wear_sources: [heat, impact, magnetic, age], failure_consequence: 化学、荷电、锁定或追踪状态不明时禁止使用。}
+    provenance_profile: {ownership: unknown, source: 硅基制造且状态未知的受保护资产, significance: 来源决定追踪、征用和外交风险，拆解可能破坏唯一研究样本。}
+
+  - id: item.rare.readonly_violation_archive
+    name: 违规记录只读档案
+    description: 保存自由意志日违规证据的只读载体，需要验证来源、完整性和保管链，不自动改变政治状态。
+    status: candidate_only
+    category: rare_and_special
+    form: independent_item
+    tags: [rare, offline_data, readonly_evidence, traceable, high_wealth_exposure]
+    resource_chains: [politics, security]
+    availability: unique
+    legal_profile: controlled
+    exposure_profile: {visibility: low, traceability: regulated_batch, wealth_signal: high}
+    actions: [read, authenticate, inspect, present, reserve, trade, store]
+    unit: piece
+    mass: 0.3
+    volume: 0.4
+    stack_rule: {stackable: false, merge_keys: []}
+    storage_rule: [dry, locked, archive_safe, fireproof, magnetic_shielded]
+    base_value: 300
+    acquisition_paths: [{type: mission, note: 从调查、泄露或具名证人处取得并建立保管链。}]
+    consumption_loss_paths: [{type: invalidated, note: 完整性、来源或保管链被否定。}, {type: confiscated, note: 调查方或权力机构查扣。}, {type: destroyed, note: 载体损坏或受控销毁。}]
+    logistics_note: 单件记录哈希、来源、访问和保管人，读取不等于证据被承认。
+    interfaces: {produced_by: [], used_by: [], repair_recipes: [], dismantle_recipes: []}
+    decision_role: 连接调查、外交、威胁和公开选择，同时让证据有效性取决于验证与保管链。
+    durability_profile: {tracked: true, repairability: nonrepairable, dismantle_policy: none, wear_sources: [impact, moisture, magnetic, age], failure_consequence: 载体、完整性或保管链损坏后不能作为可信证据。}
+    provenance_profile: {ownership: disputed, source: 具名调查、证人或泄露渠道, significance: 来源和保管链决定证据是否被承认，公开、交易或销毁会产生不同政治后果。}
+
+interface_extensions:
+  item.material.woven_cloth:
+    used_by: [recipe.c7_clothing.sew_base_layer, recipe.c7_clothing.sew_insulated_coat, recipe.c7_clothing.sew_rain_shell, recipe.c7_clothing.sew_work_gloves, recipe.c7_clothing.make_work_boots, recipe.c7_clothing.make_dust_mask, recipe.c7_clothing.make_safety_goggles, recipe.c7_clothing.make_welding_apron, recipe.c7_clothing.sew_padded_trousers, recipe.c7_daily.assemble_sewing_kit, recipe.c7_decoration.sew_cloth_toy]
+  item.material.plant_fiber:
+    used_by: [recipe.c7_clothing.sew_insulated_coat, recipe.c7_clothing.sew_work_gloves, recipe.c7_clothing.make_welding_apron, recipe.c7_clothing.sew_padded_trousers, recipe.c7_daily.assemble_sewing_kit, recipe.c7_decoration.sew_cloth_toy]
+  item.component.fastener_set:
+    used_by: [recipe.c7_clothing.sew_insulated_coat, recipe.c7_clothing.sew_rain_shell, recipe.c7_clothing.make_work_boots, recipe.c7_clothing.make_welding_apron, recipe.c7_clothing.sew_padded_trousers, recipe.c7_furniture.make_storage_shelf, recipe.c7_furniture.make_communal_bench, recipe.c7_furniture.make_workshop_stool, recipe.c7_daily.assemble_sewing_kit]
+  item.chemical.plant_oil:
+    used_by: [recipe.c7_clothing.sew_rain_shell]
+  item.material.reclaimed_rubber_strip:
+    used_by: [recipe.c7_clothing.make_work_boots, recipe.c7_clothing.make_dust_mask, recipe.c7_clothing.make_safety_goggles]
+  item.material.reclaimed_steel_plate:
+    used_by: [recipe.c7_clothing.make_work_boots]
+  item.material.layered_filter_media:
+    used_by: [recipe.c7_clothing.make_dust_mask]
+  item.material.reclaimed_glass_sheet:
+    used_by: [recipe.c7_clothing.make_safety_goggles]
+  item.material.reclaimed_lumber:
+    used_by: [recipe.c7_furniture.make_storage_shelf, recipe.c7_furniture.make_communal_bench, recipe.c7_furniture.make_workshop_stool, recipe.c7_decoration.carve_wooden_figure]
+  item.waste.sawdust:
+    produced_by: [recipe.c7_furniture.make_storage_shelf, recipe.c7_furniture.make_communal_bench, recipe.c7_furniture.make_workshop_stool, recipe.c7_decoration.carve_wooden_figure]

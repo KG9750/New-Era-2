@@ -1,0 +1,578 @@
+schema_version: 0.3.0
+library_status: candidate_only
+authority:
+  contract: docs/item-library/item-library-authoring-contract-v0.3.md
+  design: docs/design-docs/item-and-manufacturing-system-v0.1.md
+  design_sha256: 24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb
+scope_note: 24 个非库存定义入口流程；不是制造工艺，不授权运行时转换。
+
+transitions:
+  - id: transition.deploy.field_bed
+    name: 部署野战床
+    description: 将库存折叠野战床搬运到住宿位置并完成展开、稳定检查和位置登记。
+    status: candidate_only
+    kind: deploy
+    source: {kind: inventory_item, item: item.furniture.field_bed, amount: 1.0, disposition: installed, link_exclusive: true}
+    target: {definition: entity.placed.field_bed}
+    additional_inputs: []
+    facilities: [settlement_space]
+    tools: [placement_tools]
+    qualification: {minimum_role: installer, skill: maintenance, specialty: placement, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 0.5, max: 1.0}
+    logistics:
+      input_staging: 从家具储藏区领取指定床实例并搬到已确认的住宿位置。
+      output_location: 在可达、干燥且不阻塞通道的位置登记为已部署床位。
+    rollback:
+      allowed: true
+      result: source_returned
+      note: 拆卸并复核完整度后返回同一库存实例，不能生成第二张床。
+    risks:
+      - {id: bad_site, condition: 位置潮湿、受阻或没有足够展开空间。, effect: 部署不成立或床位不能被安全使用。}
+
+  - id: transition.deploy.lockable_storage_chest
+    name: 部署上锁储物箱
+    description: 将指定箱体搬到储藏位置，完成固定、钥匙或访问归属登记。
+    status: candidate_only
+    kind: deploy
+    source: {kind: inventory_item, item: item.furniture.lockable_storage_chest, amount: 1.0, disposition: installed, link_exclusive: true}
+    target: {definition: entity.placed.lockable_storage_chest}
+    additional_inputs: []
+    facilities: [settlement_space]
+    tools: [placement_tools, woodworking_tools]
+    qualification: {minimum_role: installer, skill: maintenance, specialty: placement, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 1.0, max: 2.0}
+    logistics:
+      input_staging: 从家具区搬运指定箱体，同时携带其钥匙与来源记录。
+      output_location: 在受控储藏区固定并登记可访问人物，箱内物资仍需逐项入库。
+    rollback:
+      allowed: true
+      result: source_returned
+      note: 清空内容、解除访问关系并拆卸后返回原箱体实例。
+    risks:
+      - {id: unauthorized_access, condition: 箱体部署完成但钥匙或访问名单未登记。, effect: 储藏能力不能标记为受控并产生归属争议。}
+
+  - id: transition.deploy.communal_table
+    name: 部署公共长桌
+    description: 将公共长桌搬运到共享区域并完成稳定、通道与使用边界检查。
+    status: candidate_only
+    kind: deploy
+    source: {kind: inventory_item, item: item.furniture.communal_table, amount: 1.0, disposition: installed, link_exclusive: true}
+    target: {definition: entity.placed.communal_table}
+    additional_inputs: []
+    facilities: [settlement_space]
+    tools: [placement_tools]
+    qualification: {minimum_role: installer, skill: maintenance, specialty: placement, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 1.0, max: 2.0}
+    logistics:
+      input_staging: 从家具区组织多人或推车搬运，提前清理公共区域通道。
+      output_location: 在不阻断人流和生产路线的位置完成稳定检查与公共用途登记。
+    rollback:
+      allowed: true
+      result: source_returned
+      note: 清空桌面、解除地点登记并搬回家具库存。
+    risks:
+      - {id: bad_site, condition: 桌体占用紧急通道或与生产动线冲突。, effect: 部署被拒绝或需要重新选址并增加有效时间。}
+
+  - id: transition.deploy.task_lamp
+    name: 部署有线工作灯
+    description: 将库存工作灯安装到具体工位并完成线路连接和电气检查。
+    status: candidate_only
+    kind: deploy
+    source: {kind: inventory_item, item: item.furniture.task_lamp, amount: 1.0, disposition: installed, link_exclusive: true}
+    target: {definition: entity.placed.task_lamp}
+    additional_inputs: []
+    facilities: [settlement_space, electrical_grid]
+    tools: [placement_tools, electrical_testing_tools]
+    qualification: {minimum_role: electrician, skill: electronics, specialty: placement, missing_effect: prohibited}
+    effective_time_hours: {min: 1.0, max: 2.5}
+    logistics:
+      input_staging: 将指定灯具搬到断电工位并核对连接接口和线路可达性。
+      output_location: 固定在目标工位，完成绝缘与通断检查后才登记为已部署。
+    rollback:
+      allowed: true
+      result: source_returned
+      note: 断电、解除线路并拆下同一灯具实例，检查后返回库存。
+    risks:
+      - {id: electrical_fault, condition: 接线前未断电或线路绝缘状态不明。, effect: 部署失败并产生人员与设施风险。}
+
+  - id: transition.deploy.wired_alarm_unit
+    name: 部署有线预警单元
+    description: 将库存预警单元安装到警戒点，连接物理线路并完成局部触发测试。
+    status: candidate_only
+    kind: deploy
+    source: {kind: inventory_item, item: item.electronic.wired_alarm_unit, amount: 1.0, disposition: installed, link_exclusive: true}
+    target: {definition: entity.placed.wired_alarm_unit}
+    additional_inputs: []
+    facilities: [settlement_space, electrical_grid]
+    tools: [placement_tools, electrical_testing_tools]
+    qualification: {minimum_role: electrician, skill: electronics, specialty: wired_security, missing_effect: prohibited}
+    effective_time_hours: {min: 2.0, max: 4.0}
+    logistics:
+      input_staging: 将指定单元、线路图和测试工具送到已选择的警戒位置。
+      output_location: 固定传感与控制部件，完成局部线路和触发记录后登记。
+    rollback:
+      allowed: true
+      result: source_returned
+      note: 先停用警戒线路，再拆下原单元并保留其维护和误报记录。
+    risks:
+      - {id: false_alarm, condition: 传感位置或线路测试未覆盖实际环境干扰。, effect: 单元不能标记为可靠预警入口并增加值守负担。}
+      - {id: electrical_fault, condition: 布线受潮、破损或接入错误回路。, effect: 部署失败并可能损坏单元或线路。}
+
+  - id: transition.deploy.settlement_banner_display
+    name: 部署聚落旗帜展示
+    description: 将库存旗帜搬到公共可见位置，完成悬挂安全和展示归属登记。
+    status: candidate_only
+    kind: deploy
+    source: {kind: inventory_item, item: item.decoration.settlement_banner, amount: 1.0, disposition: installed, link_exclusive: true}
+    target: {definition: entity.placed.settlement_banner_display}
+    additional_inputs: []
+    facilities: [settlement_space]
+    tools: [placement_tools]
+    qualification: {minimum_role: general_worker, skill: maintenance, specialty: placement, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 0.5, max: 1.5}
+    logistics:
+      input_staging: 从装饰物储藏处领取指定旗帜并确认展示决定和天气条件。
+      output_location: 在公共可见且结构安全的位置悬挂，并记录责任人与展示语境。
+    rollback:
+      allowed: true
+      result: source_returned
+      note: 解除悬挂、检查损伤并将同一旗帜折叠返回库存。
+    risks:
+      - {id: provenance_loss, condition: 展示时未保留旗帜来源、含义或责任记录。, effect: 身份表达可能被误读并削弱来源价值。}
+
+  - id: transition.cultivate.grain_field
+    name: 建立谷物田生长周期
+    description: 将专业谷物种源、水和化肥送达田块并播种，建立可追踪的谷物生长实体。
+    status: candidate_only
+    kind: cultivate
+    source: {kind: inventory_item, item: item.seed.specialized_grain_seed, amount: 1.0, disposition: sown, link_exclusive: false}
+    target: {definition: entity.growing.grain_field}
+    additional_inputs:
+      - {item: item.water.clean_water, amount: 40.0, consumed: true}
+      - {item: item.agriculture.compound_fertilizer, amount: 1.0, consumed: true}
+    facilities: [field_plot]
+    tools: [field_tools]
+    qualification: {minimum_role: farm_worker, skill: agriculture, specialty: crop_rotation, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 10.0, max: 16.0}
+    logistics:
+      input_staging: 种源、水和化肥在播种窗口前送到已分配田块并分别确认预留。
+      output_location: 田块登记为谷物生长实体，库存种源按面积扣除且不再可分配。
+    rollback:
+      allowed: false
+      result: irreversible_after_sowing
+      note: 播种后只能终止田块并记录损失，不能无损返还同一批种源。
+    risks:
+      - {id: late_delivery, condition: 水、化肥或种源错过播种窗口。, effect: 生长实体不能按计划建立或有效阶段延后。}
+      - {id: seed_failure, condition: 种源受潮、污染或发芽状态未检查。, effect: 田块进入 failed 阶段并保留已消耗投入。}
+
+  - id: transition.cultivate.fiber_crop_field
+    name: 建立纤维作物田生长周期
+    description: 在轮作计划确认的田块播下纤维作物种源并投入水和化肥。
+    status: candidate_only
+    kind: cultivate
+    source: {kind: inventory_item, item: item.seed.fiber_crop_seed, amount: 1.0, disposition: sown, link_exclusive: false}
+    target: {definition: entity.growing.fiber_crop_field}
+    additional_inputs:
+      - {item: item.water.clean_water, amount: 30.0, consumed: true}
+      - {item: item.agriculture.compound_fertilizer, amount: 1.0, consumed: true}
+    facilities: [field_plot]
+    tools: [field_tools]
+    qualification: {minimum_role: farm_worker, skill: agriculture, specialty: crop_rotation, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 9.0, max: 15.0}
+    logistics:
+      input_staging: 先确认田块没有被食品作物承诺占用，再集结种源、水和化肥。
+      output_location: 按田块登记纤维作物生长实体，并显示它对食品耕地的占用。
+    rollback:
+      allowed: false
+      result: irreversible_after_sowing
+      note: 播种后终止只记录损失，不返还种源或已经施用的投入。
+    risks:
+      - {id: ingredient_shortage, condition: 水或化肥预留与食品田块冲突。, effect: 不得按满额建立田块，必须缩小规模或延期。}
+      - {id: seed_failure, condition: 种源发芽检查不合格。, effect: 生长实体进入 failed 阶段。}
+
+  - id: transition.cultivate.medicinal_herb_plot
+    name: 建立药草圃生长周期
+    description: 核验药草种源后在隔离田块播种，投入洁净水和受控化肥并建立来源记录。
+    status: candidate_only
+    kind: cultivate
+    source: {kind: inventory_item, item: item.seed.medicinal_herb_seed, amount: 1.0, disposition: sown, link_exclusive: false}
+    target: {definition: entity.growing.medicinal_herb_plot}
+    additional_inputs:
+      - {item: item.water.clean_water, amount: 12.0, consumed: true}
+      - {item: item.agriculture.compound_fertilizer, amount: 0.5, consumed: true}
+    facilities: [herb_plot]
+    tools: [field_tools, measuring_tools]
+    qualification: {minimum_role: farm_worker, skill: agriculture, specialty: herb_cultivation, missing_effect: prohibited}
+    effective_time_hours: {min: 8.0, max: 14.0}
+    logistics:
+      input_staging: 种源在污染隔离条件下送到药草圃，水和化肥批次单独标记。
+      output_location: 建立带来源记录的药草生长实体，与普通田块和化学作业区隔离。
+    rollback:
+      allowed: false
+      result: irreversible_after_sowing
+      note: 播种或施肥后不能无损撤回，终止时必须记录种源和投入损失。
+    risks:
+      - {id: contamination, condition: 种源、土壤或工具与未知植物或工业化学品混用。, effect: 生长实体不能进入医疗收获路径。}
+      - {id: seed_failure, condition: 种源鉴别或发芽状态错误。, effect: 田块进入 failed 阶段并触发来源复核。}
+
+  - id: transition.cultivate.fodder_field
+    name: 建立饲料地生长周期
+    description: 在牧地附近田块播下饲料作物种源并投入灌溉，建立动物供给链的生长实体。
+    status: candidate_only
+    kind: cultivate
+    source: {kind: inventory_item, item: item.seed.fodder_crop_seed, amount: 1.0, disposition: sown, link_exclusive: false}
+    target: {definition: entity.growing.fodder_field}
+    additional_inputs:
+      - {item: item.water.clean_water, amount: 20.0, consumed: true}
+    facilities: [field_plot, pasture]
+    tools: [field_tools]
+    qualification: {minimum_role: farm_worker, skill: agriculture, specialty: crop_rotation, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 7.0, max: 12.0}
+    logistics:
+      input_staging: 种源和灌溉水在播种前送到靠近动物设施的田块。
+      output_location: 田块登记为饲料作物生长实体，并与人物食品田块分开核算。
+    rollback:
+      allowed: false
+      result: irreversible_after_sowing
+      note: 播种后终止不会返还种源，已消耗水也不恢复。
+    risks:
+      - {id: late_delivery, condition: 播种窗口前没有完成水和田块承诺。, effect: 动物供给计划延后并扩大饲料缺口。}
+      - {id: seed_failure, condition: 种源保存或田块条件不合格。, effect: 生长实体进入 failed 阶段。}
+
+  - id: transition.intake.watch_dog
+    name: 接收并安置警戒犬
+    description: 从外部活体交接接收犬只，完成健康观察、犬舍位置和照护归属登记。
+    status: candidate_only
+    kind: live_intake
+    source: {kind: external_intake, intake_type: live_animal_handover, disposition: accepted_to_custody}
+    target: {definition: entity.character.watch_dog}
+    additional_inputs:
+      - {item: item.animal.feed_bundle, amount: 0.25, consumed: true}
+      - {item: item.water.clean_water, amount: 5.0, consumed: true}
+    facilities: [animal_intake_pen, kennel]
+    tools: [handling_gear, animal_care_kit]
+    qualification: {minimum_role: animal_handler, skill: animal_care, specialty: canine_handling, missing_effect: prohibited}
+    effective_time_hours: {min: 4.0, max: 8.0}
+    logistics:
+      input_staging: 在接收栏完成交接记录、隔离观察和基础供给，不把犬只放入普通仓库。
+      output_location: 健康观察通过后建立犬舍位置、照护人和角色归属。
+    rollback:
+      allowed: false
+      result: custody_transfer_required
+      note: 退出聚落必须完成新的照护交接，不能把角色返还为库存物品。
+    risks:
+      - {id: animal_stress, condition: 交接、隔离或新环境超过个体适应能力。, effect: 接收时间扩大且不能分派警戒用途。}
+      - {id: escape, condition: 接收栏、犬舍或照护交接不完整。, effect: 角色归属不能成立并可能走失。}
+
+  - id: transition.intake.barn_cat
+    name: 接收并安置谷仓猫
+    description: 完成猫只健康观察、谷仓活动范围和日常照护归属登记。
+    status: candidate_only
+    kind: live_intake
+    source: {kind: external_intake, intake_type: live_animal_handover, disposition: accepted_to_custody}
+    target: {definition: entity.character.barn_cat}
+    additional_inputs:
+      - {item: item.animal.feed_bundle, amount: 0.15, consumed: true}
+      - {item: item.water.clean_water, amount: 3.0, consumed: true}
+    facilities: [animal_intake_pen, barn]
+    tools: [handling_gear, animal_care_kit]
+    qualification: {minimum_role: animal_handler, skill: animal_care, specialty: livestock_handling, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 2.0, max: 5.0}
+    logistics:
+      input_staging: 在接收栏观察健康和应激，准备基础供给与躲避空间。
+      output_location: 在谷仓附近登记照护点和活动范围，不保证捕鼠行为。
+    rollback:
+      allowed: false
+      result: custody_transfer_required
+      note: 需要新的照护方或安全放归方案，不能转成可堆叠宠物物品。
+    risks:
+      - {id: animal_stress, condition: 缺少躲避空间或强制接触过多。, effect: 角色不能稳定建立谷仓活动范围。}
+      - {id: escape, condition: 接收期未完成环境适应和照护归属。, effect: 猫只走失并终止接收流程。}
+
+  - id: transition.intake.homing_pigeon
+    name: 接收并安置信鸽
+    description: 完成鸽只健康观察、鸽舍归属和基础返巢来源核验。
+    status: candidate_only
+    kind: live_intake
+    source: {kind: external_intake, intake_type: live_animal_handover, disposition: accepted_to_custody}
+    target: {definition: entity.character.homing_pigeon}
+    additional_inputs:
+      - {item: item.animal.feed_bundle, amount: 0.1, consumed: true}
+      - {item: item.water.clean_water, amount: 2.0, consumed: true}
+    facilities: [animal_intake_pen, dovecote]
+    tools: [handling_gear, animal_care_kit]
+    qualification: {minimum_role: animal_handler, skill: animal_care, specialty: avian_handling, missing_effect: prohibited}
+    effective_time_hours: {min: 3.0, max: 6.0}
+    logistics:
+      input_staging: 在封闭接收区完成健康观察和脚环或来源标记核验。
+      output_location: 建立鸽舍归属和候选路线记录，尚不允许直接执行通讯任务。
+    rollback:
+      allowed: false
+      result: custody_transfer_required
+      note: 退出必须交接给具备鸽舍的照护方，不能返还为库存。
+    risks:
+      - {id: animal_stress, condition: 搬运、噪声或新鸽舍环境造成持续应激。, effect: 返巢适配不能开始。}
+      - {id: escape, condition: 未完成鸽舍适应就开放飞行。, effect: 鸽只失踪并终止角色归属。}
+
+  - id: transition.intake.pack_goat
+    name: 接收并安置驮运山羊
+    description: 完成山羊检疫、畜棚与牧地归属、基础牵引适应检查。
+    status: candidate_only
+    kind: live_intake
+    source: {kind: external_intake, intake_type: live_animal_handover, disposition: accepted_to_custody}
+    target: {definition: entity.character.pack_goat}
+    additional_inputs:
+      - {item: item.animal.feed_bundle, amount: 0.5, consumed: true}
+      - {item: item.water.clean_water, amount: 8.0, consumed: true}
+    facilities: [animal_intake_pen, barn, pasture]
+    tools: [handling_gear, animal_care_kit]
+    qualification: {minimum_role: animal_handler, skill: animal_care, specialty: livestock_handling, missing_effect: prohibited}
+    effective_time_hours: {min: 5.0, max: 10.0}
+    logistics:
+      input_staging: 在接收栏完成健康和蹄部观察，预留饲料、水与隔离空间。
+      output_location: 建立畜棚、牧地和照护人归属，运输训练仍为后续系统。
+    rollback:
+      allowed: false
+      result: custody_transfer_required
+      note: 退出必须完成役畜照护交接，不能折算为库存物品。
+    risks:
+      - {id: animal_stress, condition: 运输后立即负重或缺少适应时间。, effect: 接收时间扩大并禁止运输分派。}
+      - {id: escape, condition: 围栏、牵引或牧地边界不适配。, effect: 角色可能走失并中断接收。}
+
+  - id: transition.intake.laying_hen
+    name: 接收并安置蛋鸡
+    description: 完成鸡只健康观察、禽舍隔离和照护归属登记。
+    status: candidate_only
+    kind: live_intake
+    source: {kind: external_intake, intake_type: live_animal_handover, disposition: accepted_to_custody}
+    target: {definition: entity.character.laying_hen}
+    additional_inputs:
+      - {item: item.animal.feed_bundle, amount: 0.2, consumed: true}
+      - {item: item.water.clean_water, amount: 3.0, consumed: true}
+    facilities: [animal_intake_pen, poultry_coop]
+    tools: [handling_gear, animal_care_kit]
+    qualification: {minimum_role: animal_handler, skill: animal_care, specialty: avian_handling, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 2.0, max: 5.0}
+    logistics:
+      input_staging: 在接收区完成禽类健康观察并准备隔离饲喂。
+      output_location: 建立禽舍位置、照护人和卫生记录，不生成鸡蛋库存。
+    rollback:
+      allowed: false
+      result: custody_transfer_required
+      note: 退出需完成禽类照护交接或兽医处置，不能转为库存对象。
+    risks:
+      - {id: contamination, condition: 新接收禽只未隔离就进入现有禽舍。, effect: 角色归属暂缓并扩大群体健康风险。}
+      - {id: animal_stress, condition: 密度、噪声或饲喂条件不合格。, effect: 接收期延长且不能标记产蛋候选。}
+
+  - id: transition.intake.dairy_goat
+    name: 接收并安置奶山羊
+    description: 完成山羊健康观察、畜棚和牧地归属，并记录乳品用途仍需后续确认。
+    status: candidate_only
+    kind: live_intake
+    source: {kind: external_intake, intake_type: live_animal_handover, disposition: accepted_to_custody}
+    target: {definition: entity.character.dairy_goat}
+    additional_inputs:
+      - {item: item.animal.feed_bundle, amount: 0.5, consumed: true}
+      - {item: item.water.clean_water, amount: 10.0, consumed: true}
+    facilities: [animal_intake_pen, barn, pasture]
+    tools: [handling_gear, animal_care_kit]
+    qualification: {minimum_role: animal_handler, skill: animal_care, specialty: livestock_handling, missing_effect: prohibited}
+    effective_time_hours: {min: 5.0, max: 10.0}
+    logistics:
+      input_staging: 在接收栏完成健康、乳房和来源观察，准备独立供给。
+      output_location: 建立畜棚、牧地和照护人归属；乳品处理仍需食品系统流程。
+    rollback:
+      allowed: false
+      result: custody_transfer_required
+      note: 退出需转交合格照护方并保留健康记录。
+    risks:
+      - {id: contamination, condition: 健康观察与乳品卫生记录缺失。, effect: 角色可以被照护但不得进入乳品用途。}
+      - {id: animal_stress, condition: 运输后缺少安静隔离和稳定饲喂。, effect: 接收时间扩大并终止用途评估。}
+
+  - id: transition.intake.search_rescue_dog
+    name: 接收并安置搜救犬
+    description: 接收具有搜救背景声明的犬只，完成健康观察、来源核验和能力待评估标记。
+    status: candidate_only
+    kind: live_intake
+    source: {kind: external_intake, intake_type: live_animal_handover, disposition: accepted_to_custody}
+    target: {definition: entity.character.search_rescue_dog}
+    additional_inputs:
+      - {item: item.animal.feed_bundle, amount: 0.3, consumed: true}
+      - {item: item.water.clean_water, amount: 6.0, consumed: true}
+    facilities: [animal_intake_pen, kennel]
+    tools: [handling_gear, animal_care_kit]
+    qualification: {minimum_role: animal_handler, skill: animal_care, specialty: canine_handling, missing_effect: prohibited}
+    effective_time_hours: {min: 6.0, max: 12.0}
+    logistics:
+      input_staging: 在接收栏完成来源、健康和应激观察，保存原训练声明但不视为已验证。
+      output_location: 建立犬舍和照护归属，角色标记为能力待评估而非可直接派遣。
+    rollback:
+      allowed: false
+      result: custody_transfer_required
+      note: 退出必须转交合格照护方，训练声明与健康记录随交接保留。
+    risks:
+      - {id: false_claim, condition: 外部交接方的搜救训练声明缺少可核验证据。, effect: 角色只保留普通犬只照护状态，不获得搜救用途标记。}
+      - {id: animal_stress, condition: 接收期进行高压能力测试。, effect: 评估被终止并延长适应期。}
+
+  - id: transition.intake.fiber_rabbit
+    name: 接收并安置纤维兔
+    description: 完成兔只健康观察、兔舍环境和梳理照护归属登记。
+    status: candidate_only
+    kind: live_intake
+    source: {kind: external_intake, intake_type: live_animal_handover, disposition: accepted_to_custody}
+    target: {definition: entity.character.fiber_rabbit}
+    additional_inputs:
+      - {item: item.animal.feed_bundle, amount: 0.15, consumed: true}
+      - {item: item.water.clean_water, amount: 3.0, consumed: true}
+    facilities: [animal_intake_pen, rabbit_hutch]
+    tools: [handling_gear, animal_care_kit]
+    qualification: {minimum_role: animal_handler, skill: animal_care, specialty: livestock_handling, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 3.0, max: 6.0}
+    logistics:
+      input_staging: 在安静接收区完成健康和毛被观察，准备干燥兔舍与饲料。
+      output_location: 建立兔舍、照护人和候选梳理用途记录，不生成纤维库存。
+    rollback:
+      allowed: false
+      result: custody_transfer_required
+      note: 退出需完成动物福利交接，不得转为库存纤维或宠物道具。
+    risks:
+      - {id: animal_stress, condition: 温度、噪声或抓持方式不适合兔只。, effect: 接收时间扩大并禁止梳理用途。}
+      - {id: escape, condition: 兔舍缝隙或接收区边界未检查。, effect: 角色走失并中断接收。}
+
+  - id: transition.rights.border_passage
+    name: 激活边境通行权
+    description: 核验通行证册、签发状态和持有人匹配后建立排他关联的通行权记录。
+    status: candidate_only
+    kind: right_activation
+    source: {kind: inventory_item, item: item.document.travel_permit_booklet, amount: 1.0, disposition: retained_and_linked, link_exclusive: true}
+    target: {definition: record.right.border_passage}
+    additional_inputs: []
+    facilities: [administration_desk]
+    tools: [record_seal]
+    qualification: {minimum_role: registrar, skill: administration, specialty: rights_verification, missing_effect: prohibited}
+    effective_time_hours: {min: 0.5, max: 1.5}
+    logistics:
+      input_staging: 将指定证册和持有人身份信息送到登记台，证册不被消耗。
+      output_location: 在权利台账建立与证册实例排他关联的记录。
+    rollback:
+      allowed: true
+      result: record_deactivated
+      note: 停用或撤销记录后保留证册和历史关联，不能抹除审计链。
+    risks:
+      - {id: duplicate_activation, condition: 同一证册实例已关联另一有效通行记录。, effect: 激活被禁止并触发审计。}
+      - {id: revocation, condition: 签发方已暂停或撤销证册。, effect: 记录保持 inactive 或转为 revoked。}
+
+  - id: transition.rights.ration_entitlement
+    name: 激活配给领取权
+    description: 核验配给券册、名单和持有人后建立领取资格记录，不直接发放库存。
+    status: candidate_only
+    kind: right_activation
+    source: {kind: inventory_item, item: item.document.ration_coupon_book, amount: 1.0, disposition: retained_and_linked, link_exclusive: true}
+    target: {definition: record.right.ration_entitlement}
+    additional_inputs: []
+    facilities: [administration_desk]
+    tools: [record_seal]
+    qualification: {minimum_role: registrar, skill: administration, specialty: rights_verification, missing_effect: prohibited}
+    effective_time_hours: {min: 0.5, max: 1.5}
+    logistics:
+      input_staging: 将指定券册和配给名单送到登记台并核对未重复使用。
+      output_location: 建立资格记录与券册实例的排他关联，实际领取仍走库存裁定。
+    rollback:
+      allowed: true
+      result: record_deactivated
+      note: 停用记录不销毁券册，但保留已领取和撤销历史。
+    risks:
+      - {id: duplicate_activation, condition: 券册已关联另一有效资格记录。, effect: 激活被拒绝并标记潜在重复领取。}
+      - {id: false_claim, condition: 持有人或名单信息无法匹配。, effect: 记录保持 inactive 并要求补充证据。}
+
+  - id: transition.rights.workshop_position_qualification
+    name: 激活工坊岗位资格
+    description: 核验资格证、签发方和持有人后建立岗位准入记录。
+    status: candidate_only
+    kind: right_activation
+    source: {kind: inventory_item, item: item.document.workshop_qualification_certificate, amount: 1.0, disposition: retained_and_linked, link_exclusive: true}
+    target: {definition: record.right.workshop_position_qualification}
+    additional_inputs: []
+    facilities: [administration_desk]
+    tools: [record_seal]
+    qualification: {minimum_role: registrar, skill: administration, specialty: rights_verification, missing_effect: prohibited}
+    effective_time_hours: {min: 0.75, max: 2.0}
+    logistics:
+      input_staging: 将证书、持有人和签发记录送到登记台核验。
+      output_location: 建立资格记录并关联具体岗位范围，不生成排班或技能。
+    rollback:
+      allowed: true
+      result: record_deactivated
+      note: 暂停或撤销资格时保留证书和历史岗位记录。
+    risks:
+      - {id: false_claim, condition: 证书来源、岗位范围或持有人不匹配。, effect: 资格不能激活并进入证据复核。}
+      - {id: revocation, condition: 工坊委员会撤回资格或岗位范围改变。, effect: 记录转为 suspended 或 revoked。}
+
+  - id: transition.rights.disputed_property_claim
+    name: 登记争议产权主张
+    description: 保存争议产权契据和证据链，建立初始为 disputed 的主张记录。
+    status: candidate_only
+    kind: right_activation
+    source: {kind: inventory_item, item: item.document.disputed_property_deed, amount: 1.0, disposition: retained_and_linked, link_exclusive: true}
+    target: {definition: record.right.disputed_property_claim}
+    additional_inputs: []
+    facilities: [administration_desk]
+    tools: [record_seal]
+    qualification: {minimum_role: registrar, skill: archival, specialty: rights_verification, missing_effect: prohibited}
+    effective_time_hours: {min: 1.5, max: 4.0}
+    logistics:
+      input_staging: 将契据、来源记录和已知反对主张送到档案登记区。
+      output_location: 建立 disputed 状态记录并排他关联契据，争议资产不进入可用库存。
+    rollback:
+      allowed: true
+      result: record_deactivated
+      note: 撤回主张只停用记录，契据和审计历史继续保留。
+    risks:
+      - {id: evidence_loss, condition: 契据来源或反对证据未完成归档。, effect: 主张记录不能建立完整证据链。}
+      - {id: false_claim, condition: 契据内容与资产或持有人无法对应。, effect: 记录保持 disputed 并增加政治暴露。}
+
+  - id: transition.rights.silicon_access
+    name: 激活硅基访问权
+    description: 在物理隔离条件下认证访问令牌并建立可审计的系统访问记录。
+    status: candidate_only
+    kind: right_activation
+    source: {kind: inventory_item, item: item.rare.silicon_access_token, amount: 1.0, disposition: retained_and_linked, link_exclusive: true}
+    target: {definition: record.right.silicon_access}
+    additional_inputs: []
+    facilities: [access_terminal]
+    tools: [data_recovery_tools]
+    qualification: {minimum_role: archivist, skill: electronics, specialty: secure_access, missing_effect: prohibited}
+    effective_time_hours: {min: 1.0, max: 3.0}
+    logistics:
+      input_staging: 将令牌送到隔离终端并核对持有人、目标系统和审计范围。
+      output_location: 建立与令牌实例排他关联的访问记录，令牌继续受控保管。
+    rollback:
+      allowed: true
+      result: record_deactivated
+      note: 停用访问记录后令牌仍存在，历史访问和撤销信息不能删除。
+    risks:
+      - {id: unauthorized_access, condition: 持有人、目标系统或权限范围没有明确匹配。, effect: 激活被禁止并产生安全审计。}
+      - {id: duplicate_activation, condition: 令牌已关联另一有效访问记录。, effect: 新记录不能建立。}
+
+  - id: transition.rights.seed_vault_custody
+    name: 激活种源匣保管权
+    description: 核验密封种源匣、交接链和委员会决定后建立保管责任记录。
+    status: candidate_only
+    kind: right_activation
+    source: {kind: inventory_item, item: item.rare.sealed_seed_vault, amount: 1.0, disposition: retained_and_linked, link_exclusive: true}
+    target: {definition: record.right.seed_vault_custody}
+    additional_inputs: []
+    facilities: [seed_vault, administration_desk]
+    tools: [record_seal]
+    qualification: {minimum_role: registrar, skill: archival, specialty: rights_verification, missing_effect: prohibited}
+    effective_time_hours: {min: 1.0, max: 3.0}
+    logistics:
+      input_staging: 将种源匣、封条状态、交接记录和委员会决定共同送到保管区核验。
+      output_location: 建立聚落级保管记录并排他关联种源匣实例，不自动开封或分配内容。
+    rollback:
+      allowed: true
+      result: record_deactivated
+      note: 更换保管方时停用旧记录并建立新交接链，种源匣继续作为物理证据。
+    risks:
+      - {id: evidence_loss, condition: 封条、来源或交接签名不完整。, effect: 保管权不能激活并必须隔离种源匣。}
+      - {id: duplicate_activation, condition: 同一种源匣已有有效保管记录。, effect: 新记录被拒绝并触发委员会审计。}

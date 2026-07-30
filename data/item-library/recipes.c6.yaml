@@ -1,0 +1,263 @@
+schema_version: 0.6.0
+library_status: candidate_only
+authority:
+  contract: docs/item-library/item-library-authoring-contract-v0.6.md
+  design: docs/design-docs/item-and-manufacturing-system-v0.1.md
+  design_sha256: 24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb
+scope_note: C6 只定义食品医疗和低技术武器训练耗材工艺，不定义枪械或受控弹药制造。
+
+recipes:
+  - id: recipe.c6_food.dry_fruit
+    name: 鲜果切分脱水
+    description: 将合格鲜果切分并以受控热源脱水封装，减少腐坏但消耗燃料。
+    status: candidate_only
+    kind: food_processing
+    resource_chains: [survival, security, politics]
+    inputs: [{item: item.food.fresh_fruit, amount: 1.0, consumed: true}, {item: item.material.dry_firewood, amount: 0.12, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [food_preservation_station, basic_kitchen]
+    tools: [preservation_tools, cooking_set]
+    qualification: {minimum_role: cook, skill: cooking, specialty: fruit_drying, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 4.0, max: 7.0}
+    logistics: {input_staging: 鲜果按成熟和损伤状态送入食品区。, output_storage: 完全冷却后防潮封装并标记加工批次。}
+    outputs: [{item: item.food.dried_fruit, min: 0.2, max: 0.35}]
+    byproducts: [{type: burden, burden: wastewater, min: 0.1, max: 0.3}]
+    risks: [{id: spoilage, condition: 脱水不足或冷却后吸湿。, effect: 包装内霉变并损失批次。}, {id: fire, condition: 热源和干燥材料隔离不合格。, effect: 工艺中止并产生火灾风险。}]
+
+  - id: recipe.c6_food.cook_bean_root_stew
+    name: 豆根公共炖食
+    description: 将干豆、根菜、水和盐以柴薪炖煮为需要及时分餐的熟食。
+    status: candidate_only
+    kind: food_processing
+    resource_chains: [survival, politics]
+    inputs: [{item: item.food.dried_legume, amount: 0.4, consumed: true}, {item: item.food.root_vegetable, amount: 0.4, consumed: true}, {item: item.water.clean_water, amount: 1.0, consumed: true}, {item: item.chemical.mineral_salt, amount: 0.01, consumed: true}, {item: item.material.dry_firewood, amount: 0.15, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [basic_kitchen]
+    tools: [cooking_set, measuring_tools]
+    qualification: {minimum_role: cook, skill: cooking, specialty: communal_cooking, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 3.0, max: 5.0}
+    logistics: {input_staging: 干豆提前浸泡并与根菜、盐、水和燃料同批集结。, output_storage: 熟食按烹制时段分装并立即分餐或冷藏。}
+    outputs: [{item: item.food.bean_root_stew, min: 1.3, max: 1.6}]
+    byproducts: [{type: item, item: item.waste.wood_ash, min: 0.01, max: 0.03}, {type: burden, burden: wastewater, min: 0.1, max: 0.3}]
+    risks: [{id: foodborne_illness, condition: 浸泡、炖煮、分餐或温控不合格。, effect: 整批熟食禁止食用。}, {id: late_delivery, condition: 餐食完成时分餐人物或地点未就绪。, effect: 保存窗口缩短并增加浪费。}]
+
+  - id: recipe.c6_food.bake_travel_biscuit
+    name: 硬质行粮饼烘制
+    description: 用面粉、糖、水和柴薪制作低含水行粮并防潮封装。
+    status: candidate_only
+    kind: food_processing
+    resource_chains: [survival, security, politics]
+    inputs: [{item: item.food.grain_flour, amount: 1.0, consumed: true}, {item: item.food.unrefined_sugar, amount: 0.05, consumed: true}, {item: item.water.clean_water, amount: 0.3, consumed: true}, {item: item.material.dry_firewood, amount: 0.2, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [basic_kitchen]
+    tools: [cooking_set, preservation_tools, measuring_tools]
+    qualification: {minimum_role: cook, skill: cooking, specialty: travel_baking, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 4.0, max: 6.0}
+    logistics: {input_staging: 食材和燃料分别送到厨房并确认行粮订单未重复占用。, output_storage: 彻底冷却后防潮封装并标记生产日期。}
+    outputs: [{item: item.food.travel_biscuit, min: 0.9, max: 1.1}]
+    byproducts: [{type: item, item: item.waste.wood_ash, min: 0.01, max: 0.03}]
+    risks: [{id: packaging_failure, condition: 冷却不足或封装受潮。, effect: 行粮失去耐储用途。}, {id: fire, condition: 烘制热源和粉料控制不合格。, effect: 批次与厨房面临损失。}]
+
+  - id: recipe.c6_medical.prepare_irrigation_saline
+    name: 伤口冲洗盐水配制
+    description: 由医护人员用洁净水和食品级盐按清洁批次配制冲洗液。
+    status: candidate_only
+    kind: medical_processing
+    resource_chains: [survival, security]
+    inputs: [{item: item.water.clean_water, amount: 1.0, consumed: true}, {item: item.chemical.mineral_salt, amount: 0.009, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [medical_clean_station, clean_workbench]
+    tools: [medical_packing_tools, measuring_tools, sterilization_tools]
+    qualification: {minimum_role: medic, skill: medicine, specialty: saline_preparation, missing_effect: prohibited}
+    effective_time_hours: {min: 1.0, max: 2.0}
+    logistics: {input_staging: 食品级盐、水、清洁容器和标签共同集结。, output_storage: 配制后封口并标记浓度、用途和时间。}
+    outputs: [{item: item.medical.wound_irrigation_saline, min: 1.0, max: 1.0}]
+    byproducts: []
+    risks: [{id: dosage_error, condition: 盐水浓度、计量或标签错误。, effect: 整批不得用于伤口冲洗。}, {id: contamination, condition: 水、工具或容器清洁不合格。, effect: 整批报废。}]
+
+  - id: recipe.c6_medical.pack_field_wound_care
+    name: 野外伤口护理包封装
+    description: 将无菌绷带、纱布和基础消毒剂按一次野外伤口处置需求封装。
+    status: candidate_only
+    kind: medical_processing
+    resource_chains: [survival, security]
+    inputs: [{item: item.medical.sterile_bandage, amount: 1.0, consumed: true}, {item: item.medical.sterile_gauze_pad, amount: 1.0, consumed: true}, {item: item.medical.basic_antiseptic, amount: 0.1, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [medical_clean_station, clean_workbench]
+    tools: [medical_packing_tools, sterilization_tools]
+    qualification: {minimum_role: medic, skill: medicine, specialty: wound_care_packing, missing_effect: prohibited}
+    effective_time_hours: {min: 2.0, max: 4.0}
+    logistics: {input_staging: 三类医疗输入按批次和封口状态送入清洁区。, output_storage: 通过内容、封口和标签检查后按护理用途上锁入库。}
+    outputs: [{item: item.medical.field_wound_care_pack, min: 1.0, max: 1.0}]
+    byproducts: []
+    risks: [{id: contamination, condition: 取料或封装环境不合格。, effect: 成品退出无菌库存。}, {id: packaging_failure, condition: 内容清单、封口或标签不完整。, effect: 成品不得进入野外护理库存。}]
+
+  - id: recipe.c6_medical.pack_burn_dressing
+    name: 烧伤敷料封装
+    description: 将无菌纱布、清洁织物和基础消毒剂组合为烧伤初步照护敷料。
+    status: candidate_only
+    kind: medical_processing
+    resource_chains: [survival, security]
+    inputs: [{item: item.medical.sterile_gauze_pad, amount: 1.0, consumed: true}, {item: item.material.woven_cloth, amount: 0.1, consumed: true}, {item: item.medical.basic_antiseptic, amount: 0.1, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [medical_clean_station]
+    tools: [medical_packing_tools, sterilization_tools]
+    qualification: {minimum_role: medic, skill: medicine, specialty: burn_care, missing_effect: prohibited}
+    effective_time_hours: {min: 2.0, max: 3.0}
+    logistics: {input_staging: 三项输入在医疗清洁区按批次集结。, output_storage: 完成封口后按烧伤用途与普通纱布分柜。}
+    outputs: [{item: item.medical.burn_dressing_pack, min: 0.9, max: 1.0}]
+    byproducts: []
+    risks: [{id: contamination, condition: 敷料组合或封装区受到污染。, effect: 整批退出医疗用途。}, {id: packaging_failure, condition: 封口或温控标记缺失。, effect: 成品不能进入烧伤照护库存。}]
+
+  - id: recipe.c6_weapon.make_hunting_bow
+    name: 狩猎弓制作
+    description: 将整形木材和植物纤维制作成需要逐件检查的狩猎弓。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [security, survival]
+    inputs: [{item: item.material.reclaimed_lumber, amount: 0.8, consumed: true}, {item: item.material.plant_fiber, amount: 0.3, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [archery_bench, carpentry_bench]
+    tools: [archery_tools, woodworking_tools, measuring_tools]
+    qualification: {minimum_role: carpenter, skill: woodworking, specialty: bowyery, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 8.0, max: 14.0}
+    logistics: {input_staging: 木材按纹理和含水状态送入，纤维弦料保持干燥。, output_storage: 完成弓臂、弦体和拉力检查后逐件上锁。}
+    outputs: [{item: item.weapon.hunting_bow, min: 1.0, max: 1.0}]
+    byproducts: [{type: item, item: item.waste.sawdust, min: 0.05, max: 0.12}]
+    risks: [{id: string_snap, condition: 弦料、弓臂或拉力检查不合格。, effect: 成品禁止使用并可能造成人员伤害。}, {id: material_variation, condition: 回收木材纹理或含水差异过大。, effect: 工时和失败风险扩大。}]
+
+  - id: recipe.c6_weapon.make_light_crossbow
+    name: 轻型弩装配
+    description: 用木材、钢件、机械备件和纤维装配低技术弩具，不冻结射程或威力。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [security, industry]
+    inputs: [{item: item.material.reclaimed_lumber, amount: 0.8, consumed: true}, {item: item.material.reclaimed_steel_plate, amount: 0.4, consumed: true}, {item: item.component.mechanical_spares, amount: 0.5, consumed: true}, {item: item.material.plant_fiber, amount: 0.3, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [archery_bench, precision_bench]
+    tools: [archery_tools, metalworking_tools, woodworking_tools, measuring_tools]
+    qualification: {minimum_role: armorer, skill: fabrication, specialty: crossbow_fitting, missing_effect: prohibited}
+    effective_time_hours: {min: 12.0, max: 20.0}
+    logistics: {input_staging: 四类输入按尺寸与状态成套集结。, output_storage: 锁止、弦体和导轨检查后逐件封存。}
+    outputs: [{item: item.weapon.light_crossbow, min: 1.0, max: 1.0}]
+    byproducts: [{type: item, item: item.waste.metal_offcuts, min: 0.05, max: 0.12}, {type: item, item: item.waste.sawdust, min: 0.03, max: 0.08}]
+    risks: [{id: accidental_discharge, condition: 锁止或扳机检查不合格。, effect: 工艺中止并隔离成品。}, {id: string_snap, condition: 弩臂或弦体装配不稳定。, effect: 成品禁止使用。}]
+
+  - id: recipe.c6_weapon.make_hunting_spear
+    name: 狩猎矛装配
+    description: 将整形木柄、钢制矛头和紧固件装成狩猎矛。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [security, survival]
+    inputs: [{item: item.material.reclaimed_lumber, amount: 0.7, consumed: true}, {item: item.material.reclaimed_steel_plate, amount: 0.25, consumed: true}, {item: item.component.fastener_set, amount: 0.2, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [basic_workshop, carpentry_bench]
+    tools: [metalworking_tools, woodworking_tools, measuring_tools]
+    qualification: {minimum_role: armorer, skill: fabrication, specialty: polearm_making, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 5.0, max: 8.0}
+    logistics: {input_staging: 木柄和钢件按直度与状态送入工坊。, output_storage: 完成矛头固定和柄部检查后长件上锁。}
+    outputs: [{item: item.weapon.hunting_spear, min: 1.0, max: 1.0}]
+    byproducts: [{type: item, item: item.waste.metal_offcuts, min: 0.03, max: 0.08}]
+    risks: [{id: worker_injury, condition: 矛头整形与装柄缺少固定防护。, effect: 人物受伤并延长工时。}, {id: quality_loss, condition: 柄部直度或固定不足。, effect: 成品不能进入防务库存。}]
+
+  - id: recipe.c6_weapon.make_breaching_sledge
+    name: 破障大锤装配
+    description: 将重型钢件与整形木柄装成救援和破障大锤。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [industry, security, survival]
+    inputs: [{item: item.material.reclaimed_steel_plate, amount: 1.2, consumed: true}, {item: item.material.reclaimed_lumber, amount: 0.6, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [basic_workshop]
+    tools: [metalworking_tools, woodworking_tools]
+    qualification: {minimum_role: mechanic, skill: fabrication, specialty: breaching_tool, missing_effect: failure_risk_increased}
+    effective_time_hours: {min: 7.0, max: 11.0}
+    logistics: {input_staging: 钢件和木柄按重量与纹理检查后集结。, output_storage: 完成柄头固定和冲击检查后重型工具区上锁。}
+    outputs: [{item: item.weapon.breaching_sledge, min: 1.0, max: 1.0}]
+    byproducts: [{type: item, item: item.waste.metal_offcuts, min: 0.06, max: 0.12}, {type: item, item: item.waste.sawdust, min: 0.03, max: 0.06}]
+    risks: [{id: worker_injury, condition: 重件搬运和固定不合格。, effect: 人员受伤并中止装配。}, {id: quality_loss, condition: 柄头结合不足。, effect: 成品不能用于冲击任务。}]
+
+  - id: recipe.c6_weapon.make_weighted_staff
+    name: 配重长棍制作
+    description: 将整形木材和紧固配重制作成标准警戒长棍。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [security, politics]
+    inputs: [{item: item.material.reclaimed_lumber, amount: 0.8, consumed: true}, {item: item.component.fastener_set, amount: 0.2, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [carpentry_bench]
+    tools: [woodworking_tools, measuring_tools]
+    qualification: {minimum_role: carpenter, skill: woodworking, specialty: staff_making, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 3.0, max: 5.0}
+    logistics: {input_staging: 木材按直度和裂纹送入木作台。, output_storage: 完成表面、配重和握持检查后长件存放。}
+    outputs: [{item: item.weapon.weighted_staff, min: 1.0, max: 1.0}]
+    byproducts: [{type: item, item: item.waste.sawdust, min: 0.03, max: 0.07}]
+    risks: [{id: quality_loss, condition: 木体裂纹或配重固定不足。, effect: 成品不能进入训练或警戒库存。}, {id: worker_injury, condition: 配重装配和试挥空间不足。, effect: 人员受伤并延长工时。}]
+
+  - id: recipe.c6_weapon.make_capture_net
+    name: 配重捕捉网编制
+    description: 将植物纤维编结为网体并用紧固件形成边缘配重。
+    status: candidate_only
+    kind: tailoring
+    resource_chains: [security, survival]
+    inputs: [{item: item.material.plant_fiber, amount: 1.0, consumed: true}, {item: item.component.fastener_set, amount: 0.4, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [textile_bench, basic_workshop]
+    tools: [sewing_tools, measuring_tools]
+    qualification: {minimum_role: tailor, skill: tailoring, specialty: net_making, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 7.0, max: 11.0}
+    logistics: {input_staging: 纤维按强度和污染分级，配重件去除尖角。, output_storage: 展开检查网目、结点和配重后折叠入库。}
+    outputs: [{item: item.weapon.weighted_capture_net, min: 1.0, max: 1.0}]
+    byproducts: []
+    risks: [{id: quality_loss, condition: 网目、结点或边缘配重不均。, effect: 成品不能作为可靠捕捉工具。}, {id: worker_injury, condition: 配重尖角或试投空间不安全。, effect: 人员受伤并中止工艺。}]
+
+  - id: recipe.c6_ammo.make_hunting_arrows
+    name: 狩猎箭束制作
+    description: 将木杆、金属边角料和植物纤维制作成适配狩猎弓的箭束。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [security, survival]
+    inputs: [{item: item.material.reclaimed_lumber, amount: 0.4, consumed: true}, {item: item.waste.metal_offcuts, amount: 0.2, consumed: true}, {item: item.material.plant_fiber, amount: 0.15, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [archery_bench]
+    tools: [archery_tools, woodworking_tools, measuring_tools]
+    qualification: {minimum_role: carpenter, skill: woodworking, specialty: projectile_fletching, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 4.0, max: 7.0}
+    logistics: {input_staging: 木杆、箭头料和尾羽纤维按尺寸送入。, output_storage: 直度和固定检查后按长度成束上锁。}
+    outputs: [{item: item.ammunition.hunting_arrow_bundle, min: 0.8, max: 1.0}]
+    byproducts: []
+    risks: [{id: quality_loss, condition: 箭杆弯曲、箭头或尾羽固定不足。, effect: 成品退出实用箭束库存。}, {id: worker_injury, condition: 箭头整形缺少防护。, effect: 人员受伤并延长工时。}]
+
+  - id: recipe.c6_ammo.make_crossbow_bolts
+    name: 轻弩矢束制作
+    description: 按弩槽尺寸将木杆、金属边角料和紧固件制作成短弩矢。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [security, industry]
+    inputs: [{item: item.material.reclaimed_lumber, amount: 0.35, consumed: true}, {item: item.waste.metal_offcuts, amount: 0.25, consumed: true}, {item: item.component.fastener_set, amount: 0.1, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [archery_bench, precision_bench]
+    tools: [archery_tools, metalworking_tools, measuring_tools]
+    qualification: {minimum_role: armorer, skill: fabrication, specialty: projectile_fletching, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 5.0, max: 8.0}
+    logistics: {input_staging: 木杆和金属件按目标弩具尺寸集结。, output_storage: 尺寸和直度检查后单独成束。}
+    outputs: [{item: item.ammunition.crossbow_bolt_bundle, min: 0.75, max: 0.95}]
+    byproducts: []
+    risks: [{id: quality_loss, condition: 尺寸、直度或箭头固定不合格。, effect: 弩矢不能进入适配库存。}, {id: worker_injury, condition: 短矢金属加工缺少防护。, effect: 人员受伤并延长工时。}]
+
+  - id: recipe.c6_ammo.make_practice_arrows
+    name: 训练箭束制作
+    description: 用木杆、植物纤维和醒目织物制作钝头训练箭束。
+    status: candidate_only
+    kind: assembly
+    resource_chains: [security, politics]
+    inputs: [{item: item.material.reclaimed_lumber, amount: 0.35, consumed: true}, {item: item.material.plant_fiber, amount: 0.15, consumed: true}, {item: item.material.woven_cloth, amount: 0.1, consumed: true}]
+    substitution_policy: {allowed: false, rules: []}
+    facilities: [archery_bench]
+    tools: [archery_tools, woodworking_tools, measuring_tools]
+    qualification: {minimum_role: carpenter, skill: woodworking, specialty: projectile_fletching, missing_effect: quality_cap_reduced}
+    effective_time_hours: {min: 3.0, max: 5.0}
+    logistics: {input_staging: 木杆、纤维和醒目标记织物按训练规格集结。, output_storage: 钝头和标记检查后与实用箭束分柜。}
+    outputs: [{item: item.ammunition.practice_arrow_bundle, min: 0.9, max: 1.1}]
+    byproducts: []
+    risks: [{id: accidental_discharge, condition: 钝头脱落或训练箭与实用箭混装。, effect: 训练批次隔离并重新检查。}, {id: quality_loss, condition: 箭杆裂纹或尾羽固定不足。, effect: 成品不得进入训练库存。}]

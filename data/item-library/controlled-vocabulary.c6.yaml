@@ -1,0 +1,69 @@
+schema_version: 0.6.0
+status: candidate_only
+authority:
+  contract: docs/item-library/item-library-authoring-contract-v0.6.md
+  design: docs/design-docs/item-and-manufacturing-system-v0.1.md
+  design_sha256: 24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb
+
+enums:
+  ammo_families:
+    bow: 弓箭
+    crossbow: 弩箭
+    revolver: 转轮手枪弹
+    carbine: 卡宾枪弹
+
+  knowledge_domains:
+    electrical_safety: 电气安全
+    food_preservation: 食品保存
+
+  facilities:
+    archery_bench: 弓具工作台
+
+  tools:
+    archery_tools: 弓具工具
+
+  specialties:
+    fruit_drying: 水果脱水
+    communal_cooking: 公共炊事
+    travel_baking: 行粮烘制
+    saline_preparation: 盐水配制
+    wound_care_packing: 伤口护理包封装
+    burn_care: 烧伤照护
+    bowyery: 制弓
+    crossbow_fitting: 弩具装配
+    polearm_making: 长柄武器制作
+    breaching_tool: 破障工具制作
+    staff_making: 长棍制作
+    net_making: 投网制作
+    projectile_fletching: 箭矢制作
+
+  risks:
+    string_snap: 弦体断裂
+
+  tags:
+    bow: 弓
+    crossbow: 弩
+    spear: 矛
+    sidearm: 随身枪械
+    carbine: 卡宾枪
+    launcher: 发射器
+    breaching: 破障
+    staff: 长棍
+    net: 投网
+    arrow: 箭
+    bolt: 弩箭
+    revolver_caliber: 转轮枪口径
+    carbine_caliber: 卡宾枪口径
+    marker: 标记
+    fresh_fruit: 鲜果
+    dried_fruit: 果干
+    prepared_meal: 熟食
+    travel_food: 行粮
+    saline: 盐水
+    wound_care: 伤口护理
+    burn_care: 烧伤照护
+    fever: 发热
+    orchard: 果树
+    fungal: 菌类
+    safety: 安全
+    ledger: 台账
