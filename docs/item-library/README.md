@@ -20,6 +20,10 @@
 - R2-B 机器可读审计：`../../data/item-library/flow-audit-r2b.json`
 - R2-B 审计摘要：`../../data/item-library/flow-audit-r2b.md`
 - R2-B 复审状态：`reviews/item-library-r2b-review-status-2026-07-30.md`（独立 subagent 三轮审查完成，`R2B_REVIEW_PASS`）
+- R2-C 校准提案合同：`item-library-calibration-contract-v0.1.md`
+- R2-C 机器可读提案：`../../data/item-library/calibration-proposals-r2c.json`
+- R2-C 提案摘要：`../../data/item-library/calibration-proposals-r2c.md`
+- R2-C 审查状态：`reviews/item-library-r2c-review-status-2026-07-30.md`
 
 ## 数据布局
 
@@ -33,9 +37,11 @@
 - `semantic-audit-r2a.json`：220 项逐项语义分类和 334 节点依赖图；
 - `semantic-audit-r2a.md`：R2-A 人工审查摘要。
 - `flow-audit-r2b.json`：90 张工艺的制造流、循环、候选价值和共享瓶颈机器报告；
-- `flow-audit-r2b.md`：R2-B 人工审查摘要。
+- `flow-audit-r2b.md`：R2-B 人工审查摘要；
+- `calibration-proposals-r2c.json`：90 张工艺的基线与内存 overlay 质量/候选价值画像，以及逐字段校准提案；
+- `calibration-proposals-r2c.md`：R2-C 人工审查摘要。
 
-分批文件是编辑源，bundle 是消费入口。不要手工修改 bundle。
+分批文件是编辑源，bundle 是消费入口。R2-C 只生成提案，不是编辑源或运行时补丁。不要手工修改 bundle 与确定性报告。
 
 ## 验证
 
@@ -45,6 +51,7 @@ for profile in c1 c2 c3 c4 c5 c6 c7; do
 done
 ruby scripts/audit_item_library_semantics.rb
 ruby scripts/audit_item_library_flows.rb
+ruby scripts/propose_item_library_calibration.rb
 ```
 
 计算稳定 ID 的确定性依赖闭包：
@@ -58,6 +65,7 @@ ruby scripts/audit_item_library_semantics.rb \
 
 - 全部内容仍为 `candidate_only`；
 - 统一候选包默认禁止整包运行时导入；
+- R2-C 数值只存在于 `proposal_only` 内存 overlay，未修改 R1；
 - 未来主干必须按稳定 ID 显式选取并另行获得阶段授权；
 - 当前没有运行时 Def、UI、正式数值、存档迁移或 Gate 授权；
 - Gate 1A、Gate 1H 与 Gate 2 状态不因本目录改变。

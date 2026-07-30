@@ -1,0 +1,4045 @@
+{
+  "schema_version": "new-era-2.item-library.calibration-proposals.r2c.v0.1",
+  "source_baseline_id": "new-era-2.item-library.r1-c7-candidate",
+  "source_payload_sha256": "02918459ef17e42ed5e2151660873f6a4e88e12dff29730a013f1d062fe554ad",
+  "source_semantic_audit_sha256": "dad942c1e12f274abc2691c5f2d6a2b615ab76c6224e98afb8146ac513f9eeee",
+  "source_flow_audit_sha256": "b11ac7a39e9839f33bffe5375e7d9f5c3e827c89e70de0743f26defa45939f3d",
+  "source_bundle_file_sha256": "32f9d9c41e7271e4da0f037167ad94023d050ee1b7471fdec98495393d9ff361",
+  "status": "candidate_only",
+  "runtime_authorization": "NONE",
+  "proposal_mode": "proposal_only",
+  "candidate_overlay_only": true,
+  "whole_bundle_runtime_import_allowed": false,
+  "overlay_sha256": "2e1cfcf1e5421b915e92715cf204830ca097ad674af339e84d58be71a6841df1",
+  "source_files": {
+    "data/item-library/item-library-r1-candidate-bundle.json": "32f9d9c41e7271e4da0f037167ad94023d050ee1b7471fdec98495393d9ff361",
+    "data/item-library/semantic-audit-r2a.json": "c8279af1b1749286b7d1170af4b9a78229c2e31abc8b346090e6301b8dea59e3",
+    "data/item-library/flow-audit-r2b.json": "ce90090f3249a5446cf37273e52f7bde8cc489cec232633041475ae3f1b1a860",
+    "docs/item-library/item-library-calibration-contract-v0.1.md": "19fa5e668117e68f80b6260b565b8c30b7bfceae9b3b15aaa1fe428212585d32",
+    "scripts/propose_item_library_calibration.rb": "b9e95fb99b5669bdc64db72155f8e943ca576186ae973520eb3f1fe8847b3517"
+  },
+  "thresholds": {
+    "mass_review_ratio_exclusive": 1.05,
+    "mass_severe_ratio_exclusive": 1.25,
+    "mass_low_ratio_exclusive": 0.25,
+    "candidate_value_ratio_low": 0.25,
+    "candidate_value_ratio_high": 4.0
+  },
+  "counts": {
+    "recipes_profiled": 90,
+    "baseline_severe_mass": 11,
+    "baseline_mass_review": 7,
+    "baseline_low_mass_report_only": 34,
+    "baseline_value_outliers": 7,
+    "numeric_patch_proposals": 15,
+    "accepted_outliers": 2,
+    "overlay_unadjudicated_severe_mass": 0,
+    "overlay_unadjudicated_value_outliers": 0
+  },
+  "numeric_patch_proposals": [
+    {
+      "id": "r2c.numeric.01_flour_unit_mass",
+      "disposition": "numeric_patch_proposal",
+      "subject_recipe_id": "recipe.c5_food.mill_flour",
+      "triggers": [
+        "mass_severe_amplification"
+      ],
+      "rationale": "面粉以 bag 计量，但 10 kg/bag 会让 1 kg 原粮产出最多 9 kg 面粉，并使两张下游烘焙工艺把一袋面粉按 10 kg 计入。把候选袋质量改为 1 kg，可同时校正磨粉和下游画像。",
+      "operations": [
+        {
+          "type": "replace_item_field",
+          "item_id": "item.food.grain_flour",
+          "field": "mass",
+          "from": 10.0,
+          "to": 1.0
+        }
+      ],
+      "affected_item_ids": [
+        "item.food.grain_flour"
+      ],
+      "metric_affected_recipe_ids": [
+        "recipe.c5_food.bake_flatbread",
+        "recipe.c5_food.mill_flour",
+        "recipe.c6_food.bake_travel_biscuit"
+      ],
+      "downstream_recipe_ids": [
+        "recipe.c5_food.bake_flatbread",
+        "recipe.c6_food.bake_travel_biscuit"
+      ],
+      "before_metrics": {
+        "input_mass": 1.0,
+        "output_mass_min": 7.5,
+        "output_mass_max": 9.0,
+        "mass_return_ratio_min": 7.5,
+        "mass_return_ratio_max": 9.0,
+        "input_candidate_value": 3.0,
+        "output_candidate_value_min": 5.25,
+        "output_candidate_value_max": 6.3,
+        "candidate_value_return_ratio_min": 1.75,
+        "candidate_value_return_ratio_max": 2.1,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": false
+      },
+      "after_metrics": {
+        "input_mass": 1.0,
+        "output_mass_min": 0.75,
+        "output_mass_max": 0.9,
+        "mass_return_ratio_min": 0.75,
+        "mass_return_ratio_max": 0.9,
+        "input_candidate_value": 3.0,
+        "output_candidate_value_min": 5.25,
+        "output_candidate_value_max": 6.3,
+        "candidate_value_return_ratio_min": 1.75,
+        "candidate_value_return_ratio_max": 2.1,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "acceptance_boundary": "仅供未来稳定 ID 选择时评估；不得直接写回 R1 或导入运行时。"
+    },
+    {
+      "id": "r2c.numeric.02_watch_dismantle_yield",
+      "disposition": "numeric_patch_proposal",
+      "subject_recipe_id": "recipe.dismantle.mechanical_watch",
+      "triggers": [
+        "mass_severe_amplification"
+      ],
+      "rationale": "0.1 kg 腕表的回收上限不应超过目标质量。按精密小件比例缩小机械备件和金属边角料区间。",
+      "operations": [
+        {
+          "type": "replace_recipe_output_field",
+          "recipe_id": "recipe.dismantle.mechanical_watch",
+          "item_id": "item.component.mechanical_spares",
+          "field": "min",
+          "from": 0.05,
+          "to": 0.01
+        },
+        {
+          "type": "replace_recipe_output_field",
+          "recipe_id": "recipe.dismantle.mechanical_watch",
+          "item_id": "item.component.mechanical_spares",
+          "field": "max",
+          "from": 0.15,
+          "to": 0.025
+        },
+        {
+          "type": "replace_recipe_output_field",
+          "recipe_id": "recipe.dismantle.mechanical_watch",
+          "item_id": "item.waste.metal_offcuts",
+          "field": "min",
+          "from": 0.02,
+          "to": 0.005
+        },
+        {
+          "type": "replace_recipe_output_field",
+          "recipe_id": "recipe.dismantle.mechanical_watch",
+          "item_id": "item.waste.metal_offcuts",
+          "field": "max",
+          "from": 0.08,
+          "to": 0.02
+        }
+      ],
+      "affected_item_ids": [
+        "item.component.mechanical_spares",
+        "item.waste.metal_offcuts"
+      ],
+      "metric_affected_recipe_ids": [
+        "recipe.dismantle.mechanical_watch"
+      ],
+      "downstream_recipe_ids": [
+        "recipe.c2_assembly.weapon_cleaning_kit",
+        "recipe.c5_component.assemble_bearing_kit",
+        "recipe.c6_ammo.make_crossbow_bolts",
+        "recipe.c6_ammo.make_hunting_arrows",
+        "recipe.c6_weapon.make_light_crossbow",
+        "recipe.metal.assemble_field_repair_kit",
+        "recipe.repair.bolt_rifle_service",
+        "recipe.repair.mechanical_watch_service",
+        "recipe.repair.pump_shotgun_service"
+      ],
+      "before_metrics": {
+        "input_mass": 0.1,
+        "output_mass_min": 0.145,
+        "output_mass_max": 0.455,
+        "mass_return_ratio_min": 1.45,
+        "mass_return_ratio_max": 4.55,
+        "input_candidate_value": 130.0,
+        "output_candidate_value_min": 1.64,
+        "output_candidate_value_max": 4.96,
+        "candidate_value_return_ratio_min": 0.012615,
+        "candidate_value_return_ratio_max": 0.038154,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": false
+      },
+      "after_metrics": {
+        "input_mass": 0.1,
+        "output_mass_min": 0.03,
+        "output_mass_max": 0.0825,
+        "mass_return_ratio_min": 0.3,
+        "mass_return_ratio_max": 0.825,
+        "input_candidate_value": 130.0,
+        "output_candidate_value_min": 0.33,
+        "output_candidate_value_max": 0.84,
+        "candidate_value_return_ratio_min": 0.002538,
+        "candidate_value_return_ratio_max": 0.006462,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "acceptance_boundary": "仅供未来稳定 ID 选择时评估；不得直接写回 R1 或导入运行时。"
+    },
+    {
+      "id": "r2c.numeric.03_biomass_briquette_units",
+      "disposition": "numeric_patch_proposal",
+      "subject_recipe_id": "recipe.c4_wood.compress_briquette",
+      "triggers": [
+        "mass_severe_amplification",
+        "candidate_value_outlier"
+      ],
+      "rationale": "当前一袋 4 kg 木屑会产出最多 10.2 kg 压块。提高木屑批量并略收紧产出上限，使最大质量返回比低于 1，候选价值比回到筛查区间。",
+      "operations": [
+        {
+          "type": "replace_recipe_input_amount",
+          "recipe_id": "recipe.c4_wood.compress_briquette",
+          "item_id": "item.waste.sawdust",
+          "from": 1.0,
+          "to": 2.5
+        },
+        {
+          "type": "replace_recipe_output_field",
+          "recipe_id": "recipe.c4_wood.compress_briquette",
+          "item_id": "item.material.biomass_briquette",
+          "field": "max",
+          "from": 0.85,
+          "to": 0.8
+        }
+      ],
+      "affected_item_ids": [
+        "item.material.biomass_briquette",
+        "item.waste.sawdust"
+      ],
+      "metric_affected_recipe_ids": [
+        "recipe.c4_wood.compress_briquette"
+      ],
+      "downstream_recipe_ids": [
+
+      ],
+      "before_metrics": {
+        "input_mass": 4.0,
+        "output_mass_min": 8.4,
+        "output_mass_max": 10.2,
+        "mass_return_ratio_min": 2.1,
+        "mass_return_ratio_max": 2.55,
+        "input_candidate_value": 2.0,
+        "output_candidate_value_min": 7.0,
+        "output_candidate_value_max": 8.5,
+        "candidate_value_return_ratio_min": 3.5,
+        "candidate_value_return_ratio_max": 4.25,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": true
+      },
+      "after_metrics": {
+        "input_mass": 10.0,
+        "output_mass_min": 8.4,
+        "output_mass_max": 9.6,
+        "mass_return_ratio_min": 0.84,
+        "mass_return_ratio_max": 0.96,
+        "input_candidate_value": 5.0,
+        "output_candidate_value_min": 7.0,
+        "output_candidate_value_max": 8.0,
+        "candidate_value_return_ratio_min": 1.4,
+        "candidate_value_return_ratio_max": 1.6,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "acceptance_boundary": "仅供未来稳定 ID 选择时评估；不得直接写回 R1 或导入运行时。"
+    },
+    {
+      "id": "r2c.numeric.04_battery_module_casing",
+      "disposition": "numeric_patch_proposal",
+      "subject_recipe_id": "recipe.c4_battery.assemble_module",
+      "triggers": [
+        "mass_severe_amplification"
+      ],
+      "rationale": "8 kg 电池模块的既有输入只有 3.5 kg，描述中缺少可审计的结构外壳。提案增加 0.25 bundle 回收金属板作为候选壳体材料。",
+      "operations": [
+        {
+          "type": "add_recipe_input",
+          "recipe_id": "recipe.c4_battery.assemble_module",
+          "from": null,
+          "to": {
+            "item": "item.material.reclaimed_steel_plate",
+            "amount": 0.25,
+            "consumed": true
+          }
+        }
+      ],
+      "affected_item_ids": [
+        "item.material.reclaimed_steel_plate"
+      ],
+      "metric_affected_recipe_ids": [
+        "recipe.c4_battery.assemble_module"
+      ],
+      "downstream_recipe_ids": [
+        "recipe.c5_electronic.assemble_field_telephone",
+        "recipe.c5_electronic.assemble_task_lantern"
+      ],
+      "before_metrics": {
+        "input_mass": 3.5,
+        "output_mass_min": 8.0,
+        "output_mass_max": 8.0,
+        "mass_return_ratio_min": 2.285714,
+        "mass_return_ratio_max": 2.285714,
+        "input_candidate_value": 41.4,
+        "output_candidate_value_min": 58.0,
+        "output_candidate_value_max": 58.0,
+        "candidate_value_return_ratio_min": 1.400966,
+        "candidate_value_return_ratio_max": 1.400966,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": false
+      },
+      "after_metrics": {
+        "input_mass": 8.0,
+        "output_mass_min": 8.0,
+        "output_mass_max": 8.0,
+        "mass_return_ratio_min": 1.0,
+        "mass_return_ratio_max": 1.0,
+        "input_candidate_value": 47.9,
+        "output_candidate_value_min": 58.0,
+        "output_candidate_value_max": 58.0,
+        "candidate_value_return_ratio_min": 1.210856,
+        "candidate_value_return_ratio_max": 1.210856,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "acceptance_boundary": "仅供未来稳定 ID 选择时评估；不得直接写回 R1 或导入运行时。"
+    },
+    {
+      "id": "r2c.numeric.05_archive_drive_recovery",
+      "disposition": "numeric_patch_proposal",
+      "subject_recipe_id": "recipe.dismantle.offline_archive_drive",
+      "triggers": [
+        "mass_severe_amplification"
+      ],
+      "rationale": "0.6 kg 档案盘的电子件与铜线最大回收质量达到 1.29 kg。缩小两项回收区间，使最大库存回收质量为 0.51 kg。",
+      "operations": [
+        {
+          "type": "replace_recipe_output_field",
+          "recipe_id": "recipe.dismantle.offline_archive_drive",
+          "item_id": "item.component.recovered_electronics",
+          "field": "min",
+          "from": 0.3,
+          "to": 0.2
+        },
+        {
+          "type": "replace_recipe_output_field",
+          "recipe_id": "recipe.dismantle.offline_archive_drive",
+          "item_id": "item.component.recovered_electronics",
+          "field": "max",
+          "from": 0.7,
+          "to": 0.3
+        },
+        {
+          "type": "replace_recipe_output_field",
+          "recipe_id": "recipe.dismantle.offline_archive_drive",
+          "item_id": "item.material.copper_wire",
+          "field": "min",
+          "from": 0.05,
+          "to": 0.03
+        },
+        {
+          "type": "replace_recipe_output_field",
+          "recipe_id": "recipe.dismantle.offline_archive_drive",
+          "item_id": "item.material.copper_wire",
+          "field": "max",
+          "from": 0.15,
+          "to": 0.05
+        }
+      ],
+      "affected_item_ids": [
+        "item.component.recovered_electronics",
+        "item.material.copper_wire"
+      ],
+      "metric_affected_recipe_ids": [
+        "recipe.dismantle.offline_archive_drive"
+      ],
+      "downstream_recipe_ids": [
+        "recipe.c2_assembly.task_lamp",
+        "recipe.c5_component.assemble_connectors",
+        "recipe.c5_component.assemble_power_regulator",
+        "recipe.c5_component.assemble_protected_relay",
+        "recipe.c5_electronic.assemble_task_lantern",
+        "recipe.electrical.assemble_wired_alarm_unit",
+        "recipe.repair.offline_archive_drive",
+        "recipe.repair.task_lamp"
+      ],
+      "before_metrics": {
+        "input_mass": 0.6,
+        "output_mass_min": 0.51,
+        "output_mass_max": 1.29,
+        "mass_return_ratio_min": 0.85,
+        "mass_return_ratio_max": 2.15,
+        "input_candidate_value": 120.0,
+        "output_candidate_value_min": 12.0,
+        "output_candidate_value_max": 28.8,
+        "candidate_value_return_ratio_min": 0.1,
+        "candidate_value_return_ratio_max": 0.24,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": false
+      },
+      "after_metrics": {
+        "input_mass": 0.6,
+        "output_mass_min": 0.33,
+        "output_mass_max": 0.51,
+        "mass_return_ratio_min": 0.55,
+        "mass_return_ratio_max": 0.85,
+        "input_candidate_value": 120.0,
+        "output_candidate_value_min": 7.92,
+        "output_candidate_value_max": 12.0,
+        "candidate_value_return_ratio_min": 0.066,
+        "candidate_value_return_ratio_max": 0.1,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "acceptance_boundary": "仅供未来稳定 ID 选择时评估；不得直接写回 R1 或导入运行时。"
+    },
+    {
+      "id": "r2c.numeric.06_sterile_bandage_unit",
+      "disposition": "numeric_patch_proposal",
+      "subject_recipe_id": "recipe.medical.sterilize_bandage",
+      "triggers": [
+        "mass_severe_amplification",
+        "candidate_value_outlier"
+      ],
+      "rationale": "单包绷带的 0.3 kg 与 14 候选价值同时放大产出。改为 0.12 kg、4 候选价值后，最大质量返回比和候选价值比都回到筛查区间。",
+      "operations": [
+        {
+          "type": "replace_item_field",
+          "item_id": "item.medical.sterile_bandage",
+          "field": "mass",
+          "from": 0.3,
+          "to": 0.12
+        },
+        {
+          "type": "replace_item_field",
+          "item_id": "item.medical.sterile_bandage",
+          "field": "base_value",
+          "from": 14.0,
+          "to": 4.0
+        }
+      ],
+      "affected_item_ids": [
+        "item.medical.sterile_bandage"
+      ],
+      "metric_affected_recipe_ids": [
+        "recipe.c6_medical.pack_field_wound_care",
+        "recipe.medical.sterilize_bandage"
+      ],
+      "downstream_recipe_ids": [
+        "recipe.c6_medical.pack_field_wound_care"
+      ],
+      "before_metrics": {
+        "input_mass": 0.72,
+        "output_mass_min": 1.2,
+        "output_mass_max": 1.5,
+        "mass_return_ratio_min": 1.666667,
+        "mass_return_ratio_max": 2.083333,
+        "input_candidate_value": 6.2,
+        "output_candidate_value_min": 56.0,
+        "output_candidate_value_max": 70.0,
+        "candidate_value_return_ratio_min": 9.032258,
+        "candidate_value_return_ratio_max": 11.290323,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": true
+      },
+      "after_metrics": {
+        "input_mass": 0.72,
+        "output_mass_min": 0.48,
+        "output_mass_max": 0.6,
+        "mass_return_ratio_min": 0.666667,
+        "mass_return_ratio_max": 0.833333,
+        "input_candidate_value": 6.2,
+        "output_candidate_value_min": 16.0,
+        "output_candidate_value_max": 20.0,
+        "candidate_value_return_ratio_min": 2.580645,
+        "candidate_value_return_ratio_max": 3.225806,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "acceptance_boundary": "仅供未来稳定 ID 选择时评估；不得直接写回 R1 或导入运行时。"
+    },
+    {
+      "id": "r2c.numeric.07_field_bed_frame",
+      "disposition": "numeric_patch_proposal",
+      "subject_recipe_id": "recipe.c2_assembly.field_bed",
+      "triggers": [
+        "mass_severe_amplification"
+      ],
+      "rationale": "9 kg 野战床只有 5.1 kg 已消耗库存输入。把回收金属板从 0.15 提高到 0.35 bundle，为折叠框架补足候选结构质量。",
+      "operations": [
+        {
+          "type": "replace_recipe_input_amount",
+          "recipe_id": "recipe.c2_assembly.field_bed",
+          "item_id": "item.material.reclaimed_steel_plate",
+          "from": 0.15,
+          "to": 0.35
+        }
+      ],
+      "affected_item_ids": [
+        "item.material.reclaimed_steel_plate"
+      ],
+      "metric_affected_recipe_ids": [
+        "recipe.c2_assembly.field_bed"
+      ],
+      "downstream_recipe_ids": [
+        "recipe.dismantle.field_bed",
+        "recipe.repair.field_bed"
+      ],
+      "before_metrics": {
+        "input_mass": 5.1,
+        "output_mass_min": 9.0,
+        "output_mass_max": 9.0,
+        "mass_return_ratio_min": 1.764706,
+        "mass_return_ratio_max": 1.764706,
+        "input_candidate_value": 18.4,
+        "output_candidate_value_min": 42.0,
+        "output_candidate_value_max": 42.0,
+        "candidate_value_return_ratio_min": 2.282609,
+        "candidate_value_return_ratio_max": 2.282609,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": false
+      },
+      "after_metrics": {
+        "input_mass": 8.7,
+        "output_mass_min": 9.0,
+        "output_mass_max": 9.0,
+        "mass_return_ratio_min": 1.034483,
+        "mass_return_ratio_max": 1.034483,
+        "input_candidate_value": 23.6,
+        "output_candidate_value_min": 42.0,
+        "output_candidate_value_max": 42.0,
+        "candidate_value_return_ratio_min": 1.779661,
+        "candidate_value_return_ratio_max": 1.779661,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "acceptance_boundary": "仅供未来稳定 ID 选择时评估；不得直接写回 R1 或导入运行时。"
+    },
+    {
+      "id": "r2c.numeric.08_fastener_batch",
+      "disposition": "numeric_patch_proposal",
+      "subject_recipe_id": "recipe.metal.form_fasteners",
+      "triggers": [
+        "mass_severe_amplification",
+        "candidate_value_outlier"
+      ],
+      "rationale": "紧固件工艺同时存在质量放大与高候选价值比。提高板材输入并收紧紧固件上限，先修正质量；剩余价值溢价单独作为暂时接受异常。",
+      "operations": [
+        {
+          "type": "replace_recipe_input_amount",
+          "recipe_id": "recipe.metal.form_fasteners",
+          "item_id": "item.material.reclaimed_steel_plate",
+          "from": 0.25,
+          "to": 0.4
+        },
+        {
+          "type": "replace_recipe_output_field",
+          "recipe_id": "recipe.metal.form_fasteners",
+          "item_id": "item.component.fastener_set",
+          "field": "max",
+          "from": 8.0,
+          "to": 7.0
+        }
+      ],
+      "affected_item_ids": [
+        "item.component.fastener_set",
+        "item.material.reclaimed_steel_plate"
+      ],
+      "metric_affected_recipe_ids": [
+        "recipe.metal.form_fasteners"
+      ],
+      "downstream_recipe_ids": [
+        "recipe.c2_assembly.field_bed",
+        "recipe.c2_assembly.task_lamp",
+        "recipe.c5_component.assemble_hose",
+        "recipe.c5_medical.assemble_clean_splint",
+        "recipe.c5_tool.assemble_mechanic_set",
+        "recipe.c6_ammo.make_crossbow_bolts",
+        "recipe.c6_ammo.make_hunting_arrows",
+        "recipe.c6_weapon.make_capture_net",
+        "recipe.c6_weapon.make_hunting_spear",
+        "recipe.c6_weapon.make_weighted_staff",
+        "recipe.c7_clothing.make_welding_apron",
+        "recipe.c7_clothing.make_work_boots",
+        "recipe.c7_clothing.sew_insulated_coat",
+        "recipe.c7_clothing.sew_padded_trousers",
+        "recipe.c7_clothing.sew_rain_shell",
+        "recipe.c7_daily.assemble_sewing_kit",
+        "recipe.c7_furniture.make_communal_bench",
+        "recipe.c7_furniture.make_storage_shelf",
+        "recipe.c7_furniture.make_workshop_stool",
+        "recipe.electrical.assemble_wired_alarm_unit",
+        "recipe.metal.assemble_field_repair_kit",
+        "recipe.metal.assemble_reinforced_plate",
+        "recipe.repair.field_bed",
+        "recipe.textile.sew_padded_vest",
+        "recipe.textile.sew_work_clothes"
+      ],
+      "before_metrics": {
+        "input_mass": 4.5,
+        "output_mass_min": 5.3,
+        "output_mass_max": 7.4,
+        "mass_return_ratio_min": 1.177778,
+        "mass_return_ratio_max": 1.644444,
+        "input_candidate_value": 6.5,
+        "output_candidate_value_min": 55.0,
+        "output_candidate_value_max": 74.0,
+        "candidate_value_return_ratio_min": 8.461538,
+        "candidate_value_return_ratio_max": 11.384615,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": true
+      },
+      "after_metrics": {
+        "input_mass": 7.2,
+        "output_mass_min": 5.3,
+        "output_mass_max": 6.6,
+        "mass_return_ratio_min": 0.736111,
+        "mass_return_ratio_max": 0.916667,
+        "input_candidate_value": 10.4,
+        "output_candidate_value_min": 55.0,
+        "output_candidate_value_max": 65.0,
+        "candidate_value_return_ratio_min": 5.288462,
+        "candidate_value_return_ratio_max": 6.25,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": true
+      },
+      "acceptance_boundary": "仅供未来稳定 ID 选择时评估；不得直接写回 R1 或导入运行时。"
+    },
+    {
+      "id": "r2c.numeric.09_field_repair_kit_packaging",
+      "disposition": "numeric_patch_proposal",
+      "subject_recipe_id": "recipe.metal.assemble_field_repair_kit",
+      "triggers": [
+        "mass_severe_amplification"
+      ],
+      "rationale": "5 kg 现场维修包的既有内容物只有 3.8 kg。增加 0.3 roll 通用织物，代表工具卷、隔层与封装材料。",
+      "operations": [
+        {
+          "type": "add_recipe_input",
+          "recipe_id": "recipe.metal.assemble_field_repair_kit",
+          "from": null,
+          "to": {
+            "item": "item.material.woven_cloth",
+            "amount": 0.3,
+            "consumed": true
+          }
+        }
+      ],
+      "affected_item_ids": [
+        "item.material.woven_cloth"
+      ],
+      "metric_affected_recipe_ids": [
+        "recipe.metal.assemble_field_repair_kit"
+      ],
+      "downstream_recipe_ids": [
+
+      ],
+      "before_metrics": {
+        "input_mass": 3.8,
+        "output_mass_min": 5.0,
+        "output_mass_max": 5.0,
+        "mass_return_ratio_min": 1.315789,
+        "mass_return_ratio_max": 1.315789,
+        "input_candidate_value": 45.0,
+        "output_candidate_value_min": 58.0,
+        "output_candidate_value_max": 58.0,
+        "candidate_value_return_ratio_min": 1.288889,
+        "candidate_value_return_ratio_max": 1.288889,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": false
+      },
+      "after_metrics": {
+        "input_mass": 5.0,
+        "output_mass_min": 5.0,
+        "output_mass_max": 5.0,
+        "mass_return_ratio_min": 1.0,
+        "mass_return_ratio_max": 1.0,
+        "input_candidate_value": 51.0,
+        "output_candidate_value_min": 58.0,
+        "output_candidate_value_max": 58.0,
+        "candidate_value_return_ratio_min": 1.137255,
+        "candidate_value_return_ratio_max": 1.137255,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "acceptance_boundary": "仅供未来稳定 ID 选择时评估；不得直接写回 R1 或导入运行时。"
+    },
+    {
+      "id": "r2c.numeric.10_wired_alarm_housing",
+      "disposition": "numeric_patch_proposal",
+      "subject_recipe_id": "recipe.electrical.assemble_wired_alarm_unit",
+      "triggers": [
+        "mass_severe_amplification"
+      ],
+      "rationale": "6 kg 有线预警单元的既有电子与线束输入只有 4.6 kg。增加 0.08 bundle 回收金属板作为候选外壳和安装底板。",
+      "operations": [
+        {
+          "type": "add_recipe_input",
+          "recipe_id": "recipe.electrical.assemble_wired_alarm_unit",
+          "from": null,
+          "to": {
+            "item": "item.material.reclaimed_steel_plate",
+            "amount": 0.08,
+            "consumed": true
+          }
+        }
+      ],
+      "affected_item_ids": [
+        "item.material.reclaimed_steel_plate"
+      ],
+      "metric_affected_recipe_ids": [
+        "recipe.electrical.assemble_wired_alarm_unit"
+      ],
+      "downstream_recipe_ids": [
+
+      ],
+      "before_metrics": {
+        "input_mass": 4.6,
+        "output_mass_min": 6.0,
+        "output_mass_max": 6.0,
+        "mass_return_ratio_min": 1.304348,
+        "mass_return_ratio_max": 1.304348,
+        "input_candidate_value": 82.5,
+        "output_candidate_value_min": 110.0,
+        "output_candidate_value_max": 110.0,
+        "candidate_value_return_ratio_min": 1.333333,
+        "candidate_value_return_ratio_max": 1.333333,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": false
+      },
+      "after_metrics": {
+        "input_mass": 6.04,
+        "output_mass_min": 6.0,
+        "output_mass_max": 6.0,
+        "mass_return_ratio_min": 0.993377,
+        "mass_return_ratio_max": 0.993377,
+        "input_candidate_value": 84.58,
+        "output_candidate_value_min": 110.0,
+        "output_candidate_value_max": 110.0,
+        "candidate_value_return_ratio_min": 1.300544,
+        "candidate_value_return_ratio_max": 1.300544,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "acceptance_boundary": "仅供未来稳定 ID 选择时评估；不得直接写回 R1 或导入运行时。"
+    },
+    {
+      "id": "r2c.numeric.11_bolt_rifle_recovery",
+      "disposition": "numeric_patch_proposal",
+      "subject_recipe_id": "recipe.dismantle.bolt_rifle",
+      "triggers": [
+        "mass_severe_amplification"
+      ],
+      "rationale": "4.2 kg 步枪的最大库存回收质量为 5.36 kg。收紧机械件、板材和边角料上限，使最大回收质量低于目标质量。",
+      "operations": [
+        {
+          "type": "replace_recipe_output_field",
+          "recipe_id": "recipe.dismantle.bolt_rifle",
+          "item_id": "item.component.mechanical_spares",
+          "field": "max",
+          "from": 0.8,
+          "to": 0.6
+        },
+        {
+          "type": "replace_recipe_output_field",
+          "recipe_id": "recipe.dismantle.bolt_rifle",
+          "item_id": "item.material.reclaimed_steel_plate",
+          "field": "max",
+          "from": 0.12,
+          "to": 0.08
+        },
+        {
+          "type": "replace_recipe_output_field",
+          "recipe_id": "recipe.dismantle.bolt_rifle",
+          "item_id": "item.waste.metal_offcuts",
+          "field": "max",
+          "from": 1.2,
+          "to": 0.8
+        }
+      ],
+      "affected_item_ids": [
+        "item.component.mechanical_spares",
+        "item.material.reclaimed_steel_plate",
+        "item.waste.metal_offcuts"
+      ],
+      "metric_affected_recipe_ids": [
+        "recipe.dismantle.bolt_rifle"
+      ],
+      "downstream_recipe_ids": [
+        "recipe.c2_assembly.field_bed",
+        "recipe.c2_assembly.weapon_cleaning_kit",
+        "recipe.c5_component.assemble_bearing_kit",
+        "recipe.c5_component.assemble_hose",
+        "recipe.c5_tool.assemble_mechanic_set",
+        "recipe.c6_ammo.make_crossbow_bolts",
+        "recipe.c6_ammo.make_hunting_arrows",
+        "recipe.c6_weapon.make_breaching_sledge",
+        "recipe.c6_weapon.make_hunting_spear",
+        "recipe.c6_weapon.make_light_crossbow",
+        "recipe.c7_clothing.make_work_boots",
+        "recipe.metal.assemble_field_repair_kit",
+        "recipe.metal.assemble_reinforced_plate",
+        "recipe.metal.form_fasteners",
+        "recipe.repair.bolt_rifle_service",
+        "recipe.repair.field_bed",
+        "recipe.repair.mechanical_watch_service",
+        "recipe.repair.pump_shotgun_service"
+      ],
+      "before_metrics": {
+        "input_mass": 4.2,
+        "output_mass_min": 2.4,
+        "output_mass_max": 5.36,
+        "mass_return_ratio_min": 0.571429,
+        "mass_return_ratio_max": 1.27619,
+        "input_candidate_value": 95.0,
+        "output_candidate_value_min": 15.1,
+        "output_candidate_value_max": 31.12,
+        "candidate_value_return_ratio_min": 0.158947,
+        "candidate_value_return_ratio_max": 0.327579,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": false
+      },
+      "after_metrics": {
+        "input_mass": 4.2,
+        "output_mass_min": 2.4,
+        "output_mass_max": 3.74,
+        "mass_return_ratio_min": 0.571429,
+        "mass_return_ratio_max": 0.890476,
+        "input_candidate_value": 95.0,
+        "output_candidate_value_min": 15.1,
+        "output_candidate_value_max": 22.88,
+        "candidate_value_return_ratio_min": 0.158947,
+        "candidate_value_return_ratio_max": 0.240842,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "acceptance_boundary": "仅供未来稳定 ID 选择时评估；不得直接写回 R1 或导入运行时。"
+    },
+    {
+      "id": "r2c.numeric.12_workshop_stool_lumber",
+      "disposition": "numeric_patch_proposal",
+      "subject_recipe_id": "recipe.c7_furniture.make_workshop_stool",
+      "triggers": [
+        "candidate_value_outlier"
+      ],
+      "rationale": "工艺把 24 kg/bundle 的整形木板按七个 bundle 使用，明显混淆了 bundle 与单块木板。改为 0.30 bundle。",
+      "operations": [
+        {
+          "type": "replace_recipe_input_amount",
+          "recipe_id": "recipe.c7_furniture.make_workshop_stool",
+          "item_id": "item.material.reclaimed_lumber",
+          "from": 7.0,
+          "to": 0.3
+        }
+      ],
+      "affected_item_ids": [
+        "item.material.reclaimed_lumber"
+      ],
+      "metric_affected_recipe_ids": [
+        "recipe.c7_furniture.make_workshop_stool"
+      ],
+      "downstream_recipe_ids": [
+        "recipe.c4_wood.compress_briquette"
+      ],
+      "before_metrics": {
+        "input_mass": 168.44,
+        "output_mass_min": 6.48,
+        "output_mass_max": 7.2,
+        "mass_return_ratio_min": 0.038471,
+        "mass_return_ratio_max": 0.042745,
+        "input_candidate_value": 172.95,
+        "output_candidate_value_min": 18.24,
+        "output_candidate_value_max": 18.6,
+        "candidate_value_return_ratio_min": 0.105464,
+        "candidate_value_return_ratio_max": 0.107546,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": true
+      },
+      "after_metrics": {
+        "input_mass": 7.64,
+        "output_mass_min": 6.48,
+        "output_mass_max": 7.2,
+        "mass_return_ratio_min": 0.848168,
+        "mass_return_ratio_max": 0.942408,
+        "input_candidate_value": 12.15,
+        "output_candidate_value_min": 18.24,
+        "output_candidate_value_max": 18.6,
+        "candidate_value_return_ratio_min": 1.501235,
+        "candidate_value_return_ratio_max": 1.530864,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "acceptance_boundary": "仅供未来稳定 ID 选择时评估；不得直接写回 R1 或导入运行时。"
+    },
+    {
+      "id": "r2c.numeric.13_communal_bench_lumber",
+      "disposition": "numeric_patch_proposal",
+      "subject_recipe_id": "recipe.c7_furniture.make_communal_bench",
+      "triggers": [
+        "candidate_value_outlier"
+      ],
+      "rationale": "公共长凳把 24 kg/bundle 的木板按 14 个 bundle 使用。改为 0.75 bundle，使质量与候选价值同时回到筛查区间。",
+      "operations": [
+        {
+          "type": "replace_recipe_input_amount",
+          "recipe_id": "recipe.c7_furniture.make_communal_bench",
+          "item_id": "item.material.reclaimed_lumber",
+          "from": 14.0,
+          "to": 0.75
+        }
+      ],
+      "affected_item_ids": [
+        "item.material.reclaimed_lumber"
+      ],
+      "metric_affected_recipe_ids": [
+        "recipe.c7_furniture.make_communal_bench"
+      ],
+      "downstream_recipe_ids": [
+        "recipe.c4_wood.compress_briquette"
+      ],
+      "before_metrics": {
+        "input_mass": 336.72,
+        "output_mass_min": 17.0,
+        "output_mass_max": 18.4,
+        "mass_return_ratio_min": 0.050487,
+        "mass_return_ratio_max": 0.054645,
+        "input_candidate_value": 344.1,
+        "output_candidate_value_min": 29.5,
+        "output_candidate_value_max": 30.2,
+        "candidate_value_return_ratio_min": 0.085731,
+        "candidate_value_return_ratio_max": 0.087765,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": true
+      },
+      "after_metrics": {
+        "input_mass": 18.72,
+        "output_mass_min": 17.0,
+        "output_mass_max": 18.4,
+        "mass_return_ratio_min": 0.90812,
+        "mass_return_ratio_max": 0.982906,
+        "input_candidate_value": 26.1,
+        "output_candidate_value_min": 29.5,
+        "output_candidate_value_max": 30.2,
+        "candidate_value_return_ratio_min": 1.130268,
+        "candidate_value_return_ratio_max": 1.157088,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "acceptance_boundary": "仅供未来稳定 ID 选择时评估；不得直接写回 R1 或导入运行时。"
+    },
+    {
+      "id": "r2c.numeric.14_storage_shelf_lumber",
+      "disposition": "numeric_patch_proposal",
+      "subject_recipe_id": "recipe.c7_furniture.make_storage_shelf",
+      "triggers": [
+        "candidate_value_outlier"
+      ],
+      "rationale": "储物架把 24 kg/bundle 的木板按 18 个 bundle 使用。改为 0.90 bundle，使质量与候选价值同时回到筛查区间。",
+      "operations": [
+        {
+          "type": "replace_recipe_input_amount",
+          "recipe_id": "recipe.c7_furniture.make_storage_shelf",
+          "item_id": "item.material.reclaimed_lumber",
+          "from": 18.0,
+          "to": 0.9
+        }
+      ],
+      "affected_item_ids": [
+        "item.material.reclaimed_lumber"
+      ],
+      "metric_affected_recipe_ids": [
+        "recipe.c7_furniture.make_storage_shelf"
+      ],
+      "downstream_recipe_ids": [
+        "recipe.c4_wood.compress_briquette"
+      ],
+      "before_metrics": {
+        "input_mass": 432.96,
+        "output_mass_min": 19.2,
+        "output_mass_max": 20.8,
+        "mass_return_ratio_min": 0.044346,
+        "mass_return_ratio_max": 0.048041,
+        "input_candidate_value": 442.8,
+        "output_candidate_value_min": 34.6,
+        "output_candidate_value_max": 35.4,
+        "candidate_value_return_ratio_min": 0.078139,
+        "candidate_value_return_ratio_max": 0.079946,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": true
+      },
+      "after_metrics": {
+        "input_mass": 22.56,
+        "output_mass_min": 19.2,
+        "output_mass_max": 20.8,
+        "mass_return_ratio_min": 0.851064,
+        "mass_return_ratio_max": 0.921986,
+        "input_candidate_value": 32.4,
+        "output_candidate_value_min": 34.6,
+        "output_candidate_value_max": 35.4,
+        "candidate_value_return_ratio_min": 1.067901,
+        "candidate_value_return_ratio_max": 1.092593,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "acceptance_boundary": "仅供未来稳定 ID 选择时评估；不得直接写回 R1 或导入运行时。"
+    },
+    {
+      "id": "r2c.numeric.15_reinforced_plate_offcuts",
+      "disposition": "numeric_patch_proposal",
+      "subject_recipe_id": "recipe.metal.assemble_reinforced_plate",
+      "triggers": [
+        "candidate_value_outlier",
+        "mass_review_band"
+      ],
+      "rationale": "粗制防护插板只轻微超重，先把金属边角料最大值从 1.5 kg 收紧到 1.2 kg，使最大库存输出质量等于输入质量；剩余候选价值溢价单独裁定。",
+      "operations": [
+        {
+          "type": "replace_recipe_byproduct_field",
+          "recipe_id": "recipe.metal.assemble_reinforced_plate",
+          "item_id": "item.waste.metal_offcuts",
+          "field": "max",
+          "from": 1.5,
+          "to": 1.2
+        }
+      ],
+      "affected_item_ids": [
+        "item.waste.metal_offcuts"
+      ],
+      "metric_affected_recipe_ids": [
+        "recipe.metal.assemble_reinforced_plate"
+      ],
+      "downstream_recipe_ids": [
+        "recipe.c6_ammo.make_crossbow_bolts",
+        "recipe.c6_ammo.make_hunting_arrows"
+      ],
+      "before_metrics": {
+        "input_mass": 5.7,
+        "output_mass_min": 5.0,
+        "output_mass_max": 6.0,
+        "mass_return_ratio_min": 0.877193,
+        "mass_return_ratio_max": 1.052632,
+        "input_candidate_value": 15.0,
+        "output_candidate_value_min": 71.0,
+        "output_candidate_value_max": 73.0,
+        "candidate_value_return_ratio_min": 4.733333,
+        "candidate_value_return_ratio_max": 4.866667,
+        "mass_classification": "review_band",
+        "candidate_value_outlier": true
+      },
+      "after_metrics": {
+        "input_mass": 5.7,
+        "output_mass_min": 5.0,
+        "output_mass_max": 5.7,
+        "mass_return_ratio_min": 0.877193,
+        "mass_return_ratio_max": 1.0,
+        "input_candidate_value": 15.0,
+        "output_candidate_value_min": 71.0,
+        "output_candidate_value_max": 72.4,
+        "candidate_value_return_ratio_min": 4.733333,
+        "candidate_value_return_ratio_max": 4.826667,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": true
+      },
+      "acceptance_boundary": "仅供未来稳定 ID 选择时评估；不得直接写回 R1 或导入运行时。"
+    }
+  ],
+  "accepted_outliers": [
+    {
+      "id": "r2c.accepted.01_fastener_value_premium",
+      "recipe_id": "recipe.metal.form_fasteners",
+      "dimension": "candidate_value",
+      "rationale": "质量修正后仍有标准化、精密加工与 3–5 小时人物时间溢价。当前 base_value 继续保留，以免在没有运行时维修需求数据时同时改写 24 张下游工艺的价值关系。",
+      "reevaluation_requirement": "任何包含紧固件的稳定 ID 子集进入运行时前，必须用实际维修消耗、人物时间与下游订单数据重新校准。",
+      "status": "provisional",
+      "disposition": "accepted_outlier",
+      "overlay_ratio": 6.25,
+      "acceptance_boundary": "只接受 R2-C 提案层的残余异常，不冻结正式价值。"
+    },
+    {
+      "id": "r2c.accepted.02_reinforced_plate_value_premium",
+      "recipe_id": "recipe.metal.assemble_reinforced_plate",
+      "dimension": "candidate_value",
+      "rationale": "质量修正后剩余候选价值溢价可暂由受控装配、品质检查、安全用途和 4–7 小时人物时间解释；没有足够证据直接降低防护件价值。",
+      "reevaluation_requirement": "选择防护插板进入运行时前，必须与伤害、防护、耐久和制造失败率一起校准。",
+      "status": "provisional",
+      "disposition": "accepted_outlier",
+      "overlay_ratio": 4.826667,
+      "acceptance_boundary": "只接受 R2-C 提案层的残余异常，不冻结正式价值。"
+    }
+  ],
+  "mass_review_queue": [
+    {
+      "id": "recipe.c2_assembly.task_lamp",
+      "baseline_ratio": 1.162791,
+      "overlay_ratio": 1.162791,
+      "disposition": "manual_review_required",
+      "review_hint": "复核外壳、包装、装配辅料与成品单位。"
+    },
+    {
+      "id": "recipe.c2_assembly.weapon_cleaning_kit",
+      "baseline_ratio": 1.074627,
+      "overlay_ratio": 1.074627,
+      "disposition": "manual_review_required",
+      "review_hint": "复核外壳、包装、装配辅料与成品单位。"
+    },
+    {
+      "id": "recipe.c5_medical.prepare_oral_rehydration",
+      "baseline_ratio": 1.06486,
+      "overlay_ratio": 1.06486,
+      "disposition": "manual_review_required",
+      "review_hint": "复核容器、密度、含水率与区间取整。"
+    },
+    {
+      "id": "recipe.c6_medical.prepare_irrigation_saline",
+      "baseline_ratio": 1.090188,
+      "overlay_ratio": 1.090188,
+      "disposition": "manual_review_required",
+      "review_hint": "复核容器、密度、含水率与区间取整。"
+    },
+    {
+      "id": "recipe.chemistry.mix_cleaning_solution",
+      "baseline_ratio": 1.089109,
+      "overlay_ratio": 1.089109,
+      "disposition": "manual_review_required",
+      "review_hint": "复核容器、密度、含水率与区间取整。"
+    },
+    {
+      "id": "recipe.dismantle.pump_shotgun",
+      "baseline_ratio": 1.197368,
+      "overlay_ratio": 1.197368,
+      "disposition": "manual_review_required",
+      "review_hint": "复核目标质量、回收单位和最大回收区间。"
+    },
+    {
+      "id": "recipe.metal.assemble_reinforced_plate",
+      "baseline_ratio": 1.052632,
+      "overlay_ratio": 1.0,
+      "disposition": "manual_review_required",
+      "review_hint": "复核外壳、包装、装配辅料与成品单位。"
+    }
+  ],
+  "baseline_severe_mass_recipe_ids": [
+    "recipe.c2_assembly.field_bed",
+    "recipe.c4_battery.assemble_module",
+    "recipe.c4_wood.compress_briquette",
+    "recipe.c5_food.mill_flour",
+    "recipe.dismantle.bolt_rifle",
+    "recipe.dismantle.mechanical_watch",
+    "recipe.dismantle.offline_archive_drive",
+    "recipe.electrical.assemble_wired_alarm_unit",
+    "recipe.medical.sterilize_bandage",
+    "recipe.metal.assemble_field_repair_kit",
+    "recipe.metal.form_fasteners"
+  ],
+  "baseline_value_outlier_recipe_ids": [
+    "recipe.c4_wood.compress_briquette",
+    "recipe.c7_furniture.make_communal_bench",
+    "recipe.c7_furniture.make_storage_shelf",
+    "recipe.c7_furniture.make_workshop_stool",
+    "recipe.medical.sterilize_bandage",
+    "recipe.metal.assemble_reinforced_plate",
+    "recipe.metal.form_fasteners"
+  ],
+  "recipe_profiles": [
+    {
+      "id": "recipe.agriculture.mixed_field_crop_cycle",
+      "kind": "agriculture",
+      "baseline": {
+        "input_mass": 61.0,
+        "output_mass_min": 26.0,
+        "output_mass_max": 40.0,
+        "mass_return_ratio_min": 0.42623,
+        "mass_return_ratio_max": 0.655738,
+        "input_candidate_value": 86.0,
+        "output_candidate_value_min": 86.0,
+        "output_candidate_value_max": 134.0,
+        "candidate_value_return_ratio_min": 1.0,
+        "candidate_value_return_ratio_max": 1.55814,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 61.0,
+        "output_mass_min": 26.0,
+        "output_mass_max": 40.0,
+        "mass_return_ratio_min": 0.42623,
+        "mass_return_ratio_max": 0.655738,
+        "input_candidate_value": 86.0,
+        "output_candidate_value_min": 86.0,
+        "output_candidate_value_max": 134.0,
+        "candidate_value_return_ratio_min": 1.0,
+        "candidate_value_return_ratio_max": 1.55814,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c2_assembly.field_bed",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 5.1,
+        "output_mass_min": 9.0,
+        "output_mass_max": 9.0,
+        "mass_return_ratio_min": 1.764706,
+        "mass_return_ratio_max": 1.764706,
+        "input_candidate_value": 18.4,
+        "output_candidate_value_min": 42.0,
+        "output_candidate_value_max": 42.0,
+        "candidate_value_return_ratio_min": 2.282609,
+        "candidate_value_return_ratio_max": 2.282609,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 8.7,
+        "output_mass_min": 9.0,
+        "output_mass_max": 9.0,
+        "mass_return_ratio_min": 1.034483,
+        "mass_return_ratio_max": 1.034483,
+        "input_candidate_value": 23.6,
+        "output_candidate_value_min": 42.0,
+        "output_candidate_value_max": 42.0,
+        "candidate_value_return_ratio_min": 1.779661,
+        "candidate_value_return_ratio_max": 1.779661,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c2_assembly.task_lamp",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 2.15,
+        "output_mass_min": 2.5,
+        "output_mass_max": 2.5,
+        "mass_return_ratio_min": 1.162791,
+        "mass_return_ratio_max": 1.162791,
+        "input_candidate_value": 40.05,
+        "output_candidate_value_min": 46.0,
+        "output_candidate_value_max": 46.0,
+        "candidate_value_return_ratio_min": 1.148564,
+        "candidate_value_return_ratio_max": 1.148564,
+        "mass_classification": "review_band",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 2.15,
+        "output_mass_min": 2.5,
+        "output_mass_max": 2.5,
+        "mass_return_ratio_min": 1.162791,
+        "mass_return_ratio_max": 1.162791,
+        "input_candidate_value": 40.05,
+        "output_candidate_value_min": 46.0,
+        "output_candidate_value_max": 46.0,
+        "candidate_value_return_ratio_min": 1.148564,
+        "candidate_value_return_ratio_max": 1.148564,
+        "mass_classification": "review_band",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c2_assembly.weapon_cleaning_kit",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 1.675,
+        "output_mass_min": 1.8,
+        "output_mass_max": 1.8,
+        "mass_return_ratio_min": 1.074627,
+        "mass_return_ratio_max": 1.074627,
+        "input_candidate_value": 15.5,
+        "output_candidate_value_min": 26.0,
+        "output_candidate_value_max": 26.0,
+        "candidate_value_return_ratio_min": 1.677419,
+        "candidate_value_return_ratio_max": 1.677419,
+        "mass_classification": "review_band",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 1.675,
+        "output_mass_min": 1.8,
+        "output_mass_max": 1.8,
+        "mass_return_ratio_min": 1.074627,
+        "mass_return_ratio_max": 1.074627,
+        "input_candidate_value": 15.5,
+        "output_candidate_value_min": 26.0,
+        "output_candidate_value_max": 26.0,
+        "candidate_value_return_ratio_min": 1.677419,
+        "candidate_value_return_ratio_max": 1.677419,
+        "mass_classification": "review_band",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c4_battery.assemble_module",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 3.5,
+        "output_mass_min": 8.0,
+        "output_mass_max": 8.0,
+        "mass_return_ratio_min": 2.285714,
+        "mass_return_ratio_max": 2.285714,
+        "input_candidate_value": 41.4,
+        "output_candidate_value_min": 58.0,
+        "output_candidate_value_max": 58.0,
+        "candidate_value_return_ratio_min": 1.400966,
+        "candidate_value_return_ratio_max": 1.400966,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 8.0,
+        "output_mass_min": 8.0,
+        "output_mass_max": 8.0,
+        "mass_return_ratio_min": 1.0,
+        "mass_return_ratio_max": 1.0,
+        "input_candidate_value": 47.9,
+        "output_candidate_value_min": 58.0,
+        "output_candidate_value_max": 58.0,
+        "candidate_value_return_ratio_min": 1.210856,
+        "candidate_value_return_ratio_max": 1.210856,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c4_energy.refine_biofuel",
+      "kind": "chemical_processing",
+      "baseline": {
+        "input_mass": 13.3,
+        "output_mass_min": 11.0,
+        "output_mass_max": 11.0,
+        "mass_return_ratio_min": 0.827068,
+        "mass_return_ratio_max": 0.827068,
+        "input_candidate_value": 105.4,
+        "output_candidate_value_min": 70.0,
+        "output_candidate_value_max": 70.0,
+        "candidate_value_return_ratio_min": 0.664137,
+        "candidate_value_return_ratio_max": 0.664137,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 13.3,
+        "output_mass_min": 11.0,
+        "output_mass_max": 11.0,
+        "mass_return_ratio_min": 0.827068,
+        "mass_return_ratio_max": 0.827068,
+        "input_candidate_value": 105.4,
+        "output_candidate_value_min": 70.0,
+        "output_candidate_value_max": 70.0,
+        "candidate_value_return_ratio_min": 0.664137,
+        "candidate_value_return_ratio_max": 0.664137,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c4_filter.activate_carbon",
+      "kind": "material_processing",
+      "baseline": {
+        "input_mass": 10.0,
+        "output_mass_min": 3.12,
+        "output_mass_max": 4.48,
+        "mass_return_ratio_min": 0.312,
+        "mass_return_ratio_max": 0.448,
+        "input_candidate_value": 18.0,
+        "output_candidate_value_min": 12.02,
+        "output_candidate_value_max": 16.08,
+        "candidate_value_return_ratio_min": 0.667778,
+        "candidate_value_return_ratio_max": 0.893333,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 10.0,
+        "output_mass_min": 3.12,
+        "output_mass_max": 4.48,
+        "mass_return_ratio_min": 0.312,
+        "mass_return_ratio_max": 0.448,
+        "input_candidate_value": 18.0,
+        "output_candidate_value_min": 12.02,
+        "output_candidate_value_max": 16.08,
+        "candidate_value_return_ratio_min": 0.667778,
+        "candidate_value_return_ratio_max": 0.893333,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c4_filter.assemble_cartridge",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 12.7,
+        "output_mass_min": 3.0,
+        "output_mass_max": 3.0,
+        "mass_return_ratio_min": 0.23622,
+        "mass_return_ratio_max": 0.23622,
+        "input_candidate_value": 28.4,
+        "output_candidate_value_min": 34.0,
+        "output_candidate_value_max": 34.0,
+        "candidate_value_return_ratio_min": 1.197183,
+        "candidate_value_return_ratio_max": 1.197183,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 12.7,
+        "output_mass_min": 3.0,
+        "output_mass_max": 3.0,
+        "mass_return_ratio_min": 0.23622,
+        "mass_return_ratio_max": 0.23622,
+        "input_candidate_value": 28.4,
+        "output_candidate_value_min": 34.0,
+        "output_candidate_value_max": 34.0,
+        "candidate_value_return_ratio_min": 1.197183,
+        "candidate_value_return_ratio_max": 1.197183,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c4_filter.blend_media",
+      "kind": "material_processing",
+      "baseline": {
+        "input_mass": 19.0,
+        "output_mass_min": 10.8,
+        "output_mass_max": 12.0,
+        "mass_return_ratio_min": 0.568421,
+        "mass_return_ratio_max": 0.631579,
+        "input_candidate_value": 10.9,
+        "output_candidate_value_min": 20.7,
+        "output_candidate_value_max": 23.0,
+        "candidate_value_return_ratio_min": 1.899083,
+        "candidate_value_return_ratio_max": 2.110092,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 19.0,
+        "output_mass_min": 10.8,
+        "output_mass_max": 12.0,
+        "mass_return_ratio_min": 0.568421,
+        "mass_return_ratio_max": 0.631579,
+        "input_candidate_value": 10.9,
+        "output_candidate_value_min": 20.7,
+        "output_candidate_value_max": 23.0,
+        "candidate_value_return_ratio_min": 1.899083,
+        "candidate_value_return_ratio_max": 2.110092,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c4_glass.melt_sheet",
+      "kind": "material_processing",
+      "baseline": {
+        "input_mass": 18.0,
+        "output_mass_min": 3.4,
+        "output_mass_max": 4.8,
+        "mass_return_ratio_min": 0.188889,
+        "mass_return_ratio_max": 0.266667,
+        "input_candidate_value": 10.0,
+        "output_candidate_value_min": 13.75,
+        "output_candidate_value_max": 17.0,
+        "candidate_value_return_ratio_min": 1.375,
+        "candidate_value_return_ratio_max": 1.7,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 18.0,
+        "output_mass_min": 3.4,
+        "output_mass_max": 4.8,
+        "mass_return_ratio_min": 0.188889,
+        "mass_return_ratio_max": 0.266667,
+        "input_candidate_value": 10.0,
+        "output_candidate_value_min": 13.75,
+        "output_candidate_value_max": 17.0,
+        "candidate_value_return_ratio_min": 1.375,
+        "candidate_value_return_ratio_max": 1.7,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c4_masonry.calcine_quicklime",
+      "kind": "material_processing",
+      "baseline": {
+        "input_mass": 39.6,
+        "output_mass_min": 9.93,
+        "output_mass_max": 12.48,
+        "mass_return_ratio_min": 0.250758,
+        "mass_return_ratio_max": 0.315152,
+        "input_candidate_value": 15.6,
+        "output_candidate_value_min": 12.38,
+        "output_candidate_value_max": 15.28,
+        "candidate_value_return_ratio_min": 0.79359,
+        "candidate_value_return_ratio_max": 0.979487,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 39.6,
+        "output_mass_min": 9.93,
+        "output_mass_max": 12.48,
+        "mass_return_ratio_min": 0.250758,
+        "mass_return_ratio_max": 0.315152,
+        "input_candidate_value": 15.6,
+        "output_candidate_value_min": 12.38,
+        "output_candidate_value_max": 15.28,
+        "candidate_value_return_ratio_min": 0.79359,
+        "candidate_value_return_ratio_max": 0.979487,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c4_masonry.fire_brick",
+      "kind": "material_processing",
+      "baseline": {
+        "input_mass": 28.0,
+        "output_mass_min": 19.38,
+        "output_mass_max": 24.48,
+        "mass_return_ratio_min": 0.692143,
+        "mass_return_ratio_max": 0.874286,
+        "input_candidate_value": 13.5,
+        "output_candidate_value_min": 13.63,
+        "output_candidate_value_max": 17.08,
+        "candidate_value_return_ratio_min": 1.00963,
+        "candidate_value_return_ratio_max": 1.265185,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 28.0,
+        "output_mass_min": 19.38,
+        "output_mass_max": 24.48,
+        "mass_return_ratio_min": 0.692143,
+        "mass_return_ratio_max": 0.874286,
+        "input_candidate_value": 13.5,
+        "output_candidate_value_min": 13.63,
+        "output_candidate_value_max": 17.08,
+        "candidate_value_return_ratio_min": 1.00963,
+        "candidate_value_return_ratio_max": 1.265185,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c4_masonry.mix_mortar",
+      "kind": "material_processing",
+      "baseline": {
+        "input_mass": 22.0,
+        "output_mass_min": 18.0,
+        "output_mass_max": 22.0,
+        "mass_return_ratio_min": 0.818182,
+        "mass_return_ratio_max": 1.0,
+        "input_candidate_value": 12.0,
+        "output_candidate_value_min": 10.8,
+        "output_candidate_value_max": 13.2,
+        "candidate_value_return_ratio_min": 0.9,
+        "candidate_value_return_ratio_max": 1.1,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 22.0,
+        "output_mass_min": 18.0,
+        "output_mass_max": 22.0,
+        "mass_return_ratio_min": 0.818182,
+        "mass_return_ratio_max": 1.0,
+        "input_candidate_value": 12.0,
+        "output_candidate_value_min": 10.8,
+        "output_candidate_value_max": 13.2,
+        "candidate_value_return_ratio_min": 0.9,
+        "candidate_value_return_ratio_max": 1.1,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c4_nonferrous.sort_stock",
+      "kind": "material_processing",
+      "baseline": {
+        "input_mass": 22.0,
+        "output_mass_min": 2.0,
+        "output_mass_max": 3.35,
+        "mass_return_ratio_min": 0.090909,
+        "mass_return_ratio_max": 0.152273,
+        "input_candidate_value": 20.0,
+        "output_candidate_value_min": 12.5,
+        "output_candidate_value_max": 21.1,
+        "candidate_value_return_ratio_min": 0.625,
+        "candidate_value_return_ratio_max": 1.055,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 22.0,
+        "output_mass_min": 2.0,
+        "output_mass_max": 3.35,
+        "mass_return_ratio_min": 0.090909,
+        "mass_return_ratio_max": 0.152273,
+        "input_candidate_value": 20.0,
+        "output_candidate_value_min": 12.5,
+        "output_candidate_value_max": 21.1,
+        "candidate_value_return_ratio_min": 0.625,
+        "candidate_value_return_ratio_max": 1.055,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c4_rubber.reclaim_strip",
+      "kind": "material_processing",
+      "baseline": {
+        "input_mass": 14.0,
+        "output_mass_min": 0.8,
+        "output_mass_max": 1.3,
+        "mass_return_ratio_min": 0.057143,
+        "mass_return_ratio_max": 0.092857,
+        "input_candidate_value": 11.0,
+        "output_candidate_value_min": 6.4,
+        "output_candidate_value_max": 10.4,
+        "candidate_value_return_ratio_min": 0.581818,
+        "candidate_value_return_ratio_max": 0.945455,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 14.0,
+        "output_mass_min": 0.8,
+        "output_mass_max": 1.3,
+        "mass_return_ratio_min": 0.057143,
+        "mass_return_ratio_max": 0.092857,
+        "input_candidate_value": 11.0,
+        "output_candidate_value_min": 6.4,
+        "output_candidate_value_max": 10.4,
+        "candidate_value_return_ratio_min": 0.581818,
+        "candidate_value_return_ratio_max": 0.945455,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c4_wood.carbonize_charcoal",
+      "kind": "material_processing",
+      "baseline": {
+        "input_mass": 16.0,
+        "output_mass_min": 3.8,
+        "output_mass_max": 5.72,
+        "mass_return_ratio_min": 0.2375,
+        "mass_return_ratio_max": 0.3575,
+        "input_candidate_value": 11.0,
+        "output_candidate_value_min": 6.35,
+        "output_candidate_value_max": 9.12,
+        "candidate_value_return_ratio_min": 0.577273,
+        "candidate_value_return_ratio_max": 0.829091,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 16.0,
+        "output_mass_min": 3.8,
+        "output_mass_max": 5.72,
+        "mass_return_ratio_min": 0.2375,
+        "mass_return_ratio_max": 0.3575,
+        "input_candidate_value": 11.0,
+        "output_candidate_value_min": 6.35,
+        "output_candidate_value_max": 9.12,
+        "candidate_value_return_ratio_min": 0.577273,
+        "candidate_value_return_ratio_max": 0.829091,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c4_wood.compress_briquette",
+      "kind": "material_processing",
+      "baseline": {
+        "input_mass": 4.0,
+        "output_mass_min": 8.4,
+        "output_mass_max": 10.2,
+        "mass_return_ratio_min": 2.1,
+        "mass_return_ratio_max": 2.55,
+        "input_candidate_value": 2.0,
+        "output_candidate_value_min": 7.0,
+        "output_candidate_value_max": 8.5,
+        "candidate_value_return_ratio_min": 3.5,
+        "candidate_value_return_ratio_max": 4.25,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": true
+      },
+      "proposed_overlay": {
+        "input_mass": 10.0,
+        "output_mass_min": 8.4,
+        "output_mass_max": 9.6,
+        "mass_return_ratio_min": 0.84,
+        "mass_return_ratio_max": 0.96,
+        "input_candidate_value": 5.0,
+        "output_candidate_value_min": 7.0,
+        "output_candidate_value_max": 8.0,
+        "candidate_value_return_ratio_min": 1.4,
+        "candidate_value_return_ratio_max": 1.6,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c4_wood.saw_lumber",
+      "kind": "material_processing",
+      "baseline": {
+        "input_mass": 35.0,
+        "output_mass_min": 16.0,
+        "output_mass_max": 19.8,
+        "mass_return_ratio_min": 0.457143,
+        "mass_return_ratio_max": 0.565714,
+        "input_candidate_value": 14.0,
+        "output_candidate_value_min": 15.8,
+        "output_candidate_value_max": 19.5,
+        "candidate_value_return_ratio_min": 1.128571,
+        "candidate_value_return_ratio_max": 1.392857,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 35.0,
+        "output_mass_min": 16.0,
+        "output_mass_max": 19.8,
+        "mass_return_ratio_min": 0.457143,
+        "mass_return_ratio_max": 0.565714,
+        "input_candidate_value": 14.0,
+        "output_candidate_value_min": 15.8,
+        "output_candidate_value_max": 19.5,
+        "candidate_value_return_ratio_min": 1.128571,
+        "candidate_value_return_ratio_max": 1.392857,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c4_wood.split_firewood",
+      "kind": "material_processing",
+      "baseline": {
+        "input_mass": 35.0,
+        "output_mass_min": 12.2,
+        "output_mass_max": 14.72,
+        "mass_return_ratio_min": 0.348571,
+        "mass_return_ratio_max": 0.420571,
+        "input_candidate_value": 14.0,
+        "output_candidate_value_min": 8.35,
+        "output_candidate_value_max": 10.06,
+        "candidate_value_return_ratio_min": 0.596429,
+        "candidate_value_return_ratio_max": 0.718571,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 35.0,
+        "output_mass_min": 12.2,
+        "output_mass_max": 14.72,
+        "mass_return_ratio_min": 0.348571,
+        "mass_return_ratio_max": 0.420571,
+        "input_candidate_value": 14.0,
+        "output_candidate_value_min": 8.35,
+        "output_candidate_value_max": 10.06,
+        "candidate_value_return_ratio_min": 0.596429,
+        "candidate_value_return_ratio_max": 0.718571,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c5_component.assemble_bearing_kit",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 6.3,
+        "output_mass_min": 0.71,
+        "output_mass_max": 1.055,
+        "mass_return_ratio_min": 0.112698,
+        "mass_return_ratio_max": 0.16746,
+        "input_candidate_value": 38.8,
+        "output_candidate_value_min": 20.5,
+        "output_candidate_value_max": 29.14,
+        "candidate_value_return_ratio_min": 0.528351,
+        "candidate_value_return_ratio_max": 0.751031,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 6.3,
+        "output_mass_min": 0.71,
+        "output_mass_max": 1.055,
+        "mass_return_ratio_min": 0.112698,
+        "mass_return_ratio_max": 0.16746,
+        "input_candidate_value": 38.8,
+        "output_candidate_value_min": 20.5,
+        "output_candidate_value_max": 29.14,
+        "candidate_value_return_ratio_min": 0.528351,
+        "candidate_value_return_ratio_max": 0.751031,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c5_component.assemble_connectors",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 1.1,
+        "output_mass_min": 0.32,
+        "output_mass_max": 0.4,
+        "mass_return_ratio_min": 0.290909,
+        "mass_return_ratio_max": 0.363636,
+        "input_candidate_value": 8.8,
+        "output_candidate_value_min": 9.6,
+        "output_candidate_value_max": 12.0,
+        "candidate_value_return_ratio_min": 1.090909,
+        "candidate_value_return_ratio_max": 1.363636,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 1.1,
+        "output_mass_min": 0.32,
+        "output_mass_max": 0.4,
+        "mass_return_ratio_min": 0.290909,
+        "mass_return_ratio_max": 0.363636,
+        "input_candidate_value": 8.8,
+        "output_candidate_value_min": 9.6,
+        "output_candidate_value_max": 12.0,
+        "candidate_value_return_ratio_min": 1.090909,
+        "candidate_value_return_ratio_max": 1.363636,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c5_component.assemble_hose",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 5.44,
+        "output_mass_min": 1.05,
+        "output_mass_max": 1.35,
+        "mass_return_ratio_min": 0.193015,
+        "mass_return_ratio_max": 0.248162,
+        "input_candidate_value": 20.7,
+        "output_candidate_value_min": 16.1,
+        "output_candidate_value_max": 20.7,
+        "candidate_value_return_ratio_min": 0.777778,
+        "candidate_value_return_ratio_max": 1.0,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 5.44,
+        "output_mass_min": 1.05,
+        "output_mass_max": 1.35,
+        "mass_return_ratio_min": 0.193015,
+        "mass_return_ratio_max": 0.248162,
+        "input_candidate_value": 20.7,
+        "output_candidate_value_min": 16.1,
+        "output_candidate_value_max": 20.7,
+        "candidate_value_return_ratio_min": 0.777778,
+        "candidate_value_return_ratio_max": 1.0,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c5_component.assemble_power_regulator",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 2.0,
+        "output_mass_min": 0.455,
+        "output_mass_max": 0.595,
+        "mass_return_ratio_min": 0.2275,
+        "mass_return_ratio_max": 0.2975,
+        "input_candidate_value": 58.8,
+        "output_candidate_value_min": 28.6,
+        "output_candidate_value_max": 37.4,
+        "candidate_value_return_ratio_min": 0.486395,
+        "candidate_value_return_ratio_max": 0.636054,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 2.0,
+        "output_mass_min": 0.455,
+        "output_mass_max": 0.595,
+        "mass_return_ratio_min": 0.2275,
+        "mass_return_ratio_max": 0.2975,
+        "input_candidate_value": 58.8,
+        "output_candidate_value_min": 28.6,
+        "output_candidate_value_max": 37.4,
+        "candidate_value_return_ratio_min": 0.486395,
+        "candidate_value_return_ratio_max": 0.636054,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c5_component.assemble_protected_relay",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 1.6,
+        "output_mass_min": 0.56,
+        "output_mass_max": 0.72,
+        "mass_return_ratio_min": 0.35,
+        "mass_return_ratio_max": 0.45,
+        "input_candidate_value": 48.0,
+        "output_candidate_value_min": 27.3,
+        "output_candidate_value_max": 35.1,
+        "candidate_value_return_ratio_min": 0.56875,
+        "candidate_value_return_ratio_max": 0.73125,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 1.6,
+        "output_mass_min": 0.56,
+        "output_mass_max": 0.72,
+        "mass_return_ratio_min": 0.35,
+        "mass_return_ratio_max": 0.45,
+        "input_candidate_value": 48.0,
+        "output_candidate_value_min": 27.3,
+        "output_candidate_value_max": 35.1,
+        "candidate_value_return_ratio_min": 0.56875,
+        "candidate_value_return_ratio_max": 0.73125,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c5_electronic.assemble_field_telephone",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 10.7,
+        "output_mass_min": 4.0,
+        "output_mass_max": 4.0,
+        "mass_return_ratio_min": 0.373832,
+        "mass_return_ratio_max": 0.373832,
+        "input_candidate_value": 139.0,
+        "output_candidate_value_min": 92.0,
+        "output_candidate_value_max": 92.0,
+        "candidate_value_return_ratio_min": 0.661871,
+        "candidate_value_return_ratio_max": 0.661871,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 10.7,
+        "output_mass_min": 4.0,
+        "output_mass_max": 4.0,
+        "mass_return_ratio_min": 0.373832,
+        "mass_return_ratio_max": 0.373832,
+        "input_candidate_value": 139.0,
+        "output_candidate_value_min": 92.0,
+        "output_candidate_value_max": 92.0,
+        "candidate_value_return_ratio_min": 0.661871,
+        "candidate_value_return_ratio_max": 0.661871,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c5_electronic.assemble_task_lantern",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 10.1,
+        "output_mass_min": 2.36,
+        "output_mass_max": 2.6,
+        "mass_return_ratio_min": 0.233663,
+        "mass_return_ratio_max": 0.257426,
+        "input_candidate_value": 111.0,
+        "output_candidate_value_min": 64.02,
+        "output_candidate_value_max": 64.05,
+        "candidate_value_return_ratio_min": 0.576757,
+        "candidate_value_return_ratio_max": 0.577027,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 10.1,
+        "output_mass_min": 2.36,
+        "output_mass_max": 2.6,
+        "mass_return_ratio_min": 0.233663,
+        "mass_return_ratio_max": 0.257426,
+        "input_candidate_value": 111.0,
+        "output_candidate_value_min": 64.02,
+        "output_candidate_value_max": 64.05,
+        "candidate_value_return_ratio_min": 0.576757,
+        "candidate_value_return_ratio_max": 0.577027,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c5_food.bake_flatbread",
+      "kind": "food_processing",
+      "baseline": {
+        "input_mass": 13.72,
+        "output_mass_min": 0.66,
+        "output_mass_max": 0.93,
+        "mass_return_ratio_min": 0.048105,
+        "mass_return_ratio_max": 0.067784,
+        "input_candidate_value": 9.76,
+        "output_candidate_value_min": 6.01,
+        "output_candidate_value_max": 7.53,
+        "candidate_value_return_ratio_min": 0.615779,
+        "candidate_value_return_ratio_max": 0.771516,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 4.72,
+        "output_mass_min": 0.66,
+        "output_mass_max": 0.93,
+        "mass_return_ratio_min": 0.139831,
+        "mass_return_ratio_max": 0.197034,
+        "input_candidate_value": 9.76,
+        "output_candidate_value_min": 6.01,
+        "output_candidate_value_max": 7.53,
+        "candidate_value_return_ratio_min": 0.615779,
+        "candidate_value_return_ratio_max": 0.771516,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c5_food.brew_herbal_infusion",
+      "kind": "food_processing",
+      "baseline": {
+        "input_mass": 1.82,
+        "output_mass_min": 0.9,
+        "output_mass_max": 1.0,
+        "mass_return_ratio_min": 0.494505,
+        "mass_return_ratio_max": 0.549451,
+        "input_candidate_value": 2.45,
+        "output_candidate_value_min": 2.7,
+        "output_candidate_value_max": 3.0,
+        "candidate_value_return_ratio_min": 1.102041,
+        "candidate_value_return_ratio_max": 1.22449,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 1.82,
+        "output_mass_min": 0.9,
+        "output_mass_max": 1.0,
+        "mass_return_ratio_min": 0.494505,
+        "mass_return_ratio_max": 0.549451,
+        "input_candidate_value": 2.45,
+        "output_candidate_value_min": 2.7,
+        "output_candidate_value_max": 3.0,
+        "candidate_value_return_ratio_min": 1.102041,
+        "candidate_value_return_ratio_max": 1.22449,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c5_food.dry_vegetable",
+      "kind": "food_processing",
+      "baseline": {
+        "input_mass": 3.4,
+        "output_mass_min": 0.1,
+        "output_mass_max": 0.16,
+        "mass_return_ratio_min": 0.029412,
+        "mass_return_ratio_max": 0.047059,
+        "input_candidate_value": 5.65,
+        "output_candidate_value_min": 2.0,
+        "output_candidate_value_max": 3.2,
+        "candidate_value_return_ratio_min": 0.353982,
+        "candidate_value_return_ratio_max": 0.566372,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 3.4,
+        "output_mass_min": 0.1,
+        "output_mass_max": 0.16,
+        "mass_return_ratio_min": 0.029412,
+        "mass_return_ratio_max": 0.047059,
+        "input_candidate_value": 5.65,
+        "output_candidate_value_min": 2.0,
+        "output_candidate_value_max": 3.2,
+        "candidate_value_return_ratio_min": 0.353982,
+        "candidate_value_return_ratio_max": 0.566372,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c5_food.ferment_root_vegetable",
+      "kind": "food_processing",
+      "baseline": {
+        "input_mass": 1.55,
+        "output_mass_min": 1.2,
+        "output_mass_max": 1.32,
+        "mass_return_ratio_min": 0.774194,
+        "mass_return_ratio_max": 0.851613,
+        "input_candidate_value": 4.65,
+        "output_candidate_value_min": 7.0,
+        "output_candidate_value_max": 7.7,
+        "candidate_value_return_ratio_min": 1.505376,
+        "candidate_value_return_ratio_max": 1.655914,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 1.55,
+        "output_mass_min": 1.2,
+        "output_mass_max": 1.32,
+        "mass_return_ratio_min": 0.774194,
+        "mass_return_ratio_max": 0.851613,
+        "input_candidate_value": 4.65,
+        "output_candidate_value_min": 7.0,
+        "output_candidate_value_max": 7.7,
+        "candidate_value_return_ratio_min": 1.505376,
+        "candidate_value_return_ratio_max": 1.655914,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c5_food.mill_flour",
+      "kind": "food_processing",
+      "baseline": {
+        "input_mass": 1.0,
+        "output_mass_min": 7.5,
+        "output_mass_max": 9.0,
+        "mass_return_ratio_min": 7.5,
+        "mass_return_ratio_max": 9.0,
+        "input_candidate_value": 3.0,
+        "output_candidate_value_min": 5.25,
+        "output_candidate_value_max": 6.3,
+        "candidate_value_return_ratio_min": 1.75,
+        "candidate_value_return_ratio_max": 2.1,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 1.0,
+        "output_mass_min": 0.75,
+        "output_mass_max": 0.9,
+        "mass_return_ratio_min": 0.75,
+        "mass_return_ratio_max": 0.9,
+        "input_candidate_value": 3.0,
+        "output_candidate_value_min": 5.25,
+        "output_candidate_value_max": 6.3,
+        "candidate_value_return_ratio_min": 1.75,
+        "candidate_value_return_ratio_max": 2.1,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c5_medical.assemble_clean_splint",
+      "kind": "medical_processing",
+      "baseline": {
+        "input_mass": 10.96,
+        "output_mass_min": 1.34,
+        "output_mass_max": 1.6,
+        "mass_return_ratio_min": 0.122263,
+        "mass_return_ratio_max": 0.145985,
+        "input_candidate_value": 17.4,
+        "output_candidate_value_min": 13.54,
+        "output_candidate_value_max": 15.1,
+        "candidate_value_return_ratio_min": 0.778161,
+        "candidate_value_return_ratio_max": 0.867816,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 10.96,
+        "output_mass_min": 1.34,
+        "output_mass_max": 1.6,
+        "mass_return_ratio_min": 0.122263,
+        "mass_return_ratio_max": 0.145985,
+        "input_candidate_value": 17.4,
+        "output_candidate_value_min": 13.54,
+        "output_candidate_value_max": 15.1,
+        "candidate_value_return_ratio_min": 0.778161,
+        "candidate_value_return_ratio_max": 0.867816,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c5_medical.prepare_oral_rehydration",
+      "kind": "medical_processing",
+      "baseline": {
+        "input_mass": 1.033,
+        "output_mass_min": 1.1,
+        "output_mass_max": 1.1,
+        "mass_return_ratio_min": 1.06486,
+        "mass_return_ratio_max": 1.06486,
+        "input_candidate_value": 1.279,
+        "output_candidate_value_min": 4.0,
+        "output_candidate_value_max": 4.0,
+        "candidate_value_return_ratio_min": 3.127443,
+        "candidate_value_return_ratio_max": 3.127443,
+        "mass_classification": "review_band",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 1.033,
+        "output_mass_min": 1.1,
+        "output_mass_max": 1.1,
+        "mass_return_ratio_min": 1.06486,
+        "mass_return_ratio_max": 1.06486,
+        "input_candidate_value": 1.279,
+        "output_candidate_value_min": 4.0,
+        "output_candidate_value_max": 4.0,
+        "candidate_value_return_ratio_min": 3.127443,
+        "candidate_value_return_ratio_max": 3.127443,
+        "mass_classification": "review_band",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c5_tool.assemble_mechanic_set",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 28.0,
+        "output_mass_min": 5.0,
+        "output_mass_max": 6.47,
+        "mass_return_ratio_min": 0.178571,
+        "mass_return_ratio_max": 0.231071,
+        "input_candidate_value": 40.1,
+        "output_candidate_value_min": 49.02,
+        "output_candidate_value_max": 61.46,
+        "candidate_value_return_ratio_min": 1.222444,
+        "candidate_value_return_ratio_max": 1.532668,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 28.0,
+        "output_mass_min": 5.0,
+        "output_mass_max": 6.47,
+        "mass_return_ratio_min": 0.178571,
+        "mass_return_ratio_max": 0.231071,
+        "input_candidate_value": 40.1,
+        "output_candidate_value_min": 49.02,
+        "output_candidate_value_max": 61.46,
+        "candidate_value_return_ratio_min": 1.222444,
+        "candidate_value_return_ratio_max": 1.532668,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c6_ammo.make_crossbow_bolts",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 8.73,
+        "output_mass_min": 0.9,
+        "output_mass_max": 1.14,
+        "mass_return_ratio_min": 0.103093,
+        "mass_return_ratio_max": 0.130584,
+        "input_candidate_value": 9.8,
+        "output_candidate_value_min": 13.5,
+        "output_candidate_value_max": 17.1,
+        "candidate_value_return_ratio_min": 1.377551,
+        "candidate_value_return_ratio_max": 1.744898,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 8.73,
+        "output_mass_min": 0.9,
+        "output_mass_max": 1.14,
+        "mass_return_ratio_min": 0.103093,
+        "mass_return_ratio_max": 0.130584,
+        "input_candidate_value": 9.8,
+        "output_candidate_value_min": 13.5,
+        "output_candidate_value_max": 17.1,
+        "candidate_value_return_ratio_min": 1.377551,
+        "candidate_value_return_ratio_max": 1.744898,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c6_ammo.make_hunting_arrows",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 10.55,
+        "output_mass_min": 0.8,
+        "output_mass_max": 1.0,
+        "mass_return_ratio_min": 0.075829,
+        "mass_return_ratio_max": 0.094787,
+        "input_candidate_value": 11.2,
+        "output_candidate_value_min": 11.2,
+        "output_candidate_value_max": 14.0,
+        "candidate_value_return_ratio_min": 1.0,
+        "candidate_value_return_ratio_max": 1.25,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 10.55,
+        "output_mass_min": 0.8,
+        "output_mass_max": 1.0,
+        "mass_return_ratio_min": 0.075829,
+        "mass_return_ratio_max": 0.094787,
+        "input_candidate_value": 11.2,
+        "output_candidate_value_min": 11.2,
+        "output_candidate_value_max": 14.0,
+        "candidate_value_return_ratio_min": 1.0,
+        "candidate_value_return_ratio_max": 1.25,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c6_ammo.make_practice_arrows",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 9.55,
+        "output_mass_min": 0.81,
+        "output_mass_max": 0.99,
+        "mass_return_ratio_min": 0.084817,
+        "mass_return_ratio_max": 0.103665,
+        "input_candidate_value": 11.6,
+        "output_candidate_value_min": 8.1,
+        "output_candidate_value_max": 9.9,
+        "candidate_value_return_ratio_min": 0.698276,
+        "candidate_value_return_ratio_max": 0.853448,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 9.55,
+        "output_mass_min": 0.81,
+        "output_mass_max": 0.99,
+        "mass_return_ratio_min": 0.084817,
+        "mass_return_ratio_max": 0.103665,
+        "input_candidate_value": 11.6,
+        "output_candidate_value_min": 8.1,
+        "output_candidate_value_max": 9.9,
+        "candidate_value_return_ratio_min": 0.698276,
+        "candidate_value_return_ratio_max": 0.853448,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c6_food.bake_travel_biscuit",
+      "kind": "food_processing",
+      "baseline": {
+        "input_mass": 13.55,
+        "output_mass_min": 0.51,
+        "output_mass_max": 0.73,
+        "mass_return_ratio_min": 0.037638,
+        "mass_return_ratio_max": 0.053875,
+        "input_candidate_value": 9.95,
+        "output_candidate_value_min": 7.21,
+        "output_candidate_value_max": 8.83,
+        "candidate_value_return_ratio_min": 0.724623,
+        "candidate_value_return_ratio_max": 0.887437,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 4.55,
+        "output_mass_min": 0.51,
+        "output_mass_max": 0.73,
+        "mass_return_ratio_min": 0.112088,
+        "mass_return_ratio_max": 0.16044,
+        "input_candidate_value": 9.95,
+        "output_candidate_value_min": 7.21,
+        "output_candidate_value_max": 8.83,
+        "candidate_value_return_ratio_min": 0.724623,
+        "candidate_value_return_ratio_max": 0.887437,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c6_food.cook_bean_root_stew",
+      "kind": "food_processing",
+      "baseline": {
+        "input_mass": 4.21,
+        "output_mass_min": 1.36,
+        "output_mass_max": 1.78,
+        "mass_return_ratio_min": 0.32304,
+        "mass_return_ratio_max": 0.422803,
+        "input_candidate_value": 5.88,
+        "output_candidate_value_min": 7.81,
+        "output_candidate_value_max": 9.63,
+        "candidate_value_return_ratio_min": 1.328231,
+        "candidate_value_return_ratio_max": 1.637755,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 4.21,
+        "output_mass_min": 1.36,
+        "output_mass_max": 1.78,
+        "mass_return_ratio_min": 0.32304,
+        "mass_return_ratio_max": 0.422803,
+        "input_candidate_value": 5.88,
+        "output_candidate_value_min": 7.81,
+        "output_candidate_value_max": 9.63,
+        "candidate_value_return_ratio_min": 1.328231,
+        "candidate_value_return_ratio_max": 1.637755,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c6_food.dry_fruit",
+      "kind": "food_processing",
+      "baseline": {
+        "input_mass": 2.92,
+        "output_mass_min": 0.06,
+        "output_mass_max": 0.105,
+        "mass_return_ratio_min": 0.020548,
+        "mass_return_ratio_max": 0.035959,
+        "input_candidate_value": 6.32,
+        "output_candidate_value_min": 1.8,
+        "output_candidate_value_max": 3.15,
+        "candidate_value_return_ratio_min": 0.28481,
+        "candidate_value_return_ratio_max": 0.498418,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 2.92,
+        "output_mass_min": 0.06,
+        "output_mass_max": 0.105,
+        "mass_return_ratio_min": 0.020548,
+        "mass_return_ratio_max": 0.035959,
+        "input_candidate_value": 6.32,
+        "output_candidate_value_min": 1.8,
+        "output_candidate_value_max": 3.15,
+        "candidate_value_return_ratio_min": 0.28481,
+        "candidate_value_return_ratio_max": 0.498418,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c6_medical.pack_burn_dressing",
+      "kind": "medical_processing",
+      "baseline": {
+        "input_mass": 0.66,
+        "output_mass_min": 0.27,
+        "output_mass_max": 0.3,
+        "mass_return_ratio_min": 0.409091,
+        "mass_return_ratio_max": 0.454545,
+        "input_candidate_value": 15.6,
+        "output_candidate_value_min": 23.4,
+        "output_candidate_value_max": 26.0,
+        "candidate_value_return_ratio_min": 1.5,
+        "candidate_value_return_ratio_max": 1.666667,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 0.66,
+        "output_mass_min": 0.27,
+        "output_mass_max": 0.3,
+        "mass_return_ratio_min": 0.409091,
+        "mass_return_ratio_max": 0.454545,
+        "input_candidate_value": 15.6,
+        "output_candidate_value_min": 23.4,
+        "output_candidate_value_max": 26.0,
+        "candidate_value_return_ratio_min": 1.5,
+        "candidate_value_return_ratio_max": 1.666667,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c6_medical.pack_field_wound_care",
+      "kind": "medical_processing",
+      "baseline": {
+        "input_mass": 0.56,
+        "output_mass_min": 0.1,
+        "output_mass_max": 0.1,
+        "mass_return_ratio_min": 0.178571,
+        "mass_return_ratio_max": 0.178571,
+        "input_candidate_value": 27.6,
+        "output_candidate_value_min": 22.0,
+        "output_candidate_value_max": 22.0,
+        "candidate_value_return_ratio_min": 0.797101,
+        "candidate_value_return_ratio_max": 0.797101,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 0.38,
+        "output_mass_min": 0.1,
+        "output_mass_max": 0.1,
+        "mass_return_ratio_min": 0.263158,
+        "mass_return_ratio_max": 0.263158,
+        "input_candidate_value": 17.6,
+        "output_candidate_value_min": 22.0,
+        "output_candidate_value_max": 22.0,
+        "candidate_value_return_ratio_min": 1.25,
+        "candidate_value_return_ratio_max": 1.25,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c6_medical.prepare_irrigation_saline",
+      "kind": "medical_processing",
+      "baseline": {
+        "input_mass": 1.009,
+        "output_mass_min": 1.1,
+        "output_mass_max": 1.1,
+        "mass_return_ratio_min": 1.090188,
+        "mass_return_ratio_max": 1.090188,
+        "input_candidate_value": 1.027,
+        "output_candidate_value_min": 4.0,
+        "output_candidate_value_max": 4.0,
+        "candidate_value_return_ratio_min": 3.894839,
+        "candidate_value_return_ratio_max": 3.894839,
+        "mass_classification": "review_band",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 1.009,
+        "output_mass_min": 1.1,
+        "output_mass_max": 1.1,
+        "mass_return_ratio_min": 1.090188,
+        "mass_return_ratio_max": 1.090188,
+        "input_candidate_value": 1.027,
+        "output_candidate_value_min": 4.0,
+        "output_candidate_value_max": 4.0,
+        "candidate_value_return_ratio_min": 3.894839,
+        "candidate_value_return_ratio_max": 3.894839,
+        "mass_classification": "review_band",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c6_weapon.make_breaching_sledge",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 36.0,
+        "output_mass_min": 6.68,
+        "output_mass_max": 6.86,
+        "mass_return_ratio_min": 0.185556,
+        "mass_return_ratio_max": 0.190556,
+        "input_candidate_value": 45.6,
+        "output_candidate_value_min": 42.18,
+        "output_candidate_value_max": 42.36,
+        "candidate_value_return_ratio_min": 0.925,
+        "candidate_value_return_ratio_max": 0.928947,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 36.0,
+        "output_mass_min": 6.68,
+        "output_mass_max": 6.86,
+        "mass_return_ratio_min": 0.185556,
+        "mass_return_ratio_max": 0.190556,
+        "input_candidate_value": 45.6,
+        "output_candidate_value_min": 42.18,
+        "output_candidate_value_max": 42.36,
+        "candidate_value_return_ratio_min": 0.925,
+        "candidate_value_return_ratio_max": 0.928947,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c6_weapon.make_capture_net",
+      "kind": "tailoring",
+      "baseline": {
+        "input_mass": 5.32,
+        "output_mass_min": 3.0,
+        "output_mass_max": 3.0,
+        "mass_return_ratio_min": 0.56391,
+        "mass_return_ratio_max": 0.56391,
+        "input_candidate_value": 11.6,
+        "output_candidate_value_min": 31.0,
+        "output_candidate_value_max": 31.0,
+        "candidate_value_return_ratio_min": 2.672414,
+        "candidate_value_return_ratio_max": 2.672414,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 5.32,
+        "output_mass_min": 3.0,
+        "output_mass_max": 3.0,
+        "mass_return_ratio_min": 0.56391,
+        "mass_return_ratio_max": 0.56391,
+        "input_candidate_value": 11.6,
+        "output_candidate_value_min": 31.0,
+        "output_candidate_value_max": 31.0,
+        "candidate_value_return_ratio_min": 2.672414,
+        "candidate_value_return_ratio_max": 2.672414,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c6_weapon.make_hunting_bow",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 20.7,
+        "output_mass_min": 1.6,
+        "output_mass_max": 1.88,
+        "mass_return_ratio_min": 0.077295,
+        "mass_return_ratio_max": 0.090821,
+        "input_candidate_value": 21.6,
+        "output_candidate_value_min": 38.1,
+        "output_candidate_value_max": 38.24,
+        "candidate_value_return_ratio_min": 1.763889,
+        "candidate_value_return_ratio_max": 1.77037,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 20.7,
+        "output_mass_min": 1.6,
+        "output_mass_max": 1.88,
+        "mass_return_ratio_min": 0.077295,
+        "mass_return_ratio_max": 0.090821,
+        "input_candidate_value": 21.6,
+        "output_candidate_value_min": 38.1,
+        "output_candidate_value_max": 38.24,
+        "candidate_value_return_ratio_min": 1.763889,
+        "candidate_value_return_ratio_max": 1.77037,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c6_weapon.make_hunting_spear",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 21.46,
+        "output_mass_min": 2.33,
+        "output_mass_max": 2.38,
+        "mass_return_ratio_min": 0.108574,
+        "mass_return_ratio_max": 0.110904,
+        "input_candidate_value": 25.1,
+        "output_candidate_value_min": 29.06,
+        "output_candidate_value_max": 29.16,
+        "candidate_value_return_ratio_min": 1.157769,
+        "candidate_value_return_ratio_max": 1.161753,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 21.46,
+        "output_mass_min": 2.33,
+        "output_mass_max": 2.38,
+        "mass_return_ratio_min": 0.108574,
+        "mass_return_ratio_max": 0.110904,
+        "input_candidate_value": 25.1,
+        "output_candidate_value_min": 29.06,
+        "output_candidate_value_max": 29.16,
+        "candidate_value_return_ratio_min": 1.157769,
+        "candidate_value_return_ratio_max": 1.161753,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c6_weapon.make_light_crossbow",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 29.15,
+        "output_mass_min": 3.37,
+        "output_mass_max": 3.64,
+        "mass_return_ratio_min": 0.115609,
+        "mass_return_ratio_max": 0.124871,
+        "input_candidate_value": 48.0,
+        "output_candidate_value_min": 67.16,
+        "output_candidate_value_max": 67.4,
+        "candidate_value_return_ratio_min": 1.399167,
+        "candidate_value_return_ratio_max": 1.404167,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 29.15,
+        "output_mass_min": 3.37,
+        "output_mass_max": 3.64,
+        "mass_return_ratio_min": 0.115609,
+        "mass_return_ratio_max": 0.124871,
+        "input_candidate_value": 48.0,
+        "output_candidate_value_min": 67.16,
+        "output_candidate_value_max": 67.4,
+        "candidate_value_return_ratio_min": 1.399167,
+        "candidate_value_return_ratio_max": 1.404167,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c6_weapon.make_weighted_staff",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 19.36,
+        "output_mass_min": 2.12,
+        "output_mass_max": 2.28,
+        "mass_return_ratio_min": 0.109504,
+        "mass_return_ratio_max": 0.117769,
+        "input_candidate_value": 21.0,
+        "output_candidate_value_min": 22.06,
+        "output_candidate_value_max": 22.14,
+        "candidate_value_return_ratio_min": 1.050476,
+        "candidate_value_return_ratio_max": 1.054286,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 19.36,
+        "output_mass_min": 2.12,
+        "output_mass_max": 2.28,
+        "mass_return_ratio_min": 0.109504,
+        "mass_return_ratio_max": 0.117769,
+        "input_candidate_value": 21.0,
+        "output_candidate_value_min": 22.06,
+        "output_candidate_value_max": 22.14,
+        "candidate_value_return_ratio_min": 1.050476,
+        "candidate_value_return_ratio_max": 1.054286,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c7_clothing.make_dust_mask",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 2.2,
+        "output_mass_min": 0.15,
+        "output_mass_max": 0.15,
+        "mass_return_ratio_min": 0.068182,
+        "mass_return_ratio_max": 0.068182,
+        "input_candidate_value": 7.04,
+        "output_candidate_value_min": 11.0,
+        "output_candidate_value_max": 11.0,
+        "candidate_value_return_ratio_min": 1.5625,
+        "candidate_value_return_ratio_max": 1.5625,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 2.2,
+        "output_mass_min": 0.15,
+        "output_mass_max": 0.15,
+        "mass_return_ratio_min": 0.068182,
+        "mass_return_ratio_max": 0.068182,
+        "input_candidate_value": 7.04,
+        "output_candidate_value_min": 11.0,
+        "output_candidate_value_max": 11.0,
+        "candidate_value_return_ratio_min": 1.5625,
+        "candidate_value_return_ratio_max": 1.5625,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c7_clothing.make_safety_goggles",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 1.28,
+        "output_mass_min": 0.25,
+        "output_mass_max": 0.25,
+        "mass_return_ratio_min": 0.195313,
+        "mass_return_ratio_max": 0.195313,
+        "input_candidate_value": 7.3,
+        "output_candidate_value_min": 14.0,
+        "output_candidate_value_max": 14.0,
+        "candidate_value_return_ratio_min": 1.917808,
+        "candidate_value_return_ratio_max": 1.917808,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 1.28,
+        "output_mass_min": 0.25,
+        "output_mass_max": 0.25,
+        "mass_return_ratio_min": 0.195313,
+        "mass_return_ratio_max": 0.195313,
+        "input_candidate_value": 7.3,
+        "output_candidate_value_min": 14.0,
+        "output_candidate_value_max": 14.0,
+        "candidate_value_return_ratio_min": 1.917808,
+        "candidate_value_return_ratio_max": 1.917808,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c7_clothing.make_welding_apron",
+      "kind": "tailoring",
+      "baseline": {
+        "input_mass": 11.5,
+        "output_mass_min": 1.8,
+        "output_mass_max": 1.8,
+        "mass_return_ratio_min": 0.156522,
+        "mass_return_ratio_max": 0.156522,
+        "input_candidate_value": 50.25,
+        "output_candidate_value_min": 29.0,
+        "output_candidate_value_max": 29.0,
+        "candidate_value_return_ratio_min": 0.577114,
+        "candidate_value_return_ratio_max": 0.577114,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 11.5,
+        "output_mass_min": 1.8,
+        "output_mass_max": 1.8,
+        "mass_return_ratio_min": 0.156522,
+        "mass_return_ratio_max": 0.156522,
+        "input_candidate_value": 50.25,
+        "output_candidate_value_min": 29.0,
+        "output_candidate_value_max": 29.0,
+        "candidate_value_return_ratio_min": 0.577114,
+        "candidate_value_return_ratio_max": 0.577114,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c7_clothing.make_work_boots",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 12.18,
+        "output_mass_min": 2.0,
+        "output_mass_max": 2.0,
+        "mass_return_ratio_min": 0.164204,
+        "mass_return_ratio_max": 0.164204,
+        "input_candidate_value": 45.05,
+        "output_candidate_value_min": 35.0,
+        "output_candidate_value_max": 35.0,
+        "candidate_value_return_ratio_min": 0.776915,
+        "candidate_value_return_ratio_max": 0.776915,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 12.18,
+        "output_mass_min": 2.0,
+        "output_mass_max": 2.0,
+        "mass_return_ratio_min": 0.164204,
+        "mass_return_ratio_max": 0.164204,
+        "input_candidate_value": 45.05,
+        "output_candidate_value_min": 35.0,
+        "output_candidate_value_max": 35.0,
+        "candidate_value_return_ratio_min": 0.776915,
+        "candidate_value_return_ratio_max": 0.776915,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c7_clothing.sew_base_layer",
+      "kind": "tailoring",
+      "baseline": {
+        "input_mass": 4.8,
+        "output_mass_min": 0.8,
+        "output_mass_max": 0.8,
+        "mass_return_ratio_min": 0.166667,
+        "mass_return_ratio_max": 0.166667,
+        "input_candidate_value": 24.0,
+        "output_candidate_value_min": 14.0,
+        "output_candidate_value_max": 14.0,
+        "candidate_value_return_ratio_min": 0.583333,
+        "candidate_value_return_ratio_max": 0.583333,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 4.8,
+        "output_mass_min": 0.8,
+        "output_mass_max": 0.8,
+        "mass_return_ratio_min": 0.166667,
+        "mass_return_ratio_max": 0.166667,
+        "input_candidate_value": 24.0,
+        "output_candidate_value_min": 14.0,
+        "output_candidate_value_max": 14.0,
+        "candidate_value_return_ratio_min": 0.583333,
+        "candidate_value_return_ratio_max": 0.583333,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c7_clothing.sew_insulated_coat",
+      "kind": "tailoring",
+      "baseline": {
+        "input_mass": 16.24,
+        "output_mass_min": 2.2,
+        "output_mass_max": 2.2,
+        "mass_return_ratio_min": 0.135468,
+        "mass_return_ratio_max": 0.135468,
+        "input_candidate_value": 62.3,
+        "output_candidate_value_min": 32.0,
+        "output_candidate_value_max": 32.0,
+        "candidate_value_return_ratio_min": 0.513644,
+        "candidate_value_return_ratio_max": 0.513644,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 16.24,
+        "output_mass_min": 2.2,
+        "output_mass_max": 2.2,
+        "mass_return_ratio_min": 0.135468,
+        "mass_return_ratio_max": 0.135468,
+        "input_candidate_value": 62.3,
+        "output_candidate_value_min": 32.0,
+        "output_candidate_value_max": 32.0,
+        "candidate_value_return_ratio_min": 0.513644,
+        "candidate_value_return_ratio_max": 0.513644,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c7_clothing.sew_padded_trousers",
+      "kind": "tailoring",
+      "baseline": {
+        "input_mass": 9.21,
+        "output_mass_min": 1.5,
+        "output_mass_max": 1.5,
+        "mass_return_ratio_min": 0.162866,
+        "mass_return_ratio_max": 0.162866,
+        "input_candidate_value": 39.4,
+        "output_candidate_value_min": 24.0,
+        "output_candidate_value_max": 24.0,
+        "candidate_value_return_ratio_min": 0.609137,
+        "candidate_value_return_ratio_max": 0.609137,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 9.21,
+        "output_mass_min": 1.5,
+        "output_mass_max": 1.5,
+        "mass_return_ratio_min": 0.162866,
+        "mass_return_ratio_max": 0.162866,
+        "input_candidate_value": 39.4,
+        "output_candidate_value_min": 24.0,
+        "output_candidate_value_max": 24.0,
+        "candidate_value_return_ratio_min": 0.609137,
+        "candidate_value_return_ratio_max": 0.609137,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c7_clothing.sew_rain_shell",
+      "kind": "tailoring",
+      "baseline": {
+        "input_mass": 7.675,
+        "output_mass_min": 1.1,
+        "output_mass_max": 1.1,
+        "mass_return_ratio_min": 0.143322,
+        "mass_return_ratio_max": 0.143322,
+        "input_candidate_value": 39.9,
+        "output_candidate_value_min": 28.0,
+        "output_candidate_value_max": 28.0,
+        "candidate_value_return_ratio_min": 0.701754,
+        "candidate_value_return_ratio_max": 0.701754,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 7.675,
+        "output_mass_min": 1.1,
+        "output_mass_max": 1.1,
+        "mass_return_ratio_min": 0.143322,
+        "mass_return_ratio_max": 0.143322,
+        "input_candidate_value": 39.9,
+        "output_candidate_value_min": 28.0,
+        "output_candidate_value_max": 28.0,
+        "candidate_value_return_ratio_min": 0.701754,
+        "candidate_value_return_ratio_max": 0.701754,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c7_clothing.sew_work_gloves",
+      "kind": "tailoring",
+      "baseline": {
+        "input_mass": 2.4,
+        "output_mass_min": 0.4,
+        "output_mass_max": 0.4,
+        "mass_return_ratio_min": 0.166667,
+        "mass_return_ratio_max": 0.166667,
+        "input_candidate_value": 9.96,
+        "output_candidate_value_min": 12.0,
+        "output_candidate_value_max": 12.0,
+        "candidate_value_return_ratio_min": 1.204819,
+        "candidate_value_return_ratio_max": 1.204819,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 2.4,
+        "output_mass_min": 0.4,
+        "output_mass_max": 0.4,
+        "mass_return_ratio_min": 0.166667,
+        "mass_return_ratio_max": 0.166667,
+        "input_candidate_value": 9.96,
+        "output_candidate_value_min": 12.0,
+        "output_candidate_value_max": 12.0,
+        "candidate_value_return_ratio_min": 1.204819,
+        "candidate_value_return_ratio_max": 1.204819,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c7_daily.assemble_sewing_kit",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 1.464,
+        "output_mass_min": 0.6,
+        "output_mass_max": 0.6,
+        "mass_return_ratio_min": 0.409836,
+        "mass_return_ratio_max": 0.409836,
+        "input_candidate_value": 5.68,
+        "output_candidate_value_min": 17.0,
+        "output_candidate_value_max": 17.0,
+        "candidate_value_return_ratio_min": 2.992958,
+        "candidate_value_return_ratio_max": 2.992958,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 1.464,
+        "output_mass_min": 0.6,
+        "output_mass_max": 0.6,
+        "mass_return_ratio_min": 0.409836,
+        "mass_return_ratio_max": 0.409836,
+        "input_candidate_value": 5.68,
+        "output_candidate_value_min": 17.0,
+        "output_candidate_value_max": 17.0,
+        "candidate_value_return_ratio_min": 2.992958,
+        "candidate_value_return_ratio_max": 2.992958,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c7_decoration.carve_wooden_figure",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 19.2,
+        "output_mass_min": 0.92,
+        "output_mass_max": 1.4,
+        "mass_return_ratio_min": 0.047917,
+        "mass_return_ratio_max": 0.072917,
+        "input_candidate_value": 19.2,
+        "output_candidate_value_min": 16.16,
+        "output_candidate_value_max": 16.4,
+        "candidate_value_return_ratio_min": 0.841667,
+        "candidate_value_return_ratio_max": 0.854167,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 19.2,
+        "output_mass_min": 0.92,
+        "output_mass_max": 1.4,
+        "mass_return_ratio_min": 0.047917,
+        "mass_return_ratio_max": 0.072917,
+        "input_candidate_value": 19.2,
+        "output_candidate_value_min": 16.16,
+        "output_candidate_value_max": 16.4,
+        "candidate_value_return_ratio_min": 0.841667,
+        "candidate_value_return_ratio_max": 0.854167,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c7_decoration.sew_cloth_toy",
+      "kind": "tailoring",
+      "baseline": {
+        "input_mass": 2.65,
+        "output_mass_min": 0.3,
+        "output_mass_max": 0.3,
+        "mass_return_ratio_min": 0.113208,
+        "mass_return_ratio_max": 0.113208,
+        "input_candidate_value": 9.0,
+        "output_candidate_value_min": 12.0,
+        "output_candidate_value_max": 12.0,
+        "candidate_value_return_ratio_min": 1.333333,
+        "candidate_value_return_ratio_max": 1.333333,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 2.65,
+        "output_mass_min": 0.3,
+        "output_mass_max": 0.3,
+        "mass_return_ratio_min": 0.113208,
+        "mass_return_ratio_max": 0.113208,
+        "input_candidate_value": 9.0,
+        "output_candidate_value_min": 12.0,
+        "output_candidate_value_max": 12.0,
+        "candidate_value_return_ratio_min": 1.333333,
+        "candidate_value_return_ratio_max": 1.333333,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c7_furniture.make_communal_bench",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 336.72,
+        "output_mass_min": 17.0,
+        "output_mass_max": 18.4,
+        "mass_return_ratio_min": 0.050487,
+        "mass_return_ratio_max": 0.054645,
+        "input_candidate_value": 344.1,
+        "output_candidate_value_min": 29.5,
+        "output_candidate_value_max": 30.2,
+        "candidate_value_return_ratio_min": 0.085731,
+        "candidate_value_return_ratio_max": 0.087765,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": true
+      },
+      "proposed_overlay": {
+        "input_mass": 18.72,
+        "output_mass_min": 17.0,
+        "output_mass_max": 18.4,
+        "mass_return_ratio_min": 0.90812,
+        "mass_return_ratio_max": 0.982906,
+        "input_candidate_value": 26.1,
+        "output_candidate_value_min": 29.5,
+        "output_candidate_value_max": 30.2,
+        "candidate_value_return_ratio_min": 1.130268,
+        "candidate_value_return_ratio_max": 1.157088,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c7_furniture.make_storage_shelf",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 432.96,
+        "output_mass_min": 19.2,
+        "output_mass_max": 20.8,
+        "mass_return_ratio_min": 0.044346,
+        "mass_return_ratio_max": 0.048041,
+        "input_candidate_value": 442.8,
+        "output_candidate_value_min": 34.6,
+        "output_candidate_value_max": 35.4,
+        "candidate_value_return_ratio_min": 0.078139,
+        "candidate_value_return_ratio_max": 0.079946,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": true
+      },
+      "proposed_overlay": {
+        "input_mass": 22.56,
+        "output_mass_min": 19.2,
+        "output_mass_max": 20.8,
+        "mass_return_ratio_min": 0.851064,
+        "mass_return_ratio_max": 0.921986,
+        "input_candidate_value": 32.4,
+        "output_candidate_value_min": 34.6,
+        "output_candidate_value_max": 35.4,
+        "candidate_value_return_ratio_min": 1.067901,
+        "candidate_value_return_ratio_max": 1.092593,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.c7_furniture.make_workshop_stool",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 168.44,
+        "output_mass_min": 6.48,
+        "output_mass_max": 7.2,
+        "mass_return_ratio_min": 0.038471,
+        "mass_return_ratio_max": 0.042745,
+        "input_candidate_value": 172.95,
+        "output_candidate_value_min": 18.24,
+        "output_candidate_value_max": 18.6,
+        "candidate_value_return_ratio_min": 0.105464,
+        "candidate_value_return_ratio_max": 0.107546,
+        "mass_classification": "low_ratio_report_only",
+        "candidate_value_outlier": true
+      },
+      "proposed_overlay": {
+        "input_mass": 7.64,
+        "output_mass_min": 6.48,
+        "output_mass_max": 7.2,
+        "mass_return_ratio_min": 0.848168,
+        "mass_return_ratio_max": 0.942408,
+        "input_candidate_value": 12.15,
+        "output_candidate_value_min": 18.24,
+        "output_candidate_value_max": 18.6,
+        "candidate_value_return_ratio_min": 1.501235,
+        "candidate_value_return_ratio_max": 1.530864,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.chemistry.make_soap",
+      "kind": "chemical_processing",
+      "baseline": {
+        "input_mass": 1.4,
+        "output_mass_min": 1.0,
+        "output_mass_max": 1.2,
+        "mass_return_ratio_min": 0.714286,
+        "mass_return_ratio_max": 0.857143,
+        "input_candidate_value": 7.7,
+        "output_candidate_value_min": 25.0,
+        "output_candidate_value_max": 30.0,
+        "candidate_value_return_ratio_min": 3.246753,
+        "candidate_value_return_ratio_max": 3.896104,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 1.4,
+        "output_mass_min": 1.0,
+        "output_mass_max": 1.2,
+        "mass_return_ratio_min": 0.714286,
+        "mass_return_ratio_max": 0.857143,
+        "input_candidate_value": 7.7,
+        "output_candidate_value_min": 25.0,
+        "output_candidate_value_max": 30.0,
+        "candidate_value_return_ratio_min": 3.246753,
+        "candidate_value_return_ratio_max": 3.896104,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.chemistry.mix_cleaning_solution",
+      "kind": "chemical_processing",
+      "baseline": {
+        "input_mass": 1.01,
+        "output_mass_min": 0.99,
+        "output_mass_max": 1.1,
+        "mass_return_ratio_min": 0.980198,
+        "mass_return_ratio_max": 1.089109,
+        "input_candidate_value": 3.55,
+        "output_candidate_value_min": 6.3,
+        "output_candidate_value_max": 7.0,
+        "candidate_value_return_ratio_min": 1.774648,
+        "candidate_value_return_ratio_max": 1.971831,
+        "mass_classification": "review_band",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 1.01,
+        "output_mass_min": 0.99,
+        "output_mass_max": 1.1,
+        "mass_return_ratio_min": 0.980198,
+        "mass_return_ratio_max": 1.089109,
+        "input_candidate_value": 3.55,
+        "output_candidate_value_min": 6.3,
+        "output_candidate_value_max": 7.0,
+        "candidate_value_return_ratio_min": 1.774648,
+        "candidate_value_return_ratio_max": 1.971831,
+        "mass_classification": "review_band",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.chemistry.prepare_basic_antiseptic",
+      "kind": "medical_processing",
+      "baseline": {
+        "input_mass": 0.87,
+        "output_mass_min": 0.54,
+        "output_mass_max": 0.6,
+        "mass_return_ratio_min": 0.62069,
+        "mass_return_ratio_max": 0.689655,
+        "input_candidate_value": 6.51,
+        "output_candidate_value_min": 14.4,
+        "output_candidate_value_max": 16.0,
+        "candidate_value_return_ratio_min": 2.211982,
+        "candidate_value_return_ratio_max": 2.457757,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 0.87,
+        "output_mass_min": 0.54,
+        "output_mass_max": 0.6,
+        "mass_return_ratio_min": 0.62069,
+        "mass_return_ratio_max": 0.689655,
+        "input_candidate_value": 6.51,
+        "output_candidate_value_min": 14.4,
+        "output_candidate_value_max": 16.0,
+        "candidate_value_return_ratio_min": 2.211982,
+        "candidate_value_return_ratio_max": 2.457757,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.dismantle.bolt_rifle",
+      "kind": "dismantle",
+      "baseline": {
+        "input_mass": 4.2,
+        "output_mass_min": 2.4,
+        "output_mass_max": 5.36,
+        "mass_return_ratio_min": 0.571429,
+        "mass_return_ratio_max": 1.27619,
+        "input_candidate_value": 95.0,
+        "output_candidate_value_min": 15.1,
+        "output_candidate_value_max": 31.12,
+        "candidate_value_return_ratio_min": 0.158947,
+        "candidate_value_return_ratio_max": 0.327579,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 4.2,
+        "output_mass_min": 2.4,
+        "output_mass_max": 3.74,
+        "mass_return_ratio_min": 0.571429,
+        "mass_return_ratio_max": 0.890476,
+        "input_candidate_value": 95.0,
+        "output_candidate_value_min": 15.1,
+        "output_candidate_value_max": 22.88,
+        "candidate_value_return_ratio_min": 0.158947,
+        "candidate_value_return_ratio_max": 0.240842,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.dismantle.field_bed",
+      "kind": "dismantle",
+      "baseline": {
+        "input_mass": 9.0,
+        "output_mass_min": 1.02,
+        "output_mass_max": 2.64,
+        "mass_return_ratio_min": 0.113333,
+        "mass_return_ratio_max": 0.293333,
+        "input_candidate_value": 42.0,
+        "output_candidate_value_min": 3.68,
+        "output_candidate_value_max": 9.33,
+        "candidate_value_return_ratio_min": 0.087619,
+        "candidate_value_return_ratio_max": 0.222143,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 9.0,
+        "output_mass_min": 1.02,
+        "output_mass_max": 2.64,
+        "mass_return_ratio_min": 0.113333,
+        "mass_return_ratio_max": 0.293333,
+        "input_candidate_value": 42.0,
+        "output_candidate_value_min": 3.68,
+        "output_candidate_value_max": 9.33,
+        "candidate_value_return_ratio_min": 0.087619,
+        "candidate_value_return_ratio_max": 0.222143,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.dismantle.mechanical_watch",
+      "kind": "dismantle",
+      "baseline": {
+        "input_mass": 0.1,
+        "output_mass_min": 0.145,
+        "output_mass_max": 0.455,
+        "mass_return_ratio_min": 1.45,
+        "mass_return_ratio_max": 4.55,
+        "input_candidate_value": 130.0,
+        "output_candidate_value_min": 1.64,
+        "output_candidate_value_max": 4.96,
+        "candidate_value_return_ratio_min": 0.012615,
+        "candidate_value_return_ratio_max": 0.038154,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 0.1,
+        "output_mass_min": 0.03,
+        "output_mass_max": 0.0825,
+        "mass_return_ratio_min": 0.3,
+        "mass_return_ratio_max": 0.825,
+        "input_candidate_value": 130.0,
+        "output_candidate_value_min": 0.33,
+        "output_candidate_value_max": 0.84,
+        "candidate_value_return_ratio_min": 0.002538,
+        "candidate_value_return_ratio_max": 0.006462,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.dismantle.offline_archive_drive",
+      "kind": "dismantle",
+      "baseline": {
+        "input_mass": 0.6,
+        "output_mass_min": 0.51,
+        "output_mass_max": 1.29,
+        "mass_return_ratio_min": 0.85,
+        "mass_return_ratio_max": 2.15,
+        "input_candidate_value": 120.0,
+        "output_candidate_value_min": 12.0,
+        "output_candidate_value_max": 28.8,
+        "candidate_value_return_ratio_min": 0.1,
+        "candidate_value_return_ratio_max": 0.24,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 0.6,
+        "output_mass_min": 0.33,
+        "output_mass_max": 0.51,
+        "mass_return_ratio_min": 0.55,
+        "mass_return_ratio_max": 0.85,
+        "input_candidate_value": 120.0,
+        "output_candidate_value_min": 7.92,
+        "output_candidate_value_max": 12.0,
+        "candidate_value_return_ratio_min": 0.066,
+        "candidate_value_return_ratio_max": 0.1,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.dismantle.pump_shotgun",
+      "kind": "dismantle",
+      "baseline": {
+        "input_mass": 3.8,
+        "output_mass_min": 1.97,
+        "output_mass_max": 4.55,
+        "mass_return_ratio_min": 0.518421,
+        "mass_return_ratio_max": 1.197368,
+        "input_candidate_value": 88.0,
+        "output_candidate_value_min": 11.64,
+        "output_candidate_value_max": 27.0,
+        "candidate_value_return_ratio_min": 0.132273,
+        "candidate_value_return_ratio_max": 0.306818,
+        "mass_classification": "review_band",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 3.8,
+        "output_mass_min": 1.97,
+        "output_mass_max": 4.55,
+        "mass_return_ratio_min": 0.518421,
+        "mass_return_ratio_max": 1.197368,
+        "input_candidate_value": 88.0,
+        "output_candidate_value_min": 11.64,
+        "output_candidate_value_max": 27.0,
+        "candidate_value_return_ratio_min": 0.132273,
+        "candidate_value_return_ratio_max": 0.306818,
+        "mass_classification": "review_band",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.dismantle.task_lamp",
+      "kind": "dismantle",
+      "baseline": {
+        "input_mass": 2.5,
+        "output_mass_min": 0.285,
+        "output_mass_max": 0.945,
+        "mass_return_ratio_min": 0.114,
+        "mass_return_ratio_max": 0.378,
+        "input_candidate_value": 46.0,
+        "output_candidate_value_min": 5.82,
+        "output_candidate_value_max": 19.5,
+        "candidate_value_return_ratio_min": 0.126522,
+        "candidate_value_return_ratio_max": 0.423913,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 2.5,
+        "output_mass_min": 0.285,
+        "output_mass_max": 0.945,
+        "mass_return_ratio_min": 0.114,
+        "mass_return_ratio_max": 0.378,
+        "input_candidate_value": 46.0,
+        "output_candidate_value_min": 5.82,
+        "output_candidate_value_max": 19.5,
+        "candidate_value_return_ratio_min": 0.126522,
+        "candidate_value_return_ratio_max": 0.423913,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.electrical.assemble_wired_alarm_unit",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 4.6,
+        "output_mass_min": 6.0,
+        "output_mass_max": 6.0,
+        "mass_return_ratio_min": 1.304348,
+        "mass_return_ratio_max": 1.304348,
+        "input_candidate_value": 82.5,
+        "output_candidate_value_min": 110.0,
+        "output_candidate_value_max": 110.0,
+        "candidate_value_return_ratio_min": 1.333333,
+        "candidate_value_return_ratio_max": 1.333333,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 6.04,
+        "output_mass_min": 6.0,
+        "output_mass_max": 6.0,
+        "mass_return_ratio_min": 0.993377,
+        "mass_return_ratio_max": 0.993377,
+        "input_candidate_value": 84.58,
+        "output_candidate_value_min": 110.0,
+        "output_candidate_value_max": 110.0,
+        "candidate_value_return_ratio_min": 1.300544,
+        "candidate_value_return_ratio_max": 1.300544,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.food.preserved_ration_batch",
+      "kind": "food_processing",
+      "baseline": {
+        "input_mass": 11.3,
+        "output_mass_min": 6.0,
+        "output_mass_max": 7.2,
+        "mass_return_ratio_min": 0.530973,
+        "mass_return_ratio_max": 0.637168,
+        "input_candidate_value": 29.9,
+        "output_candidate_value_min": 80.0,
+        "output_candidate_value_max": 96.0,
+        "candidate_value_return_ratio_min": 2.675585,
+        "candidate_value_return_ratio_max": 3.210702,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 11.3,
+        "output_mass_min": 6.0,
+        "output_mass_max": 7.2,
+        "mass_return_ratio_min": 0.530973,
+        "mass_return_ratio_max": 0.637168,
+        "input_candidate_value": 29.9,
+        "output_candidate_value_min": 80.0,
+        "output_candidate_value_max": 96.0,
+        "candidate_value_return_ratio_min": 2.675585,
+        "candidate_value_return_ratio_max": 3.210702,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.hygiene.prepare_cleaning_rags",
+      "kind": "tailoring",
+      "baseline": {
+        "input_mass": 0.8,
+        "output_mass_min": 0.5,
+        "output_mass_max": 0.75,
+        "mass_return_ratio_min": 0.625,
+        "mass_return_ratio_max": 0.9375,
+        "input_candidate_value": 4.0,
+        "output_candidate_value_min": 4.0,
+        "output_candidate_value_max": 6.0,
+        "candidate_value_return_ratio_min": 1.0,
+        "candidate_value_return_ratio_max": 1.5,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 0.8,
+        "output_mass_min": 0.5,
+        "output_mass_max": 0.75,
+        "mass_return_ratio_min": 0.625,
+        "mass_return_ratio_max": 0.9375,
+        "input_candidate_value": 4.0,
+        "output_candidate_value_min": 4.0,
+        "output_candidate_value_max": 6.0,
+        "candidate_value_return_ratio_min": 1.0,
+        "candidate_value_return_ratio_max": 1.5,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.medical.sterilize_bandage",
+      "kind": "medical_processing",
+      "baseline": {
+        "input_mass": 0.72,
+        "output_mass_min": 1.2,
+        "output_mass_max": 1.5,
+        "mass_return_ratio_min": 1.666667,
+        "mass_return_ratio_max": 2.083333,
+        "input_candidate_value": 6.2,
+        "output_candidate_value_min": 56.0,
+        "output_candidate_value_max": 70.0,
+        "candidate_value_return_ratio_min": 9.032258,
+        "candidate_value_return_ratio_max": 11.290323,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": true
+      },
+      "proposed_overlay": {
+        "input_mass": 0.72,
+        "output_mass_min": 0.48,
+        "output_mass_max": 0.6,
+        "mass_return_ratio_min": 0.666667,
+        "mass_return_ratio_max": 0.833333,
+        "input_candidate_value": 6.2,
+        "output_candidate_value_min": 16.0,
+        "output_candidate_value_max": 20.0,
+        "candidate_value_return_ratio_min": 2.580645,
+        "candidate_value_return_ratio_max": 3.225806,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.metal.assemble_field_repair_kit",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 3.8,
+        "output_mass_min": 5.0,
+        "output_mass_max": 5.0,
+        "mass_return_ratio_min": 1.315789,
+        "mass_return_ratio_max": 1.315789,
+        "input_candidate_value": 45.0,
+        "output_candidate_value_min": 58.0,
+        "output_candidate_value_max": 58.0,
+        "candidate_value_return_ratio_min": 1.288889,
+        "candidate_value_return_ratio_max": 1.288889,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 5.0,
+        "output_mass_min": 5.0,
+        "output_mass_max": 5.0,
+        "mass_return_ratio_min": 1.0,
+        "mass_return_ratio_max": 1.0,
+        "input_candidate_value": 51.0,
+        "output_candidate_value_min": 58.0,
+        "output_candidate_value_max": 58.0,
+        "candidate_value_return_ratio_min": 1.137255,
+        "candidate_value_return_ratio_max": 1.137255,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.metal.assemble_reinforced_plate",
+      "kind": "assembly",
+      "baseline": {
+        "input_mass": 5.7,
+        "output_mass_min": 5.0,
+        "output_mass_max": 6.0,
+        "mass_return_ratio_min": 0.877193,
+        "mass_return_ratio_max": 1.052632,
+        "input_candidate_value": 15.0,
+        "output_candidate_value_min": 71.0,
+        "output_candidate_value_max": 73.0,
+        "candidate_value_return_ratio_min": 4.733333,
+        "candidate_value_return_ratio_max": 4.866667,
+        "mass_classification": "review_band",
+        "candidate_value_outlier": true
+      },
+      "proposed_overlay": {
+        "input_mass": 5.7,
+        "output_mass_min": 5.0,
+        "output_mass_max": 5.7,
+        "mass_return_ratio_min": 0.877193,
+        "mass_return_ratio_max": 1.0,
+        "input_candidate_value": 15.0,
+        "output_candidate_value_min": 71.0,
+        "output_candidate_value_max": 72.4,
+        "candidate_value_return_ratio_min": 4.733333,
+        "candidate_value_return_ratio_max": 4.826667,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": true
+      }
+    },
+    {
+      "id": "recipe.metal.form_fasteners",
+      "kind": "material_processing",
+      "baseline": {
+        "input_mass": 4.5,
+        "output_mass_min": 5.3,
+        "output_mass_max": 7.4,
+        "mass_return_ratio_min": 1.177778,
+        "mass_return_ratio_max": 1.644444,
+        "input_candidate_value": 6.5,
+        "output_candidate_value_min": 55.0,
+        "output_candidate_value_max": 74.0,
+        "candidate_value_return_ratio_min": 8.461538,
+        "candidate_value_return_ratio_max": 11.384615,
+        "mass_classification": "severe_amplification",
+        "candidate_value_outlier": true
+      },
+      "proposed_overlay": {
+        "input_mass": 7.2,
+        "output_mass_min": 5.3,
+        "output_mass_max": 6.6,
+        "mass_return_ratio_min": 0.736111,
+        "mass_return_ratio_max": 0.916667,
+        "input_candidate_value": 10.4,
+        "output_candidate_value_min": 55.0,
+        "output_candidate_value_max": 65.0,
+        "candidate_value_return_ratio_min": 5.288462,
+        "candidate_value_return_ratio_max": 6.25,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": true
+      }
+    },
+    {
+      "id": "recipe.metal.reclaim_steel_plate",
+      "kind": "material_processing",
+      "baseline": {
+        "input_mass": 25.0,
+        "output_mass_min": 14.6,
+        "output_mass_max": 23.0,
+        "mass_return_ratio_min": 0.584,
+        "mass_return_ratio_max": 0.92,
+        "input_candidate_value": 12.0,
+        "output_candidate_value_min": 22.2,
+        "output_candidate_value_max": 36.0,
+        "candidate_value_return_ratio_min": 1.85,
+        "candidate_value_return_ratio_max": 3.0,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 25.0,
+        "output_mass_min": 14.6,
+        "output_mass_max": 23.0,
+        "mass_return_ratio_min": 0.584,
+        "mass_return_ratio_max": 0.92,
+        "input_candidate_value": 12.0,
+        "output_candidate_value_min": 22.2,
+        "output_candidate_value_max": 36.0,
+        "candidate_value_return_ratio_min": 1.85,
+        "candidate_value_return_ratio_max": 3.0,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.repair.bolt_rifle_service",
+      "kind": "repair",
+      "baseline": {
+        "input_mass": 1.5,
+        "output_mass_min": 0,
+        "output_mass_max": 0,
+        "mass_return_ratio_min": null,
+        "mass_return_ratio_max": null,
+        "input_candidate_value": 18.0,
+        "output_candidate_value_min": 0,
+        "output_candidate_value_max": 0,
+        "candidate_value_return_ratio_min": null,
+        "candidate_value_return_ratio_max": null,
+        "mass_classification": "not_applicable",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 1.5,
+        "output_mass_min": 0,
+        "output_mass_max": 0,
+        "mass_return_ratio_min": null,
+        "mass_return_ratio_max": null,
+        "input_candidate_value": 18.0,
+        "output_candidate_value_min": 0,
+        "output_candidate_value_max": 0,
+        "candidate_value_return_ratio_min": null,
+        "candidate_value_return_ratio_max": null,
+        "mass_classification": "not_applicable",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.repair.field_bed",
+      "kind": "repair",
+      "baseline": {
+        "input_mass": 1.9,
+        "output_mass_min": 0,
+        "output_mass_max": 0,
+        "mass_return_ratio_min": null,
+        "mass_return_ratio_max": null,
+        "input_candidate_value": 7.55,
+        "output_candidate_value_min": 0,
+        "output_candidate_value_max": 0,
+        "candidate_value_return_ratio_min": null,
+        "candidate_value_return_ratio_max": null,
+        "mass_classification": "not_applicable",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 1.9,
+        "output_mass_min": 0,
+        "output_mass_max": 0,
+        "mass_return_ratio_min": null,
+        "mass_return_ratio_max": null,
+        "input_candidate_value": 7.55,
+        "output_candidate_value_min": 0,
+        "output_candidate_value_max": 0,
+        "candidate_value_return_ratio_min": null,
+        "candidate_value_return_ratio_max": null,
+        "mass_classification": "not_applicable",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.repair.mechanical_watch_service",
+      "kind": "repair",
+      "baseline": {
+        "input_mass": 0.61,
+        "output_mass_min": 0,
+        "output_mass_max": 0,
+        "mass_return_ratio_min": null,
+        "mass_return_ratio_max": null,
+        "input_candidate_value": 7.1,
+        "output_candidate_value_min": 0,
+        "output_candidate_value_max": 0,
+        "candidate_value_return_ratio_min": null,
+        "candidate_value_return_ratio_max": null,
+        "mass_classification": "not_applicable",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 0.61,
+        "output_mass_min": 0,
+        "output_mass_max": 0,
+        "mass_return_ratio_min": null,
+        "mass_return_ratio_max": null,
+        "input_candidate_value": 7.1,
+        "output_candidate_value_min": 0,
+        "output_candidate_value_max": 0,
+        "candidate_value_return_ratio_min": null,
+        "candidate_value_return_ratio_max": null,
+        "mass_classification": "not_applicable",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.repair.offline_archive_drive",
+      "kind": "repair",
+      "baseline": {
+        "input_mass": 1.0,
+        "output_mass_min": 0,
+        "output_mass_max": 0,
+        "mass_return_ratio_min": null,
+        "mass_return_ratio_max": null,
+        "input_candidate_value": 21.2,
+        "output_candidate_value_min": 0,
+        "output_candidate_value_max": 0,
+        "candidate_value_return_ratio_min": null,
+        "candidate_value_return_ratio_max": null,
+        "mass_classification": "not_applicable",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 1.0,
+        "output_mass_min": 0,
+        "output_mass_max": 0,
+        "mass_return_ratio_min": null,
+        "mass_return_ratio_max": null,
+        "input_candidate_value": 21.2,
+        "output_candidate_value_min": 0,
+        "output_candidate_value_max": 0,
+        "candidate_value_return_ratio_min": null,
+        "candidate_value_return_ratio_max": null,
+        "mass_classification": "not_applicable",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.repair.pump_shotgun_service",
+      "kind": "repair",
+      "baseline": {
+        "input_mass": 1.5,
+        "output_mass_min": 0,
+        "output_mass_max": 0,
+        "mass_return_ratio_min": null,
+        "mass_return_ratio_max": null,
+        "input_candidate_value": 18.0,
+        "output_candidate_value_min": 0,
+        "output_candidate_value_max": 0,
+        "candidate_value_return_ratio_min": null,
+        "candidate_value_return_ratio_max": null,
+        "mass_classification": "not_applicable",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 1.5,
+        "output_mass_min": 0,
+        "output_mass_max": 0,
+        "mass_return_ratio_min": null,
+        "mass_return_ratio_max": null,
+        "input_candidate_value": 18.0,
+        "output_candidate_value_min": 0,
+        "output_candidate_value_max": 0,
+        "candidate_value_return_ratio_min": null,
+        "candidate_value_return_ratio_max": null,
+        "mass_classification": "not_applicable",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.repair.task_lamp",
+      "kind": "repair",
+      "baseline": {
+        "input_mass": 0.975,
+        "output_mass_min": 0,
+        "output_mass_max": 0,
+        "mass_return_ratio_min": null,
+        "mass_return_ratio_max": null,
+        "input_candidate_value": 18.9,
+        "output_candidate_value_min": 0,
+        "output_candidate_value_max": 0,
+        "candidate_value_return_ratio_min": null,
+        "candidate_value_return_ratio_max": null,
+        "mass_classification": "not_applicable",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 0.975,
+        "output_mass_min": 0,
+        "output_mass_max": 0,
+        "mass_return_ratio_min": null,
+        "mass_return_ratio_max": null,
+        "input_candidate_value": 18.9,
+        "output_candidate_value_min": 0,
+        "output_candidate_value_max": 0,
+        "candidate_value_return_ratio_min": null,
+        "candidate_value_return_ratio_max": null,
+        "mass_classification": "not_applicable",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.textile.sew_padded_vest",
+      "kind": "tailoring",
+      "baseline": {
+        "input_mass": 5.1,
+        "output_mass_min": 2.25,
+        "output_mass_max": 2.35,
+        "mass_return_ratio_min": 0.441176,
+        "mass_return_ratio_max": 0.460784,
+        "input_candidate_value": 18.25,
+        "output_candidate_value_min": 48.4,
+        "output_candidate_value_max": 49.2,
+        "candidate_value_return_ratio_min": 2.652055,
+        "candidate_value_return_ratio_max": 2.69589,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 5.1,
+        "output_mass_min": 2.25,
+        "output_mass_max": 2.35,
+        "mass_return_ratio_min": 0.441176,
+        "mass_return_ratio_max": 0.460784,
+        "input_candidate_value": 18.25,
+        "output_candidate_value_min": 48.4,
+        "output_candidate_value_max": 49.2,
+        "candidate_value_return_ratio_min": 2.652055,
+        "candidate_value_return_ratio_max": 2.69589,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.textile.sew_work_clothes",
+      "kind": "tailoring",
+      "baseline": {
+        "input_mass": 2.2,
+        "output_mass_min": 1.6,
+        "output_mass_max": 1.7,
+        "mass_return_ratio_min": 0.727273,
+        "mass_return_ratio_max": 0.772727,
+        "input_candidate_value": 12.25,
+        "output_candidate_value_min": 32.8,
+        "output_candidate_value_max": 33.6,
+        "candidate_value_return_ratio_min": 2.677551,
+        "candidate_value_return_ratio_max": 2.742857,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 2.2,
+        "output_mass_min": 1.6,
+        "output_mass_max": 1.7,
+        "mass_return_ratio_min": 0.727273,
+        "mass_return_ratio_max": 0.772727,
+        "input_candidate_value": 12.25,
+        "output_candidate_value_min": 32.8,
+        "output_candidate_value_max": 33.6,
+        "candidate_value_return_ratio_min": 2.677551,
+        "candidate_value_return_ratio_max": 2.742857,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    },
+    {
+      "id": "recipe.textile.weave_cloth",
+      "kind": "tailoring",
+      "baseline": {
+        "input_mass": 10.0,
+        "output_mass_min": 4.1,
+        "output_mass_max": 5.85,
+        "mass_return_ratio_min": 0.41,
+        "mass_return_ratio_max": 0.585,
+        "input_candidate_value": 16.0,
+        "output_candidate_value_min": 20.8,
+        "output_candidate_value_max": 30.0,
+        "candidate_value_return_ratio_min": 1.3,
+        "candidate_value_return_ratio_max": 1.875,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      },
+      "proposed_overlay": {
+        "input_mass": 10.0,
+        "output_mass_min": 4.1,
+        "output_mass_max": 5.85,
+        "mass_return_ratio_min": 0.41,
+        "mass_return_ratio_max": 0.585,
+        "input_candidate_value": 16.0,
+        "output_candidate_value_min": 20.8,
+        "output_candidate_value_max": 30.0,
+        "candidate_value_return_ratio_min": 1.3,
+        "candidate_value_return_ratio_max": 1.875,
+        "mass_classification": "within_screen",
+        "candidate_value_outlier": false
+      }
+    }
+  ],
+  "acceptance_boundary": {
+    "r1_modified": false,
+    "runtime_authorized": false,
+    "gate_status_changed": false,
+    "future_adoption_requires": [
+      "explicit stable-ID selection",
+      "separate runtime schema",
+      "target Gate authorization",
+      "runtime and player-test evidence"
+    ]
+  },
+  "report_sha256": "bb2aea80fa6fa7c10f0f4aeeb235d1e9adb30bd2330fc7590b3f5f7a6eacf09c"
+}
