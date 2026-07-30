@@ -8,8 +8,8 @@
   "source_files": {
     "data/item-library/item-library-r1-candidate-bundle.json": "32f9d9c41e7271e4da0f037167ad94023d050ee1b7471fdec98495393d9ff361",
     "data/item-library/semantic-audit-r2a.json": "c8279af1b1749286b7d1170af4b9a78229c2e31abc8b346090e6301b8dea59e3",
-    "docs/item-library/item-library-flow-audit-contract-v0.1.md": "cf8645e8022e01dc54cccc93c66f7d619c4aa91f4a56127896a32ac3246aeac4",
-    "scripts/audit_item_library_flows.rb": "7da4b25e2940fa1b084cfa053c6b2525f1de577068fb38e80309d1a2d801eeeb"
+    "docs/item-library/item-library-flow-audit-contract-v0.1.md": "f5a913ffe0b06d64052867eb093595605df4439912fb2681fcc98b197bb95fc7",
+    "scripts/audit_item_library_flows.rb": "cd6d1aa9966b8b04a3516ea56b3d8a900c1ebe6ab4b741799037ba47868b07d8"
   },
   "counts": {
     "inventory_items": 196,
@@ -83,8 +83,9 @@
   "source_sink": {
     "origin_item_count": 191,
     "reachable_item_count": 196,
-    "unreachable_consumed_input_count": 0,
-    "unreachable_consumed_inputs": [
+    "reachable_recipe_count": 90,
+    "unreachable_recipe_count": 0,
+    "unreachable_recipes": [
 
     ],
     "external_source_count": 108,
@@ -9037,5 +9038,5 @@
       }
     ]
   },
-  "audit_sha256": "c4b81e3eac942863dc549d484462de8c90efc6843d8c5559050c0dd532615f79"
+  "audit_sha256": "5618a36fe1ac70d8f30835f9c8a3e7bdaa1d9d8acb407d32d7ce3ef089332778"
 }

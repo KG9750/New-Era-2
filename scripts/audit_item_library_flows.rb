@@ -13,6 +13,7 @@ CONTRACT_PATH = File.join(ROOT, "docs/item-library/item-library-flow-audit-contr
 JSON_REPORT_PATH = File.join(ROOT, "data/item-library/flow-audit-r2b.json")
 MARKDOWN_REPORT_PATH = File.join(ROOT, "data/item-library/flow-audit-r2b.md")
 
+EXPECTED_BASELINE_ID = "new-era-2.item-library.r1-c7-candidate"
 PASSIVE_ACTIONS = %w[reserve trade deliver store inspect].freeze
 NORMAL_VALUE_RATIO_LOW = 0.25
 NORMAL_VALUE_RATIO_HIGH = 4.0
@@ -59,6 +60,21 @@ def substitute_item_ids(recipe)
     .compact
     .uniq
     .sort
+end
+
+def recipe_requirement_groups(recipe)
+  rules_by_input = recipe.dig("substitution_policy", "rules")
+                         .to_a
+                         .group_by { |rule| rule["input"] }
+  groups = recipe.fetch("inputs", []).map do |input|
+    alternatives = rules_by_input.fetch(input["item"], [])
+                                 .flat_map { |rule| rule.fetch("alternatives", []).map { |entry| entry["item"] } }
+                                 .compact
+    ([input.fetch("item")] + alternatives).uniq.sort
+  end
+  target_item = recipe.dig("target", "item")
+  groups.unshift([target_item]) if target_item
+  groups
 end
 
 def round_number(value)
@@ -219,17 +235,32 @@ def build_recipe_ledger(recipes, items, errors, warnings)
       end
     end
 
-    consumed_inputs.each do |input|
-      returned = (recipe.fetch("outputs", []) + inventory_byproducts)
-                 .select { |output| output["item"] == input["item"] }
-                 .map { |output| output.fetch("max").to_f }
-                 .max
-      next unless returned && returned >= input.fetch("amount").to_f
+    consumed_amounts = consumed_inputs.each_with_object(Hash.new(0.0)) do |input, memo|
+      memo[input.fetch("item")] += input.fetch("amount").to_f
+    end
+    substitute_amounts = Hash.new(0.0)
+    recipe.dig("substitution_policy", "rules").to_a.each do |rule|
+      primary_amount = consumed_amounts.fetch(rule["input"], 0.0)
+      rule.fetch("alternatives", []).each do |alternative|
+        substitute_amounts[alternative.fetch("item")] += primary_amount * alternative.fetch("ratio").to_f
+      end
+    end
+    returned_amounts = (recipe.fetch("outputs", []) + inventory_byproducts)
+                       .each_with_object(Hash.new(0.0)) do |output, memo|
+      memo[output.fetch("item")] += output.fetch("max").to_f
+    end
+    consumption_scenarios = consumed_amounts.map { |item_id, amount| [item_id, amount, "direct"] }
+    substitute_amounts.each do |item_id, amount|
+      consumption_scenarios << [item_id, amount + consumed_amounts.fetch(item_id, 0.0), "substitute"]
+    end
+    consumption_scenarios.each do |item_id, consumed_amount, source|
+      returned_amount = returned_amounts.fetch(item_id, 0.0)
+      next if returned_amount < consumed_amount
 
       errors << {
         "code" => "direct_self_amplification",
         "id" => recipe_id,
-        "message" => "#{input.fetch("item")} 的最大返还量不小于已消耗量"
+        "message" => "#{item_id} 的#{source}最大返还量 #{round_number(returned_amount)} 不小于已消耗量 #{round_number(consumed_amount)}"
       }
     end
 
@@ -336,7 +367,7 @@ def build_cycle_rows(components, edges, recipe_ledger, errors)
   end
 end
 
-def build_source_sink_audit(items, recipes, transformation_edges, errors)
+def build_source_sink_audit(items, recipes, errors)
   producer_ids = recipes.each_with_object(Hash.new { |hash, key| hash[key] = [] }) do |recipe, memo|
     outputs = recipe_item_ids(recipe, "outputs") +
               recipe.fetch("byproducts", []).map { |entry| entry["item"] }.compact
@@ -396,40 +427,56 @@ def build_source_sink_audit(items, recipes, transformation_edges, errors)
     item.fetch("acquisition_paths", []).any? { |path| path["type"] != "manufacture" }
   end.map { |item| item.fetch("id") }.to_set
   reachable_ids = origin_ids.dup
+  reachable_recipe_ids = Set.new
   loop do
     added = false
-    transformation_edges.each do |edge|
-      next unless reachable_ids.include?(edge.fetch("from"))
-      next if reachable_ids.include?(edge.fetch("to"))
+    recipes.sort_by { |recipe| recipe.fetch("id") }.each do |recipe|
+      groups = recipe_requirement_groups(recipe)
+      next unless groups.all? { |group| group.any? { |item_id| reachable_ids.include?(item_id) } }
 
-      reachable_ids << edge.fetch("to")
-      added = true
+      unless reachable_recipe_ids.include?(recipe.fetch("id"))
+        reachable_recipe_ids << recipe.fetch("id")
+        added = true
+      end
+      next if recipe["kind"] == "repair"
+
+      outputs = recipe_item_ids(recipe, "outputs") +
+                recipe.fetch("byproducts", []).map { |entry| entry["item"] }.compact
+      outputs.each do |item_id|
+        next if reachable_ids.include?(item_id)
+
+        reachable_ids << item_id
+        added = true
+      end
     end
     break unless added
   end
 
-  required_input_ids = recipes.flat_map do |recipe|
-    inputs = recipe.fetch("inputs", [])
-                   .select { |entry| entry["consumed"] == true }
-                   .map { |entry| entry.fetch("item") }
-    inputs.concat(substitute_item_ids(recipe))
-    inputs << recipe.dig("target", "item") if recipe["kind"] == "dismantle"
-    inputs
-  end.compact.uniq.sort
-  unreachable_input_ids = required_input_ids.reject { |item_id| reachable_ids.include?(item_id) }
-  unreachable_input_ids.each do |item_id|
+  unreachable_recipes = recipes.sort_by { |recipe| recipe.fetch("id") }.reject do |recipe|
+    reachable_recipe_ids.include?(recipe.fetch("id"))
+  end.map do |recipe|
+    unsatisfied_groups = recipe_requirement_groups(recipe).reject do |group|
+      group.any? { |item_id| reachable_ids.include?(item_id) }
+    end
+    {
+      "id" => recipe.fetch("id"),
+      "unsatisfied_requirement_groups" => unsatisfied_groups
+    }
+  end
+  unreachable_recipes.each do |row|
     errors << {
-      "code" => "unreachable_consumed_input",
-      "id" => item_id,
-      "message" => "已消耗输入无法从任何非 manufacture 获得路径沿转化图抵达"
+      "code" => "unreachable_recipe_requirements",
+      "id" => row.fetch("id"),
+      "message" => "至少一个必需输入位或目标实例无法从非 manufacture 获得路径抵达"
     }
   end
 
   {
     "origin_item_count" => origin_ids.length,
     "reachable_item_count" => reachable_ids.length,
-    "unreachable_consumed_input_count" => unreachable_input_ids.length,
-    "unreachable_consumed_inputs" => unreachable_input_ids,
+    "reachable_recipe_count" => reachable_recipe_ids.length,
+    "unreachable_recipe_count" => unreachable_recipes.length,
+    "unreachable_recipes" => unreachable_recipes,
     "external_source_count" => external_sources.length,
     "external_sources" => external_sources,
     "missing_source_count" => missing_sources.length,
@@ -504,7 +551,8 @@ def build_markdown(report)
   lines << "|---|---:|"
   lines << "| 非制造起点物品 | #{source_sink.fetch("origin_item_count")} |"
   lines << "| 可从起点抵达的物品 | #{source_sink.fetch("reachable_item_count")} |"
-  lines << "| 不可达已消耗输入 | #{source_sink.fetch("unreachable_consumed_input_count")} |"
+  lines << "| 可执行工艺 | #{source_sink.fetch("reachable_recipe_count")} |"
+  lines << "| 存在不可达必需输入位的工艺 | #{source_sink.fetch("unreachable_recipe_count")} |"
   lines << "| 外部来源物品 | #{source_sink.fetch("external_source_count")} |"
   lines << "| 断裂来源 | #{source_sink.fetch("missing_source_count")} |"
   lines << "| 制造终端产出 | #{source_sink.fetch("terminal_output_count")} |"
@@ -617,6 +665,14 @@ unless bundle["status"] == "candidate_only" && bundle["runtime_authorization"] =
     "message" => "Bundle 不再保持 candidate_only / NONE"
   }
 end
+unless bundle["baseline_id"] == EXPECTED_BASELINE_ID &&
+       semantic_audit["source_baseline_id"] == bundle["baseline_id"]
+  errors << {
+    "code" => "baseline_identity_mismatch",
+    "id" => "bundle",
+    "message" => "Bundle 与 R2-A 没有共同指向冻结的 R1-C7 基线"
+  }
+end
 unless semantic_audit["source_payload_sha256"] == bundle["payload_sha256"] &&
        semantic_audit["status"] == "candidate_only" &&
        semantic_audit["runtime_authorization"] == "NONE" &&
@@ -664,7 +720,7 @@ end
 recipe_ledger = build_recipe_ledger(recipes, items, errors, warnings)
 transformation_edges, cycle_components = build_transformation_graph(recipes, items)
 cycle_rows = build_cycle_rows(cycle_components, transformation_edges, recipe_ledger, errors)
-source_sink = build_source_sink_audit(items, recipes, transformation_edges, errors)
+source_sink = build_source_sink_audit(items, recipes, errors)
 shared_bottlenecks = build_shared_bottlenecks(items, recipes)
 
 warnings.each do |warning|

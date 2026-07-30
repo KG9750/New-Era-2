@@ -19,7 +19,7 @@
 - R2-B 制造流审计合同：`item-library-flow-audit-contract-v0.1.md`
 - R2-B 机器可读审计：`../../data/item-library/flow-audit-r2b.json`
 - R2-B 审计摘要：`../../data/item-library/flow-audit-r2b.md`
-- R2-B 复审状态：`reviews/item-library-r2b-review-status-2026-07-30.md`（实现验证通过，独立 subagent 审查待完成）
+- R2-B 复审状态：`reviews/item-library-r2b-review-status-2026-07-30.md`（首审发现已修正，独立 subagent 复审待完成）
 
 ## 数据布局
 
