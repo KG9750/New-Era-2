@@ -3,11 +3,13 @@
 | 字段 | 内容 |
 |---|---|
 | 项目 | Project-004-New Era 2 |
-| 状态 | `PREPARATION / NOT_RELEASED` |
+| 状态 | `C04_RECOVERY_ACTIVE / NOT_RELEASED` |
 | 日期 | 2026-07-27 |
 | cohort | `g1a-20260727-rc9-01` |
 | 测试运营负责人 | 根 agent `/root` |
-| 计划 authority | `2026-07-27-gate1a-rc9-remediation-plan.md` |
+| RC9 基线计划 authority | `2026-07-27-gate1a-rc9-remediation-plan.md` |
+| C04 当前计划 authority | `2026-07-29-gate1a-rc9-c04-recovery-plan.md` |
+| C04 当前 `plan_ref` | `441f7d96635e9176c8aea3ff21454d596c287c49`，supersedes `52eb452a5ffec167a3809d3f372e62b9d8524124` |
 | 协议 authority | `../../product-specs/weekly-management-slice-playtest-v0.2.md` |
 | 设计 authority | `../../design-docs/weekly-plan-production-forecast-slice-v0.2.md` |
 
@@ -401,3 +403,213 @@ npm run guard:rc8 -- \
 ```
 
 RC9-01 失败时保持 RC9-02 阻塞，不得先写生产代码。
+
+## 17. C04 场前修订（2026-07-29）
+
+本节只前向适用于 C04，不追认或改写 C01–C03、P01–P06、D01–D15。发生冲突时：
+
+- C01/C02 继续由本合同原 §3/§9 的 v0.2 与 `fork_turns=none` 规则解释；
+- C03 继续由其已拒绝的 recovery contract 与 rejection record 解释；
+- C04 由已推送的
+  `2026-07-29-gate1a-rc9-c04-recovery-plan.md`、当前
+  `plan_ref=441f7d96635e9176c8aea3ff21454d596c287c49` 和本节共同解释；
+  `f0ba061250d8633669eff625f7aa8809b789e682` 只保留为 grammar/binary
+  版本限定父权威，`31c05fee5130cd25f6273037468928d9196858f0` 只保留为 compatibility v2
+  父权威，`c085bb63a2cbce790e47859ec49ff05c58283c74` 只保留为更早历史。
+
+A01 的 provisional I `3cc6de4f6c8458f51936a893b95ea08e62bb0883` 与
+preservation `bbda54826dc529ad3b93c55c4fd164463c842401` 永久排除。A02 在 failed I
+`b027ad8019d8fa46eaf7596c40eb28f470cc8c06` 的首项 lint 因 wrapper 解析到 Node
+25 而以 exit `134` 失败；preservation 为
+`6752c3b4f73a17fadcfc2420c9b9c6ededeeceb9`，失败评论为 `5119276886`，
+`phase6-retry-01/lint.txt` 固定为 `720` bytes / `3` lines / SHA-256
+`331c2275772bed740553fd3f886b533e537138d0a671f1cb1931bf2d9c12fd61`。A01/A02
+namespace 均永久只读；第二次 amendment 唯一新 integration root 为字面量
+`phase6-retry-02`，且不授权 P07/P08、D16–D20、CM01 或任何 Gate。
+
+A03 在 failed I `4d93ea5aa42bf6fb34fa0109c6bc66af82145b50` 的 retry-02
+完成 lint 后，于完整 Vitest 以 `381/387` fail-closed；preservation 为
+`09c3b88ee0f9092788a974c95c4aec01de09df2e`，失败评论为 `5123668371`。
+retry-02 永久只读并排除最终 lineage。第三次 amendment 唯一新 integration
+root 为字面量 `phase6-retry-03`，且必须先在新 I 上直接完成固定 Node 24 lint、
+`23 files / 387/387`、tracked clean、HEAD/Node/Git binding 与 namespace 前后
+预检；该预检不调用 wrapper、不消耗 authority。production wrapper 第一项
+preflight 启动即消耗，任一失败立即停止且不得 retry-04。
+
+### 17.1 C04 authority
+
+```text
+candidateAttempt=C04
+authorityProfile=rc9-v03
+scenarioVersion=0.5.1
+schemaVersion=gate1-playtest-v2
+protocolVersion=weekly-management-slice-playtest-v0.3
+antiPass=TECH-RC9-P07,TECH-RC9-P08
+diagnostics=TECH-RC9-D16..TECH-RC9-D20
+candidateManifest=CM01_UNALLOCATED
+```
+
+candidate manifest 必须显式声明 `authorityProfile` 与 `protocolVersion`，并由共享
+versioned contract 对 scenario、protocol、exact role/path set 做逐字匹配。C04
+只能使用 `rc9-v03`；真实 C03 rejection-history 必须作为反例，不能把 C03
+重包装为 CM01。
+
+### 17.2 C04 diagnostic isolation
+
+D16–D20 在任何场次开始前统一冻结：
+
+```text
+diagnosticIsolationProfile=standalone-codex-cli-v2
+codexCliBinary=/Applications/ChatGPT.app/Contents/Resources/codex
+codexCliVersion=codex-cli 0.146.0-alpha.3.1
+codexCliBinarySha256=6d8be49e49751554df16572369e636cbe02c84b208cad3dc35528c846eeca223
+codexCliTeamIdentifier=2DC432GLL2
+codexCliAuthority=Developer ID Application: OpenAI OpCo, LLC (2DC432GLL2)
+nodeBinary=/opt/homebrew/opt/node@24/bin/node
+nodeVersion=v24.18.0
+nodeBinarySha256=72c18e2eeda260f67a5b2b66e96fa9b5ad82864676ebb54925695d87120cae3f
+model=gpt-5.6-sol
+reasoning=xhigh
+browserProvider=direct-tools-playwright-mcp
+playwrightMcpVersion=0.0.76
+allowedOrigin=http://127.0.0.1:4202
+```
+
+compatibility/version 决策只接受以下 artifact pair，并必须复算 sidecar：
+
+```text
+docs/exec-plans/evidence/2026-07-29-c04-cli-compatibility-probe.json
+docs/exec-plans/evidence/2026-07-29-c04-cli-compatibility-probe.json.sha256
+```
+
+isolation grammar 迁移只接受以下三组 artifact pair；必须复算每个 JSON、sidecar
+文件及 sidecar 声明值，并逐字匹配下表：
+
+| artifact pair | JSON SHA-256 | sidecar 文件 SHA-256 |
+|---|---|---|
+| `docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-discovery.json` / `docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-discovery.json.sha256` | `3e03c15d3af68430a885c19d37b30126de4b29d80608889a05570a7da228ac30` | `aa59eb2264d11d25825d4e3f2b961fb43c34b1d346785ca7e08812475a0742f3` |
+| `docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-recapture.json` / `docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-recapture.json.sha256` | `70997d22e8a4d1c37bdd39aca49543527825d714e941c03f823822c19fdebbf7` | `dc04668fe7b1273e9321dfff9067caf8d925456de9210e87ed888758d8763e86` |
+| `docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-amendment-review.json` / `docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-amendment-review.json.sha256` | `0e8ac887fc5cf17c4e688ef345c58cf9677a618e92e0b175cf92ed4df845011f` | `c8e83b93c74254a9b0aa44b69b23aef23ffe590b28967cd7ff8c67ae4ae30c02` |
+
+grammar review receipt 必须绑定其父 recovery plan blob 的内容 SHA-256
+`7b1b657c7c2bed5c8c8524b059149e52db9ba39bbecb7ffb91b4dfa706e4ef3e`
+且 `finalStatus=PASS`；该 receipt 不覆盖、不审查也不为当前第三次 amendment
+recovery plan blob
+`401a149e192ae3a1bf4cf23683f3ec46f6be20b9e44245e5dff7a23b95392192`
+背书。discovery 的
+`FAIL_INCOMPLETE_REQUIRED_COVERAGE` 只触发 amendment；recapture v3 才是
+exact grammar/native-type/correlation authority。三者都不是 golden、diagnostic、
+C04 admission 或 Gate PASS 证据。
+
+唯一有效启动命令如下；`TEMP_WORKSPACE`、`NEUTRAL_PLAYER_PROMPT` 与
+`CLI_EVENT_STREAM` 只能替换为场次专属绝对路径，其他 token 不得重排、合并、补省略
+或通过 alias/wrapper 改写：
+
+```bash
+PATH="/opt/homebrew/opt/node@24/bin:/opt/homebrew/bin:/usr/bin:/bin" \
+/Applications/ChatGPT.app/Contents/Resources/codex \
+  exec --json --strict-config --ignore-user-config \
+  --skip-git-repo-check --sandbox read-only \
+  --cd "$TEMP_WORKSPACE" \
+  --model gpt-5.6-sol \
+  --disable memories \
+  --disable hooks \
+  --ignore-rules \
+  -c 'plugins."browser@openai-bundled".enabled=false' \
+  -c 'plugins."chrome@openai-bundled".enabled=false' \
+  -c 'plugins."computer-use@openai-bundled".enabled=false' \
+  -c 'mcp_servers.playwright.enabled=true' \
+  -c 'mcp_servers.playwright.command="npx"' \
+  -c 'mcp_servers.playwright.args=["-y","@playwright/mcp@0.0.76"]' \
+  -c 'mcp_servers.playwright.default_tools_approval_mode="auto"' \
+  -c 'model_reasoning_effort="xhigh"' \
+  -c 'approval_policy="never"' \
+  - < "$NEUTRAL_PLAYER_PROMPT" > "$CLI_EVENT_STREAM"
+```
+
+以下两组 config token 已由 strict-config probe 证明会在 0.142/0.146 触发
+`CONFIG_INVALID_TRANSPORT`，不得出现在有效 argv，也不得添加替代的 disabled MCP
+entry：
+
+```text
+-c mcp_servers.chrome-devtools.enabled=false
+-c mcp_servers.node_repl.enabled=false
+```
+
+每场 preflight 必须从上述绝对 binary 现场复算 path、version、SHA-256、codesign
+TeamIdentifier、完整 Authority 及 Node absolute path/version/SHA-256。六类单字段
+身份漂移必须分别命中以下唯一失败码：
+
+| 单一漂移 | 精确失败码 |
+|---|---|
+| absolute binary path | `C04_CLI_BINARY_PATH` |
+| CLI version | `C04_CLI_VERSION` |
+| binary SHA-256 | `C04_CLI_BINARY_SHA256` |
+| codesign TeamIdentifier | `C04_CLI_TEAM_IDENTIFIER` |
+| 完整 codesign Authority | `C04_CLI_AUTHORITY` |
+| Node 24 identity | `C04_NODE_IDENTITY` |
+
+两套 golden 必须分别来自上述唯一 binary、recapture v3 fixed private handoff 的
+persisted rollout 与 `codex exec --json` stream，exact path 与 grammar ID 为：
+
+```text
+prototype/tests/fixtures/isolation/golden-codex-0.146.0-alpha.3.1-persisted-rollout.jsonl
+codex-0.146.0-alpha.3.1-persisted-rollout-v2
+prototype/tests/fixtures/isolation/golden-codex-0.146.0-alpha.3.1-exec-events.jsonl
+codex-0.146.0-alpha.3.1-exec-events-v2
+```
+
+required coverage 严格等于 recapture v3
+`grammar.*.variants + supplementalGrammar.*.variants` 的逐 variant 去重 union：
+persisted 恰好五种顶层 envelope、17 种 payload subtype、19 个
+exact-key/native-type variant；exec 恰好七种顶层 envelope、三种 item subtype。
+exact keys、native types、lifecycle tuple、correlation、order 与 uniqueness 以当前
+recovery plan §3.1–§3.2 的逐字合同为准，不得使用旧 incomplete discovery matrix
+删减 shape。
+
+golden source set 必须逐字为
+`recapture-v3-private-handoff-A-B-C-B_EXTENSION-B_SUCCESS_PROBE`，并从 recapture
+规定的固定 root 按 opaque object ID 读取五个 capture × 两个 stream。provenance
+只写入
+`prototype/tests/fixtures/fixture-expectations.json.isolationGoldenProvenance`，
+每个 stream 必须冻结 `sourceSet` 与按
+A、B、C、B_EXTENSION、B_SUCCESS_PROBE 排序的 `fixtureSourceCaptures`，逐行保留
+source-line ordinal、event order、opaque object ID/commitment 与 read-back/privacy
+状态；不得退回 volatile raw、原 session rollout、旧 discovery commitment、
+projection 或手写副本。
+
+`prototype/tests/fixtures/isolation/fixture-matrix.json` 必须至少包含 recovery plan
+§3.1 冻结的 31 个单字段/单关系 negative fixtures，并逐项命中对应精确失败码。
+任一 known grammar mutation 未 fail-closed，或 fixture-source/D16–D20 出现 matrix
+外的新 type/subtype/key/native type、lifecycle 或 correlation shape，都必须立即
+停止 C04，重新执行 discovery、amendment 与 external review；不得在实现、场次或
+review/seal 中扩 grammar、改 golden 或放宽 allowlist。
+
+Playwright 工具与参数 allowlist、两段 unsafe code、private raw evidence、公开结构
+投影、preflight/verification 字段和其余失败码以当前 C04 恢复计划 §3 的逐字合同
+为准；不得临场换成 collaboration subagent、Browser plugin、Chrome、Computer
+Use、Node REPL 或另一种“等价”机制。
+
+每场必须：
+
+1. 使用全新、开始时为空的 `mktemp -d` 工作区与全新 standalone CLI process；
+2. 产生唯一 session meta、rollout commitment、browser context/page ID 和唯一
+   固定初态应用 Session；
+3. 只通过固定 Playwright MCP 操作唯一 origin，不调用 shell、Git、文件、Issue、
+   repo、协议、计划、阈值、anti-pass 或其他样本；
+4. 在公开证据前把原始 rollout/event stream 写入本机 content-addressed private
+   store，执行 `chmod 400`、`chflags uchg` 并以 `stat -f '%Sf'` 证明；
+5. 保存公开 structural evidence、preflight、isolation verification、raw/
+   sidecar/receipt/browser download、sample record、validity decision 与 agent
+   原文；
+6. 核验、清空并完成清空后访谈，再 commit/push；之后才可启动下一场。
+
+任一 private raw 缺失、hash/flag 不符、工具或参数越界、origin 不符、第二
+context/page/Session、刷新/重开/重置、身份字段不可复算，都使该样本技术无效并
+立即停止 C04，不临场修订合同。
+
+### 17.3 C04 admission 边界
+
+五场全部技术有效且 W1/W2 人工 V2 中位数分别在 `3–5`、无 P0、无刷数反证，
+只允许 C04 进入 CM01 制备。diagnostics PASS 不是 Gate 1A PASS，Gate 1H 继续
+`PENDING`，Gate 2 继续 `LOCKED`。

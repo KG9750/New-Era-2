@@ -1,0 +1,212 @@
+{
+  "fixtureId": "candidate-manifest-v03-path-mismatch-rejected",
+  "kind": "candidate-manifest",
+  "input": {
+    "candidateManifestId": "CM01",
+    "candidateAttempt": "C04",
+    "status": "PENDING_INDEPENDENT_REVIEW",
+    "sourceSha": "4444444444444444444444444444444444444444",
+    "dependencyIntegrationSha": "5555555555555555555555555555555555555555",
+    "candidateEvidenceSnapshotSha": "9999999999999999999999999999999999999999",
+    "candidateAttemptManifestHash": "6666666666666666666666666666666666666666666666666666666666666666",
+    "buildId": "g1-rc-20260729.rc9-c04",
+    "scenarioId": "gate1-two-week-management",
+    "scenarioVersion": "0.5.1",
+    "schemaVersion": "gate1-playtest-v2",
+    "artifactHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+    "archiveHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+    "authorityHashes": [
+      {
+        "role": "protocol",
+        "path": "docs/product-specs/weekly-management-slice-playtest-v0.3.md",
+        "sha256": "0101010101010101010101010101010101010101010101010101010101010101"
+      },
+      {
+        "role": "c03-management-authority",
+        "path": "docs/design-docs/gate1-c03-management-choice-authority.md",
+        "sha256": "0202020202020202020202020202020202020202020202020202020202020202"
+      },
+      {
+        "role": "c03-branch-matrix",
+        "path": "docs/design-docs/gate1-rc9-branch-matrix.md",
+        "sha256": "0303030303030303030303030303030303030303030303030303030303030303"
+      },
+      {
+        "role": "c04-recovery-plan",
+        "path": "docs/exec-plans/active/2026-07-27-gate1a-rc9-c03-recovery-plan.md",
+        "sha256": "0404040404040404040404040404040404040404040404040404040404040404"
+      },
+      {
+        "role": "operations",
+        "path": "docs/exec-plans/active/2026-07-27-gate1a-rc9-test-operations.md",
+        "sha256": "0505050505050505050505050505050505050505050505050505050505050505"
+      },
+      {
+        "role": "player-packet",
+        "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/player-packet-v0.2.md",
+        "sha256": "0606060606060606060606060606060606060606060606060606060606060606"
+      },
+      {
+        "role": "interview",
+        "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/post-session-interview-v0.2.md",
+        "sha256": "0707070707070707070707070707070707070707070707070707070707070707"
+      },
+      {
+        "role": "fixture-oracle",
+        "path": "prototype/tests/fixtures/fixture-expectations.json",
+        "sha256": "0808080808080808080808080808080808080808080808080808080808080808"
+      },
+      {
+        "role": "capture-host",
+        "path": "prototype/scripts/playtest-host.mjs",
+        "sha256": "0909090909090909090909090909090909090909090909090909090909090909"
+      }
+    ],
+    "diagnosticManifest": {
+      "status": "PASS",
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/diagnostics/manifest.json",
+      "sha256": "7777777777777777777777777777777777777777777777777777777777777777",
+      "sampleIds": [
+        "TECH-RC9-D16",
+        "TECH-RC9-D17",
+        "TECH-RC9-D18",
+        "TECH-RC9-D19",
+        "TECH-RC9-D20"
+      ]
+    },
+    "antiPass": [
+      {
+        "sampleId": "TECH-RC9-P07",
+        "status": "PASS",
+        "evidenceHash": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+        "evidencePath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/anti-pass/TECH-RC9-P07/result.json"
+      },
+      {
+        "sampleId": "TECH-RC9-P08",
+        "status": "PASS",
+        "evidenceHash": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb",
+        "evidencePath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/anti-pass/TECH-RC9-P08/result.json"
+      }
+    ],
+    "rc8Guard": {
+      "baselineSha": "c0f4269bc3fef56962199629bad8db041aafc5f0",
+      "treeId": "c5714f7ca7adb5e8fe052d4d00f27c545b988347",
+      "inventorySha256": "e6990ddc8acd6ff4dbacfec975c06e4d0b9bbc7f6a2fc1324f5023caec1b96ee",
+      "status": "PASS"
+    },
+    "commandResults": [
+      {
+        "id": "lint",
+        "status": "PASS",
+        "outputHash": "0101010101010101010101010101010101010101010101010101010101010101",
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/lint.txt"
+      },
+      {
+        "id": "test",
+        "status": "PASS",
+        "outputHash": "0202020202020202020202020202020202020202020202020202020202020202",
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/test.txt"
+      },
+      {
+        "id": "build",
+        "status": "PASS",
+        "outputHash": "0303030303030303030303030303030303030303030303030303030303030303",
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/build.txt"
+      },
+      {
+        "id": "rc-build",
+        "status": "PASS",
+        "outputHash": "0404040404040404040404040404040404040404040404040404040404040404",
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/rc-build.txt"
+      },
+      {
+        "id": "rc-verify",
+        "status": "PASS",
+        "outputHash": "0505050505050505050505050505050505050505050505050505050505050505",
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/rc-verify.txt"
+      },
+      {
+        "id": "e2e-rc",
+        "status": "PASS",
+        "outputHash": "0606060606060606060606060606060606060606060606060606060606060606",
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/e2e-rc.txt"
+      },
+      {
+        "id": "rc-archive",
+        "status": "PASS",
+        "outputHash": "0707070707070707070707070707070707070707070707070707070707070707",
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/rc-archive.txt"
+      },
+      {
+        "id": "rc-verify-archive",
+        "status": "PASS",
+        "outputHash": "0808080808080808080808080808080808080808080808080808080808080808",
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/rc-verify-archive.txt"
+      },
+      {
+        "id": "schema-fixtures",
+        "status": "PASS",
+        "outputHash": "0909090909090909090909090909090909090909090909090909090909090909",
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/schema-fixtures.txt"
+      },
+      {
+        "id": "guard-rc8",
+        "status": "PASS",
+        "outputHash": "1010101010101010101010101010101010101010101010101010101010101010",
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/guard-rc8.txt"
+      },
+      {
+        "id": "manifest-fixtures",
+        "status": "PASS",
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/manifest-fixtures.json",
+        "outputHash": "1111111111111111111111111111111111111111111111111111111111111111"
+      },
+      {
+        "id": "manifest-probe",
+        "status": "PASS",
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/manifest-probe.json",
+        "outputHash": "1313131313131313131313131313131313131313131313131313131313131313"
+      },
+      {
+        "id": "runtime-equivalence",
+        "status": "PASS",
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/runtime-equivalence.json",
+        "outputHash": "1414141414141414141414141414141414141414141414141414141414141414"
+      },
+      {
+        "id": "rc-repro",
+        "status": "PASS",
+        "outputHash": "1212121212121212121212121212121212121212121212121212121212121212",
+        "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/rc-repro.txt"
+      }
+    ],
+    "priorManifests": [],
+    "rejectedAttempts": [
+      {
+        "candidateAttempt": "C01",
+        "rejectionPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C01/rejection-record.json",
+        "rejectionHash": "2408890b5fe84b42663a4960ce1f8595a4603a200c5aa864391eedfa32e91cd0"
+      },
+      {
+        "candidateAttempt": "C02",
+        "rejectionPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C02/rejection-record.json",
+        "rejectionHash": "9265bde06a4f59dd85e122f4372229c5259b0c1dea26bd269c24d8acbf188397"
+      },
+      {
+        "candidateAttempt": "C03",
+        "rejectionPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C03/rejection-record.json",
+        "rejectionHash": "5550936b5298269e16b53c40df7a597d6c839a6dda155298e6f0a99fd7f0df6f"
+      }
+    ],
+    "authorityProfile": "rc9-v03",
+    "protocolVersion": "weekly-management-slice-playtest-v0.3",
+    "candidateAttemptManifestPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/candidate-build-manifest.json",
+    "frozenEvidenceGuard": {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/frozen-evidence-guard.json",
+      "sha256": "eeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeeee",
+      "baselineSha": "5b9438cc5123ba35d8a703f3507bbf463e90176d",
+      "status": "PASS_EVIDENCE_LINEAGE"
+    },
+    "synthetic": true
+  }
+}

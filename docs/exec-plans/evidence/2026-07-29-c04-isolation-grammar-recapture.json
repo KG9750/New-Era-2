@@ -1,0 +1,5897 @@
+{
+  "schemaVersion": 3,
+  "artifactId": "c04-isolation-grammar-recapture-summary",
+  "generatedAtUtc": "2026-07-29T00:51:43.671Z",
+  "status": "RECAPTURE_V3_PRIVATE_HANDOFF_COMPLETE_WITH_OBSERVED_GRAMMAR_DRIFT",
+  "scope": {
+    "planOrGateMutationPerformed": false,
+    "existingDiscoveryPairMutationPerformed": false,
+    "privateRawPreserved": true,
+    "originalSessionRolloutsPreserved": true,
+    "capturePhaseReadOnlyRepoOperation": true,
+    "capturePhaseRepoMutationPerformed": false,
+    "authorityCloseoutRepoMutationLimitedToRecaptureEvidencePair": true,
+    "recaptureEvidencePairUpdatedByAuthorityCloseout": true
+  },
+  "privacy": {
+    "messageOrReasoningValuesStored": false,
+    "identityValuesStored": false,
+    "pathValuesStored": false,
+    "secretValuesStored": false,
+    "sensitiveRawFieldValuesStored": false,
+    "nonAllowlistedRawFieldValuesStored": false,
+    "sensitiveOrNonAllowlistedArgumentsOrToolIoValuesStored": false,
+    "allowlistedBenignControlPlaneLiteralsStored": true,
+    "allowlistedBenignControlPlanePolicyId": "c04-tool-search-control-plane-v3",
+    "grammarSectionsUseExactKeyNamesAndNativeTypesOnly": true
+  },
+  "environmentComparison": {
+    "binary": {
+      "versionMatchDiscovery": true,
+      "sha256MatchDiscovery": true,
+      "comparisonStatus": "MATCH"
+    },
+    "node": {
+      "versionMatchDiscovery": true,
+      "sha256MatchDiscovery": true,
+      "comparisonStatus": "MATCH"
+    },
+    "invocation": {
+      "argvTokenCount": 36,
+      "standardCaptureIds": [
+        "A",
+        "B",
+        "B_EXTENSION"
+      ],
+      "standardTemplateExactMatchDiscovery": true,
+      "controlledFailureCaptureId": "C",
+      "controlledFailureArgvTokenCount": 36,
+      "controlledFailureExactMatchExceptModelValue": true,
+      "controlledFailureOnlyDelta": "modelArgumentValue",
+      "environmentPathExactMatchDiscovery": true,
+      "argvValuesStored": false,
+      "supplementalCaptureId": "B_SUCCESS_PROBE",
+      "supplementalTemplateExactMatchDiscovery": true
+    }
+  },
+  "host": {
+    "startedForFreshToolCaptures": true,
+    "stoppedAfterBExtension": true,
+    "listenerAbsentAfterStop": true,
+    "hostAddressStored": false
+  },
+  "captures": {
+    "A": {
+      "classification": "NO_TOOL_SUCCESS",
+      "captureComplete": true,
+      "processExitCode": 0,
+      "freshWorkspaceEmptyAfterCapture": true,
+      "raw": {
+        "exec": {
+          "bytes": 624,
+          "lines": 5,
+          "sha256": "5ba3e6d7a9029e5c76f37358313a5149f17e1b12398b257d8ea07bec0a52be41"
+        },
+        "persisted": {
+          "bytes": 67505,
+          "lines": 14,
+          "sha256": "9b8f40c2565e2db6e4830600204bcc47dc4f300b15f2feb2f01360826d390c72"
+        },
+        "stderr": {
+          "bytes": 138,
+          "lines": 1,
+          "sha256": "2e810bf8ccb3a74bc1785de302a0fa03ae91fb40776bc1949daa3c83a71f7d99"
+        }
+      },
+      "eventOrder": {
+        "exec": [
+          {
+            "ordinal": 1,
+            "topLevelType": "thread.started",
+            "envelopeVariantId": "E004"
+          },
+          {
+            "ordinal": 2,
+            "topLevelType": "turn.started",
+            "envelopeVariantId": "E007"
+          },
+          {
+            "ordinal": 3,
+            "topLevelType": "item.completed",
+            "envelopeVariantId": "E002",
+            "itemSubtype": "error",
+            "itemVariantId": "E009"
+          },
+          {
+            "ordinal": 4,
+            "topLevelType": "item.completed",
+            "envelopeVariantId": "E002",
+            "itemSubtype": "agent_message",
+            "itemVariantId": "E008"
+          },
+          {
+            "ordinal": 5,
+            "topLevelType": "turn.completed",
+            "envelopeVariantId": "E005"
+          }
+        ],
+        "persisted": [
+          {
+            "ordinal": 1,
+            "topLevelType": "session_meta",
+            "envelopeVariantId": "P003",
+            "payloadSubtype": "session_meta",
+            "payloadVariantId": "P013"
+          },
+          {
+            "ordinal": 2,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "task_started",
+            "payloadVariantId": "P016"
+          },
+          {
+            "ordinal": 3,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 4,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 5,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 6,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 7,
+            "topLevelType": "world_state",
+            "envelopeVariantId": "P005",
+            "payloadSubtype": "world_state",
+            "payloadVariantId": "P022"
+          },
+          {
+            "ordinal": 8,
+            "topLevelType": "turn_context",
+            "envelopeVariantId": "P004",
+            "payloadSubtype": "turn_context",
+            "payloadVariantId": "P020"
+          },
+          {
+            "ordinal": 9,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 10,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "user_message",
+            "payloadVariantId": "P021"
+          },
+          {
+            "ordinal": 11,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "agent_message",
+            "payloadVariantId": "P006"
+          },
+          {
+            "ordinal": 12,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P010"
+          },
+          {
+            "ordinal": 13,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "token_count",
+            "payloadVariantId": "P017"
+          },
+          {
+            "ordinal": 14,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "task_complete",
+            "payloadVariantId": "P015"
+          }
+        ]
+      },
+      "persistedSelection": {
+        "cwdCommitmentMatch": true,
+        "startedAtWindowCommitment": true,
+        "processLineage": {
+          "sessionSourceIsExec": true,
+          "execThreadEqualsSessionMetaId": true,
+          "execThreadEqualsSessionId": true
+        },
+        "originalRolloutStillPresent": true,
+        "originalEqualsPrivateCopy": true,
+        "selectionStatus": "PASS",
+        "identityValuesStored": false,
+        "pathValuesStored": false,
+        "timestampValuesStored": false
+      },
+      "execMcpAssociation": null,
+      "persistedMcpAssociation": null,
+      "singlePlaywrightNavigateCallObserved": null,
+      "navigationOutcome": "NOT_APPLICABLE",
+      "turnFailedObserved": false,
+      "correlationV2": {
+        "threadIdentity": {
+          "symbols": [
+            {
+              "symbol": "exec.thread.started.thread_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.session_meta.id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.session_meta.session_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            }
+          ],
+          "pairwiseEqualityMatrix": [
+            {
+              "left": "exec.thread.started.thread_id",
+              "right": "persisted.session_meta.id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "exec.thread.started.thread_id",
+              "right": "persisted.session_meta.session_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.session_meta.id",
+              "right": "persisted.session_meta.session_id",
+              "comparable": true,
+              "equal": true
+            }
+          ],
+          "matrixSummary": {
+            "pairCount": 3,
+            "comparablePairCount": 3,
+            "equalPairCount": 3,
+            "unequalPairCount": 0,
+            "unavailablePairCount": 0,
+            "noUnobservedEqualityAssumed": true
+          },
+          "allThreeEqual": true,
+          "ordinalsByStream": {
+            "execThreadStarted": 1,
+            "persistedSessionMeta": 1
+          },
+          "crossStreamOrderNotAsserted": true
+        },
+        "turnIdentity": {
+          "symbols": [
+            {
+              "symbol": "persisted.task_started.turn_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.turn_context.turn_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.task_complete.turn_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            }
+          ],
+          "pairwiseEqualityMatrix": [
+            {
+              "left": "persisted.task_started.turn_id",
+              "right": "persisted.turn_context.turn_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.task_started.turn_id",
+              "right": "persisted.task_complete.turn_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.turn_context.turn_id",
+              "right": "persisted.task_complete.turn_id",
+              "comparable": true,
+              "equal": true
+            }
+          ],
+          "matrixSummary": {
+            "pairCount": 3,
+            "comparablePairCount": 3,
+            "equalPairCount": 3,
+            "unequalPairCount": 0,
+            "unavailablePairCount": 0,
+            "noUnobservedEqualityAssumed": true
+          },
+          "allPresentTurnIdsEqual": true,
+          "order": {
+            "taskStartedOrdinal": 2,
+            "turnContextOrdinal": 8,
+            "taskCompleteOrdinal": 14,
+            "taskStartedBeforeTurnContext": true,
+            "turnContextBeforeTaskComplete": true,
+            "strictOrder": true
+          }
+        },
+        "mcpToolIdentity": {
+          "applicable": false,
+          "symbols": [],
+          "pairwiseEqualityMatrix": [],
+          "matrixSummary": {
+            "pairCount": 0,
+            "comparablePairCount": 0,
+            "equalPairCount": 0,
+            "unequalPairCount": 0,
+            "unavailablePairCount": 0,
+            "noUnobservedEqualityAssumed": true
+          },
+          "order": {
+            "execStartedOrdinal": null,
+            "execCompletedOrdinal": null,
+            "persistedCallOrdinal": null,
+            "persistedEndOrdinal": null,
+            "persistedOutputOrdinal": null,
+            "execStrictOrder": null,
+            "persistedStrictOrder": null,
+            "crossStreamOrderNotAsserted": true
+          }
+        },
+        "toolSearchIdentity": {
+          "applicable": false,
+          "symbols": [],
+          "pairwiseEqualityMatrix": [],
+          "matrixSummary": {
+            "pairCount": 0,
+            "comparablePairCount": 0,
+            "equalPairCount": 0,
+            "unequalPairCount": 0,
+            "unavailablePairCount": 0,
+            "noUnobservedEqualityAssumed": true
+          },
+          "callIdEquality": null,
+          "itemIdEquality": null,
+          "order": {
+            "callOrdinal": null,
+            "outputOrdinal": null,
+            "strictOrder": null
+          }
+        },
+        "responseItemIdentity": {
+          "items": [
+            {
+              "ordinal": 3,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 4,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 5,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 6,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 9,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 12,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            }
+          ],
+          "responseItemCount": 6,
+          "idFieldPresentCount": 6,
+          "nonNullStringIdCount": 6,
+          "uniqueIdCount": 6,
+          "allIdsPresentNonNullStrings": true,
+          "allIdsUnique": true,
+          "negativeRelationSummary": {
+            "totalPairCount": 15,
+            "unequalPairCount": 15,
+            "equalPairCount": 0,
+            "allDistinct": true,
+            "noCrossItemEqualityAssumedBeyondObservedComparison": true
+          }
+        }
+      }
+    },
+    "B": {
+      "classification": "MCP_TOOL_SUCCESS",
+      "captureComplete": true,
+      "processExitCode": 0,
+      "freshWorkspaceEmptyAfterCapture": true,
+      "raw": {
+        "exec": {
+          "bytes": 812,
+          "lines": 6,
+          "sha256": "f38f647a28c1fb04c60ee9d818acb5d47e9d62d293b0679b407e28a093bee352"
+        },
+        "persisted": {
+          "bytes": 79815,
+          "lines": 24,
+          "sha256": "2cc32921264eeb17772d2c1fa2c5cb798c1ee9526163220133044074d1d692f7"
+        },
+        "stderr": {
+          "bytes": 138,
+          "lines": 1,
+          "sha256": "999b934cdc9793010a699e4f01e4e6fb9f65c8bc523ef445ac846d5faacfed73"
+        }
+      },
+      "eventOrder": {
+        "exec": [
+          {
+            "ordinal": 1,
+            "topLevelType": "thread.started",
+            "envelopeVariantId": "E004"
+          },
+          {
+            "ordinal": 2,
+            "topLevelType": "turn.started",
+            "envelopeVariantId": "E007"
+          },
+          {
+            "ordinal": 3,
+            "topLevelType": "item.started",
+            "envelopeVariantId": "E003",
+            "itemSubtype": "mcp_tool_call",
+            "itemVariantId": "E010"
+          },
+          {
+            "ordinal": 4,
+            "topLevelType": "item.completed",
+            "envelopeVariantId": "E002",
+            "itemSubtype": "mcp_tool_call",
+            "itemVariantId": "E010"
+          },
+          {
+            "ordinal": 5,
+            "topLevelType": "item.completed",
+            "envelopeVariantId": "E002",
+            "itemSubtype": "agent_message",
+            "itemVariantId": "E008"
+          },
+          {
+            "ordinal": 6,
+            "topLevelType": "turn.completed",
+            "envelopeVariantId": "E005"
+          }
+        ],
+        "persisted": [
+          {
+            "ordinal": 1,
+            "topLevelType": "session_meta",
+            "envelopeVariantId": "P003",
+            "payloadSubtype": "session_meta",
+            "payloadVariantId": "P013"
+          },
+          {
+            "ordinal": 2,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "task_started",
+            "payloadVariantId": "P016"
+          },
+          {
+            "ordinal": 3,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 4,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 5,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 6,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 7,
+            "topLevelType": "world_state",
+            "envelopeVariantId": "P005",
+            "payloadSubtype": "world_state",
+            "payloadVariantId": "P022"
+          },
+          {
+            "ordinal": 8,
+            "topLevelType": "turn_context",
+            "envelopeVariantId": "P004",
+            "payloadSubtype": "turn_context",
+            "payloadVariantId": "P020"
+          },
+          {
+            "ordinal": 9,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 10,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "user_message",
+            "payloadVariantId": "P021"
+          },
+          {
+            "ordinal": 11,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "reasoning",
+            "payloadVariantId": "P012"
+          },
+          {
+            "ordinal": 12,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "reasoning",
+            "payloadVariantId": "P012"
+          },
+          {
+            "ordinal": 13,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "tool_search_call",
+            "payloadVariantId": "P018"
+          },
+          {
+            "ordinal": 14,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "tool_search_output",
+            "payloadVariantId": "P019"
+          },
+          {
+            "ordinal": 15,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "token_count",
+            "payloadVariantId": "P017"
+          },
+          {
+            "ordinal": 16,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "function_call",
+            "payloadVariantId": "P008"
+          },
+          {
+            "ordinal": 17,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "mcp_tool_call_end",
+            "payloadVariantId": "P009"
+          },
+          {
+            "ordinal": 18,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "function_call_output",
+            "payloadVariantId": "P007"
+          },
+          {
+            "ordinal": 19,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "token_count",
+            "payloadVariantId": "P017"
+          },
+          {
+            "ordinal": 20,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "reasoning",
+            "payloadVariantId": "P012"
+          },
+          {
+            "ordinal": 21,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "agent_message",
+            "payloadVariantId": "P006"
+          },
+          {
+            "ordinal": 22,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P010"
+          },
+          {
+            "ordinal": 23,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "token_count",
+            "payloadVariantId": "P017"
+          },
+          {
+            "ordinal": 24,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "task_complete",
+            "payloadVariantId": "P015"
+          }
+        ]
+      },
+      "persistedSelection": {
+        "cwdCommitmentMatch": true,
+        "startedAtWindowCommitment": false,
+        "processLineage": {
+          "sessionSourceIsExec": true,
+          "execThreadEqualsSessionMetaId": true,
+          "execThreadEqualsSessionId": true
+        },
+        "originalRolloutStillPresent": true,
+        "originalEqualsPrivateCopy": true,
+        "selectionStatus": "PASS",
+        "identityValuesStored": false,
+        "pathValuesStored": false,
+        "timestampValuesStored": false
+      },
+      "execMcpAssociation": {
+        "subtype": "mcp_tool_call",
+        "startedOrdinal": 3,
+        "completedOrdinal": 4,
+        "idEquality": true,
+        "strictOrder": true,
+        "completionSucceeded": false,
+        "completionFailed": true,
+        "completionErrorNativeType": "object",
+        "completionResultNativeType": "null",
+        "identityValueStored": false,
+        "errorValueStored": false,
+        "resultValueStored": false
+      },
+      "persistedMcpAssociation": {
+        "observedChainSubtypes": [
+          "function_call",
+          "mcp_tool_call_end",
+          "function_call_output"
+        ],
+        "callOrdinal": 16,
+        "endOrdinal": 17,
+        "outputOrdinal": 18,
+        "callToEndCallIdEquality": true,
+        "endToOutputCallIdEquality": true,
+        "callToOutputCallIdEquality": true,
+        "strictOrder": true,
+        "legacyCustomToolChainObserved": false,
+        "identityValueStored": false
+      },
+      "singlePlaywrightNavigateCallObserved": true,
+      "navigationOutcome": "FAILED",
+      "turnFailedObserved": false,
+      "correlationV2": {
+        "threadIdentity": {
+          "symbols": [
+            {
+              "symbol": "exec.thread.started.thread_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.session_meta.id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.session_meta.session_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            }
+          ],
+          "pairwiseEqualityMatrix": [
+            {
+              "left": "exec.thread.started.thread_id",
+              "right": "persisted.session_meta.id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "exec.thread.started.thread_id",
+              "right": "persisted.session_meta.session_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.session_meta.id",
+              "right": "persisted.session_meta.session_id",
+              "comparable": true,
+              "equal": true
+            }
+          ],
+          "matrixSummary": {
+            "pairCount": 3,
+            "comparablePairCount": 3,
+            "equalPairCount": 3,
+            "unequalPairCount": 0,
+            "unavailablePairCount": 0,
+            "noUnobservedEqualityAssumed": true
+          },
+          "allThreeEqual": true,
+          "ordinalsByStream": {
+            "execThreadStarted": 1,
+            "persistedSessionMeta": 1
+          },
+          "crossStreamOrderNotAsserted": true
+        },
+        "turnIdentity": {
+          "symbols": [
+            {
+              "symbol": "persisted.task_started.turn_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.turn_context.turn_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.task_complete.turn_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            }
+          ],
+          "pairwiseEqualityMatrix": [
+            {
+              "left": "persisted.task_started.turn_id",
+              "right": "persisted.turn_context.turn_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.task_started.turn_id",
+              "right": "persisted.task_complete.turn_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.turn_context.turn_id",
+              "right": "persisted.task_complete.turn_id",
+              "comparable": true,
+              "equal": true
+            }
+          ],
+          "matrixSummary": {
+            "pairCount": 3,
+            "comparablePairCount": 3,
+            "equalPairCount": 3,
+            "unequalPairCount": 0,
+            "unavailablePairCount": 0,
+            "noUnobservedEqualityAssumed": true
+          },
+          "allPresentTurnIdsEqual": true,
+          "order": {
+            "taskStartedOrdinal": 2,
+            "turnContextOrdinal": 8,
+            "taskCompleteOrdinal": 24,
+            "taskStartedBeforeTurnContext": true,
+            "turnContextBeforeTaskComplete": true,
+            "strictOrder": true
+          }
+        },
+        "mcpToolIdentity": {
+          "applicable": true,
+          "symbols": [
+            {
+              "symbol": "exec.mcp.started.item.id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "exec.mcp.completed.item.id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.call.id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.call.call_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.end.call_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.output.id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.output.call_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            }
+          ],
+          "pairwiseEqualityMatrix": [
+            {
+              "left": "exec.mcp.started.item.id",
+              "right": "exec.mcp.completed.item.id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "exec.mcp.started.item.id",
+              "right": "persisted.call.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.started.item.id",
+              "right": "persisted.call.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.started.item.id",
+              "right": "persisted.end.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.started.item.id",
+              "right": "persisted.output.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.started.item.id",
+              "right": "persisted.output.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.completed.item.id",
+              "right": "persisted.call.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.completed.item.id",
+              "right": "persisted.call.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.completed.item.id",
+              "right": "persisted.end.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.completed.item.id",
+              "right": "persisted.output.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.completed.item.id",
+              "right": "persisted.output.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.call.id",
+              "right": "persisted.call.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.call.id",
+              "right": "persisted.end.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.call.id",
+              "right": "persisted.output.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.call.id",
+              "right": "persisted.output.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.call.call_id",
+              "right": "persisted.end.call_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.call.call_id",
+              "right": "persisted.output.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.call.call_id",
+              "right": "persisted.output.call_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.end.call_id",
+              "right": "persisted.output.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.end.call_id",
+              "right": "persisted.output.call_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.output.id",
+              "right": "persisted.output.call_id",
+              "comparable": true,
+              "equal": false
+            }
+          ],
+          "matrixSummary": {
+            "pairCount": 21,
+            "comparablePairCount": 21,
+            "equalPairCount": 4,
+            "unequalPairCount": 17,
+            "unavailablePairCount": 0,
+            "noUnobservedEqualityAssumed": true
+          },
+          "order": {
+            "execStartedOrdinal": 3,
+            "execCompletedOrdinal": 4,
+            "persistedCallOrdinal": 16,
+            "persistedEndOrdinal": 17,
+            "persistedOutputOrdinal": 18,
+            "execStrictOrder": true,
+            "persistedStrictOrder": true,
+            "crossStreamOrderNotAsserted": true
+          }
+        },
+        "toolSearchIdentity": {
+          "applicable": true,
+          "symbols": [
+            {
+              "symbol": "persisted.tool_search_call.id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.tool_search_call.call_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.tool_search_output.id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.tool_search_output.call_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            }
+          ],
+          "pairwiseEqualityMatrix": [
+            {
+              "left": "persisted.tool_search_call.id",
+              "right": "persisted.tool_search_call.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.tool_search_call.id",
+              "right": "persisted.tool_search_output.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.tool_search_call.id",
+              "right": "persisted.tool_search_output.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.tool_search_call.call_id",
+              "right": "persisted.tool_search_output.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.tool_search_call.call_id",
+              "right": "persisted.tool_search_output.call_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.tool_search_output.id",
+              "right": "persisted.tool_search_output.call_id",
+              "comparable": true,
+              "equal": false
+            }
+          ],
+          "matrixSummary": {
+            "pairCount": 6,
+            "comparablePairCount": 6,
+            "equalPairCount": 1,
+            "unequalPairCount": 5,
+            "unavailablePairCount": 0,
+            "noUnobservedEqualityAssumed": true
+          },
+          "callIdEquality": true,
+          "itemIdEquality": false,
+          "order": {
+            "callOrdinal": 13,
+            "outputOrdinal": 14,
+            "strictOrder": true
+          }
+        },
+        "responseItemIdentity": {
+          "items": [
+            {
+              "ordinal": 3,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 4,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 5,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 6,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 9,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 11,
+              "subtype": "reasoning",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 12,
+              "subtype": "reasoning",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 13,
+              "subtype": "tool_search_call",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 14,
+              "subtype": "tool_search_output",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 16,
+              "subtype": "function_call",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 18,
+              "subtype": "function_call_output",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 20,
+              "subtype": "reasoning",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 22,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            }
+          ],
+          "responseItemCount": 13,
+          "idFieldPresentCount": 13,
+          "nonNullStringIdCount": 13,
+          "uniqueIdCount": 13,
+          "allIdsPresentNonNullStrings": true,
+          "allIdsUnique": true,
+          "negativeRelationSummary": {
+            "totalPairCount": 78,
+            "unequalPairCount": 78,
+            "equalPairCount": 0,
+            "allDistinct": true,
+            "noCrossItemEqualityAssumedBeyondObservedComparison": true
+          }
+        }
+      }
+    },
+    "C": {
+      "classification": "CONTROLLED_MODEL_FAILURE",
+      "captureComplete": true,
+      "processExitCode": 1,
+      "freshWorkspaceEmptyAfterCapture": true,
+      "raw": {
+        "exec": {
+          "bytes": 583,
+          "lines": 4,
+          "sha256": "616a636c099526e35d694db40423bfafe0bf2d3cc583e7d821f1bb8470d1d668"
+        },
+        "persisted": {
+          "bytes": 65216,
+          "lines": 11,
+          "sha256": "7d7e83405fd3e68219eb811c01c7eba65e11206ff5f770de4be5f7883f84b194"
+        },
+        "stderr": {
+          "bytes": 437,
+          "lines": 2,
+          "sha256": "034262ce93f396999d3d4430e3b83dfbe800933712cff5f3f27d39b07ba5cce0"
+        }
+      },
+      "eventOrder": {
+        "exec": [
+          {
+            "ordinal": 1,
+            "topLevelType": "thread.started",
+            "envelopeVariantId": "E004"
+          },
+          {
+            "ordinal": 2,
+            "topLevelType": "turn.started",
+            "envelopeVariantId": "E007"
+          },
+          {
+            "ordinal": 3,
+            "topLevelType": "error",
+            "envelopeVariantId": "E001"
+          },
+          {
+            "ordinal": 4,
+            "topLevelType": "turn.failed",
+            "envelopeVariantId": "E006"
+          }
+        ],
+        "persisted": [
+          {
+            "ordinal": 1,
+            "topLevelType": "session_meta",
+            "envelopeVariantId": "P003",
+            "payloadSubtype": "session_meta",
+            "payloadVariantId": "P013"
+          },
+          {
+            "ordinal": 2,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "task_started",
+            "payloadVariantId": "P016"
+          },
+          {
+            "ordinal": 3,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 4,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 5,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 6,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 7,
+            "topLevelType": "world_state",
+            "envelopeVariantId": "P005",
+            "payloadSubtype": "world_state",
+            "payloadVariantId": "P022"
+          },
+          {
+            "ordinal": 8,
+            "topLevelType": "turn_context",
+            "envelopeVariantId": "P004",
+            "payloadSubtype": "turn_context",
+            "payloadVariantId": "P020"
+          },
+          {
+            "ordinal": 9,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 10,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "user_message",
+            "payloadVariantId": "P021"
+          },
+          {
+            "ordinal": 11,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "task_complete",
+            "payloadVariantId": "P014"
+          }
+        ]
+      },
+      "persistedSelection": {
+        "cwdCommitmentMatch": true,
+        "startedAtWindowCommitment": false,
+        "processLineage": {
+          "sessionSourceIsExec": true,
+          "execThreadEqualsSessionMetaId": true,
+          "execThreadEqualsSessionId": true
+        },
+        "originalRolloutStillPresent": true,
+        "originalEqualsPrivateCopy": true,
+        "selectionStatus": "PASS",
+        "identityValuesStored": false,
+        "pathValuesStored": false,
+        "timestampValuesStored": false
+      },
+      "execMcpAssociation": null,
+      "persistedMcpAssociation": null,
+      "singlePlaywrightNavigateCallObserved": null,
+      "navigationOutcome": "NOT_APPLICABLE",
+      "turnFailedObserved": true,
+      "correlationV2": {
+        "threadIdentity": {
+          "symbols": [
+            {
+              "symbol": "exec.thread.started.thread_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.session_meta.id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.session_meta.session_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            }
+          ],
+          "pairwiseEqualityMatrix": [
+            {
+              "left": "exec.thread.started.thread_id",
+              "right": "persisted.session_meta.id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "exec.thread.started.thread_id",
+              "right": "persisted.session_meta.session_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.session_meta.id",
+              "right": "persisted.session_meta.session_id",
+              "comparable": true,
+              "equal": true
+            }
+          ],
+          "matrixSummary": {
+            "pairCount": 3,
+            "comparablePairCount": 3,
+            "equalPairCount": 3,
+            "unequalPairCount": 0,
+            "unavailablePairCount": 0,
+            "noUnobservedEqualityAssumed": true
+          },
+          "allThreeEqual": true,
+          "ordinalsByStream": {
+            "execThreadStarted": 1,
+            "persistedSessionMeta": 1
+          },
+          "crossStreamOrderNotAsserted": true
+        },
+        "turnIdentity": {
+          "symbols": [
+            {
+              "symbol": "persisted.task_started.turn_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.turn_context.turn_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.task_complete.turn_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            }
+          ],
+          "pairwiseEqualityMatrix": [
+            {
+              "left": "persisted.task_started.turn_id",
+              "right": "persisted.turn_context.turn_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.task_started.turn_id",
+              "right": "persisted.task_complete.turn_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.turn_context.turn_id",
+              "right": "persisted.task_complete.turn_id",
+              "comparable": true,
+              "equal": true
+            }
+          ],
+          "matrixSummary": {
+            "pairCount": 3,
+            "comparablePairCount": 3,
+            "equalPairCount": 3,
+            "unequalPairCount": 0,
+            "unavailablePairCount": 0,
+            "noUnobservedEqualityAssumed": true
+          },
+          "allPresentTurnIdsEqual": true,
+          "order": {
+            "taskStartedOrdinal": 2,
+            "turnContextOrdinal": 8,
+            "taskCompleteOrdinal": 11,
+            "taskStartedBeforeTurnContext": true,
+            "turnContextBeforeTaskComplete": true,
+            "strictOrder": true
+          }
+        },
+        "mcpToolIdentity": {
+          "applicable": false,
+          "symbols": [],
+          "pairwiseEqualityMatrix": [],
+          "matrixSummary": {
+            "pairCount": 0,
+            "comparablePairCount": 0,
+            "equalPairCount": 0,
+            "unequalPairCount": 0,
+            "unavailablePairCount": 0,
+            "noUnobservedEqualityAssumed": true
+          },
+          "order": {
+            "execStartedOrdinal": null,
+            "execCompletedOrdinal": null,
+            "persistedCallOrdinal": null,
+            "persistedEndOrdinal": null,
+            "persistedOutputOrdinal": null,
+            "execStrictOrder": null,
+            "persistedStrictOrder": null,
+            "crossStreamOrderNotAsserted": true
+          }
+        },
+        "toolSearchIdentity": {
+          "applicable": false,
+          "symbols": [],
+          "pairwiseEqualityMatrix": [],
+          "matrixSummary": {
+            "pairCount": 0,
+            "comparablePairCount": 0,
+            "equalPairCount": 0,
+            "unequalPairCount": 0,
+            "unavailablePairCount": 0,
+            "noUnobservedEqualityAssumed": true
+          },
+          "callIdEquality": null,
+          "itemIdEquality": null,
+          "order": {
+            "callOrdinal": null,
+            "outputOrdinal": null,
+            "strictOrder": null
+          }
+        },
+        "responseItemIdentity": {
+          "items": [
+            {
+              "ordinal": 3,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 4,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 5,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 6,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 9,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            }
+          ],
+          "responseItemCount": 5,
+          "idFieldPresentCount": 5,
+          "nonNullStringIdCount": 5,
+          "uniqueIdCount": 5,
+          "allIdsPresentNonNullStrings": true,
+          "allIdsUnique": true,
+          "negativeRelationSummary": {
+            "totalPairCount": 10,
+            "unequalPairCount": 10,
+            "equalPairCount": 0,
+            "allDistinct": true,
+            "noCrossItemEqualityAssumedBeyondObservedComparison": true
+          }
+        }
+      }
+    },
+    "B_EXTENSION": {
+      "classification": "MCP_TOOL_NATIVE_TYPE_EXTENSION",
+      "captureComplete": true,
+      "processExitCode": 0,
+      "freshWorkspaceEmptyAfterCapture": true,
+      "raw": {
+        "exec": {
+          "bytes": 904,
+          "lines": 7,
+          "sha256": "cfd78f2a731aa7b0289c1f72bad75efb3c364bc71fa1e6965df554641759d979"
+        },
+        "persisted": {
+          "bytes": 76803,
+          "lines": 25,
+          "sha256": "8842d864b0943e81ce72c0cc1c4f889aa88c609a212bbe55b4a04a4d5b39b6ff"
+        },
+        "stderr": {
+          "bytes": 138,
+          "lines": 1,
+          "sha256": "5cad312cc017caf82a02b0b46c8eb079e4fd3b1f693741c9ce30d3171a382176"
+        }
+      },
+      "eventOrder": {
+        "exec": [
+          {
+            "ordinal": 1,
+            "topLevelType": "thread.started",
+            "envelopeVariantId": "E004"
+          },
+          {
+            "ordinal": 2,
+            "topLevelType": "turn.started",
+            "envelopeVariantId": "E007"
+          },
+          {
+            "ordinal": 3,
+            "topLevelType": "item.completed",
+            "envelopeVariantId": "E002",
+            "itemSubtype": "agent_message",
+            "itemVariantId": "E008"
+          },
+          {
+            "ordinal": 4,
+            "topLevelType": "item.started",
+            "envelopeVariantId": "E003",
+            "itemSubtype": "mcp_tool_call",
+            "itemVariantId": "E010"
+          },
+          {
+            "ordinal": 5,
+            "topLevelType": "item.completed",
+            "envelopeVariantId": "E002",
+            "itemSubtype": "mcp_tool_call",
+            "itemVariantId": "E010"
+          },
+          {
+            "ordinal": 6,
+            "topLevelType": "item.completed",
+            "envelopeVariantId": "E002",
+            "itemSubtype": "agent_message",
+            "itemVariantId": "E008"
+          },
+          {
+            "ordinal": 7,
+            "topLevelType": "turn.completed",
+            "envelopeVariantId": "E005"
+          }
+        ],
+        "persisted": [
+          {
+            "ordinal": 1,
+            "topLevelType": "session_meta",
+            "envelopeVariantId": "P003",
+            "payloadSubtype": "session_meta",
+            "payloadVariantId": "P013"
+          },
+          {
+            "ordinal": 2,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "task_started",
+            "payloadVariantId": "P016"
+          },
+          {
+            "ordinal": 3,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 4,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 5,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 6,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 7,
+            "topLevelType": "world_state",
+            "envelopeVariantId": "P005",
+            "payloadSubtype": "world_state",
+            "payloadVariantId": "P022"
+          },
+          {
+            "ordinal": 8,
+            "topLevelType": "turn_context",
+            "envelopeVariantId": "P004",
+            "payloadSubtype": "turn_context",
+            "payloadVariantId": "P020"
+          },
+          {
+            "ordinal": 9,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 10,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "user_message",
+            "payloadVariantId": "P021"
+          },
+          {
+            "ordinal": 11,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "reasoning",
+            "payloadVariantId": "P012"
+          },
+          {
+            "ordinal": 12,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "agent_message",
+            "payloadVariantId": "P006"
+          },
+          {
+            "ordinal": 13,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P010"
+          },
+          {
+            "ordinal": 14,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "tool_search_call",
+            "payloadVariantId": "P018"
+          },
+          {
+            "ordinal": 15,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "tool_search_output",
+            "payloadVariantId": "P019"
+          },
+          {
+            "ordinal": 16,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "token_count",
+            "payloadVariantId": "P017"
+          },
+          {
+            "ordinal": 17,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "function_call",
+            "payloadVariantId": "P008"
+          },
+          {
+            "ordinal": 18,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "mcp_tool_call_end",
+            "payloadVariantId": "P009"
+          },
+          {
+            "ordinal": 19,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "function_call_output",
+            "payloadVariantId": "P007"
+          },
+          {
+            "ordinal": 20,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "token_count",
+            "payloadVariantId": "P017"
+          },
+          {
+            "ordinal": 21,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "reasoning",
+            "payloadVariantId": "P012"
+          },
+          {
+            "ordinal": 22,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "agent_message",
+            "payloadVariantId": "P006"
+          },
+          {
+            "ordinal": 23,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P010"
+          },
+          {
+            "ordinal": 24,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "token_count",
+            "payloadVariantId": "P017"
+          },
+          {
+            "ordinal": 25,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "task_complete",
+            "payloadVariantId": "P015"
+          }
+        ]
+      },
+      "persistedSelection": {
+        "cwdCommitmentMatch": true,
+        "startedAtWindowCommitment": false,
+        "processLineage": {
+          "sessionSourceIsExec": true,
+          "execThreadEqualsSessionMetaId": true,
+          "execThreadEqualsSessionId": true
+        },
+        "originalRolloutStillPresent": true,
+        "originalEqualsPrivateCopy": true,
+        "selectionStatus": "PASS",
+        "identityValuesStored": false,
+        "pathValuesStored": false,
+        "timestampValuesStored": false
+      },
+      "execMcpAssociation": {
+        "subtype": "mcp_tool_call",
+        "startedOrdinal": 4,
+        "completedOrdinal": 5,
+        "idEquality": true,
+        "strictOrder": true,
+        "completionSucceeded": false,
+        "completionFailed": true,
+        "completionErrorNativeType": "object",
+        "completionResultNativeType": "null",
+        "identityValueStored": false,
+        "errorValueStored": false,
+        "resultValueStored": false
+      },
+      "persistedMcpAssociation": {
+        "observedChainSubtypes": [
+          "function_call",
+          "mcp_tool_call_end",
+          "function_call_output"
+        ],
+        "callOrdinal": 17,
+        "endOrdinal": 18,
+        "outputOrdinal": 19,
+        "callToEndCallIdEquality": true,
+        "endToOutputCallIdEquality": true,
+        "callToOutputCallIdEquality": true,
+        "strictOrder": true,
+        "legacyCustomToolChainObserved": false,
+        "identityValueStored": false
+      },
+      "singlePlaywrightNavigateCallObserved": true,
+      "navigationOutcome": "FAILED",
+      "turnFailedObserved": false,
+      "correlationV2": {
+        "threadIdentity": {
+          "symbols": [
+            {
+              "symbol": "exec.thread.started.thread_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.session_meta.id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.session_meta.session_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            }
+          ],
+          "pairwiseEqualityMatrix": [
+            {
+              "left": "exec.thread.started.thread_id",
+              "right": "persisted.session_meta.id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "exec.thread.started.thread_id",
+              "right": "persisted.session_meta.session_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.session_meta.id",
+              "right": "persisted.session_meta.session_id",
+              "comparable": true,
+              "equal": true
+            }
+          ],
+          "matrixSummary": {
+            "pairCount": 3,
+            "comparablePairCount": 3,
+            "equalPairCount": 3,
+            "unequalPairCount": 0,
+            "unavailablePairCount": 0,
+            "noUnobservedEqualityAssumed": true
+          },
+          "allThreeEqual": true,
+          "ordinalsByStream": {
+            "execThreadStarted": 1,
+            "persistedSessionMeta": 1
+          },
+          "crossStreamOrderNotAsserted": true
+        },
+        "turnIdentity": {
+          "symbols": [
+            {
+              "symbol": "persisted.task_started.turn_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.turn_context.turn_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.task_complete.turn_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            }
+          ],
+          "pairwiseEqualityMatrix": [
+            {
+              "left": "persisted.task_started.turn_id",
+              "right": "persisted.turn_context.turn_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.task_started.turn_id",
+              "right": "persisted.task_complete.turn_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.turn_context.turn_id",
+              "right": "persisted.task_complete.turn_id",
+              "comparable": true,
+              "equal": true
+            }
+          ],
+          "matrixSummary": {
+            "pairCount": 3,
+            "comparablePairCount": 3,
+            "equalPairCount": 3,
+            "unequalPairCount": 0,
+            "unavailablePairCount": 0,
+            "noUnobservedEqualityAssumed": true
+          },
+          "allPresentTurnIdsEqual": true,
+          "order": {
+            "taskStartedOrdinal": 2,
+            "turnContextOrdinal": 8,
+            "taskCompleteOrdinal": 25,
+            "taskStartedBeforeTurnContext": true,
+            "turnContextBeforeTaskComplete": true,
+            "strictOrder": true
+          }
+        },
+        "mcpToolIdentity": {
+          "applicable": true,
+          "symbols": [
+            {
+              "symbol": "exec.mcp.started.item.id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "exec.mcp.completed.item.id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.call.id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.call.call_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.end.call_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.output.id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.output.call_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            }
+          ],
+          "pairwiseEqualityMatrix": [
+            {
+              "left": "exec.mcp.started.item.id",
+              "right": "exec.mcp.completed.item.id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "exec.mcp.started.item.id",
+              "right": "persisted.call.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.started.item.id",
+              "right": "persisted.call.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.started.item.id",
+              "right": "persisted.end.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.started.item.id",
+              "right": "persisted.output.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.started.item.id",
+              "right": "persisted.output.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.completed.item.id",
+              "right": "persisted.call.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.completed.item.id",
+              "right": "persisted.call.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.completed.item.id",
+              "right": "persisted.end.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.completed.item.id",
+              "right": "persisted.output.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.completed.item.id",
+              "right": "persisted.output.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.call.id",
+              "right": "persisted.call.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.call.id",
+              "right": "persisted.end.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.call.id",
+              "right": "persisted.output.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.call.id",
+              "right": "persisted.output.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.call.call_id",
+              "right": "persisted.end.call_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.call.call_id",
+              "right": "persisted.output.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.call.call_id",
+              "right": "persisted.output.call_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.end.call_id",
+              "right": "persisted.output.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.end.call_id",
+              "right": "persisted.output.call_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.output.id",
+              "right": "persisted.output.call_id",
+              "comparable": true,
+              "equal": false
+            }
+          ],
+          "matrixSummary": {
+            "pairCount": 21,
+            "comparablePairCount": 21,
+            "equalPairCount": 4,
+            "unequalPairCount": 17,
+            "unavailablePairCount": 0,
+            "noUnobservedEqualityAssumed": true
+          },
+          "order": {
+            "execStartedOrdinal": 4,
+            "execCompletedOrdinal": 5,
+            "persistedCallOrdinal": 17,
+            "persistedEndOrdinal": 18,
+            "persistedOutputOrdinal": 19,
+            "execStrictOrder": true,
+            "persistedStrictOrder": true,
+            "crossStreamOrderNotAsserted": true
+          }
+        },
+        "toolSearchIdentity": {
+          "applicable": true,
+          "symbols": [
+            {
+              "symbol": "persisted.tool_search_call.id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.tool_search_call.call_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.tool_search_output.id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.tool_search_output.call_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            }
+          ],
+          "pairwiseEqualityMatrix": [
+            {
+              "left": "persisted.tool_search_call.id",
+              "right": "persisted.tool_search_call.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.tool_search_call.id",
+              "right": "persisted.tool_search_output.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.tool_search_call.id",
+              "right": "persisted.tool_search_output.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.tool_search_call.call_id",
+              "right": "persisted.tool_search_output.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.tool_search_call.call_id",
+              "right": "persisted.tool_search_output.call_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.tool_search_output.id",
+              "right": "persisted.tool_search_output.call_id",
+              "comparable": true,
+              "equal": false
+            }
+          ],
+          "matrixSummary": {
+            "pairCount": 6,
+            "comparablePairCount": 6,
+            "equalPairCount": 1,
+            "unequalPairCount": 5,
+            "unavailablePairCount": 0,
+            "noUnobservedEqualityAssumed": true
+          },
+          "callIdEquality": true,
+          "itemIdEquality": false,
+          "order": {
+            "callOrdinal": 14,
+            "outputOrdinal": 15,
+            "strictOrder": true
+          }
+        },
+        "responseItemIdentity": {
+          "items": [
+            {
+              "ordinal": 3,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 4,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 5,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 6,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 9,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 11,
+              "subtype": "reasoning",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 13,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 14,
+              "subtype": "tool_search_call",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 15,
+              "subtype": "tool_search_output",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 17,
+              "subtype": "function_call",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 19,
+              "subtype": "function_call_output",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 21,
+              "subtype": "reasoning",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 23,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            }
+          ],
+          "responseItemCount": 13,
+          "idFieldPresentCount": 13,
+          "nonNullStringIdCount": 13,
+          "uniqueIdCount": 13,
+          "allIdsPresentNonNullStrings": true,
+          "allIdsUnique": true,
+          "negativeRelationSummary": {
+            "totalPairCount": 78,
+            "unequalPairCount": 78,
+            "equalPairCount": 0,
+            "allDistinct": true,
+            "noCrossItemEqualityAssumedBeyondObservedComparison": true
+          }
+        }
+      }
+    }
+  },
+  "supplementalCaptures": {
+    "B_SUCCESS_PROBE": {
+      "classification": "SUPPLEMENTAL_MCP_SUCCESS_PROBE",
+      "supplementalOnly": true,
+      "excludedFromPrimaryABCBExtensionGrammar": true,
+      "captureComplete": true,
+      "retryCount": 0,
+      "hostStartedForProbe": false,
+      "processExitCode": 0,
+      "freshWorkspaceEmptyAfterCapture": true,
+      "raw": {
+        "exec": {
+          "bytes": 855,
+          "lines": 6,
+          "sha256": "da3e4736ce50171441908ae4dd4621fafb6803dba36986fe0e3facb2534edd43"
+        },
+        "persisted": {
+          "bytes": 72520,
+          "lines": 19,
+          "sha256": "8e502dcf6c6310adda742eb39b16b59974dd7e1de077822e123a34424aecbb1c"
+        },
+        "stderr": {
+          "bytes": 138,
+          "lines": 1,
+          "sha256": "722062828e2b157f9afc00ad9d304069801e2d74571c51888051559972aaac21"
+        }
+      },
+      "eventOrder": {
+        "exec": [
+          {
+            "ordinal": 1,
+            "topLevelType": "thread.started",
+            "envelopeVariantId": "E003"
+          },
+          {
+            "ordinal": 2,
+            "topLevelType": "turn.started",
+            "envelopeVariantId": "E005"
+          },
+          {
+            "ordinal": 3,
+            "topLevelType": "item.started",
+            "envelopeVariantId": "E002",
+            "itemSubtype": "mcp_tool_call",
+            "itemVariantId": "E007"
+          },
+          {
+            "ordinal": 4,
+            "topLevelType": "item.completed",
+            "envelopeVariantId": "E001",
+            "itemSubtype": "mcp_tool_call",
+            "itemVariantId": "E007"
+          },
+          {
+            "ordinal": 5,
+            "topLevelType": "item.completed",
+            "envelopeVariantId": "E001",
+            "itemSubtype": "agent_message",
+            "itemVariantId": "E006"
+          },
+          {
+            "ordinal": 6,
+            "topLevelType": "turn.completed",
+            "envelopeVariantId": "E004"
+          }
+        ],
+        "persisted": [
+          {
+            "ordinal": 1,
+            "topLevelType": "session_meta",
+            "envelopeVariantId": "P003",
+            "payloadSubtype": "session_meta",
+            "payloadVariantId": "P013"
+          },
+          {
+            "ordinal": 2,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "task_started",
+            "payloadVariantId": "P015"
+          },
+          {
+            "ordinal": 3,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 4,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 5,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 6,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 7,
+            "topLevelType": "world_state",
+            "envelopeVariantId": "P005",
+            "payloadSubtype": "world_state",
+            "payloadVariantId": "P019"
+          },
+          {
+            "ordinal": 8,
+            "topLevelType": "turn_context",
+            "envelopeVariantId": "P004",
+            "payloadSubtype": "turn_context",
+            "payloadVariantId": "P017"
+          },
+          {
+            "ordinal": 9,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P011"
+          },
+          {
+            "ordinal": 10,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "user_message",
+            "payloadVariantId": "P018"
+          },
+          {
+            "ordinal": 11,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "reasoning",
+            "payloadVariantId": "P012"
+          },
+          {
+            "ordinal": 12,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "custom_tool_call",
+            "payloadVariantId": "P008"
+          },
+          {
+            "ordinal": 13,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "mcp_tool_call_end",
+            "payloadVariantId": "P009"
+          },
+          {
+            "ordinal": 14,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "custom_tool_call_output",
+            "payloadVariantId": "P007"
+          },
+          {
+            "ordinal": 15,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "token_count",
+            "payloadVariantId": "P016"
+          },
+          {
+            "ordinal": 16,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "agent_message",
+            "payloadVariantId": "P006"
+          },
+          {
+            "ordinal": 17,
+            "topLevelType": "response_item",
+            "envelopeVariantId": "P002",
+            "payloadSubtype": "message",
+            "payloadVariantId": "P010"
+          },
+          {
+            "ordinal": 18,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "token_count",
+            "payloadVariantId": "P016"
+          },
+          {
+            "ordinal": 19,
+            "topLevelType": "event_msg",
+            "envelopeVariantId": "P001",
+            "payloadSubtype": "task_complete",
+            "payloadVariantId": "P014"
+          }
+        ]
+      },
+      "persistedSelection": {
+        "cwdCommitmentMatch": true,
+        "startedAtWindowCommitment": false,
+        "processLineage": {
+          "sessionSourceIsExec": true,
+          "execThreadEqualsSessionMetaId": true,
+          "execThreadEqualsSessionId": true
+        },
+        "originalRolloutStillPresent": true,
+        "originalEqualsPrivateCopy": true,
+        "selectionStatus": "PASS",
+        "identityValuesStored": false,
+        "pathValuesStored": false,
+        "timestampValuesStored": false
+      },
+      "execMcpAssociation": {
+        "subtype": "mcp_tool_call",
+        "startedOrdinal": 3,
+        "completedOrdinal": 4,
+        "idEquality": true,
+        "strictOrder": true,
+        "completionSucceeded": true,
+        "completionFailed": false,
+        "completionErrorNativeType": "null",
+        "completionResultNativeType": "object",
+        "identityValueStored": false,
+        "errorValueStored": false,
+        "resultValueStored": false
+      },
+      "persistedMcpAssociation": {
+        "observedChainSubtypes": [
+          "custom_tool_call",
+          "mcp_tool_call_end",
+          "custom_tool_call_output"
+        ],
+        "callOrdinal": 12,
+        "endOrdinal": 13,
+        "outputOrdinal": 14,
+        "callToEndCallIdEquality": false,
+        "endToOutputCallIdEquality": false,
+        "callToOutputCallIdEquality": true,
+        "strictOrder": true,
+        "legacyCustomToolChainObserved": true,
+        "identityValueStored": false
+      },
+      "singleBrowserSnapshotCallObserved": true,
+      "probeOutcome": "SUCCEEDED",
+      "correlationV2": {
+        "threadIdentity": {
+          "symbols": [
+            {
+              "symbol": "exec.thread.started.thread_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.session_meta.id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.session_meta.session_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            }
+          ],
+          "pairwiseEqualityMatrix": [
+            {
+              "left": "exec.thread.started.thread_id",
+              "right": "persisted.session_meta.id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "exec.thread.started.thread_id",
+              "right": "persisted.session_meta.session_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.session_meta.id",
+              "right": "persisted.session_meta.session_id",
+              "comparable": true,
+              "equal": true
+            }
+          ],
+          "matrixSummary": {
+            "pairCount": 3,
+            "comparablePairCount": 3,
+            "equalPairCount": 3,
+            "unequalPairCount": 0,
+            "unavailablePairCount": 0,
+            "noUnobservedEqualityAssumed": true
+          },
+          "allThreeEqual": true,
+          "ordinalsByStream": {
+            "execThreadStarted": 1,
+            "persistedSessionMeta": 1
+          },
+          "crossStreamOrderNotAsserted": true
+        },
+        "turnIdentity": {
+          "symbols": [
+            {
+              "symbol": "persisted.task_started.turn_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.turn_context.turn_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.task_complete.turn_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            }
+          ],
+          "pairwiseEqualityMatrix": [
+            {
+              "left": "persisted.task_started.turn_id",
+              "right": "persisted.turn_context.turn_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.task_started.turn_id",
+              "right": "persisted.task_complete.turn_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.turn_context.turn_id",
+              "right": "persisted.task_complete.turn_id",
+              "comparable": true,
+              "equal": true
+            }
+          ],
+          "matrixSummary": {
+            "pairCount": 3,
+            "comparablePairCount": 3,
+            "equalPairCount": 3,
+            "unequalPairCount": 0,
+            "unavailablePairCount": 0,
+            "noUnobservedEqualityAssumed": true
+          },
+          "allPresentTurnIdsEqual": true,
+          "order": {
+            "taskStartedOrdinal": 2,
+            "turnContextOrdinal": 8,
+            "taskCompleteOrdinal": 19,
+            "taskStartedBeforeTurnContext": true,
+            "turnContextBeforeTaskComplete": true,
+            "strictOrder": true
+          }
+        },
+        "mcpToolIdentity": {
+          "applicable": true,
+          "symbols": [
+            {
+              "symbol": "exec.mcp.started.item.id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "exec.mcp.completed.item.id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.call.id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.call.call_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.end.call_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.output.id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            },
+            {
+              "symbol": "persisted.output.call_id",
+              "present": true,
+              "nativeType": "string",
+              "nonNullString": true,
+              "valueStored": false
+            }
+          ],
+          "pairwiseEqualityMatrix": [
+            {
+              "left": "exec.mcp.started.item.id",
+              "right": "exec.mcp.completed.item.id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "exec.mcp.started.item.id",
+              "right": "persisted.call.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.started.item.id",
+              "right": "persisted.call.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.started.item.id",
+              "right": "persisted.end.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.started.item.id",
+              "right": "persisted.output.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.started.item.id",
+              "right": "persisted.output.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.completed.item.id",
+              "right": "persisted.call.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.completed.item.id",
+              "right": "persisted.call.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.completed.item.id",
+              "right": "persisted.end.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.completed.item.id",
+              "right": "persisted.output.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "exec.mcp.completed.item.id",
+              "right": "persisted.output.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.call.id",
+              "right": "persisted.call.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.call.id",
+              "right": "persisted.end.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.call.id",
+              "right": "persisted.output.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.call.id",
+              "right": "persisted.output.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.call.call_id",
+              "right": "persisted.end.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.call.call_id",
+              "right": "persisted.output.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.call.call_id",
+              "right": "persisted.output.call_id",
+              "comparable": true,
+              "equal": true
+            },
+            {
+              "left": "persisted.end.call_id",
+              "right": "persisted.output.id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.end.call_id",
+              "right": "persisted.output.call_id",
+              "comparable": true,
+              "equal": false
+            },
+            {
+              "left": "persisted.output.id",
+              "right": "persisted.output.call_id",
+              "comparable": true,
+              "equal": false
+            }
+          ],
+          "matrixSummary": {
+            "pairCount": 21,
+            "comparablePairCount": 21,
+            "equalPairCount": 2,
+            "unequalPairCount": 19,
+            "unavailablePairCount": 0,
+            "noUnobservedEqualityAssumed": true
+          },
+          "order": {
+            "execStartedOrdinal": 3,
+            "execCompletedOrdinal": 4,
+            "persistedCallOrdinal": 12,
+            "persistedEndOrdinal": 13,
+            "persistedOutputOrdinal": 14,
+            "execStrictOrder": true,
+            "persistedStrictOrder": true,
+            "crossStreamOrderNotAsserted": true
+          }
+        },
+        "toolSearchIdentity": {
+          "applicable": false,
+          "symbols": [],
+          "pairwiseEqualityMatrix": [],
+          "matrixSummary": {
+            "pairCount": 0,
+            "comparablePairCount": 0,
+            "equalPairCount": 0,
+            "unequalPairCount": 0,
+            "unavailablePairCount": 0,
+            "noUnobservedEqualityAssumed": true
+          },
+          "callIdEquality": null,
+          "itemIdEquality": null,
+          "order": {
+            "callOrdinal": null,
+            "outputOrdinal": null,
+            "strictOrder": null
+          }
+        },
+        "responseItemIdentity": {
+          "items": [
+            {
+              "ordinal": 3,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 4,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 5,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 6,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 9,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 11,
+              "subtype": "reasoning",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 12,
+              "subtype": "custom_tool_call",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 14,
+              "subtype": "custom_tool_call_output",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            },
+            {
+              "ordinal": 17,
+              "subtype": "message",
+              "idFieldPresent": true,
+              "idNativeType": "string",
+              "idNonNullString": true,
+              "idValueStored": false
+            }
+          ],
+          "responseItemCount": 9,
+          "idFieldPresentCount": 9,
+          "nonNullStringIdCount": 9,
+          "uniqueIdCount": 9,
+          "allIdsPresentNonNullStrings": true,
+          "allIdsUnique": true,
+          "negativeRelationSummary": {
+            "totalPairCount": 36,
+            "unequalPairCount": 36,
+            "equalPairCount": 0,
+            "allDistinct": true,
+            "noCrossItemEqualityAssumedBeyondObservedComparison": true
+          }
+        }
+      },
+      "toolNameValueStoredOutsideAllowlistedControlPlaneObservation": false
+    }
+  },
+  "grammar": {
+    "exec": {
+      "variants": [
+        {
+          "variantId": "E001",
+          "container": "envelope",
+          "subtype": "error",
+          "exactKeySet": [
+            "message",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "message": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "C": [
+              3
+            ]
+          }
+        },
+        {
+          "variantId": "E002",
+          "container": "envelope",
+          "subtype": "item.completed",
+          "exactKeySet": [
+            "item",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "item": [
+              "object"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "A": [
+              3,
+              4
+            ],
+            "B": [
+              4,
+              5
+            ],
+            "B_EXTENSION": [
+              3,
+              5,
+              6
+            ]
+          }
+        },
+        {
+          "variantId": "E003",
+          "container": "envelope",
+          "subtype": "item.started",
+          "exactKeySet": [
+            "item",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "item": [
+              "object"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B": [
+              3
+            ],
+            "B_EXTENSION": [
+              4
+            ]
+          }
+        },
+        {
+          "variantId": "E004",
+          "container": "envelope",
+          "subtype": "thread.started",
+          "exactKeySet": [
+            "thread_id",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "thread_id": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "A": [
+              1
+            ],
+            "B": [
+              1
+            ],
+            "B_EXTENSION": [
+              1
+            ],
+            "C": [
+              1
+            ]
+          }
+        },
+        {
+          "variantId": "E005",
+          "container": "envelope",
+          "subtype": "turn.completed",
+          "exactKeySet": [
+            "type",
+            "usage"
+          ],
+          "fieldNativeTypes": {
+            "type": [
+              "string"
+            ],
+            "usage": [
+              "object"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "A": [
+              5
+            ],
+            "B": [
+              6
+            ],
+            "B_EXTENSION": [
+              7
+            ]
+          }
+        },
+        {
+          "variantId": "E006",
+          "container": "envelope",
+          "subtype": "turn.failed",
+          "exactKeySet": [
+            "error",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "error": [
+              "object"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "C": [
+              4
+            ]
+          }
+        },
+        {
+          "variantId": "E007",
+          "container": "envelope",
+          "subtype": "turn.started",
+          "exactKeySet": [
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "A": [
+              2
+            ],
+            "B": [
+              2
+            ],
+            "B_EXTENSION": [
+              2
+            ],
+            "C": [
+              2
+            ]
+          }
+        },
+        {
+          "variantId": "E008",
+          "container": "item",
+          "subtype": "agent_message",
+          "exactKeySet": [
+            "id",
+            "text",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "id": [
+              "string"
+            ],
+            "text": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "A": [
+              4
+            ],
+            "B": [
+              5
+            ],
+            "B_EXTENSION": [
+              3,
+              6
+            ]
+          }
+        },
+        {
+          "variantId": "E009",
+          "container": "item",
+          "subtype": "error",
+          "exactKeySet": [
+            "id",
+            "message",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "id": [
+              "string"
+            ],
+            "message": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "A": [
+              3
+            ]
+          }
+        },
+        {
+          "variantId": "E010",
+          "container": "item",
+          "subtype": "mcp_tool_call",
+          "exactKeySet": [
+            "arguments",
+            "error",
+            "id",
+            "result",
+            "server",
+            "status",
+            "tool",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "arguments": [
+              "object"
+            ],
+            "error": [
+              "null",
+              "object"
+            ],
+            "id": [
+              "string"
+            ],
+            "result": [
+              "null"
+            ],
+            "server": [
+              "string"
+            ],
+            "status": [
+              "string"
+            ],
+            "tool": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B": [
+              3,
+              4
+            ],
+            "B_EXTENSION": [
+              4,
+              5
+            ]
+          }
+        }
+      ]
+    },
+    "persisted": {
+      "variants": [
+        {
+          "variantId": "P001",
+          "container": "envelope",
+          "subtype": "event_msg",
+          "exactKeySet": [
+            "payload",
+            "timestamp",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "payload": [
+              "object"
+            ],
+            "timestamp": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "A": [
+              2,
+              10,
+              11,
+              13,
+              14
+            ],
+            "B": [
+              2,
+              10,
+              15,
+              17,
+              19,
+              21,
+              23,
+              24
+            ],
+            "B_EXTENSION": [
+              2,
+              10,
+              12,
+              16,
+              18,
+              20,
+              22,
+              24,
+              25
+            ],
+            "C": [
+              2,
+              10,
+              11
+            ]
+          }
+        },
+        {
+          "variantId": "P002",
+          "container": "envelope",
+          "subtype": "response_item",
+          "exactKeySet": [
+            "payload",
+            "timestamp",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "payload": [
+              "object"
+            ],
+            "timestamp": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "A": [
+              3,
+              4,
+              5,
+              6,
+              9,
+              12
+            ],
+            "B": [
+              3,
+              4,
+              5,
+              6,
+              9,
+              11,
+              12,
+              13,
+              14,
+              16,
+              18,
+              20,
+              22
+            ],
+            "B_EXTENSION": [
+              3,
+              4,
+              5,
+              6,
+              9,
+              11,
+              13,
+              14,
+              15,
+              17,
+              19,
+              21,
+              23
+            ],
+            "C": [
+              3,
+              4,
+              5,
+              6,
+              9
+            ]
+          }
+        },
+        {
+          "variantId": "P003",
+          "container": "envelope",
+          "subtype": "session_meta",
+          "exactKeySet": [
+            "payload",
+            "timestamp",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "payload": [
+              "object"
+            ],
+            "timestamp": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "A": [
+              1
+            ],
+            "B": [
+              1
+            ],
+            "B_EXTENSION": [
+              1
+            ],
+            "C": [
+              1
+            ]
+          }
+        },
+        {
+          "variantId": "P004",
+          "container": "envelope",
+          "subtype": "turn_context",
+          "exactKeySet": [
+            "payload",
+            "timestamp",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "payload": [
+              "object"
+            ],
+            "timestamp": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "A": [
+              8
+            ],
+            "B": [
+              8
+            ],
+            "B_EXTENSION": [
+              8
+            ],
+            "C": [
+              8
+            ]
+          }
+        },
+        {
+          "variantId": "P005",
+          "container": "envelope",
+          "subtype": "world_state",
+          "exactKeySet": [
+            "payload",
+            "timestamp",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "payload": [
+              "object"
+            ],
+            "timestamp": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "A": [
+              7
+            ],
+            "B": [
+              7
+            ],
+            "B_EXTENSION": [
+              7
+            ],
+            "C": [
+              7
+            ]
+          }
+        },
+        {
+          "variantId": "P006",
+          "container": "payload",
+          "subtype": "agent_message",
+          "exactKeySet": [
+            "memory_citation",
+            "message",
+            "phase",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "memory_citation": [
+              "null"
+            ],
+            "message": [
+              "string"
+            ],
+            "phase": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "A": [
+              11
+            ],
+            "B": [
+              21
+            ],
+            "B_EXTENSION": [
+              12,
+              22
+            ]
+          }
+        },
+        {
+          "variantId": "P007",
+          "container": "payload",
+          "subtype": "function_call_output",
+          "exactKeySet": [
+            "call_id",
+            "id",
+            "internal_chat_message_metadata_passthrough",
+            "output",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "call_id": [
+              "string"
+            ],
+            "id": [
+              "string"
+            ],
+            "internal_chat_message_metadata_passthrough": [
+              "object"
+            ],
+            "output": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B": [
+              18
+            ],
+            "B_EXTENSION": [
+              19
+            ]
+          }
+        },
+        {
+          "variantId": "P008",
+          "container": "payload",
+          "subtype": "function_call",
+          "exactKeySet": [
+            "arguments",
+            "call_id",
+            "id",
+            "internal_chat_message_metadata_passthrough",
+            "name",
+            "namespace",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "arguments": [
+              "string"
+            ],
+            "call_id": [
+              "string"
+            ],
+            "id": [
+              "string"
+            ],
+            "internal_chat_message_metadata_passthrough": [
+              "object"
+            ],
+            "name": [
+              "string"
+            ],
+            "namespace": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B": [
+              16
+            ],
+            "B_EXTENSION": [
+              17
+            ]
+          }
+        },
+        {
+          "variantId": "P009",
+          "container": "payload",
+          "subtype": "mcp_tool_call_end",
+          "exactKeySet": [
+            "call_id",
+            "duration",
+            "invocation",
+            "result",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "call_id": [
+              "string"
+            ],
+            "duration": [
+              "object"
+            ],
+            "invocation": [
+              "object"
+            ],
+            "result": [
+              "object"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B": [
+              17
+            ],
+            "B_EXTENSION": [
+              18
+            ]
+          }
+        },
+        {
+          "variantId": "P010",
+          "container": "payload",
+          "subtype": "message",
+          "exactKeySet": [
+            "content",
+            "id",
+            "internal_chat_message_metadata_passthrough",
+            "phase",
+            "role",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "content": [
+              "array"
+            ],
+            "id": [
+              "string"
+            ],
+            "internal_chat_message_metadata_passthrough": [
+              "object"
+            ],
+            "phase": [
+              "string"
+            ],
+            "role": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "A": [
+              12
+            ],
+            "B": [
+              22
+            ],
+            "B_EXTENSION": [
+              13,
+              23
+            ]
+          }
+        },
+        {
+          "variantId": "P011",
+          "container": "payload",
+          "subtype": "message",
+          "exactKeySet": [
+            "content",
+            "id",
+            "internal_chat_message_metadata_passthrough",
+            "role",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "content": [
+              "array"
+            ],
+            "id": [
+              "string"
+            ],
+            "internal_chat_message_metadata_passthrough": [
+              "object"
+            ],
+            "role": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "A": [
+              3,
+              4,
+              5,
+              6,
+              9
+            ],
+            "B": [
+              3,
+              4,
+              5,
+              6,
+              9
+            ],
+            "B_EXTENSION": [
+              3,
+              4,
+              5,
+              6,
+              9
+            ],
+            "C": [
+              3,
+              4,
+              5,
+              6,
+              9
+            ]
+          }
+        },
+        {
+          "variantId": "P012",
+          "container": "payload",
+          "subtype": "reasoning",
+          "exactKeySet": [
+            "encrypted_content",
+            "id",
+            "internal_chat_message_metadata_passthrough",
+            "summary",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "encrypted_content": [
+              "string"
+            ],
+            "id": [
+              "string"
+            ],
+            "internal_chat_message_metadata_passthrough": [
+              "object"
+            ],
+            "summary": [
+              "array"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B": [
+              11,
+              12,
+              20
+            ],
+            "B_EXTENSION": [
+              11,
+              21
+            ]
+          }
+        },
+        {
+          "variantId": "P013",
+          "container": "payload",
+          "subtype": "session_meta",
+          "exactKeySet": [
+            "base_instructions",
+            "cli_version",
+            "context_window",
+            "cwd",
+            "history_mode",
+            "id",
+            "model_provider",
+            "originator",
+            "session_id",
+            "source",
+            "thread_source",
+            "timestamp"
+          ],
+          "fieldNativeTypes": {
+            "base_instructions": [
+              "object"
+            ],
+            "cli_version": [
+              "string"
+            ],
+            "context_window": [
+              "object"
+            ],
+            "cwd": [
+              "string"
+            ],
+            "history_mode": [
+              "string"
+            ],
+            "id": [
+              "string"
+            ],
+            "model_provider": [
+              "string"
+            ],
+            "originator": [
+              "string"
+            ],
+            "session_id": [
+              "string"
+            ],
+            "source": [
+              "string"
+            ],
+            "thread_source": [
+              "string"
+            ],
+            "timestamp": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "A": [
+              1
+            ],
+            "B": [
+              1
+            ],
+            "B_EXTENSION": [
+              1
+            ],
+            "C": [
+              1
+            ]
+          }
+        },
+        {
+          "variantId": "P014",
+          "container": "payload",
+          "subtype": "task_complete",
+          "exactKeySet": [
+            "completed_at",
+            "duration_ms",
+            "error",
+            "last_agent_message",
+            "started_at",
+            "turn_id",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "completed_at": [
+              "number"
+            ],
+            "duration_ms": [
+              "number"
+            ],
+            "error": [
+              "object"
+            ],
+            "last_agent_message": [
+              "null"
+            ],
+            "started_at": [
+              "number"
+            ],
+            "turn_id": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "C": [
+              11
+            ]
+          }
+        },
+        {
+          "variantId": "P015",
+          "container": "payload",
+          "subtype": "task_complete",
+          "exactKeySet": [
+            "completed_at",
+            "duration_ms",
+            "last_agent_message",
+            "started_at",
+            "time_to_first_token_ms",
+            "turn_id",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "completed_at": [
+              "number"
+            ],
+            "duration_ms": [
+              "number"
+            ],
+            "last_agent_message": [
+              "string"
+            ],
+            "started_at": [
+              "number"
+            ],
+            "time_to_first_token_ms": [
+              "number"
+            ],
+            "turn_id": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "A": [
+              14
+            ],
+            "B": [
+              24
+            ],
+            "B_EXTENSION": [
+              25
+            ]
+          }
+        },
+        {
+          "variantId": "P016",
+          "container": "payload",
+          "subtype": "task_started",
+          "exactKeySet": [
+            "collaboration_mode_kind",
+            "model_context_window",
+            "started_at",
+            "turn_id",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "collaboration_mode_kind": [
+              "string"
+            ],
+            "model_context_window": [
+              "number"
+            ],
+            "started_at": [
+              "number"
+            ],
+            "turn_id": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "A": [
+              2
+            ],
+            "B": [
+              2
+            ],
+            "B_EXTENSION": [
+              2
+            ],
+            "C": [
+              2
+            ]
+          }
+        },
+        {
+          "variantId": "P017",
+          "container": "payload",
+          "subtype": "token_count",
+          "exactKeySet": [
+            "info",
+            "rate_limits",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "info": [
+              "object"
+            ],
+            "rate_limits": [
+              "object"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "A": [
+              13
+            ],
+            "B": [
+              15,
+              19,
+              23
+            ],
+            "B_EXTENSION": [
+              16,
+              20,
+              24
+            ]
+          }
+        },
+        {
+          "variantId": "P018",
+          "container": "payload",
+          "subtype": "tool_search_call",
+          "exactKeySet": [
+            "arguments",
+            "call_id",
+            "execution",
+            "id",
+            "internal_chat_message_metadata_passthrough",
+            "status",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "arguments": [
+              "object"
+            ],
+            "call_id": [
+              "string"
+            ],
+            "execution": [
+              "string"
+            ],
+            "id": [
+              "string"
+            ],
+            "internal_chat_message_metadata_passthrough": [
+              "object"
+            ],
+            "status": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B": [
+              13
+            ],
+            "B_EXTENSION": [
+              14
+            ]
+          }
+        },
+        {
+          "variantId": "P019",
+          "container": "payload",
+          "subtype": "tool_search_output",
+          "exactKeySet": [
+            "call_id",
+            "execution",
+            "id",
+            "internal_chat_message_metadata_passthrough",
+            "status",
+            "tools",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "call_id": [
+              "string"
+            ],
+            "execution": [
+              "string"
+            ],
+            "id": [
+              "string"
+            ],
+            "internal_chat_message_metadata_passthrough": [
+              "object"
+            ],
+            "status": [
+              "string"
+            ],
+            "tools": [
+              "array"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B": [
+              14
+            ],
+            "B_EXTENSION": [
+              15
+            ]
+          }
+        },
+        {
+          "variantId": "P020",
+          "container": "payload",
+          "subtype": "turn_context",
+          "exactKeySet": [
+            "approval_policy",
+            "approvals_reviewer",
+            "collaboration_mode",
+            "comp_hash",
+            "current_date",
+            "cwd",
+            "effort",
+            "model",
+            "multi_agent_mode",
+            "multi_agent_version",
+            "permission_profile",
+            "personality",
+            "realtime_active",
+            "sandbox_policy",
+            "summary",
+            "timezone",
+            "turn_id",
+            "workspace_roots"
+          ],
+          "fieldNativeTypes": {
+            "approval_policy": [
+              "string"
+            ],
+            "approvals_reviewer": [
+              "string"
+            ],
+            "collaboration_mode": [
+              "object"
+            ],
+            "comp_hash": [
+              "string"
+            ],
+            "current_date": [
+              "string"
+            ],
+            "cwd": [
+              "string"
+            ],
+            "effort": [
+              "string"
+            ],
+            "model": [
+              "string"
+            ],
+            "multi_agent_mode": [
+              "string"
+            ],
+            "multi_agent_version": [
+              "string"
+            ],
+            "permission_profile": [
+              "object"
+            ],
+            "personality": [
+              "string"
+            ],
+            "realtime_active": [
+              "boolean"
+            ],
+            "sandbox_policy": [
+              "object"
+            ],
+            "summary": [
+              "string"
+            ],
+            "timezone": [
+              "string"
+            ],
+            "turn_id": [
+              "string"
+            ],
+            "workspace_roots": [
+              "array"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "A": [
+              8
+            ],
+            "B": [
+              8
+            ],
+            "B_EXTENSION": [
+              8
+            ],
+            "C": [
+              8
+            ]
+          }
+        },
+        {
+          "variantId": "P021",
+          "container": "payload",
+          "subtype": "user_message",
+          "exactKeySet": [
+            "audio",
+            "images",
+            "local_audio",
+            "local_images",
+            "message",
+            "text_elements",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "audio": [
+              "array"
+            ],
+            "images": [
+              "array"
+            ],
+            "local_audio": [
+              "array"
+            ],
+            "local_images": [
+              "array"
+            ],
+            "message": [
+              "string"
+            ],
+            "text_elements": [
+              "array"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "A": [
+              10
+            ],
+            "B": [
+              10
+            ],
+            "B_EXTENSION": [
+              10
+            ],
+            "C": [
+              10
+            ]
+          }
+        },
+        {
+          "variantId": "P022",
+          "container": "payload",
+          "subtype": "world_state",
+          "exactKeySet": [
+            "full",
+            "state"
+          ],
+          "fieldNativeTypes": {
+            "full": [
+              "boolean"
+            ],
+            "state": [
+              "object"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "A": [
+              7
+            ],
+            "B": [
+              7
+            ],
+            "B_EXTENSION": [
+              7
+            ],
+            "C": [
+              7
+            ]
+          }
+        }
+      ]
+    },
+    "sameExactKeySetFieldTypeUnions": [
+      {
+        "stream": "exec",
+        "variantId": "E010",
+        "container": "item",
+        "subtype": "mcp_tool_call",
+        "field": "error",
+        "nativeTypes": [
+          "null",
+          "object"
+        ],
+        "containsNullPlusNonNull": true
+      }
+    ],
+    "hasUnfreezableNullPlusTypeVariant": true,
+    "legacyPersistedCustomToolChainObservedInFreshToolCaptures": false,
+    "freshPersistedFunctionCallChainObservedInBothToolCaptures": true
+  },
+  "supplementalGrammar": {
+    "excludedFromPrimaryGrammar": true,
+    "exec": {
+      "variants": [
+        {
+          "variantId": "E001",
+          "container": "envelope",
+          "subtype": "item.completed",
+          "exactKeySet": [
+            "item",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "item": [
+              "object"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              4,
+              5
+            ]
+          }
+        },
+        {
+          "variantId": "E002",
+          "container": "envelope",
+          "subtype": "item.started",
+          "exactKeySet": [
+            "item",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "item": [
+              "object"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              3
+            ]
+          }
+        },
+        {
+          "variantId": "E003",
+          "container": "envelope",
+          "subtype": "thread.started",
+          "exactKeySet": [
+            "thread_id",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "thread_id": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              1
+            ]
+          }
+        },
+        {
+          "variantId": "E004",
+          "container": "envelope",
+          "subtype": "turn.completed",
+          "exactKeySet": [
+            "type",
+            "usage"
+          ],
+          "fieldNativeTypes": {
+            "type": [
+              "string"
+            ],
+            "usage": [
+              "object"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              6
+            ]
+          }
+        },
+        {
+          "variantId": "E005",
+          "container": "envelope",
+          "subtype": "turn.started",
+          "exactKeySet": [
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              2
+            ]
+          }
+        },
+        {
+          "variantId": "E006",
+          "container": "item",
+          "subtype": "agent_message",
+          "exactKeySet": [
+            "id",
+            "text",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "id": [
+              "string"
+            ],
+            "text": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              5
+            ]
+          }
+        },
+        {
+          "variantId": "E007",
+          "container": "item",
+          "subtype": "mcp_tool_call",
+          "exactKeySet": [
+            "arguments",
+            "error",
+            "id",
+            "result",
+            "server",
+            "status",
+            "tool",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "arguments": [
+              "object"
+            ],
+            "error": [
+              "null"
+            ],
+            "id": [
+              "string"
+            ],
+            "result": [
+              "null",
+              "object"
+            ],
+            "server": [
+              "string"
+            ],
+            "status": [
+              "string"
+            ],
+            "tool": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              3,
+              4
+            ]
+          }
+        }
+      ]
+    },
+    "persisted": {
+      "variants": [
+        {
+          "variantId": "P001",
+          "container": "envelope",
+          "subtype": "event_msg",
+          "exactKeySet": [
+            "payload",
+            "timestamp",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "payload": [
+              "object"
+            ],
+            "timestamp": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              2,
+              10,
+              13,
+              15,
+              16,
+              18,
+              19
+            ]
+          }
+        },
+        {
+          "variantId": "P002",
+          "container": "envelope",
+          "subtype": "response_item",
+          "exactKeySet": [
+            "payload",
+            "timestamp",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "payload": [
+              "object"
+            ],
+            "timestamp": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              3,
+              4,
+              5,
+              6,
+              9,
+              11,
+              12,
+              14,
+              17
+            ]
+          }
+        },
+        {
+          "variantId": "P003",
+          "container": "envelope",
+          "subtype": "session_meta",
+          "exactKeySet": [
+            "payload",
+            "timestamp",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "payload": [
+              "object"
+            ],
+            "timestamp": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              1
+            ]
+          }
+        },
+        {
+          "variantId": "P004",
+          "container": "envelope",
+          "subtype": "turn_context",
+          "exactKeySet": [
+            "payload",
+            "timestamp",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "payload": [
+              "object"
+            ],
+            "timestamp": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              8
+            ]
+          }
+        },
+        {
+          "variantId": "P005",
+          "container": "envelope",
+          "subtype": "world_state",
+          "exactKeySet": [
+            "payload",
+            "timestamp",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "payload": [
+              "object"
+            ],
+            "timestamp": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              7
+            ]
+          }
+        },
+        {
+          "variantId": "P006",
+          "container": "payload",
+          "subtype": "agent_message",
+          "exactKeySet": [
+            "memory_citation",
+            "message",
+            "phase",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "memory_citation": [
+              "null"
+            ],
+            "message": [
+              "string"
+            ],
+            "phase": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              16
+            ]
+          }
+        },
+        {
+          "variantId": "P007",
+          "container": "payload",
+          "subtype": "custom_tool_call_output",
+          "exactKeySet": [
+            "call_id",
+            "id",
+            "internal_chat_message_metadata_passthrough",
+            "output",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "call_id": [
+              "string"
+            ],
+            "id": [
+              "string"
+            ],
+            "internal_chat_message_metadata_passthrough": [
+              "object"
+            ],
+            "output": [
+              "array"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              14
+            ]
+          }
+        },
+        {
+          "variantId": "P008",
+          "container": "payload",
+          "subtype": "custom_tool_call",
+          "exactKeySet": [
+            "call_id",
+            "id",
+            "input",
+            "internal_chat_message_metadata_passthrough",
+            "name",
+            "status",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "call_id": [
+              "string"
+            ],
+            "id": [
+              "string"
+            ],
+            "input": [
+              "string"
+            ],
+            "internal_chat_message_metadata_passthrough": [
+              "object"
+            ],
+            "name": [
+              "string"
+            ],
+            "status": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              12
+            ]
+          }
+        },
+        {
+          "variantId": "P009",
+          "container": "payload",
+          "subtype": "mcp_tool_call_end",
+          "exactKeySet": [
+            "call_id",
+            "duration",
+            "invocation",
+            "result",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "call_id": [
+              "string"
+            ],
+            "duration": [
+              "object"
+            ],
+            "invocation": [
+              "object"
+            ],
+            "result": [
+              "object"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              13
+            ]
+          }
+        },
+        {
+          "variantId": "P010",
+          "container": "payload",
+          "subtype": "message",
+          "exactKeySet": [
+            "content",
+            "id",
+            "internal_chat_message_metadata_passthrough",
+            "phase",
+            "role",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "content": [
+              "array"
+            ],
+            "id": [
+              "string"
+            ],
+            "internal_chat_message_metadata_passthrough": [
+              "object"
+            ],
+            "phase": [
+              "string"
+            ],
+            "role": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              17
+            ]
+          }
+        },
+        {
+          "variantId": "P011",
+          "container": "payload",
+          "subtype": "message",
+          "exactKeySet": [
+            "content",
+            "id",
+            "internal_chat_message_metadata_passthrough",
+            "role",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "content": [
+              "array"
+            ],
+            "id": [
+              "string"
+            ],
+            "internal_chat_message_metadata_passthrough": [
+              "object"
+            ],
+            "role": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              3,
+              4,
+              5,
+              6,
+              9
+            ]
+          }
+        },
+        {
+          "variantId": "P012",
+          "container": "payload",
+          "subtype": "reasoning",
+          "exactKeySet": [
+            "encrypted_content",
+            "id",
+            "internal_chat_message_metadata_passthrough",
+            "summary",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "encrypted_content": [
+              "string"
+            ],
+            "id": [
+              "string"
+            ],
+            "internal_chat_message_metadata_passthrough": [
+              "object"
+            ],
+            "summary": [
+              "array"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              11
+            ]
+          }
+        },
+        {
+          "variantId": "P013",
+          "container": "payload",
+          "subtype": "session_meta",
+          "exactKeySet": [
+            "base_instructions",
+            "cli_version",
+            "context_window",
+            "cwd",
+            "history_mode",
+            "id",
+            "model_provider",
+            "originator",
+            "session_id",
+            "source",
+            "thread_source",
+            "timestamp"
+          ],
+          "fieldNativeTypes": {
+            "base_instructions": [
+              "object"
+            ],
+            "cli_version": [
+              "string"
+            ],
+            "context_window": [
+              "object"
+            ],
+            "cwd": [
+              "string"
+            ],
+            "history_mode": [
+              "string"
+            ],
+            "id": [
+              "string"
+            ],
+            "model_provider": [
+              "string"
+            ],
+            "originator": [
+              "string"
+            ],
+            "session_id": [
+              "string"
+            ],
+            "source": [
+              "string"
+            ],
+            "thread_source": [
+              "string"
+            ],
+            "timestamp": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              1
+            ]
+          }
+        },
+        {
+          "variantId": "P014",
+          "container": "payload",
+          "subtype": "task_complete",
+          "exactKeySet": [
+            "completed_at",
+            "duration_ms",
+            "last_agent_message",
+            "started_at",
+            "time_to_first_token_ms",
+            "turn_id",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "completed_at": [
+              "number"
+            ],
+            "duration_ms": [
+              "number"
+            ],
+            "last_agent_message": [
+              "string"
+            ],
+            "started_at": [
+              "number"
+            ],
+            "time_to_first_token_ms": [
+              "number"
+            ],
+            "turn_id": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              19
+            ]
+          }
+        },
+        {
+          "variantId": "P015",
+          "container": "payload",
+          "subtype": "task_started",
+          "exactKeySet": [
+            "collaboration_mode_kind",
+            "model_context_window",
+            "started_at",
+            "turn_id",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "collaboration_mode_kind": [
+              "string"
+            ],
+            "model_context_window": [
+              "number"
+            ],
+            "started_at": [
+              "number"
+            ],
+            "turn_id": [
+              "string"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              2
+            ]
+          }
+        },
+        {
+          "variantId": "P016",
+          "container": "payload",
+          "subtype": "token_count",
+          "exactKeySet": [
+            "info",
+            "rate_limits",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "info": [
+              "object"
+            ],
+            "rate_limits": [
+              "object"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              15,
+              18
+            ]
+          }
+        },
+        {
+          "variantId": "P017",
+          "container": "payload",
+          "subtype": "turn_context",
+          "exactKeySet": [
+            "approval_policy",
+            "approvals_reviewer",
+            "collaboration_mode",
+            "comp_hash",
+            "current_date",
+            "cwd",
+            "effort",
+            "model",
+            "multi_agent_mode",
+            "multi_agent_version",
+            "permission_profile",
+            "personality",
+            "realtime_active",
+            "sandbox_policy",
+            "summary",
+            "timezone",
+            "turn_id",
+            "workspace_roots"
+          ],
+          "fieldNativeTypes": {
+            "approval_policy": [
+              "string"
+            ],
+            "approvals_reviewer": [
+              "string"
+            ],
+            "collaboration_mode": [
+              "object"
+            ],
+            "comp_hash": [
+              "string"
+            ],
+            "current_date": [
+              "string"
+            ],
+            "cwd": [
+              "string"
+            ],
+            "effort": [
+              "string"
+            ],
+            "model": [
+              "string"
+            ],
+            "multi_agent_mode": [
+              "string"
+            ],
+            "multi_agent_version": [
+              "string"
+            ],
+            "permission_profile": [
+              "object"
+            ],
+            "personality": [
+              "string"
+            ],
+            "realtime_active": [
+              "boolean"
+            ],
+            "sandbox_policy": [
+              "object"
+            ],
+            "summary": [
+              "string"
+            ],
+            "timezone": [
+              "string"
+            ],
+            "turn_id": [
+              "string"
+            ],
+            "workspace_roots": [
+              "array"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              8
+            ]
+          }
+        },
+        {
+          "variantId": "P018",
+          "container": "payload",
+          "subtype": "user_message",
+          "exactKeySet": [
+            "audio",
+            "images",
+            "local_audio",
+            "local_images",
+            "message",
+            "text_elements",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "audio": [
+              "array"
+            ],
+            "images": [
+              "array"
+            ],
+            "local_audio": [
+              "array"
+            ],
+            "local_images": [
+              "array"
+            ],
+            "message": [
+              "string"
+            ],
+            "text_elements": [
+              "array"
+            ],
+            "type": [
+              "string"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              10
+            ]
+          }
+        },
+        {
+          "variantId": "P019",
+          "container": "payload",
+          "subtype": "world_state",
+          "exactKeySet": [
+            "full",
+            "state"
+          ],
+          "fieldNativeTypes": {
+            "full": [
+              "boolean"
+            ],
+            "state": [
+              "object"
+            ]
+          },
+          "observedCaptureOrdinals": {
+            "B_SUCCESS_PROBE": [
+              7
+            ]
+          }
+        }
+      ]
+    },
+    "sameExactKeySetFieldTypeUnions": [
+      {
+        "stream": "exec",
+        "variantId": "E007",
+        "container": "item",
+        "subtype": "mcp_tool_call",
+        "field": "result",
+        "nativeTypes": [
+          "null",
+          "object"
+        ],
+        "containsNullPlusNonNull": true
+      }
+    ],
+    "hasUnfreezableNullPlusTypeVariant": true,
+    "successfulExecMcpShapeObserved": true,
+    "persistedLegacyCustomToolChainObserved": true,
+    "persistedCallIdEqualityAndOrder": false
+  },
+  "lifecycleDiscriminatedMcpGrammar": {
+    "statusLiteralAllowlist": [
+      "in_progress",
+      "failed",
+      "completed"
+    ],
+    "observedVariants": [
+      {
+        "lifecycleVariant": "started",
+        "typeTuple": {
+          "topLevelType": "item.started",
+          "itemSubtype": "mcp_tool_call",
+          "status": "in_progress",
+          "errorNativeType": "null",
+          "resultNativeType": "null"
+        },
+        "statusValueAllowlisted": true,
+        "exactItemKeySet": [
+          "arguments",
+          "error",
+          "id",
+          "result",
+          "server",
+          "status",
+          "tool",
+          "type"
+        ],
+        "observedCaptureOrdinals": {
+          "B": [
+            3
+          ],
+          "B_EXTENSION": [
+            4
+          ],
+          "B_SUCCESS_PROBE": [
+            3
+          ]
+        },
+        "nonAllowlistedRawValuesStored": false,
+        "allowlistedStatusLiteralStored": true
+      },
+      {
+        "lifecycleVariant": "completed-failed",
+        "typeTuple": {
+          "topLevelType": "item.completed",
+          "itemSubtype": "mcp_tool_call",
+          "status": "failed",
+          "errorNativeType": "object",
+          "resultNativeType": "null"
+        },
+        "statusValueAllowlisted": true,
+        "exactItemKeySet": [
+          "arguments",
+          "error",
+          "id",
+          "result",
+          "server",
+          "status",
+          "tool",
+          "type"
+        ],
+        "observedCaptureOrdinals": {
+          "B": [
+            4
+          ],
+          "B_EXTENSION": [
+            5
+          ]
+        },
+        "nonAllowlistedRawValuesStored": false,
+        "allowlistedStatusLiteralStored": true
+      },
+      {
+        "lifecycleVariant": "completed-success",
+        "typeTuple": {
+          "topLevelType": "item.completed",
+          "itemSubtype": "mcp_tool_call",
+          "status": "completed",
+          "errorNativeType": "null",
+          "resultNativeType": "object"
+        },
+        "statusValueAllowlisted": true,
+        "exactItemKeySet": [
+          "arguments",
+          "error",
+          "id",
+          "result",
+          "server",
+          "status",
+          "tool",
+          "type"
+        ],
+        "observedCaptureOrdinals": {
+          "B_SUCCESS_PROBE": [
+            4
+          ]
+        },
+        "nonAllowlistedRawValuesStored": false,
+        "allowlistedStatusLiteralStored": true
+      }
+    ],
+    "expectedThreeVariantsObserved": true,
+    "cartesianNullObjectUnionMustNotBeUsedAsLifecycleGrammar": true,
+    "statusValuesOutsideAllowlistStored": false
+  },
+  "repoBaselineReadBack": {
+    "statusExactMatchBaseline": true,
+    "discoveryJsonShaMatchBaseline": true,
+    "discoverySidecarShaMatchBaseline": true,
+    "repoPathsStored": false
+  },
+  "privateSourceHandoff": {
+    "status": "COMPLETE",
+    "rootPolicyId": "new-era-2-c04-private-evidence-v3",
+    "sourceSet": {
+      "captureIds": [
+        "A",
+        "B",
+        "C",
+        "B_EXTENSION",
+        "B_SUCCESS_PROBE"
+      ],
+      "streams": [
+        "exec",
+        "persisted"
+      ],
+      "expectedSourceFileCount": 10
+    },
+    "createNewNoClobber": true,
+    "fixedRootResolved": true,
+    "absolutePathStored": false,
+    "rootDirectory": {
+      "directory": true,
+      "nonSymlink": true,
+      "ownerOnly": true,
+      "mode0500": true,
+      "immutable": true,
+      "lstatTraversal": {
+        "componentCount": 6,
+        "allComponentsNonSymlink": true
+      },
+      "readBack": "PASS"
+    },
+    "objectsDirectory": {
+      "directory": true,
+      "nonSymlink": true,
+      "ownerOnly": true,
+      "mode0500": true,
+      "immutable": true,
+      "lstatTraversal": {
+        "componentCount": 7,
+        "allComponentsNonSymlink": true
+      },
+      "objectCount": 10,
+      "unexpectedEntryCount": 0,
+      "readBack": "PASS"
+    },
+    "objectsByCapture": {
+      "A": {
+        "exec": {
+          "opaqueObjectId": "sha256-5ba3e6d7a9029e5c76f37358313a5149f17e1b12398b257d8ea07bec0a52be41.jsonl",
+          "sha256": "5ba3e6d7a9029e5c76f37358313a5149f17e1b12398b257d8ea07bec0a52be41",
+          "bytes": 624,
+          "lines": 5,
+          "regularFile": true,
+          "nonSymlink": true,
+          "mode0400": true,
+          "immutable": true,
+          "lstatTraversal": {
+            "componentCount": 8,
+            "allComponentsNonSymlink": true
+          },
+          "readBack": "PASS"
+        },
+        "persisted": {
+          "opaqueObjectId": "sha256-9b8f40c2565e2db6e4830600204bcc47dc4f300b15f2feb2f01360826d390c72.jsonl",
+          "sha256": "9b8f40c2565e2db6e4830600204bcc47dc4f300b15f2feb2f01360826d390c72",
+          "bytes": 67505,
+          "lines": 14,
+          "regularFile": true,
+          "nonSymlink": true,
+          "mode0400": true,
+          "immutable": true,
+          "lstatTraversal": {
+            "componentCount": 8,
+            "allComponentsNonSymlink": true
+          },
+          "readBack": "PASS"
+        }
+      },
+      "B": {
+        "exec": {
+          "opaqueObjectId": "sha256-f38f647a28c1fb04c60ee9d818acb5d47e9d62d293b0679b407e28a093bee352.jsonl",
+          "sha256": "f38f647a28c1fb04c60ee9d818acb5d47e9d62d293b0679b407e28a093bee352",
+          "bytes": 812,
+          "lines": 6,
+          "regularFile": true,
+          "nonSymlink": true,
+          "mode0400": true,
+          "immutable": true,
+          "lstatTraversal": {
+            "componentCount": 8,
+            "allComponentsNonSymlink": true
+          },
+          "readBack": "PASS"
+        },
+        "persisted": {
+          "opaqueObjectId": "sha256-2cc32921264eeb17772d2c1fa2c5cb798c1ee9526163220133044074d1d692f7.jsonl",
+          "sha256": "2cc32921264eeb17772d2c1fa2c5cb798c1ee9526163220133044074d1d692f7",
+          "bytes": 79815,
+          "lines": 24,
+          "regularFile": true,
+          "nonSymlink": true,
+          "mode0400": true,
+          "immutable": true,
+          "lstatTraversal": {
+            "componentCount": 8,
+            "allComponentsNonSymlink": true
+          },
+          "readBack": "PASS"
+        }
+      },
+      "C": {
+        "exec": {
+          "opaqueObjectId": "sha256-616a636c099526e35d694db40423bfafe0bf2d3cc583e7d821f1bb8470d1d668.jsonl",
+          "sha256": "616a636c099526e35d694db40423bfafe0bf2d3cc583e7d821f1bb8470d1d668",
+          "bytes": 583,
+          "lines": 4,
+          "regularFile": true,
+          "nonSymlink": true,
+          "mode0400": true,
+          "immutable": true,
+          "lstatTraversal": {
+            "componentCount": 8,
+            "allComponentsNonSymlink": true
+          },
+          "readBack": "PASS"
+        },
+        "persisted": {
+          "opaqueObjectId": "sha256-7d7e83405fd3e68219eb811c01c7eba65e11206ff5f770de4be5f7883f84b194.jsonl",
+          "sha256": "7d7e83405fd3e68219eb811c01c7eba65e11206ff5f770de4be5f7883f84b194",
+          "bytes": 65216,
+          "lines": 11,
+          "regularFile": true,
+          "nonSymlink": true,
+          "mode0400": true,
+          "immutable": true,
+          "lstatTraversal": {
+            "componentCount": 8,
+            "allComponentsNonSymlink": true
+          },
+          "readBack": "PASS"
+        }
+      },
+      "B_EXTENSION": {
+        "exec": {
+          "opaqueObjectId": "sha256-cfd78f2a731aa7b0289c1f72bad75efb3c364bc71fa1e6965df554641759d979.jsonl",
+          "sha256": "cfd78f2a731aa7b0289c1f72bad75efb3c364bc71fa1e6965df554641759d979",
+          "bytes": 904,
+          "lines": 7,
+          "regularFile": true,
+          "nonSymlink": true,
+          "mode0400": true,
+          "immutable": true,
+          "lstatTraversal": {
+            "componentCount": 8,
+            "allComponentsNonSymlink": true
+          },
+          "readBack": "PASS"
+        },
+        "persisted": {
+          "opaqueObjectId": "sha256-8842d864b0943e81ce72c0cc1c4f889aa88c609a212bbe55b4a04a4d5b39b6ff.jsonl",
+          "sha256": "8842d864b0943e81ce72c0cc1c4f889aa88c609a212bbe55b4a04a4d5b39b6ff",
+          "bytes": 76803,
+          "lines": 25,
+          "regularFile": true,
+          "nonSymlink": true,
+          "mode0400": true,
+          "immutable": true,
+          "lstatTraversal": {
+            "componentCount": 8,
+            "allComponentsNonSymlink": true
+          },
+          "readBack": "PASS"
+        }
+      },
+      "B_SUCCESS_PROBE": {
+        "exec": {
+          "opaqueObjectId": "sha256-da3e4736ce50171441908ae4dd4621fafb6803dba36986fe0e3facb2534edd43.jsonl",
+          "sha256": "da3e4736ce50171441908ae4dd4621fafb6803dba36986fe0e3facb2534edd43",
+          "bytes": 855,
+          "lines": 6,
+          "regularFile": true,
+          "nonSymlink": true,
+          "mode0400": true,
+          "immutable": true,
+          "lstatTraversal": {
+            "componentCount": 8,
+            "allComponentsNonSymlink": true
+          },
+          "readBack": "PASS"
+        },
+        "persisted": {
+          "opaqueObjectId": "sha256-8e502dcf6c6310adda742eb39b16b59974dd7e1de077822e123a34424aecbb1c.jsonl",
+          "sha256": "8e502dcf6c6310adda742eb39b16b59974dd7e1de077822e123a34424aecbb1c",
+          "bytes": 72520,
+          "lines": 19,
+          "regularFile": true,
+          "nonSymlink": true,
+          "mode0400": true,
+          "immutable": true,
+          "lstatTraversal": {
+            "componentCount": 8,
+            "allComponentsNonSymlink": true
+          },
+          "readBack": "PASS"
+        }
+      }
+    },
+    "handoffComplete": true
+  },
+  "toolSearchControlPlaneObservation": {
+    "observedCaptureIds": [
+      "B",
+      "B_EXTENSION"
+    ],
+    "callAndOutputByCapture": {
+      "B": {
+        "callOrdinal": 13,
+        "outputOrdinal": 14,
+        "strictOrder": true
+      },
+      "B_EXTENSION": {
+        "callOrdinal": 14,
+        "outputOrdinal": 15,
+        "strictOrder": true
+      }
+    },
+    "call": {
+      "execution": "client",
+      "status": "completed",
+      "arguments": {
+        "exactKeySet": [
+          "limit",
+          "query"
+        ],
+        "fieldNativeTypes": {
+          "limit": "number",
+          "query": "string"
+        },
+        "limit": 1,
+        "query": "Playwright MCP browser_navigate navigate to URL"
+      }
+    },
+    "output": {
+      "execution": "client",
+      "status": "completed",
+      "toolsNativeType": "array",
+      "toolsLength": 1,
+      "provider": {
+        "exactKeySet": [
+          "description",
+          "name",
+          "tools",
+          "type"
+        ],
+        "fieldNativeTypes": {
+          "description": "string",
+          "name": "string",
+          "tools": "array",
+          "type": "string"
+        },
+        "type": "namespace",
+        "name": "mcp__playwright",
+        "nestedToolsNativeType": "array",
+        "nestedToolsLength": 1,
+        "leaf": {
+          "exactKeySet": [
+            "defer_loading",
+            "description",
+            "name",
+            "parameters",
+            "strict",
+            "type"
+          ],
+          "fieldNativeTypes": {
+            "defer_loading": "boolean",
+            "description": "string",
+            "name": "string",
+            "parameters": "object",
+            "strict": "boolean",
+            "type": "string"
+          },
+          "type": "function",
+          "name": "browser_navigate",
+          "defer_loading": true,
+          "strict": false,
+          "parameters": {
+            "exactKeySet": [
+              "additionalProperties",
+              "properties",
+              "required",
+              "type"
+            ],
+            "fieldNativeTypes": {
+              "additionalProperties": "boolean",
+              "properties": "object",
+              "required": "array",
+              "type": "string"
+            },
+            "type": "object",
+            "properties": {
+              "exactKeySet": [
+                "url"
+              ],
+              "url": {
+                "exactKeySet": [
+                  "description",
+                  "type"
+                ],
+                "fieldNativeTypes": {
+                  "description": "string",
+                  "type": "string"
+                },
+                "type": "string"
+              }
+            },
+            "required": [
+              "url"
+            ],
+            "additionalProperties": false
+          }
+        }
+      }
+    },
+    "descriptionCommitments": {
+      "provider": {
+        "nativeType": "string",
+        "sameNativeTypeAcrossCaptures": true,
+        "valueStored": false
+      },
+      "leaf": {
+        "nativeType": "string",
+        "sameNativeTypeAcrossCaptures": true,
+        "valueStored": false
+      },
+      "urlProperty": {
+        "nativeType": "string",
+        "sameNativeTypeAcrossCaptures": true,
+        "valueStored": false
+      }
+    },
+    "identicalAcrossBAndBExtension": true,
+    "sensitiveIdentityValuesStored": false,
+    "descriptionValuesStored": false
+  }
+}
