@@ -4,11 +4,12 @@
 
 ## 候选物品库
 
-`item-library/` 保存物品与制造系统 R1 的候选内容、累计报告和统一只读 bundle。
+`item-library/` 保存物品与制造系统 R1 的候选内容、累计报告、统一只读 bundle，以及 R2-A 逐项语义审计和依赖图。
 
 - 数据状态：`candidate_only`
 - 候选基线：`new-era-2.item-library.r1-c7-candidate`
 - 使用入口：`../docs/item-library/README.md`
+- 语义审计：`item-library/semantic-audit-r2a.md`
 - 运行时授权：无
 
 未来主干只能按稳定 ID 显式选择候选内容，并另行补齐运行时 schema、Gate 授权和测试证据；不得整包导入。
