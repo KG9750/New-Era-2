@@ -40,10 +40,32 @@ const phase6PlanRef = '441f7d96635e9176c8aea3ff21454d596c287c49'
 const phase6Path =
   '/opt/homebrew/opt/node@24/bin:/opt/homebrew/bin:/usr/bin:/bin'
 const excludedC04Ancestors = [
-  ['A01 provisional I', 'source', '3cc6de4f6c8458f51936a893b95ea08e62bb0883'],
-  ['A01 preservation', 'integration', 'bbda54826dc529ad3b93c55c4fd164463c842401'],
-  ['A02 failed I', 'source', 'b027ad8019d8fa46eaf7596c40eb28f470cc8c06'],
-  ['A02 preservation', 'integration', '6752c3b4f73a17fadcfc2420c9b9c6ededeeceb9'],
+  [
+    'A01/A03 failed I',
+    'source',
+    [
+      '3cc6de4f6c8458f51936a893b95ea08e62bb0883',
+      '4d93ea5aa42bf6fb34fa0109c6bc66af82145b50',
+    ],
+  ],
+  [
+    'A01/A03 preservation',
+    'integration',
+    [
+      'bbda54826dc529ad3b93c55c4fd164463c842401',
+      '09c3b88ee0f9092788a974c95c4aec01de09df2e',
+    ],
+  ],
+  [
+    'A02 failed I',
+    'source',
+    ['b027ad8019d8fa46eaf7596c40eb28f470cc8c06'],
+  ],
+  [
+    'A02 preservation',
+    'integration',
+    ['6752c3b4f73a17fadcfc2420c9b9c6ededeeceb9'],
+  ],
 ]
 const artifactManifestSha256 =
   'c336706bf7193c07a7f552dfbfe77cf02ec36259c72cc08b8f0c6ee8fc84cc37'
@@ -1726,17 +1748,19 @@ describe('candidate playtest manifest production CLI', () => {
 
   it.each(excludedC04Ancestors)(
     'rejects %s as a %s ancestor',
-    (_label, target, excludedAncestorSha) => {
-      const fixture = createFullManifestRepository({
-        excludedAncestorTarget: target,
-        excludedAncestorSha,
-      })
-      const repo = cloneFullManifestRepository(fixture)
-      expectFullFailurePreservesOutputs(
-        repo,
-        fullArgs(repo, fixture.manifestSha),
-        'CANDIDATE_MANIFEST_GIT_BINDING',
-      )
+    (_label, target, excludedAncestorShas) => {
+      for (const excludedAncestorSha of excludedAncestorShas) {
+        const fixture = createFullManifestRepository({
+          excludedAncestorTarget: target,
+          excludedAncestorSha,
+        })
+        const repo = cloneFullManifestRepository(fixture)
+        expectFullFailurePreservesOutputs(
+          repo,
+          fullArgs(repo, fixture.manifestSha),
+          'CANDIDATE_MANIFEST_GIT_BINDING',
+        )
+      }
     },
   )
 

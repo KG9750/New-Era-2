@@ -60,6 +60,8 @@ const EXCLUDED_C04_ANCESTORS = Object.freeze([
   'bbda54826dc529ad3b93c55c4fd164463c842401',
   'b027ad8019d8fa46eaf7596c40eb28f470cc8c06',
   '6752c3b4f73a17fadcfc2420c9b9c6ededeeceb9',
+  '4d93ea5aa42bf6fb34fa0109c6bc66af82145b50',
+  '09c3b88ee0f9092788a974c95c4aec01de09df2e',
 ])
 const ISOLATION_PROFILE = 'standalone-codex-cli-v2'
 const ISOLATION_CLI_BINARY =
