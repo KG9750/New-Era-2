@@ -4,6 +4,8 @@
 
 **历史独立审查：** `P0=0 / P1=4 / P2=3 / P3=0 / REVIEW_FAIL`
 
+**R1 独立复审：** `P0=0 / P1=1 / P2=0 / P3=0 / REVIEW_FAIL`
+
 **整改状态：** `IMPLEMENTED_PENDING_INDEPENDENT_CODEX_REREVIEW`
 
 **来源候选库：** `character-library-e990760a870ff576`

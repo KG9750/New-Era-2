@@ -23,6 +23,7 @@ Use this index to find design documents for `Project-004-New Era 2`.
 - `character-generator-v0.1-v014-independent-review-2026-07-27.md`: **人物生成器 V0.1.4 首轮 Codex 独立复审**（`P0=0 / P1=2 / P2=0 / P3=0 / REVIEW_FAIL`；发现零时长 work 与开放式权威 envelope）
 - `character-generator-v0.1-v014-r5-independent-rereview-2026-07-27.md`: **人物生成器 V0.1.4 R5 第二轮 Codex 独立复审**（受审提交 `6c3b9ba`；`P0=0 / P1=0 / P2=0 / P3=0 / REVIEW_PASS`；人工与运行时门禁仍开放）
 - `character-sample-library-v0.1-independent-review-2026-07-30.md`: **12 人样板库 V0.1 Codex 独立深刺**（受审提交 `1360dd1`；`P0=0 / P1=4 / P2=3 / P3=0 / REVIEW_FAIL`；当前样板不得进入玩家验证）
+- `character-sample-library-v0.1-r1-independent-rereview-2026-07-30.md`: **12 人样板库 V0.1 R1 Codex 独立复审**（受审提交 `982e93b`；`P0=0 / P1=1 / P2=0 / P3=0 / REVIEW_FAIL`；合法但未绑定的 source library 可触发异常）
 - `item-and-manufacturing-system-v0.1-independent-review-2026-07-26.md`: **物品与制造系统 V0.1 独立审查**（Claude Code；P0=2 / P1=5 / P2=3 / REVIEW_FAIL）
 - `item-and-manufacturing-system-v0.1-r1-remediation-and-rereview-2026-07-26.md`: **物品与制造系统 V0.1 R1 逐项修正与稳定快照复审**（P0=0 / P1=0 / P2=0 / REVIEW_PASS）
 - `item-and-manufacturing-system-v0.1-freeze-decision-2026-07-26.md`: **物品与制造系统 V0.1 R1 冻结决议**（绑定受审 SHA；记录冻结范围与 Gate 边界）

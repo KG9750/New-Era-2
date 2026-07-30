@@ -4,6 +4,7 @@ import { resolve } from 'node:path'
 import { describe, expect, it } from 'vitest'
 
 import persistedLibrary from '../../data/characters/generated-50-v0.1-candidate.json'
+import { generateCharacterLibrary } from '../src/characters/generator'
 import persistedSampleLibrary from '../../data/characters/sample-12-v0.1-draft.json'
 import {
   createCharacterSampleLibrary,
@@ -14,6 +15,7 @@ import {
   renderPlayerCharacterSampleCards,
 } from '../src/characters/sample-renderer'
 import { MBTI_TYPES, type CharacterLibrary } from '../src/characters/model'
+import { validateCharacterLibrary } from '../src/characters/validator'
 
 const sourceLibrary = persistedLibrary as unknown as CharacterLibrary
 
@@ -416,5 +418,35 @@ describe('12-person character sample library', () => {
         (finding) => finding.result === 'blocked',
       ),
     ).toBe(true)
+  })
+
+  it('never throws for a valid source library that lacks the bound roster', () => {
+    const library = createCharacterSampleLibrary(sourceLibrary)
+    const wrongSourceLibraries = [
+      generateCharacterLibrary({
+        worldSeedHex: sourceLibrary.world_seed_hex,
+        count: 1,
+      }),
+      generateCharacterLibrary({
+        worldSeedHex: '0'.repeat(64),
+        count: 50,
+      }),
+    ]
+
+    for (const wrongSource of wrongSourceLibraries) {
+      expect(
+        validateCharacterLibrary(wrongSource).some(
+          (finding) => finding.result === 'blocked',
+        ),
+      ).toBe(false)
+      expect(() =>
+        validateCharacterSampleLibrary(library, wrongSource),
+      ).not.toThrow()
+      expect(
+        validateCharacterSampleLibrary(library, wrongSource).every(
+          (finding) => finding.result === 'blocked',
+        ),
+      ).toBe(true)
+    }
   })
 })

@@ -1290,6 +1290,16 @@ export function validateCharacterSampleLibrary(
     return blockedFindings('来源候选库未通过自身机器合同')
   }
   const validSourceLibrary = sourceLibrary as CharacterLibrary
+  const availableSourceIds = new Set(
+    validSourceLibrary.characters.map((character) => character.character_id),
+  )
+  if (
+    SAMPLE_DRAFTS.some(
+      (draft) => !availableSourceIds.has(draft.source_character_id),
+    )
+  ) {
+    return blockedFindings('来源候选库不包含固定样板绑定的 12 名人物')
+  }
   const base = asBase(subject)
   const contentFindings = computeContentFindings(base, validSourceLibrary)
   if (!isRecord(subject)) {
