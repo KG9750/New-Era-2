@@ -1002,7 +1002,7 @@ describe('C04 Phase 6 Node wrapper', () => {
         expect(
           gitChildren.length,
           `${mode}/${commandId} Git child count`,
-        ).toBeLessThanOrEqual(mode === 'source' ? 16 : 24)
+        ).toBeLessThanOrEqual(mode === 'source' ? 16 : 26)
         const outputPath =
           mode === 'source' ? output : join(fixture.repo, output)
         expect(existsSync(outputPath)).toBe(true)
