@@ -3598,7 +3598,7 @@ describe('C04 frozen-evidence production CLI', () => {
       '--baseline',
       sourceBaseline,
       '--head',
-      currentHead(),
+      currentSourceHead(),
       '--output',
       output,
     ])
