@@ -18,7 +18,7 @@
     "data/item-library/selection-packs-r2d.json": "ee5bb5f6fc2545d97e307401ca9ce75a9ea0421711c1aeae711322a4506b69bc",
     "docs/item-library/reviews/item-library-r2d-review-status-2026-07-31.md": "27e9da97f868e4fa969d02ae312fddea980e315c45e6d19018d10221456d50a1",
     "docs/item-library/item-library-consumer-handoff-contract-v0.1.md": "0a017b9a908b7ab1722d47f09eb6c27a5d766ea45d7f4e5d173ad9850dd295ba",
-    "scripts/build_item_library_consumer_handoff.rb": "1d6be0cb3c331484bbce1979754d312c93e323b5f2a6e56fa5576d942fbde270"
+    "scripts/build_item_library_consumer_handoff.rb": "40a5f533e9627d03f6469a8ad12778914170f0876728863a81093c230a6bed8d"
   },
   "counts": {
     "manifests": 4,
@@ -1881,5 +1881,5 @@
     "gate_status_changed": false,
     "human_playtest_completed": false
   },
-  "report_sha256": "06abd80d014ddbbeefb61e28464d27a6005b4b94097ee1e9ec52d613c639de6c"
+  "report_sha256": "4ad843af92c46409189f93258c6ca0eb319f19e97d2dc32b6361c099d50e3e3d"
 }

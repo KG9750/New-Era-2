@@ -88,7 +88,22 @@ def review_section_gate(document, title)
   end
 end
 
-def r2d_review_pass?(document)
+def result_fields(document, section_title)
+  blocks = review_section_gate(document, section_title)
+  return nil unless blocks.length == 1
+
+  blocks.first.each_with_object({}) do |line, fields|
+    match = line.match(/\A([A-Z0-9_]+)=(.+)\z/)
+    return nil unless match
+
+    key = match[1]
+    return nil if fields.key?(key)
+
+    fields[key] = match[2]
+  end
+end
+
+def r2d_review_pass?(document, expected_results)
   fields = top_metadata(document, "# 候选物品库 R2-D 审查状态")
   return false unless fields
 
@@ -107,11 +122,12 @@ def r2d_review_pass?(document)
   return false unless fields["独立 subagent 第三轮"] == "`REVIEW_PASS`（`P0=0 / P1=0 / P2=0`）"
   return false unless fields["最终状态"] == "`R2D_REVIEW_PASS`"
   return false unless fields["运行时授权"] == "`NONE`"
+  return false unless result_fields(document, "本地实现结果") == expected_results
 
   review_section_gate(document, "第三轮独立复审") == [%w[P0=0 P1=0 P2=0 REVIEW_PASS]]
 end
 
-def assert_review_gate_regressions(document)
+def assert_review_gate_regressions(document, expected_results)
   pass_status = "**最终状态：** `R2D_REVIEW_PASS`"
   pending = document.sub(pass_status, "**最终状态：** `R2D_REVIEW_PENDING`")
   duplicate = document.sub(pass_status, [pass_status, pass_status].join("\n"))
@@ -123,10 +139,19 @@ def assert_review_gate_regressions(document)
     "P0=0\nP1=0\nP2=0\nREVIEW_PASS",
     "P0=0\nP1=1\nP2=0\nREVIEW_FAIL"
   )
-  raise "R2-D pending 状态绕过门禁" if r2d_review_pass?(pending)
-  raise "R2-D 重复最终状态绕过门禁" if r2d_review_pass?(duplicate)
-  raise "R2-D fenced 伪状态绕过门禁" if r2d_review_pass?(fenced)
-  raise "R2-D 第三轮失败结论绕过门禁" if r2d_review_pass?(failed_gate)
+  report_line = "REPORT_SHA256=#{expected_results.fetch("REPORT_SHA256")}"
+  stale_report = document.sub(report_line, "REPORT_SHA256=#{"0" * 64}")
+  missing_report = document.sub(/^REPORT_SHA256=.*\n/, "")
+  duplicate_report = document.sub(report_line, [report_line, report_line].join("\n"))
+  fenced_report = missing_report.sub(/^## /, "```text\n#{report_line}\n```\n\n## ")
+  raise "R2-D pending 状态绕过门禁" if r2d_review_pass?(pending, expected_results)
+  raise "R2-D 重复最终状态绕过门禁" if r2d_review_pass?(duplicate, expected_results)
+  raise "R2-D fenced 伪状态绕过门禁" if r2d_review_pass?(fenced, expected_results)
+  raise "R2-D 第三轮失败结论绕过门禁" if r2d_review_pass?(failed_gate, expected_results)
+  raise "R2-D 过期报告 SHA 绕过门禁" if r2d_review_pass?(stale_report, expected_results)
+  raise "R2-D 缺失报告 SHA 绕过门禁" if r2d_review_pass?(missing_report, expected_results)
+  raise "R2-D 重复报告 SHA 绕过门禁" if r2d_review_pass?(duplicate_report, expected_results)
+  raise "R2-D fenced 伪报告 SHA 绕过门禁" if r2d_review_pass?(fenced_report, expected_results)
 end
 
 def source_file_errors(source_files)
@@ -358,8 +383,22 @@ selection_report.fetch("packs").each do |pack|
   errors << "#{pack.fetch("id")} R2-D readiness 不再阻塞" unless pack.dig("readiness", "runtime_readiness") == "blocked"
 end
 
-assert_review_gate_regressions(r2d_review)
-errors << "R2-D 独立审查尚未通过" unless r2d_review_pass?(r2d_review)
+expected_review_results = {
+  "SELECTION_PACKS" => "PASS",
+  "PACK_COUNT" => selection_report.dig("counts", "packs").to_s,
+  "UNIQUE_ROOT_COUNT" => selection_report.dig("counts", "unique_roots").to_s,
+  "RECOMMENDED_UNION_NODE_COUNT" => selection_report.dig("coverage", "recommended_union_node_count").to_s,
+  "SEMANTIC_CONTEXT_UNION_NODE_COUNT" => selection_report.dig("coverage", "semantic_context_union_node_count").to_s,
+  "REPORT_SHA256" => selection_report.fetch("report_sha256"),
+  "R1_BUNDLE_FILE_SHA256" => bundle_sha_before,
+  "R1_PAYLOAD_SHA256" => bundle.fetch("payload_sha256"),
+  "RUNTIME_AUTHORIZATION" => "NONE"
+}
+if r2d_review_pass?(r2d_review, expected_review_results)
+  assert_review_gate_regressions(r2d_review, expected_review_results)
+else
+  errors << "R2-D 独立审查尚未通过或未绑定当前报告"
+end
 
 unless errors.empty?
   warn "CONSUMER_HANDOFF=FAIL"

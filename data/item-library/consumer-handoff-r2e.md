@@ -6,7 +6,7 @@
 **交接状态：** `reference_only`
 **采纳状态：** `not_adopted`
 **运行时授权：** `NONE`
-**报告 SHA-256：** `06abd80d014ddbbeefb61e28464d27a6005b4b94097ee1e9ec52d613c639de6c`
+**报告 SHA-256：** `4ad843af92c46409189f93258c6ca0eb319f19e97d2dc32b6361c099d50e3e3d`
 
 ## 1. 结论
 
