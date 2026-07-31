@@ -4,13 +4,14 @@
 **范围：** 四份主干消费交接 manifest、显式稳定 ID allowlist、默认排除面、供应接口、采纳决策队列、上游哈希绑定与接受边界
 **实现验证：** `PASS`
 **独立 subagent 首审：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=0`）
-**独立 subagent 复审：** `PENDING`
+**独立 subagent 第二轮：** `REVIEW_FAIL`（`P0=0 / P1=0 / P2=1`）
+**独立 subagent 第三轮：** `PENDING`
 **当前状态：** `R2E_RECHECK_PENDING`
 **运行时授权：** `NONE`
 
 ## 1. 当前结论
 
-R2-E 已生成四份 `reference_only` 主干消费交接 manifest，并在本地通过生成器自检。独立 subagent 首审发现一项 P1：R2-D PASS 门禁没有把当前选择报告 SHA 与审查状态文档中已认证的报告 SHA 绑定。该项已按最小范围修正，尚待全新 subagent 复审，因此当前不得写为 `R2E_REVIEW_PASS`。
+R2-E 已生成四份 `reference_only` 主干消费交接 manifest，并在本地通过生成器自检。独立 subagent 首审发现一项 P1：R2-D PASS 门禁没有把当前选择报告 SHA 与审查状态文档中已认证的报告 SHA 绑定；第二轮确认 P1 已修复，同时发现本状态文档手工记录的 R1 Bundle SHA 被截断。两项均已按最小范围修正，尚待全新 subagent 第三轮复审，因此当前不得写为 `R2E_REVIEW_PASS`。
 
 R2-E 没有创建主干采纳记录、运行时 schema 或导入包，也没有修改 R1、采纳 R2-C 数值、改变 R2-D 选择、改变 Gate 或替代真人试玩。
 
@@ -22,7 +23,7 @@ MANIFEST_COUNT=4
 UNIQUE_EXPLICIT_ID_COUNT=107
 UNIQUE_DEFAULT_EXCLUDED_ID_COUNT=35
 REPORT_SHA256=4ad843af92c46409189f93258c6ca0eb319f19e97d2dc32b6361c099d50e3e3d
-R1_BUNDLE_FILE_SHA256=32f9d9c41e7271fdec98495393d9ff361
+R1_BUNDLE_FILE_SHA256=32f9d9c41e7271e4da0f037167ad94023d050ee1b7471fdec98495393d9ff361
 R1_PAYLOAD_SHA256=02918459ef17e42ed5e2151660873f6a4e88e12dff29730a013f1d062fe554ad
 R2D_REPORT_SHA256=31fd6fe6d0ba1ec2901b053ed341e7d08ee5c83eeb2549e7d198b950df1edbec
 ADOPTION_STATE=not_adopted
@@ -54,7 +55,18 @@ REVIEW_FAIL
 - 新增过期、缺失、重复和 fenced 伪报告 SHA 负向回归；
 - 当前 R2-D JSON 即使内部自洽，只要不是审查状态文档认证的报告，也必须拒绝。
 
-## 4. 待独立复审
+第二轮复审结论：
+
+```text
+P0=0
+P1=0
+P2=1
+REVIEW_FAIL
+```
+
+第二轮确认首审 P1 修正有效；唯一 P2 是本状态文档的 R1 Bundle SHA 被截断为 33 位。现已替换为生成器与实际文件共同给出的完整 64 位 SHA，不修改任何机器报告或选择内容。
+
+## 4. 待独立第三轮复审
 
 独立 subagent 必须只读检查：
 
