@@ -7,13 +7,13 @@
 **独立 subagent 第二轮复审：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=0`）
 **独立 subagent 第三轮复审：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=0`）
 **独立 subagent 第四轮复审：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=0`）
-**独立 subagent 第五轮复审：** `PENDING`
-**当前状态：** `R2G_RECHECK_PENDING`
+**独立 subagent 第五轮复审：** `REVIEW_PASS`（`P0=0 / P1=0 / P2=0`）
+**当前状态：** `R2G_REVIEW_PASS`
 **运行时授权：** `NONE`
 
 ## 1. 当前结论
 
-R2-G 已生成 `reference_only` 机器清单与人工摘要，并在本地完成确定性自校验。独立 subagent 首审发现三项 P1 与一项 P2；第二轮发现新增的更晚审查轮次可绕过旧 PASS；第三轮发现改名后的更晚审查字段可绕过前缀筛选；第四轮发现基础输入损坏后仍继续运行依赖阶段并转发 Ruby backtrace。全部问题均已按最小范围修正，尚待全新 subagent 第五轮复审，因此当前不得写为 `R2G_REVIEW_PASS`。
+R2-G 已生成 `reference_only` 机器清单与人工摘要，并在本地完成确定性自校验。前四轮独立审查共发现六项 P1 与一项 P2，均已按最小范围修正。第五轮全新 subagent 在提交 `2aff1705a11702b4cc51fb763c85b8160a0dae14` 上完成只读复审，未发现真实缺陷。
 
 R2-G 没有新增或修改候选内容，没有填写 R2-F 的任何决定槽，没有生成真实 submitted 记录、运行时 schema、Gate 授权、真人试玩证据或主干合并。
 
@@ -74,7 +74,7 @@ REVIEW_FAIL
 
 第四轮复审结论同为 `P0=0 / P1=1 / P2=0 / REVIEW_FAIL`。第四轮确认前三轮问题均已解决，但发现 R1 损坏后 R2-G 继续执行 R2-B 并转发其 backtrace。现改为按依赖顺序在首个上游失败处停止，并只输出结构化失败摘要；失败时 JSON/Markdown 保持不变。
 
-## 4. 待第五轮独立复审
+## 4. 第五轮独立复审
 
 独立 subagent 必须只读检查：
 
@@ -86,12 +86,23 @@ REVIEW_FAIL
 6. R1、R2-C 提案、R2-F 决策槽、runtime、Gate 与主干是否保持不变；
 7. `reference_only / not_adopted / blocked / NONE` 边界是否不可被解释为采纳或授权。
 
-## 5. 接受边界
-
-在独立审查给出 `P0=0 / P1=0` 且不存在冻结阻断项之前，状态保持：
+实际结果：
 
 ```text
-R2G_RECHECK_PENDING
+P0=0
+P1=0
+P2=0
+REVIEW_PASS
 ```
 
-未来即使改为 `R2G_REVIEW_PASS`，也只表示支干冻结入口完整、可重算且边界清晰，不表示主干采纳、运行时/Gate 授权或真人试玩完成。
+第五轮实际执行 C1–C7、R2-A–R2-G、独立 SHA/计数/边界重算、archive 确定性重建，以及前四轮全部绕过夹具。九组依赖失败夹具均在首个失败阶段停止，下游 sentinel 未执行，无 Ruby backtrace，`--write` 未改变 JSON/Markdown；完整顶部元数据 allowlist 也拒绝标准/改名第四轮、任意额外字段、缺失和调序。
+
+## 5. 接受边界
+
+第五轮独立审查已满足 `P0=0 / P1=0` 且不存在冻结阻断项，当前状态为：
+
+```text
+R2G_REVIEW_PASS
+```
+
+`R2G_REVIEW_PASS` 只表示支干冻结入口完整、可重算且边界清晰，不表示主干采纳、运行时/Gate 授权或真人试玩完成。
