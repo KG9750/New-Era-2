@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "candidate-manifest-verification-v1",
+  "status": "PASS_FIXTURES",
+  "accepted": true,
+  "fullManifestVerified": false,
+  "fixtureCount": 18,
+  "fixtures": [
+    {
+      "file": "manifests/candidate-valid.json",
+      "accepted": true,
+      "errorCode": null
+    },
+    {
+      "file": "manifests/candidate-invalid-source-sha.json",
+      "accepted": false,
+      "errorCode": "CANDIDATE_MANIFEST_SHAPE"
+    },
+    {
+      "file": "manifests/candidate-invalid-incomplete-authority.json",
+      "accepted": false,
+      "errorCode": "CANDIDATE_MANIFEST_AUTHORITY"
+    },
+    {
+      "file": "manifests/candidate-zero-id-rejected.json",
+      "accepted": false,
+      "errorCode": "CANDIDATE_MANIFEST_SHAPE"
+    },
+    {
+      "file": "manifests/candidate-c02-reuses-c01-evidence-rejected.json",
+      "accepted": false,
+      "errorCode": "CANDIDATE_MANIFEST_EVIDENCE"
+    },
+    {
+      "file": "manifests/candidate-c02-first-manifest-valid.json",
+      "accepted": true,
+      "errorCode": null
+    },
+    {
+      "file": "manifests/candidate-c02-second-manifest-valid.json",
+      "accepted": true,
+      "errorCode": null
+    },
+    {
+      "file": "manifests/candidate-c01-rewrapped-by-cm02-rejected.json",
+      "accepted": false,
+      "errorCode": "CANDIDATE_MANIFEST_HISTORY"
+    },
+    {
+      "file": "manifests/candidate-c04-synthetic-valid.json",
+      "accepted": true,
+      "errorCode": null
+    },
+    {
+      "file": "manifests/candidate-missing-profile-rejected.json",
+      "accepted": false,
+      "errorCode": "CANDIDATE_MANIFEST_AUTHORITY_PROFILE"
+    },
+    {
+      "file": "manifests/candidate-unknown-profile-rejected.json",
+      "accepted": false,
+      "errorCode": "CANDIDATE_MANIFEST_AUTHORITY_PROFILE"
+    },
+    {
+      "file": "manifests/candidate-v03-scenario-mismatch-rejected.json",
+      "accepted": false,
+      "errorCode": "CANDIDATE_MANIFEST_AUTHORITY_VERSION"
+    },
+    {
+      "file": "manifests/candidate-v03-protocol-mismatch-rejected.json",
+      "accepted": false,
+      "errorCode": "CANDIDATE_MANIFEST_AUTHORITY_VERSION"
+    },
+    {
+      "file": "manifests/candidate-v03-role-mismatch-rejected.json",
+      "accepted": false,
+      "errorCode": "CANDIDATE_MANIFEST_AUTHORITY"
+    },
+    {
+      "file": "manifests/candidate-v03-path-mismatch-rejected.json",
+      "accepted": false,
+      "errorCode": "CANDIDATE_MANIFEST_AUTHORITY"
+    },
+    {
+      "file": "manifests/candidate-v03-extra-authority-rejected.json",
+      "accepted": false,
+      "errorCode": "CANDIDATE_MANIFEST_AUTHORITY"
+    },
+    {
+      "file": "manifests/candidate-c03-rejection-history-rejected.json",
+      "accepted": false,
+      "errorCode": "CANDIDATE_MANIFEST_HISTORY"
+    },
+    {
+      "file": "manifests/candidate-c04-authority-probe.json",
+      "accepted": true,
+      "errorCode": null
+    }
+  ],
+  "phase6Identity": {
+    "schemaVersion": "c04-phase6-command-identity-v1",
+    "commandId": "manifest-fixtures",
+    "mode": "integration",
+    "environment": {
+      "PATH": "/opt/homebrew/opt/node@24/bin:/opt/homebrew/bin:/usr/bin:/bin"
+    },
+    "commandVNodePath": "/opt/homebrew/opt/node@24/bin/node",
+    "resolvedNodeRealPath": "/opt/homebrew/Cellar/node@24/24.18.0/bin/node",
+    "nodeVersion": "v24.18.0",
+    "nodeBinarySha256": "72c18e2eeda260f67a5b2b66e96fa9b5ad82864676ebb54925695d87120cae3f",
+    "workingDirectory": "prototype",
+    "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/manifest-fixtures.json",
+    "argv": [
+      "npm",
+      "run",
+      "manifest:verify",
+      "--",
+      "--fixtures",
+      "--output",
+      "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/manifest-fixtures.json"
+    ],
+    "planRef": "441f7d96635e9176c8aea3ff21454d596c287c49",
+    "integrationSha": "f181340cfebb0434bb977296f483328e32dda171",
+    "artifactSourceSha": "3f2b7c4b22055b3e1d9076e65abd0ed00271c528"
+  }
+}

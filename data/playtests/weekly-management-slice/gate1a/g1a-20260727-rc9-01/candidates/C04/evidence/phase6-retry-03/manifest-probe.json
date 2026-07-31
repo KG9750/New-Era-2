@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "candidate-manifest-verification-v1",
+  "status": "PASS_AUTHORITY_PREFLIGHT",
+  "accepted": true,
+  "fullManifestVerified": false,
+  "authorityProfile": "rc9-v03",
+  "scenarioVersion": "0.5.1",
+  "protocolVersion": "weekly-management-slice-playtest-v0.3",
+  "authorityBindings": [
+    {
+      "role": "protocol",
+      "path": "docs/product-specs/weekly-management-slice-playtest-v0.3.md",
+      "sha256": "867a2329dd09f68b6b50153ee38bc54696075ce3468a66170c47ad0d8d1da641",
+      "bytes": 7231
+    },
+    {
+      "role": "c03-management-authority",
+      "path": "docs/design-docs/gate1-c03-management-choice-authority.md",
+      "sha256": "52a5924571865dcf88dbbd710461f7660d2b1f7e972a0086e68e9e672402c400",
+      "bytes": 5175
+    },
+    {
+      "role": "c03-branch-matrix",
+      "path": "docs/design-docs/gate1-rc9-branch-matrix.md",
+      "sha256": "3115d2e5d5daff747fe5e53997fcdc5974c68407a2dacfa33956b546795ddf28",
+      "bytes": 8524
+    },
+    {
+      "role": "c04-recovery-plan",
+      "path": "docs/exec-plans/active/2026-07-29-gate1a-rc9-c04-recovery-plan.md",
+      "sha256": "401a149e192ae3a1bf4cf23683f3ec46f6be20b9e44245e5dff7a23b95392192",
+      "bytes": 112542
+    },
+    {
+      "role": "operations",
+      "path": "docs/exec-plans/active/2026-07-27-gate1a-rc9-test-operations.md",
+      "sha256": "604d1ab6c8596f510a14a65c9df3fdd06d66b4b9ab58ec93e2f2deb02b4a600f",
+      "bytes": 25788
+    },
+    {
+      "role": "player-packet",
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/player-packet-v0.2.md",
+      "sha256": "ca01f407c0d2e7f0db9dc07699251190bcc55ef5c946b9a86bac17d8f24dd2ad",
+      "bytes": 3144
+    },
+    {
+      "role": "interview",
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/post-session-interview-v0.2.md",
+      "sha256": "f10c6294edf5776dc426f90228e3030f328a80d823c23a65280d60721467c12c",
+      "bytes": 2442
+    },
+    {
+      "role": "fixture-oracle",
+      "path": "prototype/tests/fixtures/fixture-expectations.json",
+      "sha256": "b12d5099b9881d89047f252808116d06086e4290e68166c6d6595b524b6b8b0b",
+      "bytes": 60163
+    },
+    {
+      "role": "capture-host",
+      "path": "prototype/scripts/playtest-host.mjs",
+      "sha256": "94c40cee50eee231d8332d2c2f4d3ef5fe8326a238db7932ff878f2a436bf66c",
+      "bytes": 88315
+    }
+  ],
+  "phase6Identity": {
+    "schemaVersion": "c04-phase6-command-identity-v1",
+    "commandId": "manifest-probe",
+    "mode": "integration",
+    "environment": {
+      "PATH": "/opt/homebrew/opt/node@24/bin:/opt/homebrew/bin:/usr/bin:/bin"
+    },
+    "commandVNodePath": "/opt/homebrew/opt/node@24/bin/node",
+    "resolvedNodeRealPath": "/opt/homebrew/Cellar/node@24/24.18.0/bin/node",
+    "nodeVersion": "v24.18.0",
+    "nodeBinarySha256": "72c18e2eeda260f67a5b2b66e96fa9b5ad82864676ebb54925695d87120cae3f",
+    "workingDirectory": "prototype",
+    "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/manifest-probe.json",
+    "argv": [
+      "npm",
+      "run",
+      "manifest:verify",
+      "--",
+      "--probe",
+      "tests/fixtures/manifests/candidate-c04-authority-probe.json",
+      "--repo-root",
+      "..",
+      "--output",
+      "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/manifest-probe.json"
+    ],
+    "planRef": "441f7d96635e9176c8aea3ff21454d596c287c49",
+    "integrationSha": "f181340cfebb0434bb977296f483328e32dda171",
+    "artifactSourceSha": "3f2b7c4b22055b3e1d9076e65abd0ed00271c528"
+  }
+}

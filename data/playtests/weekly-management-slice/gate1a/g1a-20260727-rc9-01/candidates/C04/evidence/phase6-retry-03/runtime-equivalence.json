@@ -1,0 +1,1235 @@
+{
+  "schemaVersion": "gate1a-c04-runtime-equivalence-v1",
+  "status": "PASS_RUNTIME_EQUIVALENCE",
+  "errorCode": null,
+  "commandArgv": [
+    "--head",
+    "f181340cfebb0434bb977296f483328e32dda171",
+    "--artifact-git-sha",
+    "3f2b7c4b22055b3e1d9076e65abd0ed00271c528",
+    "--output",
+    "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/runtime-equivalence.json"
+  ],
+  "verificationMode": "evidence-lineage-integration",
+  "verificationInputSha": "f181340cfebb0434bb977296f483328e32dda171",
+  "headSha": "f181340cfebb0434bb977296f483328e32dda171",
+  "artifactGitSha": "3f2b7c4b22055b3e1d9076e65abd0ed00271c528",
+  "sourceBaselineSha": "cd2fc9716d98c160fe530c593347992f18bf96e4",
+  "changedForbiddenPaths": [],
+  "source": {
+    "baselineSha": "cd2fc9716d98c160fe530c593347992f18bf96e4",
+    "headSha": "f181340cfebb0434bb977296f483328e32dda171",
+    "evidenceBaselineSha": "5b9438cc5123ba35d8a703f3507bbf463e90176d",
+    "allowlistCount": 49,
+    "exactPathAllowlist": [
+      "CONTEXT.md",
+      "PLANS.md",
+      "docs/exec-plans/active/2026-07-29-gate1a-rc9-c04-recovery-plan.md",
+      "docs/exec-plans/evidence/2026-07-29-c04-cli-compatibility-probe.json",
+      "docs/exec-plans/evidence/2026-07-29-c04-cli-compatibility-probe.json.sha256",
+      "docs/exec-plans/evidence/2026-07-29-c04-compatibility-amendment-review.json",
+      "docs/exec-plans/evidence/2026-07-29-c04-compatibility-amendment-review.json.sha256",
+      "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-discovery.json",
+      "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-discovery.json.sha256",
+      "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-recapture.json",
+      "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-recapture.json.sha256",
+      "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-amendment-review.json",
+      "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-amendment-review.json.sha256",
+      "docs/exec-plans/active/2026-07-27-gate1a-rc9-test-operations.md",
+      "prototype/package.json",
+      "prototype/scripts/candidate-manifest-contract.mjs",
+      "prototype/scripts/check-playtest-fixtures.mjs",
+      "prototype/scripts/verify-c04-runtime-equivalence.mjs",
+      "prototype/scripts/verify-diagnostic-isolation.mjs",
+      "prototype/scripts/verify-frozen-evidence.mjs",
+      "prototype/scripts/verify-playtest-manifest.mjs",
+      "prototype/scripts/create-deterministic-archive.mjs",
+      "prototype/tests/playtest-manifest.test.ts",
+      "prototype/tests/c04-verifier-cli.test.ts",
+      "prototype/tests/deterministic-archive.test.ts",
+      "prototype/tests/fixtures/fixture-expectations.json",
+      "prototype/tests/fixtures/isolation/aggregate-valid.json",
+      "prototype/tests/fixtures/isolation/fixture-matrix.json",
+      "prototype/tests/fixtures/isolation/sample-valid.json",
+      "prototype/tests/fixtures/isolation/golden-codex-0.146.0-alpha.3.1-persisted-rollout.jsonl",
+      "prototype/tests/fixtures/isolation/golden-codex-0.146.0-alpha.3.1-exec-events.jsonl",
+      "prototype/tests/fixtures/manifests/candidate-c01-rewrapped-by-cm02-rejected.json",
+      "prototype/tests/fixtures/manifests/candidate-c02-first-manifest-valid.json",
+      "prototype/tests/fixtures/manifests/candidate-c02-reuses-c01-evidence-rejected.json",
+      "prototype/tests/fixtures/manifests/candidate-c02-second-manifest-valid.json",
+      "prototype/tests/fixtures/manifests/candidate-c03-rejection-history-rejected.json",
+      "prototype/tests/fixtures/manifests/candidate-c04-authority-probe.json",
+      "prototype/tests/fixtures/manifests/candidate-c04-synthetic-valid.json",
+      "prototype/tests/fixtures/manifests/candidate-invalid-incomplete-authority.json",
+      "prototype/tests/fixtures/manifests/candidate-invalid-source-sha.json",
+      "prototype/tests/fixtures/manifests/candidate-missing-profile-rejected.json",
+      "prototype/tests/fixtures/manifests/candidate-unknown-profile-rejected.json",
+      "prototype/tests/fixtures/manifests/candidate-v03-extra-authority-rejected.json",
+      "prototype/tests/fixtures/manifests/candidate-v03-path-mismatch-rejected.json",
+      "prototype/tests/fixtures/manifests/candidate-v03-protocol-mismatch-rejected.json",
+      "prototype/tests/fixtures/manifests/candidate-v03-role-mismatch-rejected.json",
+      "prototype/tests/fixtures/manifests/candidate-v03-scenario-mismatch-rejected.json",
+      "prototype/tests/fixtures/manifests/candidate-valid.json",
+      "prototype/tests/fixtures/manifests/candidate-zero-id-rejected.json"
+    ],
+    "sourceCommitScope": {
+      "baseline": "cd2fc9716d98c160fe530c593347992f18bf96e4",
+      "head": "3f2b7c4b22055b3e1d9076e65abd0ed00271c528",
+      "changes": [
+        {
+          "status": "M",
+          "path": "CONTEXT.md"
+        },
+        {
+          "status": "M",
+          "path": "PLANS.md"
+        },
+        {
+          "status": "M",
+          "path": "docs/exec-plans/active/2026-07-27-gate1a-rc9-test-operations.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/active/2026-07-29-gate1a-rc9-c04-recovery-plan.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-cli-compatibility-probe.json"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-cli-compatibility-probe.json.sha256"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-compatibility-amendment-review.json"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-compatibility-amendment-review.json.sha256"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-amendment-review.json"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-amendment-review.json.sha256"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-discovery.json"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-discovery.json.sha256"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-recapture.json"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-recapture.json.sha256"
+        },
+        {
+          "status": "M",
+          "path": "prototype/package.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/scripts/candidate-manifest-contract.mjs"
+        },
+        {
+          "status": "M",
+          "path": "prototype/scripts/check-playtest-fixtures.mjs"
+        },
+        {
+          "status": "M",
+          "path": "prototype/scripts/create-deterministic-archive.mjs"
+        },
+        {
+          "status": "A",
+          "path": "prototype/scripts/verify-c04-runtime-equivalence.mjs"
+        },
+        {
+          "status": "A",
+          "path": "prototype/scripts/verify-diagnostic-isolation.mjs"
+        },
+        {
+          "status": "A",
+          "path": "prototype/scripts/verify-frozen-evidence.mjs"
+        },
+        {
+          "status": "M",
+          "path": "prototype/scripts/verify-playtest-manifest.mjs"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/c04-verifier-cli.test.ts"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/deterministic-archive.test.ts"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/fixtures/fixture-expectations.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/isolation/aggregate-valid.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/isolation/fixture-matrix.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/isolation/golden-codex-0.146.0-alpha.3.1-exec-events.jsonl"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/isolation/golden-codex-0.146.0-alpha.3.1-persisted-rollout.jsonl"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/isolation/sample-valid.json"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/fixtures/manifests/candidate-c01-rewrapped-by-cm02-rejected.json"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/fixtures/manifests/candidate-c02-first-manifest-valid.json"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/fixtures/manifests/candidate-c02-reuses-c01-evidence-rejected.json"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/fixtures/manifests/candidate-c02-second-manifest-valid.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/manifests/candidate-c03-rejection-history-rejected.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/manifests/candidate-c04-authority-probe.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/manifests/candidate-c04-synthetic-valid.json"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/fixtures/manifests/candidate-invalid-incomplete-authority.json"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/fixtures/manifests/candidate-invalid-source-sha.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/manifests/candidate-missing-profile-rejected.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/manifests/candidate-unknown-profile-rejected.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/manifests/candidate-v03-extra-authority-rejected.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/manifests/candidate-v03-path-mismatch-rejected.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/manifests/candidate-v03-protocol-mismatch-rejected.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/manifests/candidate-v03-role-mismatch-rejected.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/manifests/candidate-v03-scenario-mismatch-rejected.json"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/fixtures/manifests/candidate-valid.json"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/fixtures/manifests/candidate-zero-id-rejected.json"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/playtest-manifest.test.ts"
+        }
+      ],
+      "bindings": [
+        {
+          "path": "CONTEXT.md",
+          "present": true,
+          "mode": "100644",
+          "blobId": "caef23fbd973f7d7927a19f405338a7c1f15bea4"
+        },
+        {
+          "path": "PLANS.md",
+          "present": true,
+          "mode": "100644",
+          "blobId": "52fd0d7ec501b6a8b5739529f8019a974a476f00"
+        },
+        {
+          "path": "docs/exec-plans/active/2026-07-29-gate1a-rc9-c04-recovery-plan.md",
+          "present": true,
+          "mode": "100644",
+          "blobId": "9b478d55e4d55c7c538dd93d2c0e2213c99ecb6f"
+        },
+        {
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-cli-compatibility-probe.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "407f2113599c3b6fe395353bf8170cd5f33fe3e7"
+        },
+        {
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-cli-compatibility-probe.json.sha256",
+          "present": true,
+          "mode": "100644",
+          "blobId": "f338b981d3accac1fef34441e8cc97454dfa39d6"
+        },
+        {
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-compatibility-amendment-review.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "bd0af9d7cfd708540b0b8b24f7dcf4e66736f7c3"
+        },
+        {
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-compatibility-amendment-review.json.sha256",
+          "present": true,
+          "mode": "100644",
+          "blobId": "a53b7e7c91b769f7c276640705e4fcce75c408c6"
+        },
+        {
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-discovery.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "271db801928777e1251855b4594b1349f1eca735"
+        },
+        {
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-discovery.json.sha256",
+          "present": true,
+          "mode": "100644",
+          "blobId": "109237ad8a0902ec3b6a9b300c4c6f99a1e26a59"
+        },
+        {
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-recapture.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "9b6bc481bfb047ecae4caccec4020a96f0e36966"
+        },
+        {
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-recapture.json.sha256",
+          "present": true,
+          "mode": "100644",
+          "blobId": "0889970e962e607dfb7a8c44e162b1ef24d90828"
+        },
+        {
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-amendment-review.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "af8698b4862929262187d65eac673c2746422918"
+        },
+        {
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-amendment-review.json.sha256",
+          "present": true,
+          "mode": "100644",
+          "blobId": "f52d7c877d761d306ced14270d758b87c27a19b6"
+        },
+        {
+          "path": "docs/exec-plans/active/2026-07-27-gate1a-rc9-test-operations.md",
+          "present": true,
+          "mode": "100644",
+          "blobId": "a13a9a78a097dd0b36983f64c4a1c73945891162"
+        },
+        {
+          "path": "prototype/package.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "2804148ded77cd9ba8fe732b4f8c547db6c69130"
+        },
+        {
+          "path": "prototype/scripts/candidate-manifest-contract.mjs",
+          "present": true,
+          "mode": "100644",
+          "blobId": "2241f191ab66c5bc666b278a2769d300848e4586"
+        },
+        {
+          "path": "prototype/scripts/check-playtest-fixtures.mjs",
+          "present": true,
+          "mode": "100644",
+          "blobId": "b34f97f93eed5702229c14ef90ddff6400fd643d"
+        },
+        {
+          "path": "prototype/scripts/verify-c04-runtime-equivalence.mjs",
+          "present": true,
+          "mode": "100644",
+          "blobId": "0aa51e54c925a8de7cb5e7a269481ae9a80bf882"
+        },
+        {
+          "path": "prototype/scripts/verify-diagnostic-isolation.mjs",
+          "present": true,
+          "mode": "100644",
+          "blobId": "a73cc359a4db39a0b6a5921a04cc6f5e94d43715"
+        },
+        {
+          "path": "prototype/scripts/verify-frozen-evidence.mjs",
+          "present": true,
+          "mode": "100644",
+          "blobId": "e525b5565fd90b50969d4080170beccc4a59e2c7"
+        },
+        {
+          "path": "prototype/scripts/verify-playtest-manifest.mjs",
+          "present": true,
+          "mode": "100644",
+          "blobId": "6857d6d8474406a162c25717ff7d1757ed12b7e0"
+        },
+        {
+          "path": "prototype/scripts/create-deterministic-archive.mjs",
+          "present": true,
+          "mode": "100644",
+          "blobId": "bca4b82bbe11160dbbc864032ae34bc2135f7b7f"
+        },
+        {
+          "path": "prototype/tests/playtest-manifest.test.ts",
+          "present": true,
+          "mode": "100644",
+          "blobId": "18403cfac42b1de8e17ded45b8ea5d7cd6e1137a"
+        },
+        {
+          "path": "prototype/tests/c04-verifier-cli.test.ts",
+          "present": true,
+          "mode": "100644",
+          "blobId": "2cb23e0614f326da3edf8a50fa2728f934031b8d"
+        },
+        {
+          "path": "prototype/tests/deterministic-archive.test.ts",
+          "present": true,
+          "mode": "100644",
+          "blobId": "bcdc86013d1696771440c6b9163de118dab29ca6"
+        },
+        {
+          "path": "prototype/tests/fixtures/fixture-expectations.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "0c93201aa353ef92da44c20f1a3e8de61d45fc59"
+        },
+        {
+          "path": "prototype/tests/fixtures/isolation/aggregate-valid.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "21e81f167a7ba773c5d2d7074d1f2ebea942c429"
+        },
+        {
+          "path": "prototype/tests/fixtures/isolation/fixture-matrix.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "c519a332395f159ee18593ab6f18949fa6ea9e7b"
+        },
+        {
+          "path": "prototype/tests/fixtures/isolation/sample-valid.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "3fd387567edfa6c5f3fdb37de3f878810667498b"
+        },
+        {
+          "path": "prototype/tests/fixtures/isolation/golden-codex-0.146.0-alpha.3.1-persisted-rollout.jsonl",
+          "present": true,
+          "mode": "100644",
+          "blobId": "23a8fdeb4ffe6fb8c0c903cf7d62bd38590b98d4"
+        },
+        {
+          "path": "prototype/tests/fixtures/isolation/golden-codex-0.146.0-alpha.3.1-exec-events.jsonl",
+          "present": true,
+          "mode": "100644",
+          "blobId": "20267b1a755bd6bba4b3e153dbc260808cccd5db"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-c01-rewrapped-by-cm02-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "de55f1f0a8010e987b0bb46dc387f9272bc5e19a"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-c02-first-manifest-valid.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "8d502a7facd79a3469d17ded55d9b64df95850d5"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-c02-reuses-c01-evidence-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "0704c137c839cc4ca8c7b0eb3c4cf7f25e10dbc6"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-c02-second-manifest-valid.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "556492fa2058233864cda9add4855118a2ae8db8"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-c03-rejection-history-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "ac5c4de3ae2ef6fae564bdc89b7c1ffc08941c67"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-c04-authority-probe.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "d6f2d6c25c229b12a60a082a45a50948caf6de17"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-c04-synthetic-valid.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "ece3cb7c2ee6b77ac2972da45070cdd7e4bbaae9"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-invalid-incomplete-authority.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "679eff8259c10f3f8c3b7e6d9e60ebea264c7df9"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-invalid-source-sha.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "15806a798a65b81387e82bfe6b5eaf072dee125c"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-missing-profile-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "b85b99939bcbd21a9083e2f23d13c09f2d3c8b30"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-unknown-profile-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "63d7114ab320e984a01ca1fcd0e60e19c7dc6219"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-v03-extra-authority-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "cd5ca04d457c77b70bd4c17d79484eb53420601d"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-v03-path-mismatch-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "3afc0e24aa11ec907bf907ccdf94402e0cfc55e1"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-v03-protocol-mismatch-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "c6ffa4859ba483ad9e4f10114bafaa021d226dd4"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-v03-role-mismatch-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "309f3a56e079a325961be3dcdcc3190ab7ff7dce"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-v03-scenario-mismatch-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "b6e8352c7b756edd2cfcbcb06d33438191a10022"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-valid.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "a6a2d5b0145cf035763b273ea81b9a67823043b4"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-zero-id-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "17cb79f0408deaf30a02ad112e929ba10380ea84"
+        }
+      ],
+      "violations": []
+    },
+    "headScope": {
+      "baseline": "5b9438cc5123ba35d8a703f3507bbf463e90176d",
+      "head": "f181340cfebb0434bb977296f483328e32dda171",
+      "changes": [
+        {
+          "status": "M",
+          "path": "CONTEXT.md"
+        },
+        {
+          "status": "M",
+          "path": "PLANS.md"
+        },
+        {
+          "status": "M",
+          "path": "docs/exec-plans/active/2026-07-27-gate1a-rc9-test-operations.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/active/2026-07-29-gate1a-rc9-c04-recovery-plan.md"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-cli-compatibility-probe.json"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-cli-compatibility-probe.json.sha256"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-compatibility-amendment-review.json"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-compatibility-amendment-review.json.sha256"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-amendment-review.json"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-amendment-review.json.sha256"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-discovery.json"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-discovery.json.sha256"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-recapture.json"
+        },
+        {
+          "status": "A",
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-recapture.json.sha256"
+        },
+        {
+          "status": "M",
+          "path": "prototype/package.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/scripts/candidate-manifest-contract.mjs"
+        },
+        {
+          "status": "M",
+          "path": "prototype/scripts/check-playtest-fixtures.mjs"
+        },
+        {
+          "status": "M",
+          "path": "prototype/scripts/create-deterministic-archive.mjs"
+        },
+        {
+          "status": "A",
+          "path": "prototype/scripts/verify-c04-runtime-equivalence.mjs"
+        },
+        {
+          "status": "A",
+          "path": "prototype/scripts/verify-diagnostic-isolation.mjs"
+        },
+        {
+          "status": "A",
+          "path": "prototype/scripts/verify-frozen-evidence.mjs"
+        },
+        {
+          "status": "M",
+          "path": "prototype/scripts/verify-playtest-manifest.mjs"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/c04-verifier-cli.test.ts"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/deterministic-archive.test.ts"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/fixtures/fixture-expectations.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/isolation/aggregate-valid.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/isolation/fixture-matrix.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/isolation/golden-codex-0.146.0-alpha.3.1-exec-events.jsonl"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/isolation/golden-codex-0.146.0-alpha.3.1-persisted-rollout.jsonl"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/isolation/sample-valid.json"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/fixtures/manifests/candidate-c01-rewrapped-by-cm02-rejected.json"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/fixtures/manifests/candidate-c02-first-manifest-valid.json"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/fixtures/manifests/candidate-c02-reuses-c01-evidence-rejected.json"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/fixtures/manifests/candidate-c02-second-manifest-valid.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/manifests/candidate-c03-rejection-history-rejected.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/manifests/candidate-c04-authority-probe.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/manifests/candidate-c04-synthetic-valid.json"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/fixtures/manifests/candidate-invalid-incomplete-authority.json"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/fixtures/manifests/candidate-invalid-source-sha.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/manifests/candidate-missing-profile-rejected.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/manifests/candidate-unknown-profile-rejected.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/manifests/candidate-v03-extra-authority-rejected.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/manifests/candidate-v03-path-mismatch-rejected.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/manifests/candidate-v03-protocol-mismatch-rejected.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/manifests/candidate-v03-role-mismatch-rejected.json"
+        },
+        {
+          "status": "A",
+          "path": "prototype/tests/fixtures/manifests/candidate-v03-scenario-mismatch-rejected.json"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/fixtures/manifests/candidate-valid.json"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/fixtures/manifests/candidate-zero-id-rejected.json"
+        },
+        {
+          "status": "M",
+          "path": "prototype/tests/playtest-manifest.test.ts"
+        }
+      ],
+      "bindings": [
+        {
+          "path": "CONTEXT.md",
+          "present": true,
+          "mode": "100644",
+          "blobId": "caef23fbd973f7d7927a19f405338a7c1f15bea4"
+        },
+        {
+          "path": "PLANS.md",
+          "present": true,
+          "mode": "100644",
+          "blobId": "52fd0d7ec501b6a8b5739529f8019a974a476f00"
+        },
+        {
+          "path": "docs/exec-plans/active/2026-07-29-gate1a-rc9-c04-recovery-plan.md",
+          "present": true,
+          "mode": "100644",
+          "blobId": "9b478d55e4d55c7c538dd93d2c0e2213c99ecb6f"
+        },
+        {
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-cli-compatibility-probe.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "407f2113599c3b6fe395353bf8170cd5f33fe3e7"
+        },
+        {
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-cli-compatibility-probe.json.sha256",
+          "present": true,
+          "mode": "100644",
+          "blobId": "f338b981d3accac1fef34441e8cc97454dfa39d6"
+        },
+        {
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-compatibility-amendment-review.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "bd0af9d7cfd708540b0b8b24f7dcf4e66736f7c3"
+        },
+        {
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-compatibility-amendment-review.json.sha256",
+          "present": true,
+          "mode": "100644",
+          "blobId": "a53b7e7c91b769f7c276640705e4fcce75c408c6"
+        },
+        {
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-discovery.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "271db801928777e1251855b4594b1349f1eca735"
+        },
+        {
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-discovery.json.sha256",
+          "present": true,
+          "mode": "100644",
+          "blobId": "109237ad8a0902ec3b6a9b300c4c6f99a1e26a59"
+        },
+        {
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-recapture.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "9b6bc481bfb047ecae4caccec4020a96f0e36966"
+        },
+        {
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-recapture.json.sha256",
+          "present": true,
+          "mode": "100644",
+          "blobId": "0889970e962e607dfb7a8c44e162b1ef24d90828"
+        },
+        {
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-amendment-review.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "af8698b4862929262187d65eac673c2746422918"
+        },
+        {
+          "path": "docs/exec-plans/evidence/2026-07-29-c04-isolation-grammar-amendment-review.json.sha256",
+          "present": true,
+          "mode": "100644",
+          "blobId": "f52d7c877d761d306ced14270d758b87c27a19b6"
+        },
+        {
+          "path": "docs/exec-plans/active/2026-07-27-gate1a-rc9-test-operations.md",
+          "present": true,
+          "mode": "100644",
+          "blobId": "a13a9a78a097dd0b36983f64c4a1c73945891162"
+        },
+        {
+          "path": "prototype/package.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "2804148ded77cd9ba8fe732b4f8c547db6c69130"
+        },
+        {
+          "path": "prototype/scripts/candidate-manifest-contract.mjs",
+          "present": true,
+          "mode": "100644",
+          "blobId": "2241f191ab66c5bc666b278a2769d300848e4586"
+        },
+        {
+          "path": "prototype/scripts/check-playtest-fixtures.mjs",
+          "present": true,
+          "mode": "100644",
+          "blobId": "b34f97f93eed5702229c14ef90ddff6400fd643d"
+        },
+        {
+          "path": "prototype/scripts/verify-c04-runtime-equivalence.mjs",
+          "present": true,
+          "mode": "100644",
+          "blobId": "0aa51e54c925a8de7cb5e7a269481ae9a80bf882"
+        },
+        {
+          "path": "prototype/scripts/verify-diagnostic-isolation.mjs",
+          "present": true,
+          "mode": "100644",
+          "blobId": "a73cc359a4db39a0b6a5921a04cc6f5e94d43715"
+        },
+        {
+          "path": "prototype/scripts/verify-frozen-evidence.mjs",
+          "present": true,
+          "mode": "100644",
+          "blobId": "e525b5565fd90b50969d4080170beccc4a59e2c7"
+        },
+        {
+          "path": "prototype/scripts/verify-playtest-manifest.mjs",
+          "present": true,
+          "mode": "100644",
+          "blobId": "6857d6d8474406a162c25717ff7d1757ed12b7e0"
+        },
+        {
+          "path": "prototype/scripts/create-deterministic-archive.mjs",
+          "present": true,
+          "mode": "100644",
+          "blobId": "bca4b82bbe11160dbbc864032ae34bc2135f7b7f"
+        },
+        {
+          "path": "prototype/tests/playtest-manifest.test.ts",
+          "present": true,
+          "mode": "100644",
+          "blobId": "18403cfac42b1de8e17ded45b8ea5d7cd6e1137a"
+        },
+        {
+          "path": "prototype/tests/c04-verifier-cli.test.ts",
+          "present": true,
+          "mode": "100644",
+          "blobId": "2cb23e0614f326da3edf8a50fa2728f934031b8d"
+        },
+        {
+          "path": "prototype/tests/deterministic-archive.test.ts",
+          "present": true,
+          "mode": "100644",
+          "blobId": "bcdc86013d1696771440c6b9163de118dab29ca6"
+        },
+        {
+          "path": "prototype/tests/fixtures/fixture-expectations.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "0c93201aa353ef92da44c20f1a3e8de61d45fc59"
+        },
+        {
+          "path": "prototype/tests/fixtures/isolation/aggregate-valid.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "21e81f167a7ba773c5d2d7074d1f2ebea942c429"
+        },
+        {
+          "path": "prototype/tests/fixtures/isolation/fixture-matrix.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "c519a332395f159ee18593ab6f18949fa6ea9e7b"
+        },
+        {
+          "path": "prototype/tests/fixtures/isolation/sample-valid.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "3fd387567edfa6c5f3fdb37de3f878810667498b"
+        },
+        {
+          "path": "prototype/tests/fixtures/isolation/golden-codex-0.146.0-alpha.3.1-persisted-rollout.jsonl",
+          "present": true,
+          "mode": "100644",
+          "blobId": "23a8fdeb4ffe6fb8c0c903cf7d62bd38590b98d4"
+        },
+        {
+          "path": "prototype/tests/fixtures/isolation/golden-codex-0.146.0-alpha.3.1-exec-events.jsonl",
+          "present": true,
+          "mode": "100644",
+          "blobId": "20267b1a755bd6bba4b3e153dbc260808cccd5db"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-c01-rewrapped-by-cm02-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "de55f1f0a8010e987b0bb46dc387f9272bc5e19a"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-c02-first-manifest-valid.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "8d502a7facd79a3469d17ded55d9b64df95850d5"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-c02-reuses-c01-evidence-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "0704c137c839cc4ca8c7b0eb3c4cf7f25e10dbc6"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-c02-second-manifest-valid.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "556492fa2058233864cda9add4855118a2ae8db8"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-c03-rejection-history-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "ac5c4de3ae2ef6fae564bdc89b7c1ffc08941c67"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-c04-authority-probe.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "d6f2d6c25c229b12a60a082a45a50948caf6de17"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-c04-synthetic-valid.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "ece3cb7c2ee6b77ac2972da45070cdd7e4bbaae9"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-invalid-incomplete-authority.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "679eff8259c10f3f8c3b7e6d9e60ebea264c7df9"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-invalid-source-sha.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "15806a798a65b81387e82bfe6b5eaf072dee125c"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-missing-profile-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "b85b99939bcbd21a9083e2f23d13c09f2d3c8b30"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-unknown-profile-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "63d7114ab320e984a01ca1fcd0e60e19c7dc6219"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-v03-extra-authority-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "cd5ca04d457c77b70bd4c17d79484eb53420601d"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-v03-path-mismatch-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "3afc0e24aa11ec907bf907ccdf94402e0cfc55e1"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-v03-protocol-mismatch-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "c6ffa4859ba483ad9e4f10114bafaa021d226dd4"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-v03-role-mismatch-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "309f3a56e079a325961be3dcdcc3190ab7ff7dce"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-v03-scenario-mismatch-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "b6e8352c7b756edd2cfcbcb06d33438191a10022"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-valid.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "a6a2d5b0145cf035763b273ea81b9a67823043b4"
+        },
+        {
+          "path": "prototype/tests/fixtures/manifests/candidate-zero-id-rejected.json",
+          "present": true,
+          "mode": "100644",
+          "blobId": "17cb79f0408deaf30a02ad112e929ba10380ea84"
+        }
+      ],
+      "violations": []
+    },
+    "sourceBlobIdentityMismatches": [],
+    "changedForbiddenPaths": []
+  },
+  "artifact": {
+    "referenceCommit": "5b9438cc5123ba35d8a703f3507bbf463e90176d",
+    "referencePath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C03/rc-dist",
+    "artifactDir": "prototype/dist",
+    "canonicalFileCount": 5,
+    "expectedArtifactHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+    "actualArtifactHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+    "metadataArtifactHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+    "expectedArtifactManifestSha256": "c336706bf7193c07a7f552dfbfe77cf02ec36259c72cc08b8f0c6ee8fc84cc37",
+    "actualArtifactManifestSha256": "c336706bf7193c07a7f552dfbfe77cf02ec36259c72cc08b8f0c6ee8fc84cc37",
+    "artifactManifestBytesEqual": true,
+    "artifactInventoryEqual": true,
+    "expectedArtifactFiles": [
+      "artifact-manifest.json",
+      "assets/index-CvF-YVLG.js",
+      "assets/index-DVP48KUI.css",
+      "index.html",
+      "management-ledger-contract.mjs",
+      "playtest-host.mjs",
+      "rc-build.json"
+    ],
+    "actualArtifactFiles": [
+      "artifact-manifest.json",
+      "assets/index-CvF-YVLG.js",
+      "assets/index-DVP48KUI.css",
+      "index.html",
+      "management-ledger-contract.mjs",
+      "playtest-host.mjs",
+      "rc-build.json"
+    ],
+    "metadataIdentity": {
+      "expectedBuildId": "g1-rc-20260729.rc9-c04",
+      "actualBuildId": "g1-rc-20260729.rc9-c04",
+      "expectedGitSha": "3f2b7c4b22055b3e1d9076e65abd0ed00271c528",
+      "actualGitSha": "3f2b7c4b22055b3e1d9076e65abd0ed00271c528",
+      "onlyBuildIdAndGitShaDifferFromC03": true
+    },
+    "canonicalFiles": [
+      {
+        "path": "assets/index-CvF-YVLG.js",
+        "expectedBytes": 327445,
+        "actualBytes": 327445,
+        "expectedSha256": "f263b56909c96edd511084075b07111280f8c3cc6495b368943bd66679163948",
+        "actualSha256": "f263b56909c96edd511084075b07111280f8c3cc6495b368943bd66679163948",
+        "bytesEqual": true
+      },
+      {
+        "path": "assets/index-DVP48KUI.css",
+        "expectedBytes": 19221,
+        "actualBytes": 19221,
+        "expectedSha256": "065b2c6131647af44f830d6725ab546cab7541d13a103f29497d82537c70c2e6",
+        "actualSha256": "065b2c6131647af44f830d6725ab546cab7541d13a103f29497d82537c70c2e6",
+        "bytesEqual": true
+      },
+      {
+        "path": "index.html",
+        "expectedBytes": 468,
+        "actualBytes": 468,
+        "expectedSha256": "cb18e29fcef729faa6d68b3dae5a099726bb636ec5a2372de16d8106005248c9",
+        "actualSha256": "cb18e29fcef729faa6d68b3dae5a099726bb636ec5a2372de16d8106005248c9",
+        "bytesEqual": true
+      },
+      {
+        "path": "management-ledger-contract.mjs",
+        "expectedBytes": 28476,
+        "actualBytes": 28476,
+        "expectedSha256": "f8d5f512b6d75b05f3fbc7bd40a34c4ea59d9f5f940551532e9728403b6c47e0",
+        "actualSha256": "f8d5f512b6d75b05f3fbc7bd40a34c4ea59d9f5f940551532e9728403b6c47e0",
+        "bytesEqual": true
+      },
+      {
+        "path": "playtest-host.mjs",
+        "expectedBytes": 88315,
+        "actualBytes": 88315,
+        "expectedSha256": "94c40cee50eee231d8332d2c2f4d3ef5fe8326a238db7932ff878f2a436bf66c",
+        "actualSha256": "94c40cee50eee231d8332d2c2f4d3ef5fe8326a238db7932ff878f2a436bf66c",
+        "bytesEqual": true
+      }
+    ]
+  },
+  "canonicalFileCount": 5,
+  "artifactManifestBytesEqual": true,
+  "artifactInventoryEqual": true,
+  "metadataIdentityOnly": true,
+  "expectedArtifactHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+  "actualArtifactHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+  "expectedArtifactManifestSha256": "c336706bf7193c07a7f552dfbfe77cf02ec36259c72cc08b8f0c6ee8fc84cc37",
+  "actualArtifactManifestSha256": "c336706bf7193c07a7f552dfbfe77cf02ec36259c72cc08b8f0c6ee8fc84cc37",
+  "canonicalFiles": [
+    {
+      "path": "assets/index-CvF-YVLG.js",
+      "expectedBytes": 327445,
+      "actualBytes": 327445,
+      "expectedSha256": "f263b56909c96edd511084075b07111280f8c3cc6495b368943bd66679163948",
+      "actualSha256": "f263b56909c96edd511084075b07111280f8c3cc6495b368943bd66679163948",
+      "bytesEqual": true
+    },
+    {
+      "path": "assets/index-DVP48KUI.css",
+      "expectedBytes": 19221,
+      "actualBytes": 19221,
+      "expectedSha256": "065b2c6131647af44f830d6725ab546cab7541d13a103f29497d82537c70c2e6",
+      "actualSha256": "065b2c6131647af44f830d6725ab546cab7541d13a103f29497d82537c70c2e6",
+      "bytesEqual": true
+    },
+    {
+      "path": "index.html",
+      "expectedBytes": 468,
+      "actualBytes": 468,
+      "expectedSha256": "cb18e29fcef729faa6d68b3dae5a099726bb636ec5a2372de16d8106005248c9",
+      "actualSha256": "cb18e29fcef729faa6d68b3dae5a099726bb636ec5a2372de16d8106005248c9",
+      "bytesEqual": true
+    },
+    {
+      "path": "management-ledger-contract.mjs",
+      "expectedBytes": 28476,
+      "actualBytes": 28476,
+      "expectedSha256": "f8d5f512b6d75b05f3fbc7bd40a34c4ea59d9f5f940551532e9728403b6c47e0",
+      "actualSha256": "f8d5f512b6d75b05f3fbc7bd40a34c4ea59d9f5f940551532e9728403b6c47e0",
+      "bytesEqual": true
+    },
+    {
+      "path": "playtest-host.mjs",
+      "expectedBytes": 88315,
+      "actualBytes": 88315,
+      "expectedSha256": "94c40cee50eee231d8332d2c2f4d3ef5fe8326a238db7932ff878f2a436bf66c",
+      "actualSha256": "94c40cee50eee231d8332d2c2f4d3ef5fe8326a238db7932ff878f2a436bf66c",
+      "bytesEqual": true
+    }
+  ],
+  "phase6Identity": {
+    "schemaVersion": "c04-phase6-command-identity-v1",
+    "commandId": "runtime-equivalence",
+    "mode": "integration",
+    "environment": {
+      "PATH": "/opt/homebrew/opt/node@24/bin:/opt/homebrew/bin:/usr/bin:/bin"
+    },
+    "commandVNodePath": "/opt/homebrew/opt/node@24/bin/node",
+    "resolvedNodeRealPath": "/opt/homebrew/Cellar/node@24/24.18.0/bin/node",
+    "nodeVersion": "v24.18.0",
+    "nodeBinarySha256": "72c18e2eeda260f67a5b2b66e96fa9b5ad82864676ebb54925695d87120cae3f",
+    "workingDirectory": "prototype",
+    "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/runtime-equivalence.json",
+    "argv": [
+      "npm",
+      "run",
+      "runtime:equivalence",
+      "--",
+      "--head",
+      "f181340cfebb0434bb977296f483328e32dda171",
+      "--artifact-git-sha",
+      "3f2b7c4b22055b3e1d9076e65abd0ed00271c528",
+      "--output",
+      "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/runtime-equivalence.json"
+    ],
+    "planRef": "441f7d96635e9176c8aea3ff21454d596c287c49",
+    "integrationSha": "f181340cfebb0434bb977296f483328e32dda171",
+    "artifactSourceSha": "3f2b7c4b22055b3e1d9076e65abd0ed00271c528"
+  }
+}

@@ -1,0 +1,125 @@
+{
+  "schemaVersion": "gate1a-frozen-evidence-guard-v1",
+  "status": "PASS_EVIDENCE_LINEAGE",
+  "errorCode": null,
+  "commandArgv": [
+    "--mode",
+    "evidence-lineage",
+    "--baseline",
+    "5b9438cc5123ba35d8a703f3507bbf463e90176d",
+    "--head",
+    "f181340cfebb0434bb977296f483328e32dda171",
+    "--output",
+    "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/frozen-evidence-guard.json"
+  ],
+  "inventoryAlgorithm": "sha256-lines-content-sha256-two-spaces-bytes-two-spaces-relative-path-lf-v1",
+  "mode": "evidence-lineage",
+  "baselineSha": "5b9438cc5123ba35d8a703f3507bbf463e90176d",
+  "headSha": "f181340cfebb0434bb977296f483328e32dda171",
+  "observations": [
+    {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260726-rc8-01",
+      "expected": {
+        "treeId": "c5714f7ca7adb5e8fe052d4d00f27c545b988347",
+        "fileCount": 67,
+        "inventorySha256": "3f55528ad8993aae8646a152489227eee76c280e0ae2c2d092b57dc2ec5398e2"
+      },
+      "actual": {
+        "treeId": "c5714f7ca7adb5e8fe052d4d00f27c545b988347",
+        "fileCount": 67,
+        "inventorySha256": "3f55528ad8993aae8646a152489227eee76c280e0ae2c2d092b57dc2ec5398e2"
+      },
+      "matches": {
+        "tree": true,
+        "fileCount": true,
+        "inventory": true
+      }
+    },
+    {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C01",
+      "expected": {
+        "treeId": "55f661518c7ed8a2cc99f0fc0f25fabecd24c286",
+        "fileCount": 41,
+        "inventorySha256": "fa7a926f64dfff08e2c86b1baa8f87217aecce5e99232154f534110538c2f5c6"
+      },
+      "actual": {
+        "treeId": "55f661518c7ed8a2cc99f0fc0f25fabecd24c286",
+        "fileCount": 41,
+        "inventorySha256": "fa7a926f64dfff08e2c86b1baa8f87217aecce5e99232154f534110538c2f5c6"
+      },
+      "matches": {
+        "tree": true,
+        "fileCount": true,
+        "inventory": true
+      }
+    },
+    {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C02",
+      "expected": {
+        "treeId": "9b7dbae2c0c5d1bba45399e77dac65766911d3b3",
+        "fileCount": 62,
+        "inventorySha256": "250a9d82e0e2056af1622bd063e806d236178e72ee93b1a6f178708d056f4664"
+      },
+      "actual": {
+        "treeId": "9b7dbae2c0c5d1bba45399e77dac65766911d3b3",
+        "fileCount": 62,
+        "inventorySha256": "250a9d82e0e2056af1622bd063e806d236178e72ee93b1a6f178708d056f4664"
+      },
+      "matches": {
+        "tree": true,
+        "fileCount": true,
+        "inventory": true
+      }
+    },
+    {
+      "path": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C03",
+      "expected": {
+        "treeId": "6c3e5bf9bf4808724534c7c1fb472fc487a4d350",
+        "fileCount": 65,
+        "inventorySha256": "1c107b09ebdc4eacf0ac2bae388402aee2f12ad1dadbf081e547da66ac40462d"
+      },
+      "actual": {
+        "treeId": "6c3e5bf9bf4808724534c7c1fb472fc487a4d350",
+        "fileCount": 65,
+        "inventorySha256": "1c107b09ebdc4eacf0ac2bae388402aee2f12ad1dadbf081e547da66ac40462d"
+      },
+      "matches": {
+        "tree": true,
+        "fileCount": true,
+        "inventory": true
+      }
+    }
+  ],
+  "failureCodes": [],
+  "phase6Identity": {
+    "schemaVersion": "c04-phase6-command-identity-v1",
+    "commandId": "frozen-evidence-guard",
+    "mode": "integration",
+    "environment": {
+      "PATH": "/opt/homebrew/opt/node@24/bin:/opt/homebrew/bin:/usr/bin:/bin"
+    },
+    "commandVNodePath": "/opt/homebrew/opt/node@24/bin/node",
+    "resolvedNodeRealPath": "/opt/homebrew/Cellar/node@24/24.18.0/bin/node",
+    "nodeVersion": "v24.18.0",
+    "nodeBinarySha256": "72c18e2eeda260f67a5b2b66e96fa9b5ad82864676ebb54925695d87120cae3f",
+    "workingDirectory": "prototype",
+    "outputPath": "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/frozen-evidence-guard.json",
+    "argv": [
+      "npm",
+      "run",
+      "guard:frozen-evidence",
+      "--",
+      "--mode",
+      "evidence-lineage",
+      "--baseline",
+      "5b9438cc5123ba35d8a703f3507bbf463e90176d",
+      "--head",
+      "f181340cfebb0434bb977296f483328e32dda171",
+      "--output",
+      "data/playtests/weekly-management-slice/gate1a/g1a-20260727-rc9-01/candidates/C04/evidence/phase6-retry-03/frozen-evidence-guard.json"
+    ],
+    "planRef": "441f7d96635e9176c8aea3ff21454d596c287c49",
+    "integrationSha": "f181340cfebb0434bb977296f483328e32dda171",
+    "artifactSourceSha": "3f2b7c4b22055b3e1d9076e65abd0ed00271c528"
+  }
+}
