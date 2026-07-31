@@ -1,0 +1,300 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://new-era-2.invalid/schemas/item-library-adoption-record-r2f-v0.1.json",
+  "title": "New Era 2 item-library adoption decision record R2-F",
+  "description": "Planning record only; schema validation grants no runtime or Gate authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "template_id",
+    "record_origin",
+    "record_status",
+    "consumer_id",
+    "target_branch",
+    "source_manifest_id",
+    "source_manifest_sha256",
+    "source_handoff_report_sha256",
+    "candidate_stable_ids",
+    "stable_id_decisions",
+    "calibration_decisions",
+    "accepted_outlier_decisions",
+    "mass_review_decisions",
+    "evidence",
+    "selected_stable_ids",
+    "rejected_or_deferred_stable_ids",
+    "submission_ready",
+    "adoption_state",
+    "runtime_authorization",
+    "record_sha256"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": "new-era-2.item-library.adoption-record.r2f.v0.1"
+    },
+    "template_id": {
+      "type": "string",
+      "pattern": "^template\\.r2f\\."
+    },
+    "record_origin": {
+      "type": "string",
+      "enum": [
+        "template",
+        "consumer"
+      ]
+    },
+    "record_status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "submitted"
+      ]
+    },
+    "consumer_id": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "target_branch": {
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    "source_manifest_id": {
+      "type": "string"
+    },
+    "source_manifest_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    },
+    "source_handoff_report_sha256": {
+      "const": "4ad843af92c46409189f93258c6ca0eb319f19e97d2dc32b6361c099d50e3e3d"
+    },
+    "candidate_stable_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "stable_id_decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "decision",
+          "rationale"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "unresolved",
+              "adopt",
+              "reject",
+              "defer"
+            ]
+          },
+          "rationale": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "calibration_decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "decision",
+          "rationale"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "unresolved",
+              "adopt",
+              "reject",
+              "rework"
+            ]
+          },
+          "rationale": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "accepted_outlier_decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "decision",
+          "rationale"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "unresolved",
+              "confirm",
+              "reject",
+              "rework"
+            ]
+          },
+          "rationale": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "mass_review_decisions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "decision",
+          "rationale"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1
+          },
+          "decision": {
+            "type": "string",
+            "enum": [
+              "unresolved",
+              "approve",
+              "reject",
+              "rework"
+            ]
+          },
+          "rationale": {
+            "type": [
+              "string",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "evidence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "runtime_schema_version",
+        "target_gate_authorization",
+        "external_supply_policy",
+        "save_migration_assessment",
+        "runtime_validation_evidence",
+        "human_playtest_evidence"
+      ],
+      "properties": {
+        "runtime_schema_version": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "target_gate_authorization": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "external_supply_policy": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "save_migration_assessment": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "runtime_validation_evidence": {
+          "type": [
+            "string",
+            "null"
+          ]
+        },
+        "human_playtest_evidence": {
+          "type": [
+            "string",
+            "null"
+          ]
+        }
+      }
+    },
+    "selected_stable_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "rejected_or_deferred_stable_ids": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": {
+        "type": "string"
+      }
+    },
+    "submission_ready": {
+      "type": "boolean"
+    },
+    "adoption_state": {
+      "type": "string",
+      "enum": [
+        "not_adopted",
+        "pending_review"
+      ]
+    },
+    "runtime_authorization": {
+      "const": "NONE"
+    },
+    "record_sha256": {
+      "type": "string",
+      "pattern": "^[0-9a-f]{64}$"
+    }
+  },
+  "x-r2f-status": "reference_only",
+  "x-runtime-schema": false,
+  "x-runtime-authorization": "NONE",
+  "x-source-handoff-report-sha256": "4ad843af92c46409189f93258c6ca0eb319f19e97d2dc32b6361c099d50e3e3d"
+}
