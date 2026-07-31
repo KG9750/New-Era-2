@@ -204,7 +204,15 @@ def upstream_validation(label, script, arguments)
     *arguments,
     chdir: ROOT
   )
-  return [nil, "#{label} 上游验证失败：#{(stdout + stderr).lines.last(8).join.strip}"] unless status.success?
+  unless status.success?
+    controlled_lines = (stdout + stderr).lines.map(&:strip).select do |line|
+      line.match?(/\A[A-Z0-9_]+=FAIL\z/) || line.start_with?("- ")
+    end
+    detail = controlled_lines.last(8).join(" | ")
+    message = "#{label} 上游验证返回非零"
+    message = "#{message}：#{detail}" unless detail.empty?
+    return [nil, message]
+  end
 
   fields = Hash.new { |hash, key| hash[key] = [] }
   stdout.each_line do |line|
@@ -298,6 +306,7 @@ UPSTREAM_VALIDATIONS.each do |label, script, arguments|
   fields, error = upstream_validation(label, script, arguments)
   if error
     errors << error
+    break
   else
     validation_outputs[label] = fields
   end

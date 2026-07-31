@@ -6,13 +6,14 @@
 **独立 subagent 首审：** `REVIEW_FAIL`（`P0=0 / P1=3 / P2=1`）
 **独立 subagent 第二轮复审：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=0`）
 **独立 subagent 第三轮复审：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=0`）
-**独立 subagent 第四轮复审：** `PENDING`
+**独立 subagent 第四轮复审：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=0`）
+**独立 subagent 第五轮复审：** `PENDING`
 **当前状态：** `R2G_RECHECK_PENDING`
 **运行时授权：** `NONE`
 
 ## 1. 当前结论
 
-R2-G 已生成 `reference_only` 机器清单与人工摘要，并在本地完成确定性自校验。独立 subagent 首审发现三项 P1 与一项 P2；第二轮发现新增的更晚审查轮次可绕过旧 PASS；第三轮又发现改名后的更晚审查字段可绕过前缀筛选。全部问题均已按最小范围修正，尚待全新 subagent 第四轮复审，因此当前不得写为 `R2G_REVIEW_PASS`。
+R2-G 已生成 `reference_only` 机器清单与人工摘要，并在本地完成确定性自校验。独立 subagent 首审发现三项 P1 与一项 P2；第二轮发现新增的更晚审查轮次可绕过旧 PASS；第三轮发现改名后的更晚审查字段可绕过前缀筛选；第四轮发现基础输入损坏后仍继续运行依赖阶段并转发 Ruby backtrace。全部问题均已按最小范围修正，尚待全新 subagent 第五轮复审，因此当前不得写为 `R2G_REVIEW_PASS`。
 
 R2-G 没有新增或修改候选内容，没有填写 R2-F 的任何决定槽，没有生成真实 submitted 记录、运行时 schema、Gate 授权、真人试玩证据或主干合并。
 
@@ -32,13 +33,13 @@ UNRESOLVED_DECISION_SLOT_COUNT=171
 SUBMITTED_RECORD_COUNT=0
 R1_NESTED_SOURCE_FILE_COUNT=32
 BRANCH_SOURCE_FILE_COUNT=41
-MANIFEST_SHA256=a01201bf9753a837714f9099d4a2793a35b7456a08d54239562af33de7ae6341
+MANIFEST_SHA256=9933e84ad0de774a0359bb1d9841e644a73a49583ec3868a05c6d42a4d688ea2
 R1_BUNDLE_FILE_SHA256=32f9d9c41e7271e4da0f037167ad94023d050ee1b7471fdec98495393d9ff361
 ADOPTION_STATE=not_adopted
 RUNTIME_AUTHORIZATION=NONE
 ```
 
-## 3. 三轮发现与修正
+## 3. 四轮发现与修正
 
 首审结论：
 
@@ -71,7 +72,9 @@ REVIEW_FAIL
 
 第三轮复审结论同为 `P0=0 / P1=1 / P2=0 / REVIEW_FAIL`。第三轮发现将字段改名为“第四轮独立 subagent 复审”可避开前缀筛选。现改为逐阶段冻结完整顶部元数据字段名及顺序，拒绝任何额外字段，不再猜测字段前缀。
 
-## 4. 待第四轮独立复审
+第四轮复审结论同为 `P0=0 / P1=1 / P2=0 / REVIEW_FAIL`。第四轮确认前三轮问题均已解决，但发现 R1 损坏后 R2-G 继续执行 R2-B 并转发其 backtrace。现改为按依赖顺序在首个上游失败处停止，并只输出结构化失败摘要；失败时 JSON/Markdown 保持不变。
+
+## 4. 待第五轮独立复审
 
 独立 subagent 必须只读检查：
 

@@ -83,6 +83,8 @@ ruby scripts/validate_item_library_adoption_records.rb
 ruby scripts/build_item_library_branch_baseline.rb
 ```
 
+R2-G 内部按 C1–C7、R2-A–R2-F 的依赖顺序只读执行这些验证；任一阶段失败时必须立即停止后续阶段，并只输出结构化失败摘要，不得转发 Ruby backtrace 或改写 R2-G 输出。
+
 ## 7. 接受边界
 
 - 不创建真实 submitted 记录；
