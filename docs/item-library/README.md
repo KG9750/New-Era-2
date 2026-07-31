@@ -27,7 +27,7 @@
 - R2-D 主题选择包合同：`item-library-selection-pack-contract-v0.1.md`
 - R2-D 机器可读选择包：`../../data/item-library/selection-packs-r2d.json`
 - R2-D 选择包摘要：`../../data/item-library/selection-packs-r2d.md`
-- R2-D 审查状态：`reviews/item-library-r2d-review-status-2026-07-31.md`（首审 P1 已修正，当前 `R2D_RECHECK_PENDING`）
+- R2-D 审查状态：`reviews/item-library-r2d-review-status-2026-07-31.md`（两轮 P1 已修正，第三轮独立 subagent 复审完成，`R2D_REVIEW_PASS`）
 
 ## 数据布局
 

@@ -5,13 +5,13 @@
 **实现验证：** `PASS`
 **独立 subagent 首审：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=0`）
 **独立 subagent 第二轮：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=0`）
-**独立 subagent 第三轮：** `PENDING`
-**当前状态：** `R2D_RECHECK_PENDING`
+**独立 subagent 第三轮：** `REVIEW_PASS`（`P0=0 / P1=0 / P2=0`）
+**最终状态：** `R2D_REVIEW_PASS`
 **运行时授权：** `NONE`
 
 ## 1. 当前结论
 
-R2-D 已生成四个 `reference_only` 主题选择包，并在本地通过生成器自检。独立 subagent 首审发现一项 P1，上游 R2-C 审查状态门禁只做全文 token 搜索，可能被历史 PASS 文本绕过；第二轮复审发现首次修正仍未限定状态必须来自顶部权威元数据块。两项均已按最小范围修正，尚待全新 subagent 第三轮复审，因此当前不得写为 `R2D_REVIEW_PASS`。
+R2-D 已生成四个 `reference_only` 主题选择包，并在本地通过生成器自检。独立 subagent 首审发现一项 P1，上游 R2-C 审查状态门禁只做全文 token 搜索，可能被历史 PASS 文本绕过；第二轮复审发现首次修正仍未限定状态必须来自顶部权威元数据块。两项均已按最小范围修正，第三轮全新 subagent 在提交 `f81108a1837e4e6c559745f3fb13ea9572128c14` 上完成只读复审，未发现真实缺陷。
 
 R2-D 没有修改 R1 或采纳 R2-C 数值，也没有生成运行时导入包、改变 Gate 状态或替代真人试玩。
 
@@ -68,9 +68,9 @@ REVIEW_FAIL
 - 要求元数据字段集合、字段唯一性和 `实现验证 / 第二轮审查 / 最终状态 / 运行时授权` 的值精确匹配；
 - 新增重复状态、伪说明 token 和 fenced 伪状态三个负向变异回归。
 
-## 4. 待独立第三轮复审
+## 4. 第三轮独立复审
 
-独立 subagent 必须只读检查：
+第三轮全新 subagent 只读检查了：
 
 1. 推荐生产路径是否始终是对应 R2-A 闭包的子集；
 2. 推荐路径是否排除了 `repair` 与 `dismantle`；
@@ -80,12 +80,23 @@ REVIEW_FAIL
 6. R2-B/R2-C 风险传播、哈希绑定和确定性重建是否完整；
 7. `candidate_only / reference_only / runtime_authorization=NONE` 边界是否不可绕过。
 
-## 5. 接受边界
-
-在独立审查给出 `P0=0 / P1=0` 且不存在冻结阻断项之前，状态保持：
+复审结果：
 
 ```text
-R2D_RECHECK_PENDING
+P0=0
+P1=0
+P2=0
+REVIEW_PASS
 ```
 
-即使未来改为 `R2D_REVIEW_PASS`，也只表示选择包满足当前合同并可确定性复算，不表示 R1 已修改、R2-C 数值已采纳、运行时已授权、Gate 已解锁或真人试玩已完成。
+其中，真实 R2-C PASS 状态被接受；PENDING、FAIL-with-history、重复最终状态、伪说明 token、fenced 伪状态、元数据未知/缺失/重复、错误第二轮状态、非精确或重复结论块均被拒绝。
+
+## 5. 接受边界
+
+最终状态：
+
+```text
+R2D_REVIEW_PASS
+```
+
+`R2D_REVIEW_PASS` 只表示选择包满足当前合同并可确定性复算，不表示 R1 已修改、R2-C 数值已采纳、运行时已授权、Gate 已解锁或真人试玩已完成。
