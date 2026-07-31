@@ -265,7 +265,11 @@ def decision_errors(rows, expected_ids, allowed_resolved, label)
       errors << "#{label}[#{index}] 字段错误"
       next
     end
-    ids << row["id"]
+    if nonempty_string?(row["id"])
+      ids << row["id"]
+    else
+      errors << "#{label}[#{index}] id 必须是非空字符串"
+    end
     allowed = ["unresolved"] + allowed_resolved
     errors << "#{label}[#{index}] decision 非法" unless allowed.include?(row["decision"])
     if row["decision"] == "unresolved"
@@ -319,8 +323,12 @@ def validate_record(record, manifests)
   errors << "runtime_authorization 必须保持 NONE" unless record["runtime_authorization"] == "NONE"
 
   stable_rows = record["stable_id_decisions"].is_a?(Array) ? record["stable_id_decisions"] : []
-  selected = stable_rows.select { |row| row.is_a?(Hash) && row["decision"] == "adopt" }.map { |row| row["id"] }.sort
-  rejected = stable_rows.select { |row| row.is_a?(Hash) && %w[reject defer].include?(row["decision"]) }.map { |row| row["id"] }.sort
+  selected = stable_rows.select do |row|
+    row.is_a?(Hash) && row["id"].is_a?(String) && row["decision"] == "adopt"
+  end.map { |row| row["id"] }.sort
+  rejected = stable_rows.select do |row|
+    row.is_a?(Hash) && row["id"].is_a?(String) && %w[reject defer].include?(row["decision"])
+  end.map { |row| row["id"] }.sort
   errors << "selected_stable_ids 与决定不一致" unless record["selected_stable_ids"] == selected
   errors << "rejected_or_deferred_stable_ids 与决定不一致" unless record["rejected_or_deferred_stable_ids"] == rejected
 

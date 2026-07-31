@@ -3,13 +3,14 @@
 **日期：** 2026-07-31
 **范围：** 采纳决策记录结构 schema、四份空白 draft 模板、只读记录校验器、R2-E 绑定、提交就绪规则与授权边界
 **实现验证：** `PASS`
-**独立 subagent 审查：** `PENDING`
-**当前状态：** `R2F_REVIEW_PENDING`
+**独立 subagent 首审：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=0`）
+**独立 subagent 复审：** `PENDING`
+**当前状态：** `R2F_RECHECK_PENDING`
 **运行时授权：** `NONE`
 
 ## 1. 当前结论
 
-R2-F 已生成结构 schema 与四份 `template_only / draft` 采纳记录模板，并在本地通过自校验。独立 subagent 尚未完成只读审查，因此当前不得写为 `R2F_REVIEW_PASS`。
+R2-F 已生成结构 schema 与四份 `template_only / draft` 采纳记录模板，并在本地通过自校验。独立 subagent 首审发现一项 P1：畸形决策 ID 会在派生列表排序时触发 Ruby backtrace，而不是受控校验失败。该项已按最小范围修正，尚待全新 subagent 复审，因此当前不得写为 `R2F_REVIEW_PASS`。
 
 所有决定、理由和证据槽均未填写；本轮没有 submitted 记录，没有主干采纳、运行时 schema、Gate 变更或真人试玩证据。
 
@@ -23,13 +24,30 @@ ALL_DECISION_SLOT_COUNT=171
 UNRESOLVED_DECISION_SLOT_COUNT=171
 SUBMITTED_RECORD_COUNT=0
 SCHEMA_FILE_SHA256=7a066cd491e382532444a23735213fd5c61f0fd2452b8ed5ff5ac2137062dc50
-REPORT_SHA256=34579a67de94717ac35002a81ccc8b306feb7d411d2a32cb406e630a41365cc8
+REPORT_SHA256=21eeae464f8b1d75b57344fadcd4e76e8826386a974d90025115be8c67cb6cdd
 SOURCE_R2E_REPORT_SHA256=4ad843af92c46409189f93258c6ca0eb319f19e97d2dc32b6361c099d50e3e3d
 SUBMISSION_READY=false
 RUNTIME_AUTHORIZATION=NONE
 ```
 
-## 3. 待独立审查
+## 3. 首审发现与修正
+
+首审结论：
+
+```text
+P0=0
+P1=1
+P2=0
+REVIEW_FAIL
+```
+
+修正内容：
+
+- 每个决策项的 `id` 必须是非空字符串；
+- 派生 selected/rejected 列表只处理字符串 ID，不再对畸形值排序；
+- Hash、null 和 Array 三类畸形 ID 必须受控返回 `ADOPTION_RECORD_VALIDATION=FAIL`，不得输出 Ruby backtrace。
+
+## 4. 待独立复审
 
 独立 subagent 必须只读检查：
 
@@ -42,12 +60,12 @@ RUNTIME_AUTHORIZATION=NONE
 7. schema、模板、report、record 与 source SHA 是否可复算，JSON/Markdown 是否可重建；
 8. `template_only / draft / not_adopted / submission_ready=false / NONE` 边界是否不可绕过。
 
-## 4. 接受边界
+## 5. 接受边界
 
 在独立审查给出 `P0=0 / P1=0` 且不存在冻结阻断项之前，状态保持：
 
 ```text
-R2F_REVIEW_PENDING
+R2F_RECHECK_PENDING
 ```
 
 即使未来改为 `R2F_REVIEW_PASS`，也只表示记录结构、空白模板和校验器满足当前合同，不表示主干已采纳、运行时已授权、Gate 已解锁或真人试玩已完成。
