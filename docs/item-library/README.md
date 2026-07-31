@@ -40,7 +40,7 @@
 - R2-G 支干冻结合同：`item-library-branch-baseline-contract-v0.1.md`
 - R2-G 机器可读冻结入口：`../../data/item-library/branch-baseline-r2g.json`
 - R2-G 冻结摘要：`../../data/item-library/branch-baseline-r2g.md`
-- R2-G 审查状态：`reviews/item-library-r2g-review-status-2026-07-31.md`（首审 P1=3 / P2=1 已修正，当前 `R2G_RECHECK_PENDING`）
+- R2-G 审查状态：`reviews/item-library-r2g-review-status-2026-07-31.md`（首审 P1=3 / P2=1 与第二轮 P1=1 已修正，当前 `R2G_RECHECK_PENDING`）
 
 ## 数据布局
 

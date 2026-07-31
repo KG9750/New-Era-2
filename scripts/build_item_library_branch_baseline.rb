@@ -97,6 +97,16 @@ STAGES = [
   }
 ].freeze
 
+REVIEW_HISTORY_FIELDS = {
+  "r1" => [],
+  "r2a" => ["独立 subagent 首审", "独立 subagent 第二轮", "独立 subagent 第三轮"],
+  "r2b" => ["独立 subagent 首审", "独立 subagent 第二轮", "独立 subagent 第三轮"],
+  "r2c" => ["独立 subagent 首审", "独立 subagent 第二轮"],
+  "r2d" => ["独立 subagent 首审", "独立 subagent 第二轮", "独立 subagent 第三轮"],
+  "r2e" => ["独立 subagent 首审", "独立 subagent 第二轮", "独立 subagent 第三轮"],
+  "r2f" => ["独立 subagent 首审", "独立 subagent 第二轮复审", "独立 subagent 第三轮复审"]
+}.freeze
+
 SOURCE_PATHS = %w[
   docs/design-docs/item-and-manufacturing-system-v0.1.md
   docs/design-docs/item-and-manufacturing-system-v0.1-freeze-decision-2026-07-26.md
@@ -240,6 +250,9 @@ def review_errors(stage)
   return ["#{stage.fetch("id")} 审查文档 H1 或顶部元数据无效"] unless metadata
 
   errors = []
+  actual_history = metadata.keys.select { |field| field.start_with?("独立 subagent") }
+  expected_history = REVIEW_HISTORY_FIELDS.fetch(stage.fetch("id"))
+  errors << "#{stage.fetch("id")} 独立审查历史字段新增、缺失或顺序漂移" unless actual_history == expected_history
   expected = {
     stage.fetch("review_field") => stage.fetch("review_value"),
     "运行时授权" => stage.fetch("authorization_value")

@@ -4,13 +4,14 @@
 **范围：** R1 与 R2-A–R2-F 支干冻结入口、来源文件 SHA、审查状态门禁、跨阶段绑定、计数与授权边界
 **实现验证：** `PASS`
 **独立 subagent 首审：** `REVIEW_FAIL`（`P0=0 / P1=3 / P2=1`）
-**独立 subagent 复审：** `PENDING`
+**独立 subagent 第二轮复审：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=0`）
+**独立 subagent 第三轮复审：** `PENDING`
 **当前状态：** `R2G_RECHECK_PENDING`
 **运行时授权：** `NONE`
 
 ## 1. 当前结论
 
-R2-G 已生成 `reference_only` 机器清单与人工摘要，并在本地完成确定性自校验。独立 subagent 首审发现三项 P1 与一项 P2：实际计数/逻辑 SHA 可被声明值洗白、上游边界可被输出常量洗白、跨阶段来源字段绑定不完整，以及新增文档行尾空白。四项均已按最小范围修正，尚待全新 subagent 复审，因此当前不得写为 `R2G_REVIEW_PASS`。
+R2-G 已生成 `reference_only` 机器清单与人工摘要，并在本地完成确定性自校验。独立 subagent 首审发现三项 P1 与一项 P2，第二轮复审确认首审问题均已解决，但发现新增的更晚审查轮次可绕过硬编码的旧 PASS。全部问题均已按最小范围修正，尚待全新 subagent 第三轮复审，因此当前不得写为 `R2G_REVIEW_PASS`。
 
 R2-G 没有新增或修改候选内容，没有填写 R2-F 的任何决定槽，没有生成真实 submitted 记录、运行时 schema、Gate 授权、真人试玩证据或主干合并。
 
@@ -30,13 +31,13 @@ UNRESOLVED_DECISION_SLOT_COUNT=171
 SUBMITTED_RECORD_COUNT=0
 R1_NESTED_SOURCE_FILE_COUNT=32
 BRANCH_SOURCE_FILE_COUNT=41
-MANIFEST_SHA256=413878a67b5d3b874e5928ba7e98a600559b6baf14b6ab5f2af7421de41f1ac0
+MANIFEST_SHA256=18eb7584621c5446e83fb65edd2c2c1af52bb46e227d3f75198ebfaba468deee
 R1_BUNDLE_FILE_SHA256=32f9d9c41e7271e4da0f037167ad94023d050ee1b7471fdec98495393d9ff361
 ADOPTION_STATE=not_adopted
 RUNTIME_AUTHORIZATION=NONE
 ```
 
-## 3. 首审发现与修正
+## 3. 两轮发现与修正
 
 首审结论：
 
@@ -56,7 +57,18 @@ REVIEW_FAIL
 - 逐阶段验证 candidate/proposal/reference/template、adoption/readiness/authorization 与 acceptance boundary；R2-G 输出从已验证源值派生；
 - 移除合同和状态文档的 10 处行尾空白。
 
-## 4. 待独立复审
+第二轮复审结论：
+
+```text
+P0=0
+P1=1
+P2=0
+REVIEW_FAIL
+```
+
+第二轮确认首审四项均已解决。新增 P1 的修正内容：冻结 R2-A–R2-F 当前完整的 `独立 subagent` 顶部字段序列；任何新增、缺失、改名或顺序变化都会阻断 R2-G，不能沿用旧 PASS。
+
+## 4. 待第三轮独立复审
 
 独立 subagent 必须只读检查：
 
