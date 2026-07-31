@@ -36,7 +36,7 @@
 - R2-F 结构 schema：`../../data/item-library/adoption-record-schema-r2f.json`
 - R2-F 空白模板：`../../data/item-library/adoption-record-templates-r2f.json`
 - R2-F 模板摘要：`../../data/item-library/adoption-record-templates-r2f.md`
-- R2-F 审查状态：`reviews/item-library-r2f-review-status-2026-07-31.md`（首审 P1 已修正，当前 `R2F_RECHECK_PENDING`）
+- R2-F 审查状态：`reviews/item-library-r2f-review-status-2026-07-31.md`（两轮各一项 P1 已修正，当前 `R2F_RECHECK_PENDING`）
 
 ## 数据布局
 

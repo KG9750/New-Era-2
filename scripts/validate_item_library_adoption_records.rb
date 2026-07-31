@@ -339,11 +339,11 @@ def validate_record(record, manifests)
   if record["record_status"] == "draft"
     errors << "draft 不得 submission_ready" unless record["submission_ready"] == false
     errors << "draft adoption_state 必须 not_adopted" unless record["adoption_state"] == "not_adopted"
+    errors << "draft 必须全部 unresolved" unless all_rows.all? { |row| row.is_a?(Hash) && row["decision"] == "unresolved" }
+    errors << "draft evidence 必须全部为 null" unless record["evidence"].is_a?(Hash) && record["evidence"].values.all?(&:nil?)
     if record["record_origin"] == "template"
       errors << "模板 consumer_id 必须为 null" unless record["consumer_id"].nil?
       errors << "模板 target_branch 必须为 null" unless record["target_branch"].nil?
-      errors << "模板必须全部 unresolved" unless all_rows.all? { |row| row.is_a?(Hash) && row["decision"] == "unresolved" }
-      errors << "模板 evidence 必须全部为 null" unless record["evidence"].is_a?(Hash) && record["evidence"].values.all?(&:nil?)
     end
   else
     errors << "submitted 必须来自 consumer" unless record["record_origin"] == "consumer"

@@ -14,7 +14,7 @@
     "data/item-library/consumer-handoff-r2e.json": "fbe9e76798d21fd81c3531656d91ecec4611bb7a34942cb7bdfcc731c21c196d",
     "docs/item-library/reviews/item-library-r2e-review-status-2026-07-31.md": "2260cd6f2f69492f7c93dccda43beed2393018c43bb2fa74f0bc65f6e2f37285",
     "docs/item-library/item-library-adoption-record-contract-v0.1.md": "1ac2f05f22a4cde9607792310a46e985aabe13a24951a5fc6fdf73fdf53fadd4",
-    "scripts/validate_item_library_adoption_records.rb": "4d2a0403e8d18cdf711eb5d8ae3b81e66d0ad21622d5b1a479f3740de194a33a"
+    "scripts/validate_item_library_adoption_records.rb": "1953362e1156352663318a8fe1fd2d196a51865a4353271347003408d4bfffd1"
   },
   "counts": {
     "templates": 4,
@@ -1200,5 +1200,5 @@
     "gate_status_changed": false,
     "human_playtest_completed": false
   },
-  "report_sha256": "21eeae464f8b1d75b57344fadcd4e76e8826386a974d90025115be8c67cb6cdd"
+  "report_sha256": "2a0eaafcac2d400d864f1f541fe2c1c3ba814c00599d3fe7e37d0143b05c42f3"
 }
