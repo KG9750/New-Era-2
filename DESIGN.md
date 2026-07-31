@@ -20,4 +20,5 @@ Design and product-experience entrypoint for `Project-004-New Era 2`.
 - R2-A 语义审计只提高候选库的可审计性与稳定 ID 依赖闭包能力，不改变 R1 内容、正式数值或运行时授权。
 - R2-B 制造流审计只筛查来源、去向、循环、有损回收、候选价值异常和共享瓶颈，不冻结价格、产能或经济平衡，也不改变 Gate。
 - R2-C 单位与候选价值校准只生成 `proposal_only` 内存 overlay；任何候选修正都尚未写回 R1、运行时或 Gate。
+- R2-D 将候选库整理为四个 `reference_only` 主题选择包，并严格区分推荐生产路径与完整语义审计上下文；它不是运行时导入包，也不改变 Gate。
 - V0.4 尚未冻结为正式 GDD。
