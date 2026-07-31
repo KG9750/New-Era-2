@@ -19,7 +19,7 @@
     "docs/item-library/reviews/item-library-r2c-review-status-2026-07-30.md": "5a1c6e5c0266ec4dba6603eaaf31c9a703082e762a359f9e3b96d29ac1fac0c4",
     "scripts/audit_item_library_semantics.rb": "408092263807eedd01aba3128571405856b0c52fd00dee3778d60f1cee533527",
     "docs/item-library/item-library-selection-pack-contract-v0.1.md": "6124b548ac4ace62d111e268a7d160ff1db75e59c75ff57722c5176ff32d5691",
-    "scripts/build_item_library_selection_packs.rb": "447c28cd86e6484ef67286922ce4bf516504db94a38b67a1161ccd6513156f5f"
+    "scripts/build_item_library_selection_packs.rb": "8169303a6cf16c685c3777f682269d34a56298646169c3edd5109b4246214649"
   },
   "counts": {
     "packs": 4,
@@ -4023,5 +4023,5 @@
     "gate_status_changed": false,
     "human_playtest_completed": false
   },
-  "report_sha256": "bebfa538eeefe2e44dab0d83f0fa3e1777295cb2be8811ed1ab35b720d046ddf"
+  "report_sha256": "d38fb26ba5345b832ed579435d5d82b5664e010db256c6649278942f54a18e0b"
 }

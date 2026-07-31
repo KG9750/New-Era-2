@@ -139,6 +139,40 @@ def canonical_sha(value)
   Digest::SHA256.hexdigest(JSON.generate(canonicalize_json(value)))
 end
 
+def r2c_review_pass?(review)
+  lines = review.lines.map(&:strip)
+  final_status_lines = lines.select { |line| line.start_with?("**最终状态：**") }
+  return false unless final_status_lines == ["**最终状态：** `R2C_REVIEW_PASS`"]
+
+  heading = /^## \d+\. 最终结论\s*$/
+  sections = review.split(heading)
+  return false unless sections.length == 2
+
+  final_section = sections.last.split(/^## /, 2).first
+  expected_gate = %w[P0=0 P1=0 P2=0 REVIEW_PASS]
+  gate_blocks = final_section.scan(/```text\s*\n(.*?)\n```/m).map do |match|
+    body = match.first
+    body.lines.map(&:strip).reject(&:empty?)
+  end
+  gate_blocks == [expected_gate]
+end
+
+def assert_r2c_review_gate_regressions(review)
+  pending = review.sub(
+    "**最终状态：** `R2C_REVIEW_PASS`",
+    "**最终状态：** `R2C_REVIEW_PENDING`"
+  )
+  failed = review.sub(
+    "**最终状态：** `R2C_REVIEW_PASS`",
+    "**最终状态：** `R2C_REVIEW_FAIL`"
+  ).sub(
+    "P0=0\nP1=0\nP2=0\nREVIEW_PASS",
+    "P0=0\nP1=1\nP2=0\nREVIEW_FAIL"
+  )
+  raise "R2-C pending 审查状态绕过门禁" if r2c_review_pass?(pending)
+  raise "R2-C fail 审查状态绕过门禁" if r2c_review_pass?(failed)
+end
+
 def code(value)
   96.chr + value.to_s + 96.chr
 end
@@ -596,10 +630,8 @@ unless Digest::SHA256.hexdigest(JSON.generate(calibration_core)) == calibration[
        calibration["runtime_authorization"] == "NONE"
   errors << "R2-C 与当前冻结基线不一致或无法复算"
 end
-unless r2c_review.include?("R2C_REVIEW_PASS") &&
-       r2c_review.include?("P0=0") &&
-       r2c_review.include?("P1=0") &&
-       r2c_review.include?("P2=0")
+assert_r2c_review_gate_regressions(r2c_review)
+unless r2c_review_pass?(r2c_review)
   errors << "R2-C 独立审查尚未通过"
 end
 

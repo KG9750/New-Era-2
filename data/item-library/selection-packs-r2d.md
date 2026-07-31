@@ -5,7 +5,7 @@
 **内容状态：** `candidate_only`
 **选择包状态：** `reference_only`
 **运行时授权：** `NONE`
-**报告 SHA-256：** `bebfa538eeefe2e44dab0d83f0fa3e1777295cb2be8811ed1ab35b720d046ddf`
+**报告 SHA-256：** `d38fb26ba5345b832ed579435d5d82b5664e010db256c6649278942f54a18e0b`
 
 ## 1. 结论
 
