@@ -21,4 +21,5 @@ Design and product-experience entrypoint for `Project-004-New Era 2`.
 - R2-B 制造流审计只筛查来源、去向、循环、有损回收、候选价值异常和共享瓶颈，不冻结价格、产能或经济平衡，也不改变 Gate。
 - R2-C 单位与候选价值校准只生成 `proposal_only` 内存 overlay；任何候选修正都尚未写回 R1、运行时或 Gate。
 - R2-D 将候选库整理为四个 `reference_only` 主题选择包，并严格区分推荐生产路径与完整语义审计上下文；它不是运行时导入包，也不改变 Gate。
+- R2-E 将 R2-D 推荐路径转换为供未来主干评估的显式稳定 ID allowlist；所有交接 manifest 仍为 `reference_only / not_adopted / blocked`，不生成运行时 schema 或采纳记录。
 - V0.4 尚未冻结为正式 GDD。

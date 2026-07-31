@@ -1,0 +1,1885 @@
+{
+  "schema_version": "new-era-2.item-library.consumer-handoff.r2e.v0.1",
+  "source_baseline_id": "new-era-2.item-library.r1-c7-candidate",
+  "source_payload_sha256": "02918459ef17e42ed5e2151660873f6a4e88e12dff29730a013f1d062fe554ad",
+  "source_bundle_file_sha256": "32f9d9c41e7271e4da0f037167ad94023d050ee1b7471fdec98495393d9ff361",
+  "source_selection_report_sha256": "31fd6fe6d0ba1ec2901b053ed341e7d08ee5c83eeb2549e7d198b950df1edbec",
+  "source_selection_report_file_sha256": "ee5bb5f6fc2545d97e307401ca9ce75a9ea0421711c1aeae711322a4506b69bc",
+  "source_r2d_review_file_sha256": "27e9da97f868e4fa969d02ae312fddea980e315c45e6d19018d10221456d50a1",
+  "status": "candidate_only",
+  "handoff_status": "reference_only",
+  "adoption_state": "not_adopted",
+  "runtime_readiness": "blocked",
+  "runtime_authorization": "NONE",
+  "whole_bundle_runtime_import_allowed": false,
+  "consumer_adoption_record_generated": false,
+  "source_files": {
+    "data/item-library/item-library-r1-candidate-bundle.json": "32f9d9c41e7271e4da0f037167ad94023d050ee1b7471fdec98495393d9ff361",
+    "data/item-library/selection-packs-r2d.json": "ee5bb5f6fc2545d97e307401ca9ce75a9ea0421711c1aeae711322a4506b69bc",
+    "docs/item-library/reviews/item-library-r2d-review-status-2026-07-31.md": "27e9da97f868e4fa969d02ae312fddea980e315c45e6d19018d10221456d50a1",
+    "docs/item-library/item-library-consumer-handoff-contract-v0.1.md": "0a017b9a908b7ab1722d47f09eb6c27a5d766ea45d7f4e5d173ad9850dd295ba",
+    "scripts/build_item_library_consumer_handoff.rb": "1d6be0cb3c331484bbce1979754d312c93e323b5f2a6e56fa5576d942fbde270"
+  },
+  "counts": {
+    "manifests": 4,
+    "unique_explicit_ids": 107,
+    "unique_default_excluded_ids": 35
+  },
+  "manifests": [
+    {
+      "id": "handoff.r2e.civic_domestic",
+      "name": "公共生活、家居与权利记录",
+      "source_pack_id": "pack.r2d.civic_domestic",
+      "source_pack_sha256": "c14cbf46afefea3501c25e8f711256a58eee4f2b8281760b3331a96d3ccdd558",
+      "source_path_sha256": "061de63dd974ee2250dc54bc95014e67493b02c25fb8f74f6cd4281a4f59f598",
+      "selection_mode": "explicit_stable_id_allowlist",
+      "roots": [
+        "item.daily.sewing_mending_kit",
+        "item.decoration.carved_wooden_figure",
+        "item.decoration.cloth_toy",
+        "item.furniture.communal_bench",
+        "item.furniture.modular_storage_shelf",
+        "record.right.ration_entitlement",
+        "record.right.workshop_position_qualification"
+      ],
+      "explicit_selection": {
+        "inventory_items": [
+          "item.component.fastener_set",
+          "item.daily.cleaning_rags",
+          "item.daily.sewing_mending_kit",
+          "item.decoration.carved_wooden_figure",
+          "item.decoration.cloth_toy",
+          "item.document.ration_coupon_book",
+          "item.document.workshop_qualification_certificate",
+          "item.furniture.communal_bench",
+          "item.furniture.modular_storage_shelf",
+          "item.material.plant_fiber",
+          "item.material.raw_timber",
+          "item.material.reclaimed_lumber",
+          "item.material.reclaimed_steel_plate",
+          "item.material.scrap_steel",
+          "item.material.woven_cloth",
+          "item.waste.metal_offcuts",
+          "item.waste.sawdust"
+        ],
+        "non_inventory_definitions": [
+          "record.right.ration_entitlement",
+          "record.right.workshop_position_qualification"
+        ],
+        "recipes": [
+          "recipe.c4_wood.saw_lumber",
+          "recipe.c7_daily.assemble_sewing_kit",
+          "recipe.c7_decoration.carve_wooden_figure",
+          "recipe.c7_decoration.sew_cloth_toy",
+          "recipe.c7_furniture.make_communal_bench",
+          "recipe.c7_furniture.make_storage_shelf",
+          "recipe.metal.form_fasteners",
+          "recipe.metal.reclaim_steel_plate",
+          "recipe.textile.weave_cloth"
+        ],
+        "transitions": [
+          "transition.rights.ration_entitlement",
+          "transition.rights.workshop_position_qualification"
+        ]
+      },
+      "explicit_stable_ids": [
+        "item.component.fastener_set",
+        "item.daily.cleaning_rags",
+        "item.daily.sewing_mending_kit",
+        "item.decoration.carved_wooden_figure",
+        "item.decoration.cloth_toy",
+        "item.document.ration_coupon_book",
+        "item.document.workshop_qualification_certificate",
+        "item.furniture.communal_bench",
+        "item.furniture.modular_storage_shelf",
+        "item.material.plant_fiber",
+        "item.material.raw_timber",
+        "item.material.reclaimed_lumber",
+        "item.material.reclaimed_steel_plate",
+        "item.material.scrap_steel",
+        "item.material.woven_cloth",
+        "item.waste.metal_offcuts",
+        "item.waste.sawdust",
+        "recipe.c4_wood.saw_lumber",
+        "recipe.c7_daily.assemble_sewing_kit",
+        "recipe.c7_decoration.carve_wooden_figure",
+        "recipe.c7_decoration.sew_cloth_toy",
+        "recipe.c7_furniture.make_communal_bench",
+        "recipe.c7_furniture.make_storage_shelf",
+        "recipe.metal.form_fasteners",
+        "recipe.metal.reclaim_steel_plate",
+        "recipe.textile.weave_cloth",
+        "record.right.ration_entitlement",
+        "record.right.workshop_position_qualification",
+        "transition.rights.ration_entitlement",
+        "transition.rights.workshop_position_qualification"
+      ],
+      "default_excluded_audit_context": {
+        "policy": "deny_unless_separately_selected_and_reaudited",
+        "nodes": {
+          "inventory_items": [
+            "item.component.mechanical_spares",
+            "item.furniture.field_bed",
+            "item.weapon.bolt_rifle",
+            "item.weapon.pump_shotgun"
+          ],
+          "non_inventory_definitions": [
+
+          ],
+          "recipes": [
+            "recipe.dismantle.bolt_rifle",
+            "recipe.dismantle.field_bed",
+            "recipe.dismantle.pump_shotgun"
+          ],
+          "transitions": [
+
+          ]
+        },
+        "stable_ids": [
+          "item.component.mechanical_spares",
+          "item.furniture.field_bed",
+          "item.weapon.bolt_rifle",
+          "item.weapon.pump_shotgun",
+          "recipe.dismantle.bolt_rifle",
+          "recipe.dismantle.field_bed",
+          "recipe.dismantle.pump_shotgun"
+        ],
+        "source_context_sha256": "75787f261b36b19e8aeae943026ef290658eaf88ff87953d3863bd7f848f575f"
+      },
+      "supply_interface": {
+        "required_input_supply": [
+          {
+            "id": "item.component.fastener_set",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.metal.form_fasteners"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage"
+            ]
+          },
+          {
+            "id": "item.document.ration_coupon_book",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "allocation",
+              "mission"
+            ]
+          },
+          {
+            "id": "item.document.workshop_qualification_certificate",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "allocation",
+              "mission"
+            ]
+          },
+          {
+            "id": "item.material.plant_fiber",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "agriculture",
+              "forage"
+            ]
+          },
+          {
+            "id": "item.material.raw_timber",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "agriculture",
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.reclaimed_lumber",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.c4_wood.saw_lumber"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.reclaimed_steel_plate",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.metal.reclaim_steel_plate"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.scrap_steel",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.woven_cloth",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.textile.weave_cloth"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "trade"
+            ]
+          }
+        ],
+        "summary": {
+          "external_only_item_ids": [
+            "item.document.ration_coupon_book",
+            "item.document.workshop_qualification_certificate",
+            "item.material.plant_fiber",
+            "item.material.raw_timber",
+            "item.material.scrap_steel"
+          ],
+          "producer_only_item_ids": [
+
+          ],
+          "producer_or_external_item_ids": [
+            "item.component.fastener_set",
+            "item.material.reclaimed_lumber",
+            "item.material.reclaimed_steel_plate",
+            "item.material.woven_cloth"
+          ],
+          "incidental_co_production_item_ids": [
+
+          ]
+        }
+      },
+      "adoption_decision_queue": {
+        "numeric_patch_proposal_ids": [
+          "r2c.numeric.08_fastener_batch",
+          "r2c.numeric.13_communal_bench_lumber",
+          "r2c.numeric.14_storage_shelf_lumber"
+        ],
+        "accepted_outlier_ids": [
+          "r2c.accepted.01_fastener_value_premium"
+        ],
+        "mass_review_recipe_ids": [
+
+        ],
+        "r2b_value_outlier_recipe_ids": [
+          "recipe.c7_furniture.make_communal_bench",
+          "recipe.c7_furniture.make_storage_shelf",
+          "recipe.metal.form_fasteners"
+        ],
+        "r2b_contained_cycle_ids": [
+
+        ],
+        "r2b_cycle_touchpoint_ids": [
+          "cycle.775f53000e6dc29b"
+        ],
+        "r2b_shared_bottleneck_item_ids": [
+          "item.component.fastener_set",
+          "item.daily.cleaning_rags",
+          "item.material.plant_fiber",
+          "item.material.raw_timber",
+          "item.material.reclaimed_lumber",
+          "item.material.reclaimed_steel_plate",
+          "item.material.woven_cloth",
+          "item.waste.metal_offcuts"
+        ],
+        "semantic_warning_review": "not_required"
+      },
+      "consumer_decisions": [
+
+      ],
+      "handoff_preparation": "complete",
+      "adoption_state": "not_adopted",
+      "runtime_readiness": "blocked",
+      "unresolved_adoption_requirements": [
+        "runtime_schema_defined",
+        "target_gate_authorized",
+        "r2c_proposals_adjudicated",
+        "manual_reviews_resolved",
+        "external_supply_policy_defined",
+        "save_migration_assessed",
+        "runtime_validation_completed",
+        "human_playtest_completed"
+      ],
+      "runtime_payload": false,
+      "manifest_sha256": "7deab3989b60acfa4bead3a2232a3cf22063bd1f78dc21bdd92173e485847beb"
+    },
+    {
+      "id": "handoff.r2e.industry_maintenance",
+      "name": "工业维修与离线电气",
+      "source_pack_id": "pack.r2d.industry_maintenance",
+      "source_pack_sha256": "986ead1828be8ec20224a9080041c4f969531784324f1de99cca2736c792de89",
+      "source_path_sha256": "0b4c1e79c76bcbfb520e2888bdcb2849eaa6a6340f682c76768ca8758e5d0944",
+      "selection_mode": "explicit_stable_id_allowlist",
+      "roots": [
+        "item.electronic.rechargeable_task_lantern",
+        "item.electronic.wired_field_telephone",
+        "item.tool.field_repair_kit",
+        "item.tool.mechanic_hand_tool_set"
+      ],
+      "explicit_selection": {
+        "inventory_items": [
+          "item.component.cable_harness",
+          "item.component.ceramic_fuse_set",
+          "item.component.electrical_connector_set",
+          "item.component.fastener_set",
+          "item.component.local_power_regulator",
+          "item.component.mechanical_spares",
+          "item.component.protected_relay_module",
+          "item.component.rechargeable_battery_module",
+          "item.component.recovered_electronics",
+          "item.daily.cleaning_rags",
+          "item.electronic.rechargeable_task_lantern",
+          "item.electronic.wired_field_telephone",
+          "item.material.battery_electrolyte",
+          "item.material.copper_wire",
+          "item.material.glass_cullet",
+          "item.material.mixed_nonferrous_scrap",
+          "item.material.plant_fiber",
+          "item.material.raw_timber",
+          "item.material.reclaimed_aluminum_stock",
+          "item.material.reclaimed_copper_stock",
+          "item.material.reclaimed_glass_sheet",
+          "item.material.reclaimed_lumber",
+          "item.material.reclaimed_rubber_strip",
+          "item.material.reclaimed_steel_plate",
+          "item.material.rubber_scrap",
+          "item.material.scrap_steel",
+          "item.material.woven_cloth",
+          "item.tool.field_repair_kit",
+          "item.tool.mechanic_hand_tool_set",
+          "item.waste.glass_fines",
+          "item.waste.metal_offcuts",
+          "item.waste.sawdust"
+        ],
+        "non_inventory_definitions": [
+
+        ],
+        "recipes": [
+          "recipe.c4_battery.assemble_module",
+          "recipe.c4_glass.melt_sheet",
+          "recipe.c4_nonferrous.sort_stock",
+          "recipe.c4_rubber.reclaim_strip",
+          "recipe.c4_wood.saw_lumber",
+          "recipe.c5_component.assemble_connectors",
+          "recipe.c5_component.assemble_power_regulator",
+          "recipe.c5_component.assemble_protected_relay",
+          "recipe.c5_electronic.assemble_field_telephone",
+          "recipe.c5_electronic.assemble_task_lantern",
+          "recipe.c5_tool.assemble_mechanic_set",
+          "recipe.hygiene.prepare_cleaning_rags",
+          "recipe.metal.assemble_field_repair_kit",
+          "recipe.metal.form_fasteners",
+          "recipe.metal.reclaim_steel_plate",
+          "recipe.textile.weave_cloth"
+        ],
+        "transitions": [
+
+        ]
+      },
+      "explicit_stable_ids": [
+        "item.component.cable_harness",
+        "item.component.ceramic_fuse_set",
+        "item.component.electrical_connector_set",
+        "item.component.fastener_set",
+        "item.component.local_power_regulator",
+        "item.component.mechanical_spares",
+        "item.component.protected_relay_module",
+        "item.component.rechargeable_battery_module",
+        "item.component.recovered_electronics",
+        "item.daily.cleaning_rags",
+        "item.electronic.rechargeable_task_lantern",
+        "item.electronic.wired_field_telephone",
+        "item.material.battery_electrolyte",
+        "item.material.copper_wire",
+        "item.material.glass_cullet",
+        "item.material.mixed_nonferrous_scrap",
+        "item.material.plant_fiber",
+        "item.material.raw_timber",
+        "item.material.reclaimed_aluminum_stock",
+        "item.material.reclaimed_copper_stock",
+        "item.material.reclaimed_glass_sheet",
+        "item.material.reclaimed_lumber",
+        "item.material.reclaimed_rubber_strip",
+        "item.material.reclaimed_steel_plate",
+        "item.material.rubber_scrap",
+        "item.material.scrap_steel",
+        "item.material.woven_cloth",
+        "item.tool.field_repair_kit",
+        "item.tool.mechanic_hand_tool_set",
+        "item.waste.glass_fines",
+        "item.waste.metal_offcuts",
+        "item.waste.sawdust",
+        "recipe.c4_battery.assemble_module",
+        "recipe.c4_glass.melt_sheet",
+        "recipe.c4_nonferrous.sort_stock",
+        "recipe.c4_rubber.reclaim_strip",
+        "recipe.c4_wood.saw_lumber",
+        "recipe.c5_component.assemble_connectors",
+        "recipe.c5_component.assemble_power_regulator",
+        "recipe.c5_component.assemble_protected_relay",
+        "recipe.c5_electronic.assemble_field_telephone",
+        "recipe.c5_electronic.assemble_task_lantern",
+        "recipe.c5_tool.assemble_mechanic_set",
+        "recipe.hygiene.prepare_cleaning_rags",
+        "recipe.metal.assemble_field_repair_kit",
+        "recipe.metal.form_fasteners",
+        "recipe.metal.reclaim_steel_plate",
+        "recipe.textile.weave_cloth"
+      ],
+      "default_excluded_audit_context": {
+        "policy": "deny_unless_separately_selected_and_reaudited",
+        "nodes": {
+          "inventory_items": [
+            "item.armor.padded_vest",
+            "item.clothing.work_clothes",
+            "item.data.offline_archive_drive",
+            "item.furniture.field_bed",
+            "item.furniture.task_lamp",
+            "item.valuable.mechanical_watch",
+            "item.weapon.bolt_rifle",
+            "item.weapon.pump_shotgun"
+          ],
+          "non_inventory_definitions": [
+
+          ],
+          "recipes": [
+            "recipe.dismantle.bolt_rifle",
+            "recipe.dismantle.field_bed",
+            "recipe.dismantle.mechanical_watch",
+            "recipe.dismantle.offline_archive_drive",
+            "recipe.dismantle.pump_shotgun",
+            "recipe.dismantle.task_lamp",
+            "recipe.textile.sew_padded_vest",
+            "recipe.textile.sew_work_clothes"
+          ],
+          "transitions": [
+
+          ]
+        },
+        "stable_ids": [
+          "item.armor.padded_vest",
+          "item.clothing.work_clothes",
+          "item.data.offline_archive_drive",
+          "item.furniture.field_bed",
+          "item.furniture.task_lamp",
+          "item.valuable.mechanical_watch",
+          "item.weapon.bolt_rifle",
+          "item.weapon.pump_shotgun",
+          "recipe.dismantle.bolt_rifle",
+          "recipe.dismantle.field_bed",
+          "recipe.dismantle.mechanical_watch",
+          "recipe.dismantle.offline_archive_drive",
+          "recipe.dismantle.pump_shotgun",
+          "recipe.dismantle.task_lamp",
+          "recipe.textile.sew_padded_vest",
+          "recipe.textile.sew_work_clothes"
+        ],
+        "source_context_sha256": "ce6db9d6204161861da5d4cc6592a3cbacb211a1d12cbeda819a5984cd9dd4fe"
+      },
+      "supply_interface": {
+        "required_input_supply": [
+          {
+            "id": "item.component.cable_harness",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.component.ceramic_fuse_set",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.component.electrical_connector_set",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.c5_component.assemble_connectors"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "trade"
+            ]
+          },
+          {
+            "id": "item.component.fastener_set",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.metal.form_fasteners"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage"
+            ]
+          },
+          {
+            "id": "item.component.local_power_regulator",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.c5_component.assemble_power_regulator"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "trade"
+            ]
+          },
+          {
+            "id": "item.component.mechanical_spares",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.component.protected_relay_module",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.c5_component.assemble_protected_relay"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage"
+            ]
+          },
+          {
+            "id": "item.component.rechargeable_battery_module",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.c4_battery.assemble_module"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.component.recovered_electronics",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.daily.cleaning_rags",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.hygiene.prepare_cleaning_rags"
+            ],
+            "incidental_co_producer_recipe_ids": [
+              "recipe.textile.weave_cloth"
+            ],
+            "external_acquisition_types": [
+              "salvage"
+            ]
+          },
+          {
+            "id": "item.material.battery_electrolyte",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.copper_wire",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.glass_cullet",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage"
+            ]
+          },
+          {
+            "id": "item.material.mixed_nonferrous_scrap",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage"
+            ]
+          },
+          {
+            "id": "item.material.plant_fiber",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "agriculture",
+              "forage"
+            ]
+          },
+          {
+            "id": "item.material.raw_timber",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "agriculture",
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.reclaimed_aluminum_stock",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.c4_nonferrous.sort_stock"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.reclaimed_copper_stock",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.c4_nonferrous.sort_stock"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.reclaimed_glass_sheet",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.c4_glass.melt_sheet"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.reclaimed_lumber",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.c4_wood.saw_lumber"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.reclaimed_rubber_strip",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.c4_rubber.reclaim_strip"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.reclaimed_steel_plate",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.metal.reclaim_steel_plate"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.rubber_scrap",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage"
+            ]
+          },
+          {
+            "id": "item.material.scrap_steel",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.woven_cloth",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.textile.weave_cloth"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "trade"
+            ]
+          }
+        ],
+        "summary": {
+          "external_only_item_ids": [
+            "item.component.cable_harness",
+            "item.component.ceramic_fuse_set",
+            "item.component.mechanical_spares",
+            "item.component.recovered_electronics",
+            "item.material.battery_electrolyte",
+            "item.material.copper_wire",
+            "item.material.glass_cullet",
+            "item.material.mixed_nonferrous_scrap",
+            "item.material.plant_fiber",
+            "item.material.raw_timber",
+            "item.material.rubber_scrap",
+            "item.material.scrap_steel"
+          ],
+          "producer_only_item_ids": [
+
+          ],
+          "producer_or_external_item_ids": [
+            "item.component.electrical_connector_set",
+            "item.component.fastener_set",
+            "item.component.local_power_regulator",
+            "item.component.protected_relay_module",
+            "item.component.rechargeable_battery_module",
+            "item.daily.cleaning_rags",
+            "item.material.reclaimed_aluminum_stock",
+            "item.material.reclaimed_copper_stock",
+            "item.material.reclaimed_glass_sheet",
+            "item.material.reclaimed_lumber",
+            "item.material.reclaimed_rubber_strip",
+            "item.material.reclaimed_steel_plate",
+            "item.material.woven_cloth"
+          ],
+          "incidental_co_production_item_ids": [
+            "item.daily.cleaning_rags"
+          ]
+        }
+      },
+      "adoption_decision_queue": {
+        "numeric_patch_proposal_ids": [
+          "r2c.numeric.04_battery_module_casing",
+          "r2c.numeric.08_fastener_batch",
+          "r2c.numeric.09_field_repair_kit_packaging"
+        ],
+        "accepted_outlier_ids": [
+          "r2c.accepted.01_fastener_value_premium"
+        ],
+        "mass_review_recipe_ids": [
+
+        ],
+        "r2b_value_outlier_recipe_ids": [
+          "recipe.metal.form_fasteners"
+        ],
+        "r2b_contained_cycle_ids": [
+
+        ],
+        "r2b_cycle_touchpoint_ids": [
+          "cycle.1653776ea2d42384",
+          "cycle.775f53000e6dc29b"
+        ],
+        "r2b_shared_bottleneck_item_ids": [
+          "item.component.cable_harness",
+          "item.component.electrical_connector_set",
+          "item.component.fastener_set",
+          "item.component.mechanical_spares",
+          "item.component.rechargeable_battery_module",
+          "item.component.recovered_electronics",
+          "item.daily.cleaning_rags",
+          "item.material.copper_wire",
+          "item.material.plant_fiber",
+          "item.material.raw_timber",
+          "item.material.reclaimed_aluminum_stock",
+          "item.material.reclaimed_glass_sheet",
+          "item.material.reclaimed_lumber",
+          "item.material.reclaimed_rubber_strip",
+          "item.material.reclaimed_steel_plate",
+          "item.material.woven_cloth",
+          "item.waste.metal_offcuts"
+        ],
+        "semantic_warning_review": "not_required"
+      },
+      "consumer_decisions": [
+
+      ],
+      "handoff_preparation": "complete",
+      "adoption_state": "not_adopted",
+      "runtime_readiness": "blocked",
+      "unresolved_adoption_requirements": [
+        "runtime_schema_defined",
+        "target_gate_authorized",
+        "r2c_proposals_adjudicated",
+        "manual_reviews_resolved",
+        "external_supply_policy_defined",
+        "save_migration_assessed",
+        "runtime_validation_completed",
+        "human_playtest_completed"
+      ],
+      "runtime_payload": false,
+      "manifest_sha256": "77fe03ac3106819f31241d8978b2bcb7bae77a3c9b9796ab9d826d3daa16583a"
+    },
+    {
+      "id": "handoff.r2e.security_low_tech",
+      "name": "低技术安防与预警",
+      "source_pack_id": "pack.r2d.security_low_tech",
+      "source_pack_sha256": "06a61163716bff7ef4af33368568d16a9af4e8c95e513a684287f82da08bba9f",
+      "source_path_sha256": "b8097dc61c5fa7619d62f0a9770d1fcd3cca5341e07889f38cf3f76a4fdcf79d",
+      "selection_mode": "explicit_stable_id_allowlist",
+      "roots": [
+        "item.ammunition.crossbow_bolt_bundle",
+        "item.ammunition.hunting_arrow_bundle",
+        "item.armor.padded_vest",
+        "item.armor.reinforced_plate",
+        "item.electronic.wired_alarm_unit",
+        "item.weapon.hunting_bow",
+        "item.weapon.light_crossbow"
+      ],
+      "explicit_selection": {
+        "inventory_items": [
+          "item.ammunition.crossbow_bolt_bundle",
+          "item.ammunition.hunting_arrow_bundle",
+          "item.armor.padded_vest",
+          "item.armor.reinforced_plate",
+          "item.component.cable_harness",
+          "item.component.fastener_set",
+          "item.component.mechanical_spares",
+          "item.component.recovered_electronics",
+          "item.daily.cleaning_rags",
+          "item.electronic.wired_alarm_unit",
+          "item.material.copper_wire",
+          "item.material.plant_fiber",
+          "item.material.raw_timber",
+          "item.material.reclaimed_lumber",
+          "item.material.reclaimed_steel_plate",
+          "item.material.scrap_steel",
+          "item.material.woven_cloth",
+          "item.waste.metal_offcuts",
+          "item.waste.sawdust",
+          "item.weapon.hunting_bow",
+          "item.weapon.light_crossbow"
+        ],
+        "non_inventory_definitions": [
+
+        ],
+        "recipes": [
+          "recipe.c4_wood.saw_lumber",
+          "recipe.c6_ammo.make_crossbow_bolts",
+          "recipe.c6_ammo.make_hunting_arrows",
+          "recipe.c6_weapon.make_hunting_bow",
+          "recipe.c6_weapon.make_light_crossbow",
+          "recipe.electrical.assemble_wired_alarm_unit",
+          "recipe.metal.assemble_reinforced_plate",
+          "recipe.metal.form_fasteners",
+          "recipe.metal.reclaim_steel_plate",
+          "recipe.textile.sew_padded_vest",
+          "recipe.textile.weave_cloth"
+        ],
+        "transitions": [
+
+        ]
+      },
+      "explicit_stable_ids": [
+        "item.ammunition.crossbow_bolt_bundle",
+        "item.ammunition.hunting_arrow_bundle",
+        "item.armor.padded_vest",
+        "item.armor.reinforced_plate",
+        "item.component.cable_harness",
+        "item.component.fastener_set",
+        "item.component.mechanical_spares",
+        "item.component.recovered_electronics",
+        "item.daily.cleaning_rags",
+        "item.electronic.wired_alarm_unit",
+        "item.material.copper_wire",
+        "item.material.plant_fiber",
+        "item.material.raw_timber",
+        "item.material.reclaimed_lumber",
+        "item.material.reclaimed_steel_plate",
+        "item.material.scrap_steel",
+        "item.material.woven_cloth",
+        "item.waste.metal_offcuts",
+        "item.waste.sawdust",
+        "item.weapon.hunting_bow",
+        "item.weapon.light_crossbow",
+        "recipe.c4_wood.saw_lumber",
+        "recipe.c6_ammo.make_crossbow_bolts",
+        "recipe.c6_ammo.make_hunting_arrows",
+        "recipe.c6_weapon.make_hunting_bow",
+        "recipe.c6_weapon.make_light_crossbow",
+        "recipe.electrical.assemble_wired_alarm_unit",
+        "recipe.metal.assemble_reinforced_plate",
+        "recipe.metal.form_fasteners",
+        "recipe.metal.reclaim_steel_plate",
+        "recipe.textile.sew_padded_vest",
+        "recipe.textile.weave_cloth"
+      ],
+      "default_excluded_audit_context": {
+        "policy": "deny_unless_separately_selected_and_reaudited",
+        "nodes": {
+          "inventory_items": [
+            "item.ammunition.practice_arrow_bundle",
+            "item.component.sealed_bearing_kit",
+            "item.data.offline_archive_drive",
+            "item.furniture.field_bed",
+            "item.furniture.task_lamp",
+            "item.material.reclaimed_rubber_strip",
+            "item.material.rubber_scrap",
+            "item.tool.mechanic_hand_tool_set",
+            "item.valuable.mechanical_watch",
+            "item.weapon.bolt_rifle",
+            "item.weapon.breaching_sledge",
+            "item.weapon.hunting_spear",
+            "item.weapon.pump_shotgun"
+          ],
+          "non_inventory_definitions": [
+            "entity.placed.wired_alarm_unit"
+          ],
+          "recipes": [
+            "recipe.c4_rubber.reclaim_strip",
+            "recipe.c5_component.assemble_bearing_kit",
+            "recipe.c5_tool.assemble_mechanic_set",
+            "recipe.c6_ammo.make_practice_arrows",
+            "recipe.c6_weapon.make_breaching_sledge",
+            "recipe.c6_weapon.make_hunting_spear",
+            "recipe.dismantle.bolt_rifle",
+            "recipe.dismantle.field_bed",
+            "recipe.dismantle.mechanical_watch",
+            "recipe.dismantle.offline_archive_drive",
+            "recipe.dismantle.pump_shotgun",
+            "recipe.dismantle.task_lamp"
+          ],
+          "transitions": [
+            "transition.deploy.wired_alarm_unit"
+          ]
+        },
+        "stable_ids": [
+          "entity.placed.wired_alarm_unit",
+          "item.ammunition.practice_arrow_bundle",
+          "item.component.sealed_bearing_kit",
+          "item.data.offline_archive_drive",
+          "item.furniture.field_bed",
+          "item.furniture.task_lamp",
+          "item.material.reclaimed_rubber_strip",
+          "item.material.rubber_scrap",
+          "item.tool.mechanic_hand_tool_set",
+          "item.valuable.mechanical_watch",
+          "item.weapon.bolt_rifle",
+          "item.weapon.breaching_sledge",
+          "item.weapon.hunting_spear",
+          "item.weapon.pump_shotgun",
+          "recipe.c4_rubber.reclaim_strip",
+          "recipe.c5_component.assemble_bearing_kit",
+          "recipe.c5_tool.assemble_mechanic_set",
+          "recipe.c6_ammo.make_practice_arrows",
+          "recipe.c6_weapon.make_breaching_sledge",
+          "recipe.c6_weapon.make_hunting_spear",
+          "recipe.dismantle.bolt_rifle",
+          "recipe.dismantle.field_bed",
+          "recipe.dismantle.mechanical_watch",
+          "recipe.dismantle.offline_archive_drive",
+          "recipe.dismantle.pump_shotgun",
+          "recipe.dismantle.task_lamp",
+          "transition.deploy.wired_alarm_unit"
+        ],
+        "source_context_sha256": "e004aa99f53e42255d7cbb3bf0c89aff51ee70993a7c24f295f3c4801bfdc7fe"
+      },
+      "supply_interface": {
+        "required_input_supply": [
+          {
+            "id": "item.component.cable_harness",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.component.fastener_set",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.metal.form_fasteners"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage"
+            ]
+          },
+          {
+            "id": "item.component.mechanical_spares",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.component.recovered_electronics",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.copper_wire",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.plant_fiber",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "agriculture",
+              "forage"
+            ]
+          },
+          {
+            "id": "item.material.raw_timber",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "agriculture",
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.reclaimed_lumber",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.c4_wood.saw_lumber"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.reclaimed_steel_plate",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.metal.reclaim_steel_plate"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.scrap_steel",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.woven_cloth",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.textile.weave_cloth"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "trade"
+            ]
+          },
+          {
+            "id": "item.waste.metal_offcuts",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.metal.reclaim_steel_plate"
+            ],
+            "incidental_co_producer_recipe_ids": [
+              "recipe.c6_weapon.make_light_crossbow",
+              "recipe.metal.assemble_reinforced_plate",
+              "recipe.metal.form_fasteners"
+            ],
+            "external_acquisition_types": [
+              "salvage"
+            ]
+          }
+        ],
+        "summary": {
+          "external_only_item_ids": [
+            "item.component.cable_harness",
+            "item.component.mechanical_spares",
+            "item.component.recovered_electronics",
+            "item.material.copper_wire",
+            "item.material.plant_fiber",
+            "item.material.raw_timber",
+            "item.material.scrap_steel"
+          ],
+          "producer_only_item_ids": [
+
+          ],
+          "producer_or_external_item_ids": [
+            "item.component.fastener_set",
+            "item.material.reclaimed_lumber",
+            "item.material.reclaimed_steel_plate",
+            "item.material.woven_cloth",
+            "item.waste.metal_offcuts"
+          ],
+          "incidental_co_production_item_ids": [
+            "item.waste.metal_offcuts"
+          ]
+        }
+      },
+      "adoption_decision_queue": {
+        "numeric_patch_proposal_ids": [
+          "r2c.numeric.08_fastener_batch",
+          "r2c.numeric.10_wired_alarm_housing",
+          "r2c.numeric.15_reinforced_plate_offcuts"
+        ],
+        "accepted_outlier_ids": [
+          "r2c.accepted.01_fastener_value_premium",
+          "r2c.accepted.02_reinforced_plate_value_premium"
+        ],
+        "mass_review_recipe_ids": [
+          "recipe.metal.assemble_reinforced_plate"
+        ],
+        "r2b_value_outlier_recipe_ids": [
+          "recipe.metal.assemble_reinforced_plate",
+          "recipe.metal.form_fasteners"
+        ],
+        "r2b_contained_cycle_ids": [
+
+        ],
+        "r2b_cycle_touchpoint_ids": [
+          "cycle.1653776ea2d42384",
+          "cycle.775f53000e6dc29b"
+        ],
+        "r2b_shared_bottleneck_item_ids": [
+          "item.component.cable_harness",
+          "item.component.fastener_set",
+          "item.component.mechanical_spares",
+          "item.component.recovered_electronics",
+          "item.daily.cleaning_rags",
+          "item.material.copper_wire",
+          "item.material.plant_fiber",
+          "item.material.raw_timber",
+          "item.material.reclaimed_lumber",
+          "item.material.reclaimed_steel_plate",
+          "item.material.woven_cloth",
+          "item.waste.metal_offcuts"
+        ],
+        "semantic_warning_review": "not_required"
+      },
+      "consumer_decisions": [
+
+      ],
+      "handoff_preparation": "complete",
+      "adoption_state": "not_adopted",
+      "runtime_readiness": "blocked",
+      "unresolved_adoption_requirements": [
+        "runtime_schema_defined",
+        "target_gate_authorized",
+        "r2c_proposals_adjudicated",
+        "manual_reviews_resolved",
+        "external_supply_policy_defined",
+        "save_migration_assessed",
+        "runtime_validation_completed",
+        "human_playtest_completed"
+      ],
+      "runtime_payload": false,
+      "manifest_sha256": "85d7a1f2a2ec8aea210d56d2129b9a02fd0e359c3807f59e2e213e5f8659f212"
+    },
+    {
+      "id": "handoff.r2e.survival_medical",
+      "name": "生存、医疗与基础安置",
+      "source_pack_id": "pack.r2d.survival_medical",
+      "source_pack_sha256": "af6b081868fb033a0d239d81f1f10e304cb0699bd76fb17821732fcad7f7ff87",
+      "source_path_sha256": "7821708fc9c379c1afe564664e10524f47e9febce63570763c022cbe977c8e72",
+      "selection_mode": "explicit_stable_id_allowlist",
+      "roots": [
+        "item.clothing.insulated_coat",
+        "item.food.travel_biscuit",
+        "item.furniture.field_bed",
+        "item.medical.field_wound_care_pack",
+        "item.medical.wound_irrigation_saline"
+      ],
+      "explicit_selection": {
+        "inventory_items": [
+          "item.agriculture.compound_fertilizer",
+          "item.chemical.industrial_alcohol",
+          "item.chemical.mineral_salt",
+          "item.clothing.insulated_coat",
+          "item.component.fastener_set",
+          "item.daily.cleaning_rags",
+          "item.food.fresh_vegetable",
+          "item.food.grain_flour",
+          "item.food.raw_grain",
+          "item.food.travel_biscuit",
+          "item.food.unrefined_sugar",
+          "item.furniture.field_bed",
+          "item.material.dry_firewood",
+          "item.material.plant_fiber",
+          "item.material.raw_timber",
+          "item.material.reclaimed_steel_plate",
+          "item.material.scrap_steel",
+          "item.material.woven_cloth",
+          "item.medical.basic_antiseptic",
+          "item.medical.field_wound_care_pack",
+          "item.medical.sterile_bandage",
+          "item.medical.sterile_gauze_pad",
+          "item.medical.wound_irrigation_saline",
+          "item.plant.mixed_crop_seed",
+          "item.waste.metal_offcuts",
+          "item.waste.sawdust",
+          "item.waste.wood_ash",
+          "item.water.clean_water"
+        ],
+        "non_inventory_definitions": [
+
+        ],
+        "recipes": [
+          "recipe.agriculture.mixed_field_crop_cycle",
+          "recipe.c2_assembly.field_bed",
+          "recipe.c4_wood.split_firewood",
+          "recipe.c5_food.mill_flour",
+          "recipe.c6_food.bake_travel_biscuit",
+          "recipe.c6_medical.pack_field_wound_care",
+          "recipe.c6_medical.prepare_irrigation_saline",
+          "recipe.c7_clothing.sew_insulated_coat",
+          "recipe.chemistry.prepare_basic_antiseptic",
+          "recipe.medical.sterilize_bandage",
+          "recipe.metal.form_fasteners",
+          "recipe.metal.reclaim_steel_plate",
+          "recipe.textile.weave_cloth"
+        ],
+        "transitions": [
+
+        ]
+      },
+      "explicit_stable_ids": [
+        "item.agriculture.compound_fertilizer",
+        "item.chemical.industrial_alcohol",
+        "item.chemical.mineral_salt",
+        "item.clothing.insulated_coat",
+        "item.component.fastener_set",
+        "item.daily.cleaning_rags",
+        "item.food.fresh_vegetable",
+        "item.food.grain_flour",
+        "item.food.raw_grain",
+        "item.food.travel_biscuit",
+        "item.food.unrefined_sugar",
+        "item.furniture.field_bed",
+        "item.material.dry_firewood",
+        "item.material.plant_fiber",
+        "item.material.raw_timber",
+        "item.material.reclaimed_steel_plate",
+        "item.material.scrap_steel",
+        "item.material.woven_cloth",
+        "item.medical.basic_antiseptic",
+        "item.medical.field_wound_care_pack",
+        "item.medical.sterile_bandage",
+        "item.medical.sterile_gauze_pad",
+        "item.medical.wound_irrigation_saline",
+        "item.plant.mixed_crop_seed",
+        "item.waste.metal_offcuts",
+        "item.waste.sawdust",
+        "item.waste.wood_ash",
+        "item.water.clean_water",
+        "recipe.agriculture.mixed_field_crop_cycle",
+        "recipe.c2_assembly.field_bed",
+        "recipe.c4_wood.split_firewood",
+        "recipe.c5_food.mill_flour",
+        "recipe.c6_food.bake_travel_biscuit",
+        "recipe.c6_medical.pack_field_wound_care",
+        "recipe.c6_medical.prepare_irrigation_saline",
+        "recipe.c7_clothing.sew_insulated_coat",
+        "recipe.chemistry.prepare_basic_antiseptic",
+        "recipe.medical.sterilize_bandage",
+        "recipe.metal.form_fasteners",
+        "recipe.metal.reclaim_steel_plate",
+        "recipe.textile.weave_cloth"
+      ],
+      "default_excluded_audit_context": {
+        "policy": "deny_unless_separately_selected_and_reaudited",
+        "nodes": {
+          "inventory_items": [
+            "item.component.mechanical_spares",
+            "item.weapon.bolt_rifle",
+            "item.weapon.pump_shotgun"
+          ],
+          "non_inventory_definitions": [
+            "entity.placed.field_bed"
+          ],
+          "recipes": [
+            "recipe.dismantle.bolt_rifle",
+            "recipe.dismantle.field_bed",
+            "recipe.dismantle.pump_shotgun",
+            "recipe.repair.field_bed"
+          ],
+          "transitions": [
+            "transition.deploy.field_bed"
+          ]
+        },
+        "stable_ids": [
+          "entity.placed.field_bed",
+          "item.component.mechanical_spares",
+          "item.weapon.bolt_rifle",
+          "item.weapon.pump_shotgun",
+          "recipe.dismantle.bolt_rifle",
+          "recipe.dismantle.field_bed",
+          "recipe.dismantle.pump_shotgun",
+          "recipe.repair.field_bed",
+          "transition.deploy.field_bed"
+        ],
+        "source_context_sha256": "4b66185fb12a70492063d1aa0bcccccedacf9f9c294ed3dd34ba0e408f088157"
+      },
+      "supply_interface": {
+        "required_input_supply": [
+          {
+            "id": "item.agriculture.compound_fertilizer",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "mission",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.chemical.industrial_alcohol",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.chemical.mineral_salt",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "forage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.component.fastener_set",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.metal.form_fasteners"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage"
+            ]
+          },
+          {
+            "id": "item.food.grain_flour",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.c5_food.mill_flour"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "trade"
+            ]
+          },
+          {
+            "id": "item.food.raw_grain",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.agriculture.mixed_field_crop_cycle"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "agriculture",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.food.unrefined_sugar",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "mission",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.dry_firewood",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.c4_wood.split_firewood"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "forage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.plant_fiber",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "agriculture",
+              "forage"
+            ]
+          },
+          {
+            "id": "item.material.raw_timber",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "agriculture",
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.reclaimed_steel_plate",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.metal.reclaim_steel_plate"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.scrap_steel",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "salvage",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.material.woven_cloth",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.textile.weave_cloth"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "trade"
+            ]
+          },
+          {
+            "id": "item.medical.basic_antiseptic",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.chemistry.prepare_basic_antiseptic"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "trade"
+            ]
+          },
+          {
+            "id": "item.medical.sterile_bandage",
+            "supply_mode": "recommended_producer_or_external",
+            "designated_supply_producer_recipe_ids": [
+              "recipe.medical.sterilize_bandage"
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "trade"
+            ]
+          },
+          {
+            "id": "item.medical.sterile_gauze_pad",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "mission",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.plant.mixed_crop_seed",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "agriculture",
+              "trade"
+            ]
+          },
+          {
+            "id": "item.water.clean_water",
+            "supply_mode": "external_source",
+            "designated_supply_producer_recipe_ids": [
+
+            ],
+            "incidental_co_producer_recipe_ids": [
+
+            ],
+            "external_acquisition_types": [
+              "trade"
+            ]
+          }
+        ],
+        "summary": {
+          "external_only_item_ids": [
+            "item.agriculture.compound_fertilizer",
+            "item.chemical.industrial_alcohol",
+            "item.chemical.mineral_salt",
+            "item.food.unrefined_sugar",
+            "item.material.plant_fiber",
+            "item.material.raw_timber",
+            "item.material.scrap_steel",
+            "item.medical.sterile_gauze_pad",
+            "item.plant.mixed_crop_seed",
+            "item.water.clean_water"
+          ],
+          "producer_only_item_ids": [
+
+          ],
+          "producer_or_external_item_ids": [
+            "item.component.fastener_set",
+            "item.food.grain_flour",
+            "item.food.raw_grain",
+            "item.material.dry_firewood",
+            "item.material.reclaimed_steel_plate",
+            "item.material.woven_cloth",
+            "item.medical.basic_antiseptic",
+            "item.medical.sterile_bandage"
+          ],
+          "incidental_co_production_item_ids": [
+
+          ]
+        }
+      },
+      "adoption_decision_queue": {
+        "numeric_patch_proposal_ids": [
+          "r2c.numeric.01_flour_unit_mass",
+          "r2c.numeric.06_sterile_bandage_unit",
+          "r2c.numeric.07_field_bed_frame",
+          "r2c.numeric.08_fastener_batch"
+        ],
+        "accepted_outlier_ids": [
+          "r2c.accepted.01_fastener_value_premium"
+        ],
+        "mass_review_recipe_ids": [
+          "recipe.c6_medical.prepare_irrigation_saline"
+        ],
+        "r2b_value_outlier_recipe_ids": [
+          "recipe.medical.sterilize_bandage",
+          "recipe.metal.form_fasteners"
+        ],
+        "r2b_contained_cycle_ids": [
+
+        ],
+        "r2b_cycle_touchpoint_ids": [
+          "cycle.775f53000e6dc29b"
+        ],
+        "r2b_shared_bottleneck_item_ids": [
+          "item.chemical.industrial_alcohol",
+          "item.chemical.mineral_salt",
+          "item.component.fastener_set",
+          "item.daily.cleaning_rags",
+          "item.food.fresh_vegetable",
+          "item.food.grain_flour",
+          "item.food.raw_grain",
+          "item.food.unrefined_sugar",
+          "item.material.dry_firewood",
+          "item.material.plant_fiber",
+          "item.material.raw_timber",
+          "item.material.reclaimed_steel_plate",
+          "item.material.woven_cloth",
+          "item.medical.basic_antiseptic",
+          "item.medical.sterile_gauze_pad",
+          "item.waste.metal_offcuts",
+          "item.water.clean_water"
+        ],
+        "semantic_warning_review": "not_required"
+      },
+      "consumer_decisions": [
+
+      ],
+      "handoff_preparation": "complete",
+      "adoption_state": "not_adopted",
+      "runtime_readiness": "blocked",
+      "unresolved_adoption_requirements": [
+        "runtime_schema_defined",
+        "target_gate_authorized",
+        "r2c_proposals_adjudicated",
+        "manual_reviews_resolved",
+        "external_supply_policy_defined",
+        "save_migration_assessed",
+        "runtime_validation_completed",
+        "human_playtest_completed"
+      ],
+      "runtime_payload": false,
+      "manifest_sha256": "56ba2321d2107697f07d3e48b75acea702a70a461f7eb22cff085c845a2202c3"
+    }
+  ],
+  "acceptance_boundary": {
+    "r1_modified": false,
+    "r2c_proposals_adopted": false,
+    "r2d_selection_changed": false,
+    "runtime_schema_generated": false,
+    "runtime_authorized": false,
+    "gate_status_changed": false,
+    "human_playtest_completed": false
+  },
+  "report_sha256": "06abd80d014ddbbeefb61e28464d27a6005b4b94097ee1e9ec52d613c639de6c"
+}
