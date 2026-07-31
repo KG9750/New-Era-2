@@ -5,7 +5,7 @@
 **采纳状态：** `not_adopted`
 **运行时就绪：** `blocked`
 **运行时授权：** `NONE`
-**Manifest SHA-256：** `18eb7584621c5446e83fb65edd2c2c1af52bb46e227d3f75198ebfaba468deee`
+**Manifest SHA-256：** `a01201bf9753a837714f9099d4a2793a35b7456a08d54239562af33de7ae6341`
 
 ## 1. 冻结内容
 

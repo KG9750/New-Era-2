@@ -5,13 +5,14 @@
 **实现验证：** `PASS`
 **独立 subagent 首审：** `REVIEW_FAIL`（`P0=0 / P1=3 / P2=1`）
 **独立 subagent 第二轮复审：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=0`）
-**独立 subagent 第三轮复审：** `PENDING`
+**独立 subagent 第三轮复审：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=0`）
+**独立 subagent 第四轮复审：** `PENDING`
 **当前状态：** `R2G_RECHECK_PENDING`
 **运行时授权：** `NONE`
 
 ## 1. 当前结论
 
-R2-G 已生成 `reference_only` 机器清单与人工摘要，并在本地完成确定性自校验。独立 subagent 首审发现三项 P1 与一项 P2，第二轮复审确认首审问题均已解决，但发现新增的更晚审查轮次可绕过硬编码的旧 PASS。全部问题均已按最小范围修正，尚待全新 subagent 第三轮复审，因此当前不得写为 `R2G_REVIEW_PASS`。
+R2-G 已生成 `reference_only` 机器清单与人工摘要，并在本地完成确定性自校验。独立 subagent 首审发现三项 P1 与一项 P2；第二轮发现新增的更晚审查轮次可绕过旧 PASS；第三轮又发现改名后的更晚审查字段可绕过前缀筛选。全部问题均已按最小范围修正，尚待全新 subagent 第四轮复审，因此当前不得写为 `R2G_REVIEW_PASS`。
 
 R2-G 没有新增或修改候选内容，没有填写 R2-F 的任何决定槽，没有生成真实 submitted 记录、运行时 schema、Gate 授权、真人试玩证据或主干合并。
 
@@ -31,13 +32,13 @@ UNRESOLVED_DECISION_SLOT_COUNT=171
 SUBMITTED_RECORD_COUNT=0
 R1_NESTED_SOURCE_FILE_COUNT=32
 BRANCH_SOURCE_FILE_COUNT=41
-MANIFEST_SHA256=18eb7584621c5446e83fb65edd2c2c1af52bb46e227d3f75198ebfaba468deee
+MANIFEST_SHA256=a01201bf9753a837714f9099d4a2793a35b7456a08d54239562af33de7ae6341
 R1_BUNDLE_FILE_SHA256=32f9d9c41e7271e4da0f037167ad94023d050ee1b7471fdec98495393d9ff361
 ADOPTION_STATE=not_adopted
 RUNTIME_AUTHORIZATION=NONE
 ```
 
-## 3. 两轮发现与修正
+## 3. 三轮发现与修正
 
 首审结论：
 
@@ -66,9 +67,11 @@ P2=0
 REVIEW_FAIL
 ```
 
-第二轮确认首审四项均已解决。新增 P1 的修正内容：冻结 R2-A–R2-F 当前完整的 `独立 subagent` 顶部字段序列；任何新增、缺失、改名或顺序变化都会阻断 R2-G，不能沿用旧 PASS。
+第二轮确认首审四项均已解决。针对新增 P1，当时先冻结了 R2-A–R2-F 中以 `独立 subagent` 开头的顶部字段序列，使该前缀内的新增、缺失、改名或顺序变化阻断 R2-G。
 
-## 4. 待第三轮独立复审
+第三轮复审结论同为 `P0=0 / P1=1 / P2=0 / REVIEW_FAIL`。第三轮发现将字段改名为“第四轮独立 subagent 复审”可避开前缀筛选。现改为逐阶段冻结完整顶部元数据字段名及顺序，拒绝任何额外字段，不再猜测字段前缀。
+
+## 4. 待第四轮独立复审
 
 独立 subagent 必须只读检查：
 
