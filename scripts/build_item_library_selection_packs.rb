@@ -139,10 +139,40 @@ def canonical_sha(value)
   Digest::SHA256.hexdigest(JSON.generate(canonicalize_json(value)))
 end
 
+def r2c_review_metadata(review)
+  preamble = review.split(/^## /, 2).first
+  lines = preamble.lines.map(&:strip).reject(&:empty?)
+  return nil unless lines.shift == "# 候选物品库 R2-C 审查状态"
+
+  lines.each_with_object({}) do |line, fields|
+    match = line.match(/\A\*\*(.+?)：\*\* (.+)\z/)
+    return nil unless match
+
+    key = match[1]
+    return nil if fields.key?(key)
+
+    fields[key] = match[2]
+  end
+end
+
 def r2c_review_pass?(review)
-  lines = review.lines.map(&:strip)
-  final_status_lines = lines.select { |line| line.start_with?("**最终状态：**") }
-  return false unless final_status_lines == ["**最终状态：** `R2C_REVIEW_PASS`"]
+  fields = r2c_review_metadata(review)
+  return false unless fields
+
+  expected_fields = [
+    "日期",
+    "范围",
+    "实现验证",
+    "独立 subagent 首审",
+    "独立 subagent 第二轮",
+    "最终状态",
+    "运行时授权"
+  ]
+  return false unless fields.keys.sort == expected_fields.sort
+  return false unless fields["实现验证"] == "`PASS`"
+  return false unless fields["独立 subagent 第二轮"] == "`REVIEW_PASS`（`P0=0 / P1=0 / P2=0`）"
+  return false unless fields["最终状态"] == "`R2C_REVIEW_PASS`"
+  return false unless fields["运行时授权"] == "`NONE`"
 
   heading = /^## \d+\. 最终结论\s*$/
   sections = review.split(heading)
@@ -158,19 +188,32 @@ def r2c_review_pass?(review)
 end
 
 def assert_r2c_review_gate_regressions(review)
+  pass_status = "**最终状态：** `R2C_REVIEW_PASS`"
   pending = review.sub(
-    "**最终状态：** `R2C_REVIEW_PASS`",
+    pass_status,
     "**最终状态：** `R2C_REVIEW_PENDING`"
   )
   failed = review.sub(
-    "**最终状态：** `R2C_REVIEW_PASS`",
+    pass_status,
     "**最终状态：** `R2C_REVIEW_FAIL`"
   ).sub(
     "P0=0\nP1=0\nP2=0\nREVIEW_PASS",
     "P0=0\nP1=1\nP2=0\nREVIEW_FAIL"
   )
+  duplicate = review.sub(pass_status, [pass_status, pass_status].join("\n"))
+  fake_prose = pending.sub(/^## /, "说明文字保留 R2C_REVIEW_PASS 与 P0=0 / P1=0 / P2=0。\n\n## ")
+  fake_fenced_status = review.sub(
+    pass_status,
+    "**当前状态：** `R2C_REVIEW_PENDING`"
+  ).sub(
+    /^## /,
+    "```text\n#{pass_status}\n```\n\n## "
+  )
   raise "R2-C pending 审查状态绕过门禁" if r2c_review_pass?(pending)
   raise "R2-C fail 审查状态绕过门禁" if r2c_review_pass?(failed)
+  raise "R2-C 重复最终状态绕过门禁" if r2c_review_pass?(duplicate)
+  raise "R2-C 说明文字 token 绕过门禁" if r2c_review_pass?(fake_prose)
+  raise "R2-C fenced 伪状态绕过门禁" if r2c_review_pass?(fake_fenced_status)
 end
 
 def code(value)

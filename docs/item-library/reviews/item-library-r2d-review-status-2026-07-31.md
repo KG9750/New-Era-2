@@ -4,13 +4,14 @@
 **范围：** 四个主题根集合、推荐生产路径、完整语义审计上下文、R2-B/R2-C 风险绑定、确定性报告与接受边界
 **实现验证：** `PASS`
 **独立 subagent 首审：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=0`）
-**独立 subagent 复审：** `PENDING`
+**独立 subagent 第二轮：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=0`）
+**独立 subagent 第三轮：** `PENDING`
 **当前状态：** `R2D_RECHECK_PENDING`
 **运行时授权：** `NONE`
 
 ## 1. 当前结论
 
-R2-D 已生成四个 `reference_only` 主题选择包，并在本地通过生成器自检。独立 subagent 首审发现一项 P1，上游 R2-C 审查状态门禁只做全文 token 搜索，可能被历史 PASS 文本绕过。该项已按最小范围修正，尚待全新 subagent 复审，因此当前不得写为 `R2D_REVIEW_PASS`。
+R2-D 已生成四个 `reference_only` 主题选择包，并在本地通过生成器自检。独立 subagent 首审发现一项 P1，上游 R2-C 审查状态门禁只做全文 token 搜索，可能被历史 PASS 文本绕过；第二轮复审发现首次修正仍未限定状态必须来自顶部权威元数据块。两项均已按最小范围修正，尚待全新 subagent 第三轮复审，因此当前不得写为 `R2D_REVIEW_PASS`。
 
 R2-D 没有修改 R1 或采纳 R2-C 数值，也没有生成运行时导入包、改变 Gate 状态或替代真人试玩。
 
@@ -22,7 +23,7 @@ PACK_COUNT=4
 UNIQUE_ROOT_COUNT=23
 RECOMMENDED_UNION_NODE_COUNT=107
 SEMANTIC_CONTEXT_UNION_NODE_COUNT=133
-REPORT_SHA256=d38fb26ba5345b832ed579435d5d82b5664e010db256c6649278942f54a18e0b
+REPORT_SHA256=31fd6fe6d0ba1ec2901b053ed341e7d08ee5c83eeb2549e7d198b950df1edbec
 R1_BUNDLE_FILE_SHA256=32f9d9c41e7271e4da0f037167ad94023d050ee1b7471fdec98495393d9ff361
 R1_PAYLOAD_SHA256=02918459ef17e42ed5e2151660873f6a4e88e12dff29730a013f1d062fe554ad
 RUNTIME_AUTHORIZATION=NONE
@@ -52,7 +53,22 @@ REVIEW_FAIL
 - 严格要求“最终结论”节只包含一个 `P0=0 / P1=0 / P2=0 / REVIEW_PASS` 结论块；
 - 内建 `R2C_REVIEW_PENDING` 和 `R2C_REVIEW_FAIL` 两个负向变异回归，历史 PASS token 不再能绕过门禁。
 
-## 4. 待独立复审
+第二轮复审结论：
+
+```text
+P0=0
+P1=1
+P2=0
+REVIEW_FAIL
+```
+
+新增修正：
+
+- 只解析 H1 后、第一个 H2 前的连续顶部元数据块，不再全文搜索状态；
+- 要求元数据字段集合、字段唯一性和 `实现验证 / 第二轮审查 / 最终状态 / 运行时授权` 的值精确匹配；
+- 新增重复状态、伪说明 token 和 fenced 伪状态三个负向变异回归。
+
+## 4. 待独立第三轮复审
 
 独立 subagent 必须只读检查：
 
