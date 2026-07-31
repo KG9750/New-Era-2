@@ -1,10 +1,10 @@
 # 候选物品库 R2-G 支干冻结基线合同 V0.1
 
-**项目：** Project-004-New Era 2  
-**上游状态：** `R1 / R2A–R2F REVIEW_PASS`  
-**基线状态：** `reference_only`  
-**采纳状态：** `not_adopted`  
-**运行时就绪：** `blocked`  
+**项目：** Project-004-New Era 2
+**上游状态：** `R1 / R2A–R2F REVIEW_PASS`
+**基线状态：** `reference_only`
+**采纳状态：** `not_adopted`
+**运行时就绪：** `blocked`
 **运行时授权：** `NONE`
 
 ## 1. 目的

@@ -157,7 +157,7 @@
     "docs/design-docs/item-and-manufacturing-system-v0.1-freeze-decision-2026-07-26.md": "aef79e3393a43173c8e578cdc3bb354d3a4f69c0f53d76cba9dc0ce08af34964",
     "docs/design-docs/item-and-manufacturing-system-v0.1.md": "24f0d4f69322c78f6d52fd1504afa8ffbfe953b4557513bd3a3a77393af583eb",
     "docs/item-library/item-library-adoption-record-contract-v0.1.md": "1ac2f05f22a4cde9607792310a46e985aabe13a24951a5fc6fdf73fdf53fadd4",
-    "docs/item-library/item-library-branch-baseline-contract-v0.1.md": "1df2b626113dea17612a283fc5f5ebdd286f49f6ce977c504268b21f2f6ed57c",
+    "docs/item-library/item-library-branch-baseline-contract-v0.1.md": "505ec3c3360831cc4b317a0e652681f98ec66d8236555e3059ff13a123bbe290",
     "docs/item-library/item-library-calibration-contract-v0.1.md": "99c6d9f35ae826c405bb602941bf010319c7f8cc683d0f4ccf80f491e16e12cc",
     "docs/item-library/item-library-consumer-handoff-contract-v0.1.md": "0a017b9a908b7ab1722d47f09eb6c27a5d766ea45d7f4e5d173ad9850dd295ba",
     "docs/item-library/item-library-content-quota-plan-v0.1.md": "42dd708aaff30248dac72cb3ac265d830d3101c25801a687588a01c2df4418c3",
@@ -174,7 +174,7 @@
     "docs/item-library/reviews/item-library-r2f-review-status-2026-07-31.md": "0fa4bf2cd3a7e16aa3ee2a773d622770b14d0b77ef09f9a910e4b81cc62693e0",
     "scripts/audit_item_library_flows.rb": "83893f22827c3b6ce91c26cb68eda55d160e24ab9b98dcb09f09ae8036507970",
     "scripts/audit_item_library_semantics.rb": "408092263807eedd01aba3128571405856b0c52fd00dee3778d60f1cee533527",
-    "scripts/build_item_library_branch_baseline.rb": "f18e7b08446cfc96483dfbca806cff374be2c2aa422d2b1e77569ab9ae028dbd",
+    "scripts/build_item_library_branch_baseline.rb": "1c776d18952e7b6c25b1de0415ac42509098f5019d650257d03807b4efad7ca5",
     "scripts/build_item_library_consumer_handoff.rb": "40a5f533e9627d03f6469a8ad12778914170f0876728863a81093c230a6bed8d",
     "scripts/build_item_library_selection_packs.rb": "16eb386538ecf909a16452bc4443a974b17b8e967d0797bf7feff8a8d6351275",
     "scripts/propose_item_library_calibration.rb": "090c0607d82ff726d7f7909cbf9a6c89c7095a8014114ff1e42c0b9f5769b2fb",
@@ -191,5 +191,5 @@
     "human_playtest_completed": false,
     "mainline_merged": false
   },
-  "manifest_sha256": "217d65954e342393fc54a6f4d254fe7efff4645e0d269dd51f8519092dc96cd6"
+  "manifest_sha256": "413878a67b5d3b874e5928ba7e98a600559b6baf14b6ab5f2af7421de41f1ac0"
 }
