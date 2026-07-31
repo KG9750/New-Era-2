@@ -1,0 +1,94 @@
+{
+  "schemaVersion": "gate1a-rc9-candidate-rejection-record-v1",
+  "candidateAttempt": "C04",
+  "status": "REJECTED_PRE_DIAGNOSTIC",
+  "rejectedAtUtc": "2026-07-31T08:14:37Z",
+  "issue": 58,
+  "planRef": "441f7d96635e9176c8aea3ff21454d596c287c49",
+  "sourceSha": "3f2b7c4b22055b3e1d9076e65abd0ed00271c528",
+  "sourceTree": "87558aa083065f41c311c982c319e67be30dce98",
+  "sourcePrototypeTree": "c24591977e41c51b2c9c8e0767ad47bf93c4bf09",
+  "dependencyIntegrationSha": "f181340cfebb0434bb977296f483328e32dda171",
+  "phase6EvidenceCommit": "df3cc72a03b522098e3836dae66aac443f758c92",
+  "phase6EvidenceTree": "ac5c0d231725d181693c8e87a9d6badc5b91b219",
+  "buildId": "g1-rc-20260729.rc9-c04",
+  "scenarioId": "gate1-two-week-management",
+  "scenarioVersion": "0.5.1",
+  "protocolVersion": "weekly-management-slice-playtest-v0.3",
+  "playtestSchemaVersion": "gate1-playtest-v2",
+  "artifactHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65",
+  "artifactManifestHash": "c336706bf7193c07a7f552dfbfe77cf02ec36259c72cc08b8f0c6ee8fc84cc37",
+  "integrationArchiveHash": "b2f6e71df159868ad6875b4c1697cd55e22f070f353465b7b0a2359da60c5301",
+  "phase6Status": "PASS",
+  "trigger": {
+    "reasonCode": "P07_BROWSER_LAUNCH_TECHNICAL_FAILURE",
+    "description": "The sole authorized TECH-RC9-P07 execution created its canonical namespace and started the frozen C04 capture host, but Playwright Chromium terminated with SIGTRAP before a browser context, page, or application session could be created because ICU data was unavailable in the sandboxed browser bundle. The frozen no-rerun rule consumes P07 and rejects C04 before diagnostics.",
+    "discoveredPhase": "C04_P07_ANTI_PASS",
+    "failureRecordPath": "anti-pass/TECH-RC9-P07/execution-failure.json",
+    "failureRecordHash": "700997861cb93de9e8fef240d728bbd2ff9d78c39dba6366085c3f26d1e828cf",
+    "antiPassResultCreated": false,
+    "browserContextCreated": false,
+    "applicationSessionCreated": false,
+    "retryPerformed": false
+  },
+  "sampleDisposition": {
+    "p07": {
+      "status": "TECHNICAL_EXECUTION_FAILURE_CONSUMED",
+      "started": true,
+      "completed": false,
+      "reusable": false
+    },
+    "p08": {
+      "status": "NOT_STARTED_CONSUMED_BY_ATTEMPT_FAILURE",
+      "started": false,
+      "completed": false,
+      "reusable": false
+    },
+    "d16ThroughD20": {
+      "status": "NOT_STARTED_CONSUMED_BY_ATTEMPT_FAILURE",
+      "started": false,
+      "reusable": false
+    }
+  },
+  "immutability": {
+    "phase6EvidenceMayBeOverwritten": false,
+    "p07NamespaceMayBeOverwrittenOrDeleted": false,
+    "p07MayBeRerun": false,
+    "p08MayBeStarted": false,
+    "d16ThroughD20MayBeStarted": false,
+    "candidateAttemptReusable": false,
+    "allocatedAntiPassIdsReusable": false,
+    "allocatedDiagnosticIdsReusable": false
+  },
+  "nextAttempt": {
+    "candidateAttempt": "C05",
+    "candidateManifestIdCurrentlyAllocated": false,
+    "candidateManifestIdAfterSuccessfulDiagnostics": "CM01",
+    "antiPassIds": [
+      "TECH-RC9-P09",
+      "TECH-RC9-P10"
+    ],
+    "diagnosticIds": [
+      "TECH-RC9-D21",
+      "TECH-RC9-D22",
+      "TECH-RC9-D23",
+      "TECH-RC9-D24",
+      "TECH-RC9-D25"
+    ],
+    "requiredRestart": "Owner authorization is required for a new C05 source/integration/evidence namespace. Do not repair, rerun, delete, or re-sign C04, P07/P08, or D16-D20 in place."
+  },
+  "denominatorExclusions": {
+    "p07Gate1A": true,
+    "p07Gate1H": true,
+    "p08Gate1A": true,
+    "p08Gate1H": true
+  },
+  "trackLocks": {
+    "c04": "REJECTED_PRE_DIAGNOSTIC",
+    "cm01": "UNALLOCATED",
+    "gate1A": "NO_FORMAL_COHORT",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED",
+    "outputRef": "UNSET"
+  }
+}

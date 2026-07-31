@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "gate1a-rc9-anti-pass-execution-failure-v1",
+  "candidateAttempt": "C04",
+  "sampleId": "TECH-RC9-P07",
+  "status": "TECHNICAL_EXECUTION_FAILURE_CONSUMED",
+  "attemptedAtUtc": "2026-07-31T08:13:51Z",
+  "pathKind": "prominent-cta-and-repeat-submit",
+  "failureStage": "BROWSER_LAUNCH_BEFORE_CONTEXT",
+  "buildAuthority": {
+    "buildId": "g1-rc-20260729.rc9-c04",
+    "sourceSha": "3f2b7c4b22055b3e1d9076e65abd0ed00271c528",
+    "dependencyIntegrationSha": "f181340cfebb0434bb977296f483328e32dda171",
+    "phase6EvidenceCommit": "df3cc72a03b522098e3836dae66aac443f758c92",
+    "artifactHash": "9a7ddde0234d82798b2625c050710143f8f4b94bd6d14bd121910a76831abb65"
+  },
+  "executionRuntime": {
+    "nodePath": "/Users/leo/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node",
+    "nodeVersion": "v24.14.0",
+    "runnerPath": "/private/tmp/c04-p07-once.mjs",
+    "runnerSha256": "98fb45d880fbc5d7f88773c3f3a1918238a3268823370ae19e5de293f4379936",
+    "chromiumExecutable": "/Users/leo/Library/Caches/ms-playwright/chromium_headless_shell-1234/chrome-headless-shell-mac-arm64/chrome-headless-shell"
+  },
+  "failure": {
+    "reasonCode": "PLAYWRIGHT_CHROMIUM_ICU_DATA_UNAVAILABLE",
+    "message": "Playwright Chromium exited during browserType.launch before any browser context, page, or application session was created.",
+    "stderr": [
+      "browserType.launch: Target page, context or browser has been closed",
+      "[0731/161351.139804:ERROR:base/i18n/icu_util.cc:177] icudtl.dat not found in bundle",
+      "[0731/161351.141116:ERROR:base/i18n/icu_util.cc:232] Invalid file descriptor to ICU data received.",
+      "process did exit: exitCode=null, signal=SIGTRAP"
+    ]
+  },
+  "observedState": {
+    "canonicalNamespaceCreated": true,
+    "captureDirectoryCreated": true,
+    "captureFileCount": 0,
+    "captureHostStarted": true,
+    "captureHostCleanupAttempted": true,
+    "postFailurePort4207ListenerObserved": false,
+    "browserCreated": false,
+    "browserContextCreated": false,
+    "pageCreated": false,
+    "applicationSessionCreated": false,
+    "rawCaptureCreated": false,
+    "browserDownloadCreated": false,
+    "resultCreated": false
+  },
+  "disposition": {
+    "retryAuthorized": false,
+    "retryPerformed": false,
+    "namespaceMayBeDeletedOrReused": false,
+    "p07Consumed": true,
+    "p08Started": false,
+    "p08ConsumedByAttemptFailureRule": true,
+    "d16ThroughD20Started": false,
+    "d16ThroughD20ConsumedByAttemptFailureRule": true,
+    "candidateAttemptRejected": true,
+    "nextCandidateAttempt": "C05",
+    "nextAntiPassIds": [
+      "TECH-RC9-P09",
+      "TECH-RC9-P10"
+    ],
+    "nextDiagnosticIds": [
+      "TECH-RC9-D21",
+      "TECH-RC9-D22",
+      "TECH-RC9-D23",
+      "TECH-RC9-D24",
+      "TECH-RC9-D25"
+    ]
+  },
+  "denominatorExclusions": {
+    "gate1A": true,
+    "gate1H": true
+  },
+  "trackLocks": {
+    "c04": "REJECTED_PRE_DIAGNOSTIC",
+    "cm01": "UNALLOCATED",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED",
+    "outputRef": "UNSET"
+  }
+}
