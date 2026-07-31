@@ -31,7 +31,7 @@
 - R2-E 主干消费交接合同：`item-library-consumer-handoff-contract-v0.1.md`
 - R2-E 机器可读交接清单：`../../data/item-library/consumer-handoff-r2e.json`
 - R2-E 交接摘要：`../../data/item-library/consumer-handoff-r2e.md`
-- R2-E 审查状态：`reviews/item-library-r2e-review-status-2026-07-31.md`（首审 P1 与第二轮 P2 已修正，当前 `R2E_RECHECK_PENDING`）
+- R2-E 审查状态：`reviews/item-library-r2e-review-status-2026-07-31.md`（首审 P1 与第二轮 P2 已修正，第三轮独立 subagent 复审完成，`R2E_REVIEW_PASS`）
 
 ## 数据布局
 

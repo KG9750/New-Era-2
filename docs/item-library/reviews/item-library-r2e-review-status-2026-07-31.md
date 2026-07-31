@@ -5,13 +5,13 @@
 **实现验证：** `PASS`
 **独立 subagent 首审：** `REVIEW_FAIL`（`P0=0 / P1=1 / P2=0`）
 **独立 subagent 第二轮：** `REVIEW_FAIL`（`P0=0 / P1=0 / P2=1`）
-**独立 subagent 第三轮：** `PENDING`
-**当前状态：** `R2E_RECHECK_PENDING`
+**独立 subagent 第三轮：** `REVIEW_PASS`（`P0=0 / P1=0 / P2=0`）
+**最终状态：** `R2E_REVIEW_PASS`
 **运行时授权：** `NONE`
 
 ## 1. 当前结论
 
-R2-E 已生成四份 `reference_only` 主干消费交接 manifest，并在本地通过生成器自检。独立 subagent 首审发现一项 P1：R2-D PASS 门禁没有把当前选择报告 SHA 与审查状态文档中已认证的报告 SHA 绑定；第二轮确认 P1 已修复，同时发现本状态文档手工记录的 R1 Bundle SHA 被截断。两项均已按最小范围修正，尚待全新 subagent 第三轮复审，因此当前不得写为 `R2E_REVIEW_PASS`。
+R2-E 已生成四份 `reference_only` 主干消费交接 manifest，并在本地通过生成器自检。独立 subagent 首审发现一项 P1：R2-D PASS 门禁没有把当前选择报告 SHA 与审查状态文档中已认证的报告 SHA 绑定；第二轮确认 P1 已修复，同时发现本状态文档手工记录的 R1 Bundle SHA 被截断。两项均已按最小范围修正，第三轮全新 subagent 在提交 `108a8858acee2e6dff9c209705fec1dbd3306a7c` 上完成只读复审，未发现真实缺陷。
 
 R2-E 没有创建主干采纳记录、运行时 schema 或导入包，也没有修改 R1、采纳 R2-C 数值、改变 R2-D 选择、改变 Gate 或替代真人试玩。
 
@@ -66,9 +66,9 @@ REVIEW_FAIL
 
 第二轮确认首审 P1 修正有效；唯一 P2 是本状态文档的 R1 Bundle SHA 被截断为 33 位。现已替换为生成器与实际文件共同给出的完整 64 位 SHA，不修改任何机器报告或选择内容。
 
-## 4. 待独立第三轮复审
+## 4. 第三轮独立复审
 
-独立 subagent 必须只读检查：
+第三轮全新 subagent 只读检查了：
 
 1. R2-D 审查门禁是否只能接受权威顶部元数据和第三轮 PASS 结论；
 2. 每份显式选择是否与对应 R2-D 推荐路径逐字相等；
@@ -78,12 +78,23 @@ REVIEW_FAIL
 6. manifest、总报告和所有上游 SHA 是否可独立复算；
 7. `candidate_only / reference_only / not_adopted / blocked / NONE` 边界是否不可绕过。
 
-## 5. 接受边界
-
-在独立审查给出 `P0=0 / P1=0` 且不存在冻结阻断项之前，状态保持：
+复审结果：
 
 ```text
-R2E_RECHECK_PENDING
+P0=0
+P1=0
+P2=0
+REVIEW_PASS
 ```
 
-即使未来改为 `R2E_REVIEW_PASS`，也只表示交接清单满足当前合同并可确定性复算，不表示主干已采纳、运行时已授权、Gate 已解锁或真人试玩已完成。
+第三轮另外使用合法稳定 ID 替换 civic 权利根并由 R2-D 生成器完整重建，确认 R2-E 会拒绝未经审查状态文档认证的新报告；四份 manifest、供应行、风险队列、阻塞项和全部 SHA 均可独立复算。
+
+## 5. 接受边界
+
+最终状态：
+
+```text
+R2E_REVIEW_PASS
+```
+
+`R2E_REVIEW_PASS` 只表示交接清单满足当前合同并可确定性复算，不表示主干已采纳、运行时已授权、Gate 已解锁或真人试玩已完成。
