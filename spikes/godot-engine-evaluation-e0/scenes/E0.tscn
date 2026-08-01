@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://ctcvk0r6txl3x"]
+
+[ext_resource type="Script" uid="uid://dr5uka2uayrdh" path="res://scripts/e0_main.gd" id="1_e0"]
+
+[node name="E0SyntheticFixture" type="Node2D" unique_id=1693482025]
+script = ExtResource("1_e0")

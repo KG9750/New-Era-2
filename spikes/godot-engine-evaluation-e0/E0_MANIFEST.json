@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "new-era-godot-e0-project-manifest-v1",
+  "runId": "20260801-e0-02",
+  "status": "DISPOSABLE_EVALUATION_SOURCE_CANDIDATE",
+  "executionBaseSha": "b020775522f83c4731ba318905d3d436c2f51f60",
+  "planSha256": "a75f807fb3315834624a3bf69251a8d6cd989fa5ab6891d58b446d6374ea0652",
+  "annexSha256": "c72906b5b4ddfeae45bb2816aac9eda1ac0530c5193a65355d5e33b52fc2c1ed",
+  "godotVersion": "4.7.1.stable.mono.official.a13da4feb",
+  "renderer": "gl_compatibility",
+  "implementationLanguage": "GDScript",
+  "plugins": [],
+  "autoloads": [],
+  "productAssets": [],
+  "gameplayRules": [],
+  "project": {
+    "path": "spikes/godot-engine-evaluation-e0",
+    "mainScene": "res://scenes/E0.tscn",
+    "viewport": [960, 540],
+    "stretchMode": "disabled",
+    "layerType": "TileMapLayer",
+    "layerCount": 3,
+    "tileSize": [16, 16],
+    "atlasSize": [48, 16],
+    "atlasGeneration": "GDScript pure RGBA8 colors"
+  },
+  "fixtures": {
+    "nominal": {"grid": [64, 36], "totalCells": 3024},
+    "stress": {"grid": [256, 144], "totalCells": 48384}
+  },
+  "editorWitness": {
+    "saveCloseReopen": "PASS",
+    "windowTitle": "E0.tscn - New Era E0 Disposable Evaluation - Godot Engine",
+    "sceneSha256": "a5c2794c4b5b11ec155493be411af4292d6f1e95785ac02d2e04b833334df286",
+    "screenshotSha256": "37dc92e0aaaed76ba2e6284f029ec17f7ca0256312ecc5dbd1abb42e7d54fb35"
+  },
+  "runnerVectors": {
+    "successNominal": 0,
+    "successStress": 0,
+    "missingScene": 21,
+    "badResourceType": 22,
+    "fixtureMismatch": 23
+  },
+  "lifecycle": "ARCHIVE_EVIDENCE_THEN_DISCARD_OR_RETAIN_EVALUATION_REF_ONLY"
+}
