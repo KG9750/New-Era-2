@@ -1,0 +1,9 @@
+{
+	"details": {
+		"actual": 3024,
+		"expected": 999
+	},
+	"errorCode": "FIXTURE_TOTAL_MISMATCH",
+	"status": "EXPECTED_FAILURE",
+	"vector": "success"
+}

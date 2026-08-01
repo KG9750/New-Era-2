@@ -1,0 +1,10 @@
+run_id=20260801-e0-02
+cwd=/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-02/repo
+
+fa0180ead0bc574c3c124d202608940bccd6cc5d7a027bd060670d297982be6d  AGENTS.md
+f5832ce29bbccbd2c9041a9775f468cb0577435a9b8cd8138d792036a82ee632  CONTEXT.md
+cf9ff90399e2db90ca8d0fc8b9fef4fb1a76e8a5ad0da116acbd4aba6e38908c  PLANS.md
+b532e35911cdd4a7a663c0bdf0b92ecfe22688b1e7e57cf003208f768a8def54  docs/agents/game-development-workflow.md
+abe8b2def4fe092cb1705d9b8e18984e9037cd1a0d53b6c5130216c15d12ea29  docs/exec-plans/active/2026-07-26-react-web-gate-1-2-development-plan.md
+a75f807fb3315834624a3bf69251a8d6cd989fa5ab6891d58b446d6374ea0652  plan-ref:2026-08-01-godot-engine-evaluation-e0-and-engine-gate.md
+c72906b5b4ddfeae45bb2816aac9eda1ac0530c5193a65355d5e33b52fc2c1ed  plan-ref:2026-08-01-godot-engine-evaluation-e0-fixture-and-measurement-annex-v0.1.md

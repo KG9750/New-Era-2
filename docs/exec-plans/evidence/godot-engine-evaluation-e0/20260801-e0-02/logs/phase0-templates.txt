@@ -1,0 +1,28 @@
+run_id=20260801-e0-02
+root=/Users/leo/Library/Application Support/Godot/export_templates/4.7.1.stable.mono
+version=4.7.1.stable.mono
+version_sha256=ba3c770186d95a2dafd7296613d44d58f88e4a06abadc7aa16330a76d74109a5
+macos.zip_sha256=93ba34af3d19653f2fa8ca13652bc09045e818922300a5543df9ebed726228ed
+windows_release_x86_64.exe_sha256=ced72399c0c035da2bd1e0c97e3ead18f69d9de39458bcd1091796872db142f8
+local_license_file=ABSENT
+macos_zip_license_member=ABSENT
+license_basis=official Godot 4.7.1-stable LICENSE.txt
+license=MIT
+license_sha256=b0435e3b3e4e55238f05f4b306f30524a1b2e20147810d436eaa554fa6855c80
+
+files:
+/Users/leo/Library/Application Support/Godot/export_templates/4.7.1.stable.mono/macos.zip
+/Users/leo/Library/Application Support/Godot/export_templates/4.7.1.stable.mono/version.txt
+/Users/leo/Library/Application Support/Godot/export_templates/4.7.1.stable.mono/windows_release_x86_64.exe
+
+macos.zip members:
+macos_template.app/
+macos_template.app/Contents/
+macos_template.app/Contents/Info.plist
+macos_template.app/Contents/PkgInfo
+macos_template.app/Contents/Resources/
+macos_template.app/Contents/Resources/PrivacyInfo.xcprivacy
+macos_template.app/Contents/Resources/icon.icns
+macos_template.app/Contents/MacOS/
+macos_template.app/Contents/MacOS/godot_macos_debug.universal
+macos_template.app/Contents/MacOS/godot_macos_release.universal

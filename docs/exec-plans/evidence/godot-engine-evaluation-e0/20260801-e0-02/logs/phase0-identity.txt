@@ -1,0 +1,17 @@
+run_id=20260801-e0-02
+godot_version=4.7.1.stable.mono.official.a13da4feb
+godot_sha256=d11dc4a241ec29a347e13c8c7706e49433379ae1f9fc6a6e6819efb3891fce97
+godot_file=Mach-O universal binary x86_64 arm64
+godot_identifier=org.godotengine.godot
+godot_signing_authority=Developer ID Application: Prehensile Tales B.V. (6K46PWY5DM)
+godot_notarization_ticket=stapled
+godot_stapler_validation=The validate action worked!
+godot_license=MIT
+godot_license_sha256=b0435e3b3e4e55238f05f4b306f30524a1b2e20147810d436eaa554fa6855c80
+dotnet_version=10.0.302
+dotnet_sha256=ed8eb05ce0598b40df34f464d16063b30896c7e28dc1ac9e94554a8aff9676ed
+dotnet_file=Mach-O 64-bit executable arm64
+osascript_sha256=fbe034addbf9968a34f634684c318b1ad86f1d057b38a67d981d5bd43cd15989
+osascript_file=Mach-O universal binary x86_64 arm64e
+macos_version=26.5.2
+macos_build=25F84

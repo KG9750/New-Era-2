@@ -1,0 +1,71 @@
+{
+  "schemaVersion": "new-era-godot-e0-task-contract-v1",
+  "runId": "20260801-e0-02",
+  "status": "FROZEN_FROM_AUTHORIZED_ANNEX",
+  "renderer": "gl_compatibility",
+  "viewport": {"width": 960, "height": 540, "stretchMode": "disabled"},
+  "atlas": {
+    "size": [48, 16],
+    "tileSize": [16, 16],
+    "tiles": [
+      {"atlas": [0, 0], "rgba": "#566B4FFF"},
+      {"atlas": [1, 0], "rgba": "#9A8F62FF"},
+      {"atlas": [2, 0], "rgba": "#5F718CFF"}
+    ]
+  },
+  "fixtures": {
+    "nominal": {
+      "grid": [64, 36],
+      "ground": 2304,
+      "detail": 576,
+      "overlay": 144,
+      "total": 3024
+    },
+    "stress": {
+      "grid": [256, 144],
+      "ground": 36864,
+      "detail": 9216,
+      "overlay": 2304,
+      "total": 48384
+    }
+  },
+  "input": {
+    "provenance": "OS_INJECTED_INPUT",
+    "injector": "/usr/bin/osascript",
+    "focusWaitMs": 1000,
+    "keyDownMs": 100,
+    "interKeyGapMs": 250,
+    "eventObservationTimeoutMs": 2000,
+    "trace": ["D", "S", "A", "W"],
+    "expectedCenters": [[0,0], [64,0], [64,64], [0,64], [0,0]]
+  },
+  "sampling": {
+    "warmupFrames": 120,
+    "timedSampleSeconds": 10.0,
+    "fpsWindowSeconds": 1.0,
+    "fpsWindowCount": 10,
+    "minimumSampleFrames": 120,
+    "repeatCount": 3
+  },
+  "thresholds": {
+    "nominalMedianFpsMin": 55,
+    "nominalProcessP95MsMax": 16.67,
+    "nominalLongFrameMs": 33.33,
+    "nominalLongFrameRatioMax": 0.01,
+    "stressProcessP95MsMax": 33.33,
+    "stressLongFrameMs": 50.0,
+    "stressLongFrameRatioMax": 0.02,
+    "memoryAbsoluteGrowthMaxMiB": 8,
+    "memoryRelativeGrowthMax": 0.05
+  },
+  "hardStops": [
+    "IDENTITY_DRIFT",
+    "TEST_HARNESS_FAIL",
+    "WORKTREE_OR_SCOPE_DRIFT",
+    "SOURCE_FREEZE_DRIFT",
+    "PARSE_IMPORT_RESOURCE_OR_RUNTIME_ERROR",
+    "FIXTURE_COUNT_MISMATCH",
+    "PROCESS_TIMEOUT_OR_PID_REMAINS",
+    "EVIDENCE_PUBLICATION_FAIL"
+  ]
+}

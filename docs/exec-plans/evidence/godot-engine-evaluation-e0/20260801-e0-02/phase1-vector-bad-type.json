@@ -1,0 +1,9 @@
+{
+	"details": {
+		"scenePath": "res://tests/not_scene.tres",
+		"type": "Resource"
+	},
+	"errorCode": "RESOURCE_NOT_PACKED_SCENE",
+	"status": "EXPECTED_FAILURE",
+	"vector": "bad-type"
+}

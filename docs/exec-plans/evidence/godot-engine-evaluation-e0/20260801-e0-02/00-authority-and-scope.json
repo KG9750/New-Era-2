@@ -1,0 +1,31 @@
+{
+  "schemaVersion": "new-era-godot-e0-authority-scope-v1",
+  "status": "AUTHORIZED_EXECUTION_PHASE0_PASS",
+  "createdAtUtc": "2026-08-01T12:46:30Z",
+  "runId": "20260801-e0-02",
+  "executionBaseSha": "b020775522f83c4731ba318905d3d436c2f51f60",
+  "planSha256": "a75f807fb3315834624a3bf69251a8d6cd989fa5ab6891d58b446d6374ea0652",
+  "annexSha256": "c72906b5b4ddfeae45bb2816aac9eda1ac0530c5193a65355d5e33b52fc2c1ed",
+  "ownerAuthorizationSha256": "b98d6c404ad162e0484094672d7aa9769f703aa113121a84eb5d67074585f341",
+  "bootstrapReceiptSha256": "d279a4eaf61c9878cf75a09fd8a38ae3b72dee767da98c42f84a6903bd167351",
+  "allowedThrough": "ENGINE_EVALUATION_E0_PHASE_4",
+  "currentPhase": "PHASE_0_PASS",
+  "preExistingGovernance": {
+    "c04": "REJECTED_PRE_DIAGNOSTIC",
+    "c05": "NOT_CREATED_PLAN_ONLY",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED",
+    "mapRuntime": "LOCKED",
+    "productionAssets": "LOCKED",
+    "typeScriptSimulationAuthority": "UNCHANGED"
+  },
+  "boundaries": {
+    "syntheticDataOnly": true,
+    "noPlugins": true,
+    "noProductMap": true,
+    "noProductUi": true,
+    "noGameplayRules": true,
+    "noGateChanges": true,
+    "productionFoundationAuthorized": false
+  }
+}

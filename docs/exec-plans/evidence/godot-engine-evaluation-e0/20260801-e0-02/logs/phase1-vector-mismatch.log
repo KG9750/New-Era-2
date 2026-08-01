@@ -1,0 +1,4 @@
+Godot Engine v4.7.1.stable.mono.official.a13da4feb - https://godotengine.org
+
+E0_FIXTURE_MANIFEST={"cameraCenter":[0.0,0.0],"cameraCurrent":true,"displayServer":"headless","fixtureId":"nominal","grid":[64,36],"layers":[{"cellCount":2304,"name":"Ground","usedRect":[0,0,64,36]},{"cellCount":576,"name":"Detail","usedRect":[0,0,63,36]},{"cellCount":144,"name":"Overlay","usedRect":[0,0,64,36]}],"totalCellCount":3024,"visibleRect":[0.0,0.0,64.0,64.0],"windowSize":[64,64]}
+E0_RUNNER_FAIL={"details":{"actual":3024,"expected":999},"errorCode":"FIXTURE_TOTAL_MISMATCH","status":"EXPECTED_FAILURE","vector":"success"}

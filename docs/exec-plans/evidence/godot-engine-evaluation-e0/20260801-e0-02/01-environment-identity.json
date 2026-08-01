@@ -1,0 +1,97 @@
+{
+  "schemaVersion": "new-era-godot-e0-environment-identity-v1",
+  "status": "PHASE0_PASS",
+  "createdAtUtc": "2026-08-01T12:46:30Z",
+  "runId": "20260801-e0-02",
+  "executionBaseSha": "b020775522f83c4731ba318905d3d436c2f51f60",
+  "planSha256": "a75f807fb3315834624a3bf69251a8d6cd989fa5ab6891d58b446d6374ea0652",
+  "annexSha256": "c72906b5b4ddfeae45bb2816aac9eda1ac0530c5193a65355d5e33b52fc2c1ed",
+  "authoritativeInputSha256": {
+    "AGENTS.md": "fa0180ead0bc574c3c124d202608940bccd6cc5d7a027bd060670d297982be6d",
+    "CONTEXT.md": "f5832ce29bbccbd2c9041a9775f468cb0577435a9b8cd8138d792036a82ee632",
+    "PLANS.md": "cf9ff90399e2db90ca8d0fc8b9fef4fb1a76e8a5ad0da116acbd4aba6e38908c",
+    "docs/agents/game-development-workflow.md": "b532e35911cdd4a7a663c0bdf0b92ecfe22688b1e7e57cf003208f768a8def54",
+    "docs/exec-plans/active/2026-07-26-react-web-gate-1-2-development-plan.md": "abe8b2def4fe092cb1705d9b8e18984e9037cd1a0d53b6c5130216c15d12ea29",
+    "docs/exec-plans/active/2026-08-01-godot-engine-evaluation-e0-and-engine-gate.md": "a75f807fb3315834624a3bf69251a8d6cd989fa5ab6891d58b446d6374ea0652",
+    "docs/exec-plans/active/2026-08-01-godot-engine-evaluation-e0-fixture-and-measurement-annex-v0.1.md": "c72906b5b4ddfeae45bb2816aac9eda1ac0530c5193a65355d5e33b52fc2c1ed"
+  },
+  "macos": {
+    "productVersion": "26.5.2",
+    "buildVersion": "25F84"
+  },
+  "godot": {
+    "path": "/Volumes/Leo_LLM/Toolchains/NewEra/godot-4.7.1/Godot_mono.app/Contents/MacOS/Godot",
+    "version": "4.7.1.stable.mono.official.a13da4feb",
+    "sha256": "d11dc4a241ec29a347e13c8c7706e49433379ae1f9fc6a6e6819efb3891fce97",
+    "architectures": ["x86_64", "arm64"],
+    "identifier": "org.godotengine.godot",
+    "authority": "Developer ID Application: Prehensile Tales B.V. (6K46PWY5DM)",
+    "notarizationTicket": "stapled",
+    "staplerValidation": "PASS",
+    "license": "MIT",
+    "licenseSource": "https://raw.githubusercontent.com/godotengine/godot/4.7.1-stable/LICENSE.txt",
+    "licenseSha256": "b0435e3b3e4e55238f05f4b306f30524a1b2e20147810d436eaa554fa6855c80"
+  },
+  "dotnet": {
+    "path": "/Users/leo/.dotnet/dotnet",
+    "version": "10.0.302",
+    "sha256": "ed8eb05ce0598b40df34f464d16063b30896c7e28dc1ac9e94554a8aff9676ed",
+    "architecture": "arm64"
+  },
+  "osascript": {
+    "path": "/usr/bin/osascript",
+    "sha256": "fbe034addbf9968a34f634684c318b1ad86f1d057b38a67d981d5bd43cd15989",
+    "architectures": ["x86_64", "arm64e"]
+  },
+  "exportTemplates": {
+    "root": "/Users/leo/Library/Application Support/Godot/export_templates/4.7.1.stable.mono",
+    "version": "4.7.1.stable.mono",
+    "versionFileSha256": "ba3c770186d95a2dafd7296613d44d58f88e4a06abadc7aa16330a76d74109a5",
+    "files": [
+      {
+        "path": "/Users/leo/Library/Application Support/Godot/export_templates/4.7.1.stable.mono/macos.zip",
+        "sha256": "93ba34af3d19653f2fa8ca13652bc09045e818922300a5543df9ebed726228ed"
+      },
+      {
+        "path": "/Users/leo/Library/Application Support/Godot/export_templates/4.7.1.stable.mono/version.txt",
+        "sha256": "ba3c770186d95a2dafd7296613d44d58f88e4a06abadc7aa16330a76d74109a5"
+      },
+      {
+        "path": "/Users/leo/Library/Application Support/Godot/export_templates/4.7.1.stable.mono/windows_release_x86_64.exe",
+        "sha256": "ced72399c0c035da2bd1e0c97e3ead18f69d9de39458bcd1091796872db142f8"
+      }
+    ],
+    "localLicenseFile": "ABSENT",
+    "license": "MIT",
+    "licenseBasis": "official Godot 4.7.1-stable LICENSE.txt; local template root and macos.zip contain no separate license member",
+    "web": "NOT_AVAILABLE_OR_NOT_TESTED",
+    "linux": "NOT_AVAILABLE_OR_NOT_TESTED"
+  },
+  "harness": {
+    "accessibilityQuery": {"exitCode": 0, "value": true},
+    "focusProbe": {
+      "script": "harness/phase0-focus-probe.applescript",
+      "scriptSha256": "8579cfd5f9c3ff79bfe38a27baa09900a447e6823b0d976177a69dcf6e8731e0",
+      "exitCode": 0,
+      "previousFront": "ChatGPT",
+      "probeFront": "Finder",
+      "restoredFront": "ChatGPT"
+    },
+    "shiftInjection": {
+      "script": "harness/phase0-shift-probe.applescript",
+      "scriptSha256": "3eca480822676967f2bf941b7b331ed9822c0ff73cd007a5dfa9d78e17fa9b16",
+      "exitCode": 0,
+      "stderr": ""
+    },
+    "classification": "TEST_HARNESS_PASS"
+  },
+  "environmentAllowlist": {
+    "PATH": "/opt/homebrew/bin:/opt/homebrew/sbin:/Users/leo/.codex/tmp/arg0/codex-arg0TmgxWw:/Users/leo/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/leo/.bun/bin:/Users/leo/.antigravity/antigravity/bin:/Users/leo/anaconda3/bin:/Users/leo/anaconda3/condabin:/Users/leo/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:/Users/leo/.dotnet:/Applications/Obsidian.app/Contents/MacOS:/Users/leo/.lmstudio/bin:/Users/leo/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources",
+    "DOTNET_ROOT": "/Users/leo/.dotnet",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "TMPDIR": "/var/folders/23/4bh04pkn6sggy3_yn5j92gnc0000gn/T/",
+    "GODOT_DISPLAY_DRIVER": "UNSET",
+    "GODOT_RENDERING_METHOD": "UNSET"
+  }
+}

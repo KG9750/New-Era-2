@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "new-era-godot-e0-scope-audit-v1",
+  "runId": "20260801-e0-02",
+  "status": "FAIL_SOURCE_FREEZE_SCOPE_ONLY",
+  "executionBaseSha": "b020775522f83c4731ba318905d3d436c2f51f60",
+  "sourceSha": "e0622aff7188b9e4774a4d698c39a37e4c5a6908",
+  "trackedDiff": {
+    "changedPathCount": 26,
+    "allowedProjectPrefix": "spikes/godot-engine-evaluation-e0/",
+    "allChangesUnderAllowedProjectPrefix": true,
+    "outsideAllowedProjectPaths": []
+  },
+  "productBoundary": {
+    "productMapReadOrWriteObserved": false,
+    "productUiReadOrWriteObserved": false,
+    "gameplayRuleReadOrWriteObserved": false,
+    "gateEvidenceMutationObserved": false,
+    "plugins": [],
+    "autoloads": [],
+    "formalAssets": [],
+    "typeScriptSimulationAuthority": "UNCHANGED",
+    "status": "PASS"
+  },
+  "sourceFreezeBoundary": {
+    "declaredInventoryEntryCount": 12,
+    "actualTrackedEntryCount": 26,
+    "unexpectedEditorCacheCount": 13,
+    "inventorySelfEntryUnbound": true,
+    "unexpectedPathClass": ".godot editor-generated cache",
+    "status": "FAIL",
+    "classification": "SOURCE_FREEZE_SCOPE_FAIL"
+  },
+  "externalRoots": {
+    "outputRoot": "/private/tmp/new-era-godot-engine-e0-output-20260801-e0-02",
+    "evidenceStagingRoot": "/private/tmp/new-era-godot-engine-e0-staging-20260801-e0-02",
+    "writesOutsideAuthorizedWorktreeOutputOrStagingObserved": false
+  },
+  "governance": {
+    "gate1H": "PENDING",
+    "gate2": "LOCKED",
+    "c04": "REJECTED_PRE_DIAGNOSTIC",
+    "c05": "NOT_CREATED_PLAN_ONLY",
+    "mapRuntime": "LOCKED",
+    "productionAssets": "LOCKED",
+    "productionFoundationAuthorized": false,
+    "engineGate": "NOT_RUN"
+  },
+  "evidence": ["02-source-inventory.sha256", "03-project-manifest.json", "logs/phase1-source-freeze-failure.txt"]
+}
+

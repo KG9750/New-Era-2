@@ -1,0 +1,33 @@
+Executable=/Volumes/Leo_LLM/Toolchains/NewEra/godot-4.7.1/Godot_mono.app/Contents/MacOS/Godot
+Identifier=org.godotengine.godot
+Format=app bundle with Mach-O universal (x86_64 arm64)
+CodeDirectory v=20500 size=1303073 flags=0x10000(runtime) hashes=40710+7 location=embedded
+VersionPlatform=1
+VersionMin=720896
+VersionSDK=1704192
+Hash type=sha256 size=32
+CandidateCDHash sha256=8d0365702a87e9198f2b454be7ce81428b9167b5
+CandidateCDHashFull sha256=8d0365702a87e9198f2b454be7ce81428b9167b5ae33218afb1c8b8997fe41b8
+Hash choices=sha256
+CMSDigest=8d0365702a87e9198f2b454be7ce81428b9167b5ae33218afb1c8b8997fe41b8
+CMSDigestType=2
+Executable Segment base=0
+Executable Segment limit=159154176
+Executable Segment flags=0x1
+Page size=4096
+CDHash=8d0365702a87e9198f2b454be7ce81428b9167b5
+Signature size=9056
+Authority=Developer ID Application: Prehensile Tales B.V. (6K46PWY5DM)
+Authority=Developer ID Certification Authority
+Authority=Apple Root CA
+Timestamp=Jul 14, 2026 at 21:50:43
+Notarization Ticket=stapled
+Info.plist entries=24
+TeamIdentifier=6K46PWY5DM
+Runtime Version=26.1.0
+Sealed Resources version=2 rules=13 files=148
+Internal requirements count=1 size=184
+
+stapler_stdout:
+Processing: /Volumes/Leo_LLM/Toolchains/NewEra/godot-4.7.1/Godot_mono.app
+The validate action worked!

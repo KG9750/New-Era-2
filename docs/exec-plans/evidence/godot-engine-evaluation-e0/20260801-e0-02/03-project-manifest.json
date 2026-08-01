@@ -1,0 +1,39 @@
+{
+  "schemaVersion": "new-era-godot-e0-project-manifest-v1",
+  "runId": "20260801-e0-02",
+  "status": "SOURCE_FREEZE_SCOPE_FAIL",
+  "executionBaseSha": "b020775522f83c4731ba318905d3d436c2f51f60",
+  "sourceSha": "e0622aff7188b9e4774a4d698c39a37e4c5a6908",
+  "sourceRef": "codex/godot-engine-evaluation-e0-20260801-e0-02@e0622aff7188b9e4774a4d698c39a37e4c5a6908",
+  "sourceArchive": {
+    "path": "02a-source-archive.tar",
+    "sha256": "9761d4f98a536135b2f5176128ba4be2d79128dc0ed47b04bbf5fc291727cc69",
+    "bytes": 61440,
+    "secondGenerationSha256": "9761d4f98a536135b2f5176128ba4be2d79128dc0ed47b04bbf5fc291727cc69"
+  },
+  "declaredSourceInventory": {
+    "path": "spikes/godot-engine-evaluation-e0/SOURCE_INVENTORY.sha256",
+    "trackedEntryCount": 12,
+    "complete": false
+  },
+  "actualTrackedTree": {
+    "entryCount": 26,
+    "inventoryPath": "02-source-inventory.sha256",
+    "unexpectedEditorCacheCount": 13,
+    "inventorySelfEntryUnbound": true
+  },
+  "failure": {
+    "classification": "SOURCE_FREEZE_SCOPE_FAIL",
+    "reason": "source commit included .godot editor cache files not bound by the declared source inventory",
+    "phase2": "NOT_RUN",
+    "phase3": "NOT_RUN",
+    "engineGate": "NOT_RUN"
+  },
+  "scope": {
+    "plugins": [],
+    "productAssets": [],
+    "gameplayRules": [],
+    "gateChanges": [],
+    "productionFoundationAuthorized": false
+  }
+}

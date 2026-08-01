@@ -1,0 +1,9 @@
+--quit-after <int>  Quit after the given number of iterations. Set to 0 to disable.
+--path <directory>  Path to a project (<directory> must contain a "project.godot" file).
+--scene <path>  Path or UID of a scene in the project that should be started.
+--headless  Enable headless mode (--display-driver headless --audio-driver Dummy).
+--log-file <file>  Write output/error log to the specified path.
+-s, --script <script>  Run a script.
+--check-only  Only parse for errors and quit (use with --script).
+--import  Starts the editor, waits for resources to be imported, and then quits.
+--export-release <preset> <path>  Export the project in release mode using the given preset and output path.

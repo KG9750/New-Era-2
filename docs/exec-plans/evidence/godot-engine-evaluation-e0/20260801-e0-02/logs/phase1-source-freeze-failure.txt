@@ -1,0 +1,28 @@
+run_id=20260801-e0-02
+source_sha=e0622aff7188b9e4774a4d698c39a37e4c5a6908
+classification=SOURCE_FREEZE_SCOPE_FAIL
+actual_tracked_entry_count=26
+declared_inventory_entry_count=12
+unexpected_editor_cache_count=13
+inventory_self_entry_unbound=true
+
+unexpected tracked paths:
+.godot/.gdignore
+.godot/editor/E0.tscn-editstate-b2089761ea067850c5f40e51c72cd4e3.cfg
+.godot/editor/E0.tscn-folding-b2089761ea067850c5f40e51c72cd4e3.cfg
+.godot/editor/editor_layout.cfg
+.godot/editor/editor_script_doc_cache.res
+.godot/editor/editor_script_doc_cache.res-folding-a7de57390d6e786984ca20c70a831128.cfg
+.godot/editor/filesystem_cache10
+.godot/editor/filesystem_update4
+.godot/editor/project_metadata.cfg
+.godot/editor/script_editor_cache.cfg
+.godot/global_script_class_cache.cfg
+.godot/scene_groups_cache.cfg
+.godot/uid_cache.bin
+SOURCE_INVENTORY.sha256
+
+The pre-commit guard used shell negation before a pipeline under `set -e`; shell errexit does not
+terminate on a command whose status is inverted by `!`. The paths were printed, but the commit
+continued. The run stopped immediately after the post-commit tree audit detected the mismatch.
+No amendment, source repair, Phase 2, Phase 3, export, input, resize, or performance run followed.

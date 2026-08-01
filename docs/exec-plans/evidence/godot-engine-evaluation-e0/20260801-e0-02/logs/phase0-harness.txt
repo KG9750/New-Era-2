@@ -1,0 +1,26 @@
+run_id=20260801-e0-02
+
+[accessibility-query]
+argv=/usr/bin/osascript -e tell application "System Events" to get UI elements enabled
+cwd=/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-02/repo
+exit=0
+stdout=true
+stderr=
+
+[focus-probe]
+argv=/usr/bin/osascript /private/tmp/new-era-godot-engine-e0-staging-20260801-e0-02/harness/phase0-focus-probe.applescript
+script_sha256=8579cfd5f9c3ff79bfe38a27baa09900a447e6823b0d976177a69dcf6e8731e0
+exit=0
+stdout=ChatGPT|Finder|ChatGPT
+stderr=
+
+[shift-probe]
+argv=/usr/bin/osascript /private/tmp/new-era-godot-engine-e0-staging-20260801-e0-02/harness/phase0-shift-probe.applescript
+script_sha256=3eca480822676967f2bf941b7b331ed9822c0ff73cd007a5dfa9d78e17fa9b16
+exit=0
+stdout=
+stderr=
+
+classification=TEST_HARNESS_PASS
+godot_project_created=false
+godot_project_loaded=false

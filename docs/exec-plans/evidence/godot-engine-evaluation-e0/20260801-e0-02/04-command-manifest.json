@@ -1,0 +1,95 @@
+{
+  "schemaVersion": "new-era-godot-e0-command-manifest-v1",
+  "runId": "20260801-e0-02",
+  "status": "PARTIAL_SOURCE_FREEZE_SCOPE_FAIL",
+  "sourceSha": "e0622aff7188b9e4774a4d698c39a37e4c5a6908",
+  "godotBinary": "/Volumes/Leo_LLM/Toolchains/NewEra/godot-4.7.1/Godot_mono.app/Contents/MacOS/Godot",
+  "projectPath": "/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-02/repo/spikes/godot-engine-evaluation-e0",
+  "environmentAllowlist": {
+    "PATH": "/opt/homebrew/bin:/opt/homebrew/sbin:/Users/leo/.codex/tmp/arg0/codex-arg0TmgxWw:/Users/leo/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/override:/Users/leo/.bun/bin:/Users/leo/.antigravity/antigravity/bin:/Users/leo/anaconda3/bin:/Users/leo/anaconda3/condabin:/Users/leo/.local/bin:/opt/homebrew/bin:/opt/homebrew/sbin:/usr/local/bin:/System/Cryptexes/App/usr/bin:/usr/bin:/bin:/usr/sbin:/sbin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/local/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/bin:/var/run/com.apple.security.cryptexd/codex.system/bootstrap/usr/appleinternal/bin:/pkg/env/global/bin:/Library/Apple/usr/bin:/Library/TeX/texbin:/Users/leo/.dotnet:/Applications/Obsidian.app/Contents/MacOS:/Users/leo/.lmstudio/bin:/Users/leo/.cache/codex-runtimes/codex-primary-runtime/dependencies/bin/fallback:/Applications/ChatGPT.app/Contents/Resources",
+    "DOTNET_ROOT": "/Users/leo/.dotnet",
+    "LANG": "C.UTF-8",
+    "LC_ALL": "C.UTF-8",
+    "TMPDIR": "/var/folders/23/4bh04pkn6sggy3_yn5j92gnc0000gn/T/",
+    "GODOT_DISPLAY_DRIVER": "UNSET",
+    "GODOT_RENDERING_METHOD": "UNSET"
+  },
+  "commands": [
+    {
+      "id": "phase0-accessibility-query",
+      "provenance": "RECORDED_EXACT",
+      "argv": ["/usr/bin/osascript", "-e", "tell application \"System Events\" to get UI elements enabled"],
+      "cwd": "/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-02/repo",
+      "exitCode": 0,
+      "evidence": "logs/phase0-harness.txt"
+    },
+    {
+      "id": "phase0-focus-probe",
+      "provenance": "RECORDED_EXACT",
+      "argv": ["/usr/bin/osascript", "/private/tmp/new-era-godot-engine-e0-staging-20260801-e0-02/harness/phase0-focus-probe.applescript"],
+      "cwd": "/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-02/repo",
+      "exitCode": 0,
+      "evidence": "logs/phase0-harness.txt"
+    },
+    {
+      "id": "phase0-shift-probe",
+      "provenance": "RECORDED_EXACT",
+      "argv": ["/usr/bin/osascript", "/private/tmp/new-era-godot-engine-e0-staging-20260801-e0-02/harness/phase0-shift-probe.applescript"],
+      "cwd": "/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-02/repo",
+      "exitCode": 0,
+      "evidence": "logs/phase0-harness.txt"
+    },
+    {
+      "id": "phase1-check-only",
+      "provenance": "ARTIFACT_BOUND_RECONSTRUCTION",
+      "argv": ["/Volumes/Leo_LLM/Toolchains/NewEra/godot-4.7.1/Godot_mono.app/Contents/MacOS/Godot", "--headless", "--path", "/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-02/repo/spikes/godot-engine-evaluation-e0", "--script", "res://tests/e0_runner.gd", "--check-only"],
+      "cwd": "/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-02/repo",
+      "exitCode": 0,
+      "evidence": "logs/phase1-check-only.log",
+      "limitation": "The raw log binds binary version and outcome but does not echo ordered argv; argv is reconstructed from the execution wrapper shape."
+    },
+    {
+      "id": "phase1-runner-nominal",
+      "provenance": "ARTIFACT_BOUND_RECONSTRUCTION",
+      "argv": ["/Volumes/Leo_LLM/Toolchains/NewEra/godot-4.7.1/Godot_mono.app/Contents/MacOS/Godot", "--headless", "--path", "/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-02/repo/spikes/godot-engine-evaluation-e0", "--script", "res://tests/e0_runner.gd", "--", "--fixture=nominal", "--output=/private/tmp/new-era-godot-engine-e0-output-20260801-e0-02/phase1-runner-nominal.json"],
+      "cwd": "/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-02/repo",
+      "exitCode": 0,
+      "evidence": ["phase1-runner-nominal.json", "logs/phase1-runner-nominal.log"]
+    },
+    {
+      "id": "phase1-runner-stress",
+      "provenance": "ARTIFACT_BOUND_RECONSTRUCTION",
+      "argv": ["/Volumes/Leo_LLM/Toolchains/NewEra/godot-4.7.1/Godot_mono.app/Contents/MacOS/Godot", "--headless", "--path", "/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-02/repo/spikes/godot-engine-evaluation-e0", "--script", "res://tests/e0_runner.gd", "--", "--fixture=stress", "--output=/private/tmp/new-era-godot-engine-e0-output-20260801-e0-02/phase1-runner-stress.json"],
+      "cwd": "/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-02/repo",
+      "exitCode": 0,
+      "evidence": ["phase1-runner-stress.json", "logs/phase1-runner-stress.log"]
+    },
+    {
+      "id": "phase1-vector-missing-scene",
+      "provenance": "ARTIFACT_BOUND_RECONSTRUCTION",
+      "argv": ["/Volumes/Leo_LLM/Toolchains/NewEra/godot-4.7.1/Godot_mono.app/Contents/MacOS/Godot", "--headless", "--path", "/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-02/repo/spikes/godot-engine-evaluation-e0", "--script", "res://tests/e0_runner.gd", "--", "--vector=missing-scene", "--output=/private/tmp/new-era-godot-engine-e0-output-20260801-e0-02/phase1-vector-missing.json"],
+      "cwd": "/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-02/repo",
+      "exitCode": 21,
+      "evidence": ["phase1-vector-missing.json", "logs/phase1-vector-missing.log"]
+    },
+    {
+      "id": "phase1-vector-bad-type",
+      "provenance": "ARTIFACT_BOUND_RECONSTRUCTION",
+      "argv": ["/Volumes/Leo_LLM/Toolchains/NewEra/godot-4.7.1/Godot_mono.app/Contents/MacOS/Godot", "--headless", "--path", "/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-02/repo/spikes/godot-engine-evaluation-e0", "--script", "res://tests/e0_runner.gd", "--", "--vector=bad-type", "--output=/private/tmp/new-era-godot-engine-e0-output-20260801-e0-02/phase1-vector-bad-type.json"],
+      "cwd": "/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-02/repo",
+      "exitCode": 22,
+      "evidence": ["phase1-vector-bad-type.json", "logs/phase1-vector-bad-type.log"]
+    },
+    {
+      "id": "phase1-vector-fixture-mismatch",
+      "provenance": "ARTIFACT_BOUND_RECONSTRUCTION",
+      "argv": ["/Volumes/Leo_LLM/Toolchains/NewEra/godot-4.7.1/Godot_mono.app/Contents/MacOS/Godot", "--headless", "--path", "/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-02/repo/spikes/godot-engine-evaluation-e0", "--script", "res://tests/e0_runner.gd", "--", "--fixture=nominal", "--expected-total=999", "--output=/private/tmp/new-era-godot-engine-e0-output-20260801-e0-02/phase1-vector-mismatch.json"],
+      "cwd": "/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-02/repo",
+      "exitCode": 23,
+      "evidence": ["phase1-vector-mismatch.json", "logs/phase1-vector-mismatch.log"]
+    }
+  ],
+  "notRun": ["PHASE2_IMPORT", "PHASE2_HEADLESS_REPEAT", "PHASE2_EXPORT", "PHASE2_LOCAL_LAUNCH", "PHASE3_EDITOR_READ_ONLY", "PHASE3_OS_INPUT", "PHASE3_RESIZE", "PHASE3_PERFORMANCE"],
+  "limitation": "Phase 1 Godot raw logs do not echo argv. These entries preserve the artifact-bound command shape and explicitly avoid claiming a recorded-exact argv provenance. This limitation does not change the earlier hard-stop classification."
+}
+
