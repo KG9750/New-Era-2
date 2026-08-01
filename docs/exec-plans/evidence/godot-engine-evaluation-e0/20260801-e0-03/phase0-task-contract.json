@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "new-era-godot-e0-task-contract-v2",
+  "runId": "20260801-e0-03",
+  "status": "FROZEN_PRE_GODOT_GUARDS_PASS",
+  "ownerAuthorizationPackageSha256": "ec18e6a8861011ff8f4c712c376ee03b34e18036edc247969eec83950ab0a60c",
+  "remediationContractSha256": "0526cc10803a8c3b350b9be575fec7733074d4b38ef783bb38d8ff941ae34855",
+  "bootstrapReceiptSha256": "18cc9cc9dc0876334ef985bb511c4aa36a0211ebc7e2b8a0e3141b4d4709f4f4",
+  "preGodotGuards": {
+    "status": "PASS",
+    "commandRecorderSha256": "a9719eb3905b6aa38fa451852608a7aba17a58b16a0fdf03c7593079c8795026",
+    "commandRecorderSelfTest": "PASS",
+    "focusProbeSha256": "650df337183735c2a7e3034a2dfe3ba800ff3a66f169eadcdbbff5c97d5334a7",
+    "shiftProbeSha256": "a43b100f6555c14af8924a196deb73889ae7e03251f7575eea589b3bafed8c67",
+    "expectedSourcePathsSha256": "af73b86fcc5c68e9ff284c6179e018e8ddc43963c6a21acb102105070b4706bc",
+    "projectGitignoreSha256": "ea8b6c4c09c90f3621f1fd5c0489008d7c8784ba0ea331df8aad8609aea4fbef",
+    "expectedSourcePathCount": 14,
+    "trackedDotGodotCount": 0,
+    "stagedDotGodotCount": 0
+  },
+  "renderer": "gl_compatibility",
+  "viewport": {"width": 960, "height": 540, "stretchMode": "disabled"},
+  "fixtures": {
+    "nominal": {"grid": [64, 36], "ground": 2304, "detail": 576, "overlay": 144, "total": 3024},
+    "stress": {"grid": [256, 144], "ground": 36864, "detail": 9216, "overlay": 2304, "total": 48384}
+  },
+  "input": {
+    "provenance": "OS_INJECTED_INPUT",
+    "trace": ["D", "S", "A", "W"],
+    "expectedCenters": [[0, 0], [64, 0], [64, 64], [0, 64], [0, 0]]
+  },
+  "sampling": {
+    "warmupFrames": 120,
+    "timedSampleSeconds": 10.0,
+    "fpsWindowSeconds": 1.0,
+    "fpsWindowCount": 10,
+    "minimumSampleFrames": 120,
+    "repeatCount": 3
+  },
+  "phaseUnlock": {
+    "phase2RequiresSourceFreezePass": true,
+    "phase3RequiresPhase2RequiredItemsPass": true
+  }
+}
+

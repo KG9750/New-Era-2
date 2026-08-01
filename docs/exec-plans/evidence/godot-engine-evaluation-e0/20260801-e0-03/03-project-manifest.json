@@ -1,0 +1,43 @@
+{
+  "schemaVersion": "new-era-godot-e0-project-manifest-v2",
+  "runId": "20260801-e0-03",
+  "status": "PRE_GODOT_SOURCE_ALLOWLIST_FORMAT_FAIL",
+  "executionBaseSha": "b020775522f83c4731ba318905d3d436c2f51f60",
+  "sourceCommit": "NOT_CREATED",
+  "failure": {
+    "classification": "PRE_GODOT_SOURCE_ALLOWLIST_FORMAT_FAIL",
+    "hardStop": "GODOT_STARTED_BEFORE_PRE_GODOT_REQUIREMENTS_PASS",
+    "reason": "EXPECTED_SOURCE_PATHS.txt contained fourteen intended paths plus one blank physical line; the pre-Godot check incorrectly filtered blank lines and allowed Godot to start.",
+    "sourceFreeze": "NOT_RUN",
+    "phase2": "NOT_RUN",
+    "phase3": "NOT_RUN",
+    "engineGate": "NOT_RUN"
+  },
+  "preFreezeSourceSnapshot": {
+    "path": "02a-pre-freeze-source-archive.tar",
+    "sha256": "f1bf9e3c8e1354fc30d4fcbbbdcf79d3220a28d10e2104b4dbc294e6ae01864c",
+    "bytes": 52224,
+    "secondGenerationByteForByteEqual": true,
+    "inventoryPath": "02-pre-freeze-source-inventory.sha256",
+    "inventorySha256": "a9523c51c3b96f5c370d45727da934ada4e68dcba8370108aa74f9b2a490c57c",
+    "fileCount": 14,
+    "stagedPatchPath": "02c-pre-freeze-staged-source.patch",
+    "stagedPatchSha256": "a74beb371279e68193860bf0a908b47e24ad6cc6dfe1636a51d5e976484285d0"
+  },
+  "observedPartialResults": {
+    "checkOnly": "PASS",
+    "nominalRunner": {"status": "PASS", "totalCells": 3024},
+    "stressRunner": {"status": "PASS", "totalCells": 48384},
+    "failureVectors": {"missingScene": 21, "badResourceType": 22, "fixtureMismatch": 23},
+    "editorSequenceWitness": "PASS"
+  },
+  "scope": {
+    "plugins": [],
+    "autoloads": [],
+    "productAssets": [],
+    "gameplayRules": [],
+    "trackedDotGodotCount": 0,
+    "productionFoundationAuthorized": false
+  }
+}
+

@@ -1,0 +1,93 @@
+{
+	"fixtureId": "stress",
+	"manifest": {
+		"cameraCenter": [
+			0.0,
+			0.0
+		],
+		"cameraCurrent": true,
+		"displayServer": "headless",
+		"fixtureId": "stress",
+		"grid": [
+			256,
+			144
+		],
+		"layers": [
+			{
+				"cellCount": 36864,
+				"name": "Ground",
+				"usedRect": [
+					0,
+					0,
+					256,
+					144
+				]
+			},
+			{
+				"cellCount": 9216,
+				"name": "Detail",
+				"usedRect": [
+					0,
+					0,
+					255,
+					144
+				]
+			},
+			{
+				"cellCount": 2304,
+				"name": "Overlay",
+				"usedRect": [
+					0,
+					0,
+					256,
+					144
+				]
+			}
+		],
+		"totalCellCount": 48384,
+		"visibleRect": [
+			0.0,
+			0.0,
+			64.0,
+			64.0
+		],
+		"windowSize": [
+			64,
+			64
+		]
+	},
+	"nodeTree": {
+		"children": [
+			{
+				"children": [],
+				"name": "Ground",
+				"path": "/root/E0SyntheticFixture/Ground",
+				"type": "TileMapLayer"
+			},
+			{
+				"children": [],
+				"name": "Detail",
+				"path": "/root/E0SyntheticFixture/Detail",
+				"type": "TileMapLayer"
+			},
+			{
+				"children": [],
+				"name": "Overlay",
+				"path": "/root/E0SyntheticFixture/Overlay",
+				"type": "TileMapLayer"
+			},
+			{
+				"children": [],
+				"name": "E0Camera",
+				"path": "/root/E0SyntheticFixture/E0Camera",
+				"type": "Camera2D"
+			}
+		],
+		"name": "E0SyntheticFixture",
+		"path": "/root/E0SyntheticFixture",
+		"type": "Node2D"
+	},
+	"scenePath": "res://scenes/E0.tscn",
+	"status": "PASS",
+	"vector": "success"
+}

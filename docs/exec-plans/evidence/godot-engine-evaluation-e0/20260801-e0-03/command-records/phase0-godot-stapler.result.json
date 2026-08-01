@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "new-era-godot-e0-command-result-v1",
+  "status": "COMPLETED",
+  "runId": "20260801-e0-03",
+  "commandId": "phase0-godot-stapler",
+  "preRecordPath": "/private/tmp/new-era-godot-engine-e0-staging-20260801-e0-03/command-records/phase0-godot-stapler.pre.json",
+  "preRecordSha256": "6ab2630d71bf17c6ff7ad2292554fefed73e70a51027907ac93335f4a15f816e",
+  "endedAtUtc": "2026-08-01T15:28:04.597501Z",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "spawnError": null,
+  "stdoutPath": "/private/tmp/new-era-godot-engine-e0-output-20260801-e0-03/command-streams/phase0-godot-stapler.stdout",
+  "stdoutBytes": 102,
+  "stdoutSha256": "d50c1a152e6c35165cc26b8758e91ba16035551405f74c4bc04246551b23e3c9",
+  "stderrPath": "/private/tmp/new-era-godot-engine-e0-output-20260801-e0-03/command-streams/phase0-godot-stapler.stderr",
+  "stderrBytes": 0,
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

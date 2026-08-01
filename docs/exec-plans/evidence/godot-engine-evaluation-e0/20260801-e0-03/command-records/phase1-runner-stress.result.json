@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "new-era-godot-e0-command-result-v1",
+  "status": "COMPLETED",
+  "runId": "20260801-e0-03",
+  "commandId": "phase1-runner-stress",
+  "preRecordPath": "/private/tmp/new-era-godot-engine-e0-staging-20260801-e0-03/command-records/phase1-runner-stress.pre.json",
+  "preRecordSha256": "9080eeae84db2e5301126063266f8723952a17aff0a9de94155c915ccf8cc7b4",
+  "endedAtUtc": "2026-08-01T15:35:19.207559Z",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "spawnError": null,
+  "stdoutPath": "/private/tmp/new-era-godot-engine-e0-output-20260801-e0-03/command-streams/phase1-runner-stress.stdout",
+  "stdoutBytes": 1471,
+  "stdoutSha256": "7de8f291b6a6b511b837a7411ae770ce01514a623887110a607fe3f3304d926b",
+  "stderrPath": "/private/tmp/new-era-godot-engine-e0-output-20260801-e0-03/command-streams/phase1-runner-stress.stderr",
+  "stderrBytes": 0,
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

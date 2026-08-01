@@ -1,0 +1,808 @@
+diff --git a/spikes/godot-engine-evaluation-e0/.gitignore b/spikes/godot-engine-evaluation-e0/.gitignore
+new file mode 100644
+index 0000000..5c4b055
+--- /dev/null
++++ b/spikes/godot-engine-evaluation-e0/.gitignore
+@@ -0,0 +1,2 @@
++.godot/
++
+diff --git a/spikes/godot-engine-evaluation-e0/E0_MANIFEST.json b/spikes/godot-engine-evaluation-e0/E0_MANIFEST.json
+new file mode 100644
+index 0000000..b7901e7
+--- /dev/null
++++ b/spikes/godot-engine-evaluation-e0/E0_MANIFEST.json
+@@ -0,0 +1,43 @@
++{
++  "schemaVersion": "new-era-godot-e0-project-manifest-v2",
++  "runId": "20260801-e0-03",
++  "status": "DISPOSABLE_SOURCE_READY_FOR_FREEZE",
++  "executionBaseSha": "b020775522f83c4731ba318905d3d436c2f51f60",
++  "planSha256": "a75f807fb3315834624a3bf69251a8d6cd989fa5ab6891d58b446d6374ea0652",
++  "annexSha256": "c72906b5b4ddfeae45bb2816aac9eda1ac0530c5193a65355d5e33b52fc2c1ed",
++  "remediationContractSha256": "0526cc10803a8c3b350b9be575fec7733074d4b38ef783bb38d8ff941ae34855",
++  "godotVersion": "4.7.1.stable.mono.official.a13da4feb",
++  "renderer": "gl_compatibility",
++  "implementationLanguage": "GDScript",
++  "plugins": [],
++  "autoloads": [],
++  "productAssets": [],
++  "gameplayRules": [],
++  "fixtures": {
++    "nominal": {"grid": [64, 36], "totalCells": 3024},
++    "stress": {"grid": [256, 144], "totalCells": 48384}
++  },
++  "sourceGuard": {
++    "expectedSourcePathCount": 14,
++    "trackedDotGodotExpected": 0,
++    "externalInventoryOnly": true
++  },
++  "editorWitness": {
++    "status": "PASS",
++    "sequenceEvidence": "phase1-editor-witness.json",
++    "finalSceneSha256": "26497806feb65915f7a0aac51b41993bb36d854d88652fe046a7b1f4b49b7577",
++    "checkpointImageSha256": [
++      "e593ea5d5a0a5370866b3e150516b80b84f6918c6d652b96aae2d395dd3ba275",
++      "65ebf9d54d1d513b8e85144e1a591eb34ca0c1ee2b6c932f97dd3b0dacade87b",
++      "545d220e539a13edf85f260c4dbfabc83b64c95c0a7ceb71c01f2c9af359d41a"
++    ]
++  },
++  "runnerVectors": {
++    "successNominal": 0,
++    "successStress": 0,
++    "missingScene": 21,
++    "badResourceType": 22,
++    "fixtureMismatch": 23
++  },
++  "lifecycle": "ARCHIVE_EVIDENCE_THEN_DISCARD_OR_RETAIN_EVALUATION_REF_ONLY"
++}
+diff --git a/spikes/godot-engine-evaluation-e0/EXPECTED_SOURCE_PATHS.txt b/spikes/godot-engine-evaluation-e0/EXPECTED_SOURCE_PATHS.txt
+new file mode 100644
+index 0000000..31e4097
+--- /dev/null
++++ b/spikes/godot-engine-evaluation-e0/EXPECTED_SOURCE_PATHS.txt
+@@ -0,0 +1,15 @@
++.gitignore
++E0_MANIFEST.json
++EXPECTED_SOURCE_PATHS.txt
++README.md
++export_presets.cfg
++project.godot
++scenes/E0.tscn
++scripts/e0_input_injector.applescript
++scripts/e0_main.gd
++scripts/e0_main.gd.uid
++tests/e0_runner.gd
++tests/e0_runner.gd.uid
++tests/not_scene.tres
++tools/analyze_performance.py
++
+diff --git a/spikes/godot-engine-evaluation-e0/README.md b/spikes/godot-engine-evaluation-e0/README.md
+new file mode 100644
+index 0000000..18067ee
+--- /dev/null
++++ b/spikes/godot-engine-evaluation-e0/README.md
+@@ -0,0 +1,10 @@
++# New Era E0-03 Disposable Engine Evaluation
++
++This synthetic Godot project answers only whether the pinned local Godot toolchain can parse,
++load, render, accept OS-injected input, sample performance, export, launch, and terminate the
++frozen TileMapLayer fixtures.
++
++It is throwaway evaluation code. It contains no gameplay rules, product map, product UI,
++plugins, persistence, networking, or production assets. The React/TypeScript simulation remains
++the sole gameplay-rule authority. Archive the result, then retain only evaluation/evidence refs.
++
+diff --git a/spikes/godot-engine-evaluation-e0/export_presets.cfg b/spikes/godot-engine-evaluation-e0/export_presets.cfg
+new file mode 100644
+index 0000000..8f674d2
+--- /dev/null
++++ b/spikes/godot-engine-evaluation-e0/export_presets.cfg
+@@ -0,0 +1,22 @@
++[preset.0]
++
++name="E0 macOS"
++platform="macOS"
++runnable=true
++dedicated_server=false
++custom_features=""
++export_filter="all_resources"
++include_filter=""
++exclude_filter=""
++export_path=""
++script_export_mode=2
++
++[preset.0.options]
++
++binary_format/architecture="universal"
++application/bundle_identifier="org.newera.e0.run03.disposable"
++application/short_version="0.0.3"
++application/version="0.0.3"
++codesign/codesign=0
++notarization/notarization=0
++
+diff --git a/spikes/godot-engine-evaluation-e0/project.godot b/spikes/godot-engine-evaluation-e0/project.godot
+new file mode 100644
+index 0000000..7fa6f29
+--- /dev/null
++++ b/spikes/godot-engine-evaluation-e0/project.godot
+@@ -0,0 +1,54 @@
++; Engine configuration file.
++; It's best edited using the editor UI and not directly,
++; since the parameters that go here are not all obvious.
++;
++; Format:
++;   [section] ; section goes between []
++;   param=value ; assign values to parameters
++
++config_version=5
++
++[application]
++
++config/name="New Era E0-03 Disposable Evaluation"
++run/main_scene="res://scenes/E0.tscn"
++config/features=PackedStringArray("4.7")
++
++[display]
++
++window/size/viewport_width=960
++window/size/viewport_height=540
++window/size/window_width_override=960
++window/size/window_height_override=540
++
++[dotnet]
++
++project/assembly_name="New Era E0-03 Disposable Evaluation"
++
++[input]
++
++e0_camera_right={
++"deadzone": 0.5,
++"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":68,"key_label":0,"unicode":100,"location":0,"echo":false,"script":null)
++]
++}
++e0_camera_down={
++"deadzone": 0.5,
++"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":83,"key_label":0,"unicode":115,"location":0,"echo":false,"script":null)
++]
++}
++e0_camera_left={
++"deadzone": 0.5,
++"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":65,"key_label":0,"unicode":97,"location":0,"echo":false,"script":null)
++]
++}
++e0_camera_up={
++"deadzone": 0.5,
++"events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":87,"key_label":0,"unicode":119,"location":0,"echo":false,"script":null)
++]
++}
++
++[rendering]
++
++renderer/rendering_method="gl_compatibility"
++renderer/rendering_method.mobile="gl_compatibility"
+diff --git a/spikes/godot-engine-evaluation-e0/scenes/E0.tscn b/spikes/godot-engine-evaluation-e0/scenes/E0.tscn
+new file mode 100644
+index 0000000..1394384
+--- /dev/null
++++ b/spikes/godot-engine-evaluation-e0/scenes/E0.tscn
+@@ -0,0 +1,6 @@
++[gd_scene format=3 uid="uid://c6brtn5oicjtd"]
++
++[ext_resource type="Script" uid="uid://d5ikc8313by" path="res://scripts/e0_main.gd" id="1_main"]
++
++[node name="E0SyntheticFixture" type="Node2D" unique_id=49508557]
++script = ExtResource("1_main")
+diff --git a/spikes/godot-engine-evaluation-e0/scripts/e0_input_injector.applescript b/spikes/godot-engine-evaluation-e0/scripts/e0_input_injector.applescript
+new file mode 100644
+index 0000000..5226b5b
+--- /dev/null
++++ b/spikes/godot-engine-evaluation-e0/scripts/e0_input_injector.applescript
+@@ -0,0 +1,17 @@
++on run argv
++  if (count of argv) is not 1 then error "expected exact target pid" number 64
++  set targetPid to (item 1 of argv) as integer
++  tell application "System Events"
++    if not (exists first application process whose unix id is targetPid) then error "target pid absent" number 65
++    set targetProcess to first application process whose unix id is targetPid
++    set frontmost of targetProcess to true
++    delay 1.0
++    repeat with keyName in {"d", "s", "a", "w"}
++      key down keyName
++      delay 0.1
++      key up keyName
++      delay 0.25
++    end repeat
++  end tell
++end run
++
+diff --git a/spikes/godot-engine-evaluation-e0/scripts/e0_main.gd b/spikes/godot-engine-evaluation-e0/scripts/e0_main.gd
+new file mode 100644
+index 0000000..2b3e948
+--- /dev/null
++++ b/spikes/godot-engine-evaluation-e0/scripts/e0_main.gd
+@@ -0,0 +1,369 @@
++extends Node2D
++
++const TILE_SIZE := Vector2i(16, 16)
++const ATLAS_SIZE := Vector2i(48, 16)
++const SOURCE_ID := 0
++const CAMERA_STEP := 64.0
++const WARMUP_FRAMES := 120
++const SAMPLE_SECONDS := 10.0
++const MINIMUM_SAMPLE_FRAMES := 120
++const ACTION_DELTAS := {
++	"e0_camera_right": Vector2(CAMERA_STEP, 0.0),
++	"e0_camera_down": Vector2(0.0, CAMERA_STEP),
++	"e0_camera_left": Vector2(-CAMERA_STEP, 0.0),
++	"e0_camera_up": Vector2(0.0, -CAMERA_STEP),
++}
++const EXPECTED_ACTIONS := ["e0_camera_right", "e0_camera_down", "e0_camera_left", "e0_camera_up"]
++const EXPECTED_CENTERS := [Vector2.ZERO, Vector2(64, 0), Vector2(64, 64), Vector2(0, 64), Vector2.ZERO]
++
++var fixture_id := "nominal"
++var mode := "interactive"
++var output_path := ""
++var grid := Vector2i(64, 36)
++var expected_counts := {"Ground": 2304, "Detail": 576, "Overlay": 144}
++var layers: Array[TileMapLayer] = []
++var fixture_camera: Camera2D
++var fixture_manifest: Dictionary = {}
++
++var warmup_count := 0
++var sample_start_ns := 0
++var samples: Array[Dictionary] = []
++var performance_done := false
++
++var phase3_start_usec := 0
++var phase3_stage := 0
++var resize_checkpoints: Array[Dictionary] = []
++var input_ready_usec := 0
++var input_events: Array[Dictionary] = []
++var pending_input_rows: Array[Dictionary] = []
++var input_sequence := 0
++var valid_action_count := 0
++var last_input_usec := 0
++var input_done := false
++
++var witness_start_usec := 0
++
++
++func _ready() -> void:
++	_parse_args()
++	_configure_fixture()
++	_build_fixture()
++	fixture_manifest = _make_fixture_manifest()
++	print("E0_FIXTURE_MANIFEST=" + JSON.stringify(fixture_manifest))
++	if not _fixture_matches_contract():
++		printerr("E0_FIXTURE_COUNT_MISMATCH")
++		get_tree().quit(31)
++		return
++	match mode:
++		"smoke":
++			call_deferred("_finish_smoke")
++		"phase3":
++			phase3_start_usec = Time.get_ticks_usec()
++		"witness":
++			witness_start_usec = Time.get_ticks_usec()
++
++
++func _process(_delta: float) -> void:
++	_finalize_pending_input_rows()
++	if mode == "performance" and not performance_done:
++		_sample_performance()
++	elif mode == "phase3" and not input_done:
++		_process_phase3()
++	elif mode == "witness" and Time.get_ticks_usec() - witness_start_usec >= 8000000:
++		_write_json({"status": "PASS", "mode": "witness", "fixture": _make_fixture_manifest()})
++		get_tree().quit(0)
++
++
++func _input(event: InputEvent) -> void:
++	if mode != "phase3" or input_ready_usec == 0 or not (event is InputEventKey):
++		return
++	_observe_key_event(event as InputEventKey)
++
++
++func _parse_args() -> void:
++	for arg in OS.get_cmdline_user_args():
++		if arg.begins_with("--fixture="):
++			fixture_id = arg.trim_prefix("--fixture=")
++		elif arg.begins_with("--mode="):
++			mode = arg.trim_prefix("--mode=")
++		elif arg.begins_with("--output="):
++			output_path = arg.trim_prefix("--output=")
++
++
++func _configure_fixture() -> void:
++	if fixture_id == "stress":
++		grid = Vector2i(256, 144)
++		expected_counts = {"Ground": 36864, "Detail": 9216, "Overlay": 2304}
++	elif fixture_id != "nominal":
++		printerr("E0_UNKNOWN_FIXTURE=" + fixture_id)
++		get_tree().quit(30)
++
++
++func _build_fixture() -> void:
++	var tile_set := TileSet.new()
++	tile_set.tile_size = TILE_SIZE
++	var atlas_image := Image.create_empty(ATLAS_SIZE.x, ATLAS_SIZE.y, false, Image.FORMAT_RGBA8)
++	var colors := [Color("566b4f"), Color("9a8f62"), Color("5f718c")]
++	for tile_x in range(3):
++		for pixel_y in range(TILE_SIZE.y):
++			for pixel_x in range(TILE_SIZE.x):
++				atlas_image.set_pixel(tile_x * TILE_SIZE.x + pixel_x, pixel_y, colors[tile_x])
++	var atlas_source := TileSetAtlasSource.new()
++	atlas_source.texture = ImageTexture.create_from_image(atlas_image)
++	atlas_source.texture_region_size = TILE_SIZE
++	for tile_x in range(3):
++		atlas_source.create_tile(Vector2i(tile_x, 0))
++	tile_set.add_source(atlas_source, SOURCE_ID)
++
++	for layer_name in ["Ground", "Detail", "Overlay"]:
++		var layer := TileMapLayer.new()
++		layer.name = layer_name
++		layer.tile_set = tile_set
++		layer.position = Vector2(-grid.x * TILE_SIZE.x / 2.0, -grid.y * TILE_SIZE.y / 2.0)
++		add_child(layer)
++		layers.append(layer)
++
++	for y in range(grid.y):
++		for x in range(grid.x):
++			var cell := Vector2i(x, y)
++			layers[0].set_cell(cell, SOURCE_ID, Vector2i(0, 0), 0)
++			if (x + 2 * y) % 4 == 0:
++				layers[1].set_cell(cell, SOURCE_ID, Vector2i(1, 0), 0)
++			if (3 * x + y) % 16 == 0:
++				layers[2].set_cell(cell, SOURCE_ID, Vector2i(2, 0), 0)
++
++	fixture_camera = Camera2D.new()
++	fixture_camera.name = "E0Camera"
++	fixture_camera.position = Vector2.ZERO
++	fixture_camera.position_smoothing_enabled = false
++	fixture_camera.drag_horizontal_enabled = false
++	fixture_camera.drag_vertical_enabled = false
++	add_child(fixture_camera)
++	fixture_camera.make_current()
++	fixture_camera.force_update_scroll()
++
++
++func _make_fixture_manifest() -> Dictionary:
++	var layer_rows: Array[Dictionary] = []
++	var total := 0
++	for layer in layers:
++		var count := layer.get_used_cells().size()
++		var used := layer.get_used_rect()
++		total += count
++		layer_rows.append({
++			"name": String(layer.name),
++			"cellCount": count,
++			"usedRect": [used.position.x, used.position.y, used.size.x, used.size.y],
++		})
++	return {
++		"fixtureId": fixture_id,
++		"grid": [grid.x, grid.y],
++		"layers": layer_rows,
++		"totalCellCount": total,
++		"cameraCurrent": fixture_camera.is_current(),
++		"cameraCenter": _vector_to_array(fixture_camera.get_screen_center_position()),
++		"displayServer": DisplayServer.get_name(),
++		"windowSize": [get_window().size.x, get_window().size.y],
++		"visibleRect": _rect_to_array(get_viewport().get_visible_rect()),
++	}
++
++
++func _fixture_matches_contract() -> bool:
++	if fixture_manifest["grid"] != [grid.x, grid.y]:
++		return false
++	var total_expected := 0
++	for row in fixture_manifest["layers"]:
++		var layer_name: String = row["name"]
++		if not expected_counts.has(layer_name) or row["cellCount"] != expected_counts[layer_name]:
++			return false
++		total_expected += expected_counts[layer_name]
++	return fixture_manifest["totalCellCount"] == total_expected
++
++
++func get_fixture_manifest() -> Dictionary:
++	return fixture_manifest.duplicate(true)
++
++
++func _finish_smoke() -> void:
++	await get_tree().process_frame
++	_write_json({"status": "PASS", "mode": "smoke", "fixture": _make_fixture_manifest()})
++	get_tree().quit(0)
++
++
++func _process_phase3() -> void:
++	var elapsed := float(Time.get_ticks_usec() - phase3_start_usec) / 1000000.0
++	if phase3_stage == 0 and elapsed >= 1.0:
++		_record_resize_checkpoint("INITIAL_960x540")
++		phase3_stage = 1
++	elif phase3_stage == 1 and elapsed >= 5.0:
++		DisplayServer.window_set_size(Vector2i(1280, 720))
++		phase3_stage = 2
++	elif phase3_stage == 2 and elapsed >= 6.0:
++		_record_resize_checkpoint("RESIZED_1280x720")
++		phase3_stage = 3
++	elif phase3_stage == 3 and elapsed >= 10.0:
++		DisplayServer.window_set_size(Vector2i(960, 540))
++		phase3_stage = 4
++	elif phase3_stage == 4 and elapsed >= 11.0:
++		_record_resize_checkpoint("RESTORED_960x540")
++		phase3_stage = 5
++	elif phase3_stage == 5 and elapsed >= 15.0:
++		input_ready_usec = Time.get_ticks_usec()
++		last_input_usec = input_ready_usec
++		print("E0_INPUT_READY")
++		phase3_stage = 6
++	elif phase3_stage == 6:
++		_poll_input_completion()
++
++
++func _record_resize_checkpoint(label: String) -> void:
++	fixture_camera.force_update_scroll()
++	var row := {
++		"label": label,
++		"windowSize": [get_window().size.x, get_window().size.y],
++		"visibleRect": _rect_to_array(get_viewport().get_visible_rect()),
++		"cameraCenter": _vector_to_array(fixture_camera.get_screen_center_position()),
++	}
++	resize_checkpoints.append(row)
++	print("E0_RESIZE_CHECKPOINT=" + JSON.stringify(row))
++
++
++func _observe_key_event(event: InputEventKey) -> void:
++	input_sequence += 1
++	last_input_usec = Time.get_ticks_usec()
++	var action := _resolve_action(event)
++	var before := fixture_camera.get_screen_center_position()
++	if event.pressed and not event.echo and action != "":
++		fixture_camera.position += ACTION_DELTAS[action]
++		valid_action_count += 1
++		fixture_camera.force_update_scroll()
++	pending_input_rows.append({
++		"sequence": input_sequence,
++		"pressed": event.pressed,
++		"echo": event.echo,
++		"keycode": int(event.keycode),
++		"physicalKeycode": int(event.physical_keycode),
++		"resolvedAction": action,
++		"beforeCenter": _vector_to_array(before),
++		"afterCenter": [],
++	})
++
++
++func _finalize_pending_input_rows() -> void:
++	while not pending_input_rows.is_empty():
++		var row: Dictionary = pending_input_rows.pop_front()
++		row["afterCenter"] = _vector_to_array(fixture_camera.get_screen_center_position())
++		input_events.append(row)
++		print("E0_INPUT_EVENT=" + JSON.stringify(row))
++
++
++func _resolve_action(event: InputEventKey) -> String:
++	for action in ACTION_DELTAS.keys():
++		if event.is_action(action):
++			return action
++	return ""
++
++
++func _poll_input_completion() -> void:
++	var now := Time.get_ticks_usec()
++	if valid_action_count >= 4 and input_events.size() >= 8 and now - last_input_usec >= 500000:
++		input_done = true
++		var trace_pass := _input_trace_passes()
++		_write_json({
++			"status": "PASS" if trace_pass else "FAIL",
++			"inputProvenance": "OS_INJECTED_INPUT",
++			"fixture": _make_fixture_manifest(),
++			"resizeCheckpoints": resize_checkpoints,
++			"validActionCount": valid_action_count,
++			"events": input_events,
++		})
++		get_tree().quit(0 if trace_pass else 5)
++	elif now - input_ready_usec > 10000000:
++		input_done = true
++		_write_json({
++			"status": "INPUT_DELIVERY_TIMEOUT",
++			"inputProvenance": "OS_INJECTED_INPUT",
++			"resizeCheckpoints": resize_checkpoints,
++			"validActionCount": valid_action_count,
++			"events": input_events,
++		})
++		get_tree().quit(3)
++
++
++func _input_trace_passes() -> bool:
++	if resize_checkpoints.size() != 3 or valid_action_count != 4:
++		return false
++	var valid_rows: Array[Dictionary] = []
++	for row in input_events:
++		if row["pressed"] and not row["echo"] and row["resolvedAction"] != "":
++			valid_rows.append(row)
++		elif row["beforeCenter"] != row["afterCenter"]:
++			return false
++	if valid_rows.size() != 4:
++		return false
++	for index in range(4):
++		if valid_rows[index]["resolvedAction"] != EXPECTED_ACTIONS[index]:
++			return false
++		if valid_rows[index]["beforeCenter"] != _vector_to_array(EXPECTED_CENTERS[index]):
++			return false
++		if valid_rows[index]["afterCenter"] != _vector_to_array(EXPECTED_CENTERS[index + 1]):
++			return false
++	return fixture_camera.get_screen_center_position().is_equal_approx(Vector2.ZERO)
++
++
++func _sample_performance() -> void:
++	if warmup_count < WARMUP_FRAMES:
++		warmup_count += 1
++		return
++	var now_ns := Time.get_ticks_usec() * 1000
++	if sample_start_ns == 0:
++		sample_start_ns = now_ns
++	var elapsed := float(now_ns - sample_start_ns) / 1000000000.0
++	if elapsed < SAMPLE_SECONDS:
++		samples.append({
++			"frameIndex": Engine.get_process_frames(),
++			"monotonicTimestampNs": now_ns,
++			"elapsedSeconds": elapsed,
++			"TIME_FPS": Performance.get_monitor(Performance.TIME_FPS),
++			"TIME_PROCESS": Performance.get_monitor(Performance.TIME_PROCESS),
++			"TIME_PHYSICS_PROCESS": Performance.get_monitor(Performance.TIME_PHYSICS_PROCESS),
++			"MEMORY_STATIC": Performance.get_monitor(Performance.MEMORY_STATIC),
++			"OBJECT_NODE_COUNT": Performance.get_monitor(Performance.OBJECT_NODE_COUNT),
++			"RENDER_TOTAL_OBJECTS_IN_FRAME": Performance.get_monitor(Performance.RENDER_TOTAL_OBJECTS_IN_FRAME),
++			"RENDER_TOTAL_DRAW_CALLS_IN_FRAME": Performance.get_monitor(Performance.RENDER_TOTAL_DRAW_CALLS_IN_FRAME),
++			"RENDER_VIDEO_MEM_USED": Performance.get_monitor(Performance.RENDER_VIDEO_MEM_USED),
++		})
++	else:
++		performance_done = true
++		var enough := samples.size() >= MINIMUM_SAMPLE_FRAMES
++		_write_json({
++			"status": "CAPTURED" if enough else "INSUFFICIENT_SAMPLES",
++			"fixture": _make_fixture_manifest(),
++			"warmupFrames": warmup_count,
++			"timedSampleSeconds": SAMPLE_SECONDS,
++			"minimumSampleFrames": MINIMUM_SAMPLE_FRAMES,
++			"sampleCount": samples.size(),
++			"samples": samples,
++		})
++		get_tree().quit(0 if enough else 4)
++
++
++func _write_json(value: Variant) -> void:
++	if output_path == "":
++		printerr("E0_OUTPUT_PATH_UNSET")
++		return
++	var file := FileAccess.open(output_path, FileAccess.WRITE)
++	if file == null:
++		printerr("E0_OUTPUT_OPEN_FAILED=" + output_path)
++		return
++	file.store_string(JSON.stringify(value, "\t") + "\n")
++	file.close()
++
++
++func _rect_to_array(rect: Rect2) -> Array:
++	return [rect.position.x, rect.position.y, rect.size.x, rect.size.y]
++
++
++func _vector_to_array(value: Vector2) -> Array:
++	return [value.x, value.y]
++
+diff --git a/spikes/godot-engine-evaluation-e0/scripts/e0_main.gd.uid b/spikes/godot-engine-evaluation-e0/scripts/e0_main.gd.uid
+new file mode 100644
+index 0000000..a636f89
+--- /dev/null
++++ b/spikes/godot-engine-evaluation-e0/scripts/e0_main.gd.uid
+@@ -0,0 +1,2 @@
++uid://d4r03main8x2q
++
+diff --git a/spikes/godot-engine-evaluation-e0/tests/e0_runner.gd b/spikes/godot-engine-evaluation-e0/tests/e0_runner.gd
+new file mode 100644
+index 0000000..f32a373
+--- /dev/null
++++ b/spikes/godot-engine-evaluation-e0/tests/e0_runner.gd
+@@ -0,0 +1,89 @@
++extends SceneTree
++
++const DEFAULT_SCENE := "res://scenes/E0.tscn"
++
++var fixture_id := "nominal"
++var output_path := ""
++var vector := "success"
++var expected_total := -1
++
++
++func _initialize() -> void:
++	_parse_args()
++	call_deferred("_run")
++
++
++func _parse_args() -> void:
++	for arg in OS.get_cmdline_user_args():
++		if arg.begins_with("--fixture="):
++			fixture_id = arg.trim_prefix("--fixture=")
++		elif arg.begins_with("--output="):
++			output_path = arg.trim_prefix("--output=")
++		elif arg.begins_with("--vector="):
++			vector = arg.trim_prefix("--vector=")
++		elif arg.begins_with("--expected-total="):
++			expected_total = int(arg.trim_prefix("--expected-total="))
++
++
++func _run() -> void:
++	var scene_path := DEFAULT_SCENE
++	if vector == "missing-scene":
++		scene_path = "res://scenes/ABSENT.tscn"
++	elif vector == "bad-type":
++		scene_path = "res://tests/not_scene.tres"
++	if not ResourceLoader.exists(scene_path):
++		_fail(21, "RESOURCE_ABSENT", {"scenePath": scene_path})
++		return
++	var resource := ResourceLoader.load(scene_path)
++	if not (resource is PackedScene):
++		_fail(22, "RESOURCE_NOT_PACKED_SCENE", {"scenePath": scene_path, "type": resource.get_class()})
++		return
++	var instance := (resource as PackedScene).instantiate()
++	if instance == null:
++		_fail(24, "SCENE_INSTANTIATE_FAILED", {"scenePath": scene_path})
++		return
++	get_root().add_child(instance)
++	await process_frame
++	if not instance.has_method("get_fixture_manifest"):
++		_fail(25, "FIXTURE_MANIFEST_METHOD_ABSENT", {})
++		return
++	var manifest: Dictionary = instance.call("get_fixture_manifest")
++	if expected_total >= 0 and manifest["totalCellCount"] != expected_total:
++		_fail(23, "FIXTURE_TOTAL_MISMATCH", {"expected": expected_total, "actual": manifest["totalCellCount"]})
++		return
++	var result := {
++		"status": "PASS",
++		"vector": vector,
++		"scenePath": scene_path,
++		"fixtureId": fixture_id,
++		"manifest": manifest,
++		"nodeTree": _node_tree(instance),
++	}
++	_write_result(result)
++	print("E0_RUNNER_PASS=" + JSON.stringify(result))
++	quit(0)
++
++
++func _node_tree(node: Node) -> Dictionary:
++	var children: Array[Dictionary] = []
++	for child in node.get_children():
++		children.append(_node_tree(child))
++	return {"name": String(node.name), "type": node.get_class(), "path": String(node.get_path()), "children": children}
++
++
++func _fail(code: int, error_code: String, details: Dictionary) -> void:
++	var result := {"status": "EXPECTED_FAILURE", "errorCode": error_code, "details": details, "vector": vector}
++	_write_result(result)
++	printerr("E0_RUNNER_FAIL=" + JSON.stringify(result))
++	quit(code)
++
++
++func _write_result(value: Variant) -> void:
++	if output_path == "":
++		return
++	var file := FileAccess.open(output_path, FileAccess.WRITE)
++	if file == null:
++		return
++	file.store_string(JSON.stringify(value, "\t") + "\n")
++	file.close()
++
+diff --git a/spikes/godot-engine-evaluation-e0/tests/e0_runner.gd.uid b/spikes/godot-engine-evaluation-e0/tests/e0_runner.gd.uid
+new file mode 100644
+index 0000000..9dcd304
+--- /dev/null
++++ b/spikes/godot-engine-evaluation-e0/tests/e0_runner.gd.uid
+@@ -0,0 +1,2 @@
++uid://d4r03runr9y7p
++
+diff --git a/spikes/godot-engine-evaluation-e0/tests/not_scene.tres b/spikes/godot-engine-evaluation-e0/tests/not_scene.tres
+new file mode 100644
+index 0000000..391dee9
+--- /dev/null
++++ b/spikes/godot-engine-evaluation-e0/tests/not_scene.tres
+@@ -0,0 +1,5 @@
++[gd_resource type="Resource" format=3]
++
++[resource]
++resource_name = "E0 intentionally not a PackedScene"
++
+diff --git a/spikes/godot-engine-evaluation-e0/tools/analyze_performance.py b/spikes/godot-engine-evaluation-e0/tools/analyze_performance.py
+new file mode 100644
+index 0000000..12adadb
+--- /dev/null
++++ b/spikes/godot-engine-evaluation-e0/tools/analyze_performance.py
+@@ -0,0 +1,88 @@
++#!/usr/bin/env python3
++"""Evaluate one E0 raw performance capture using the frozen annex rules."""
++
++from __future__ import annotations
++
++import json
++import math
++from pathlib import Path
++import statistics
++import sys
++
++
++def p95(values: list[float]) -> float:
++    ordered = sorted(values)
++    return ordered[math.ceil(0.95 * len(ordered)) - 1]
++
++
++def analyze(source: Path) -> dict:
++    raw = json.loads(source.read_text(encoding="utf-8"))
++    samples = raw["samples"]
++    fixture = raw["fixture"]["fixtureId"]
++    elapsed = [float(row["elapsedSeconds"]) for row in samples]
++    timestamps = [int(row["monotonicTimestampNs"]) for row in samples]
++    frames = [int(row["frameIndex"]) for row in samples]
++    process_ms = [float(row["TIME_PROCESS"]) * 1000.0 for row in samples]
++    memory = [int(row["MEMORY_STATIC"]) for row in samples]
++    nodes = [int(row["OBJECT_NODE_COUNT"]) for row in samples]
++    fps_windows = [sum(1 for value in elapsed if second <= value < second + 1.0) for second in range(10)]
++    memory_limit = memory[0] + max(8 * 1024 * 1024, int(memory[0] * 0.05))
++    thirds = []
++    for low, high in ((0.0, 10.0 / 3.0), (10.0 / 3.0, 20.0 / 3.0), (20.0 / 3.0, 10.0)):
++        bucket = [memory[index] for index, value in enumerate(elapsed) if low <= value < high]
++        thirds.append(statistics.median(bucket))
++    memory_trend_fail = thirds[0] < thirds[1] < thirds[2] and thirds[2] - thirds[0] > 8 * 1024 * 1024
++    finite = all(math.isfinite(float(value)) for row in samples for value in row.values() if isinstance(value, (int, float)))
++    hard_pass = (
++        len(samples) >= 120
++        and all(right > left for left, right in zip(timestamps, timestamps[1:]))
++        and len(frames) == len(set(frames))
++        and finite
++        and nodes[-1] == nodes[0]
++        and memory[-1] <= memory_limit
++        and not memory_trend_fail
++    )
++    if fixture == "nominal":
++        long_limit = math.floor(0.01 * len(samples))
++        long_count = sum(value > 33.33 for value in process_ms)
++        threshold_pass = statistics.median(fps_windows) >= 55 and p95(process_ms) <= 16.67 and long_count <= long_limit
++    elif fixture == "stress":
++        long_limit = math.floor(0.02 * len(samples))
++        long_count = sum(value > 50.0 for value in process_ms)
++        threshold_pass = p95(process_ms) <= 33.33 and long_count <= long_limit
++    else:
++        raise ValueError(f"unexpected fixture: {fixture}")
++    return {
++        "schemaVersion": "new-era-godot-e0-performance-summary-v2",
++        "source": str(source),
++        "fixtureId": fixture,
++        "sampleCount": len(samples),
++        "fpsWindows": fps_windows,
++        "medianFps": statistics.median(fps_windows),
++        "processP95Ms": p95(process_ms),
++        "longFrameCount": long_count,
++        "longFrameLimit": long_limit,
++        "baselineMemory": memory[0],
++        "finalMemory": memory[-1],
++        "memoryLimit": memory_limit,
++        "memoryThirdMedians": thirds,
++        "baselineNodeCount": nodes[0],
++        "finalNodeCount": nodes[-1],
++        "hardChecksPass": hard_pass,
++        "thresholdsPass": threshold_pass,
++        "status": "PASS" if hard_pass and threshold_pass else "FAIL",
++    }
++
++
++def main() -> int:
++    if len(sys.argv) != 3:
++        raise SystemExit("usage: analyze_performance.py INPUT.json OUTPUT.json")
++    result = analyze(Path(sys.argv[1]))
++    Path(sys.argv[2]).write_text(json.dumps(result, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
++    print(json.dumps(result, ensure_ascii=False, separators=(",", ":")))
++    return 0 if result["status"] == "PASS" else 1
++
++
++if __name__ == "__main__":
++    raise SystemExit(main())
++

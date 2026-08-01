@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "new-era-godot-e0-command-result-v1",
+  "status": "COMPLETED",
+  "runId": "20260801-e0-03",
+  "commandId": "phase0-godot-codesign",
+  "preRecordPath": "/private/tmp/new-era-godot-engine-e0-staging-20260801-e0-03/command-records/phase0-godot-codesign.pre.json",
+  "preRecordSha256": "cb6a38ca8298bcbec6f1167097840e15d793fbcbb9a5cb305ffe9ac47220a921",
+  "endedAtUtc": "2026-08-01T15:28:04.133078Z",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "spawnError": null,
+  "stdoutPath": "/private/tmp/new-era-godot-engine-e0-output-20260801-e0-03/command-streams/phase0-godot-codesign.stdout",
+  "stdoutBytes": 0,
+  "stdoutSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderrPath": "/private/tmp/new-era-godot-engine-e0-output-20260801-e0-03/command-streams/phase0-godot-codesign.stderr",
+  "stderrBytes": 1154,
+  "stderrSha256": "5a3afb47e26337fa07e5b98ac0e1eed7171acf117b3d8f41ec7d25f37c134ea8"
+}

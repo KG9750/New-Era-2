@@ -1,0 +1,128 @@
+{
+  "schemaVersion": "new-era-godot-e0-remediation-contract-v1",
+  "status": "FROZEN_NOT_AUTHORIZED",
+  "runId": "20260801-e0-03",
+  "purpose": "Correct e0-02 source-freeze and evidence-capture defects without changing the authorized fixture, measurement thresholds, engine identity, gameplay authority, or Gate state.",
+  "inherits": {
+    "planRef": "codex/godot-e0-plan-freeze-20260801@8cff10572216e31941bacde8fe85b7c98549c462",
+    "planSha256": "a75f807fb3315834624a3bf69251a8d6cd989fa5ab6891d58b446d6374ea0652",
+    "annexSha256": "c72906b5b4ddfeae45bb2816aac9eda1ac0530c5193a65355d5e33b52fc2c1ed",
+    "executionBaseRef": "codex/godot-e0-execution-base-20260801@b020775522f83c4731ba318905d3d436c2f51f60",
+    "executionBaseManifestSha256": "204305df4111e827ef95e7fcf828629463341dd05875f72f77be390e60255f2f"
+  },
+  "sourceLineage": {
+    "startFromExecutionBaseOnly": true,
+    "reuseE001Source": false,
+    "reuseE002Source": false,
+    "amendPriorRun": false,
+    "copyPriorGodotCache": false,
+    "priorRunEvidenceReadOnly": true
+  },
+  "preGodotRequirements": {
+    "mustCompleteBeforeAnyGodotProcess": true,
+    "projectPathInitiallyAbsent": true,
+    "candidateEvidencePathInitiallyAbsent": true,
+    "outputRootInitiallyEmpty": true,
+    "stagingRootInitiallyReceiptOnly": true,
+    "projectGitignore": {
+      "path": "spikes/godot-engine-evaluation-e0/.gitignore",
+      "requiredLines": [".godot/"],
+      "mustExistBeforeFirstEditorOrHeadlessLaunch": true
+    },
+    "expectedSourcePaths": {
+      "path": "spikes/godot-engine-evaluation-e0/EXPECTED_SOURCE_PATHS.txt",
+      "format": "UTF-8 LF, one project-relative path per line, bytewise C-locale sorted",
+      "includesItself": true,
+      "includesProjectGitignore": true,
+      "containsHashes": false,
+      "mustExistBeforeFirstGodotLaunch": true,
+      "exactEntryCount": 14,
+      "exactEntries": [
+        ".gitignore",
+        "E0_MANIFEST.json",
+        "EXPECTED_SOURCE_PATHS.txt",
+        "README.md",
+        "export_presets.cfg",
+        "project.godot",
+        "scenes/E0.tscn",
+        "scripts/e0_input_injector.applescript",
+        "scripts/e0_main.gd",
+        "scripts/e0_main.gd.uid",
+        "tests/e0_runner.gd",
+        "tests/e0_runner.gd.uid",
+        "tests/not_scene.tres",
+        "tools/analyze_performance.py"
+      ]
+    },
+    "commandRecorder": {
+      "location": "external evidence staging harness, outside the Godot project source tree",
+      "mustBeFrozenAndHashedBeforeFirstGodotLaunch": true,
+      "recordsBeforeSpawn": ["runId", "commandId", "orderedArgv", "cwd", "allowlistedEnvironment", "binaryPath", "binarySha256", "startedAtUtc"],
+      "recordsAfterExit": ["exitCode", "signal", "endedAtUtc", "stdoutPath", "stdoutSha256", "stderrPath", "stderrSha256"],
+      "forbidsArtifactBoundArgvReconstruction": true,
+      "environmentAllowlist": ["PATH", "DOTNET_ROOT", "LANG", "LC_ALL", "TMPDIR", "GODOT_DISPLAY_DRIVER", "GODOT_RENDERING_METHOD"]
+    }
+  },
+  "sourceFreezeProcedure": {
+    "stageOnlyExpectedSourcePaths": true,
+    "guardSemantics": "Capture actual staged project-relative paths, C-locale sort them, then run an explicit cmp against EXPECTED_SOURCE_PATHS.txt. Any nonzero cmp or any staged .godot path executes an explicit exit 1 before commit.",
+    "forbidShellNegationPipelineErrexitGuard": true,
+    "forbidBangPipelineAsStopCondition": true,
+    "postCommitAudit": {
+      "exactTreeMustMatchExpectedPaths": true,
+      "dotGodotTrackedCountMustEqual": 0,
+      "externalInventoryPath": "02-source-inventory.sha256",
+      "externalInventoryIncludesEveryTrackedProjectFile": true,
+      "trackedSelfHashingInventoryForbidden": true,
+      "sourceCommitMustHaveExecutionBaseAsOnlyParent": true
+    },
+    "archive": {
+      "commandShape": "git archive --format=tar <exact-source-sha> spikes/godot-engine-evaluation-e0",
+      "generationCount": 2,
+      "mustBeByteForByteEqual": true,
+      "mustMatchEveryExactSourceBlob": true
+    },
+    "onAnyMismatch": {
+      "classification": "SOURCE_FREEZE_SCOPE_FAIL",
+      "phase2": "NOT_RUN",
+      "phase3": "NOT_RUN",
+      "engineGate": "NOT_RUN",
+      "amendAllowed": false,
+      "sameRunRepairAllowed": false
+    }
+  },
+  "guiWitnessProcedure": {
+    "minimumSequentialCheckpoints": ["AFTER_SAVE_SCENE_OPEN", "SCENE_OR_EDITOR_CLOSED", "SCENE_REOPENED"],
+    "eachCheckpointRecords": ["sequence", "capturedAtUtc", "godotPid", "godotExecutable", "projectPath", "windowTitle", "imagePath", "detectedMediaType", "pixelDimensions", "sha256"],
+    "imageExtensionMustMatchDetectedMediaType": true,
+    "finalSceneBytesMustMatchFrozenCandidate": true,
+    "singleFinalScreenshotCannotProveTemporalSequence": true,
+    "doesNotSubstituteForPhase3": true
+  },
+  "phaseUnlock": {
+    "phase2RequiresSourceFreezePass": true,
+    "phase3RequiresPhase2RequiredItemsPass": true,
+    "phase4ArchivesPassOrFail": true
+  },
+  "unchangedContracts": {
+    "godotVersion": "4.7.1.stable.mono.official.a13da4feb",
+    "godotBinarySha256": "d11dc4a241ec29a347e13c8c7706e49433379ae1f9fc6a6e6819efb3891fce97",
+    "renderer": "gl_compatibility",
+    "fixtureAndThresholdsFromAnnexOnly": true,
+    "syntheticDataOnly": true,
+    "plugins": [],
+    "productAssets": [],
+    "gameplayRules": [],
+    "typeScriptSimulationAuthority": "UNCHANGED"
+  },
+  "nonAuthorizations": {
+    "engineGateDecision": false,
+    "godotProductionFoundation": false,
+    "gate1HChange": false,
+    "gate2Unlock": false,
+    "mapRuntimeUnlock": false,
+    "productionAssetUnlock": false,
+    "c04OrC05Change": false,
+    "mergeOrCherryPickEvidenceIntoProduction": false
+  }
+}

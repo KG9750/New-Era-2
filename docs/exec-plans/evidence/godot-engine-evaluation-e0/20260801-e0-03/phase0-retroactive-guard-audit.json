@@ -1,0 +1,42 @@
+{
+  "schemaVersion": "new-era-godot-e0-retroactive-guard-audit-v1",
+  "runId": "20260801-e0-03",
+  "status": "RETROACTIVE_PRE_GODOT_GUARD_FAIL",
+  "classification": "PRE_GODOT_SOURCE_ALLOWLIST_FORMAT_FAIL",
+  "hardStop": "GODOT_STARTED_BEFORE_PRE_GODOT_REQUIREMENTS_PASS",
+  "supersedesStatusOnly": [
+    {
+      "path": "00-authority-and-scope.json",
+      "sha256": "c2c27eb821ab48943863088b9b1285fcd13614a3611f79a46938858d058a5abd",
+      "originalStatus": "AUTHORIZED_PHASE0_PASS"
+    },
+    {
+      "path": "01-environment-identity.json",
+      "sha256": "1a463b3924644490da1b71c40ab82751db50ae4249319d5484ca731b15483281",
+      "originalStatus": "PHASE0_PASS"
+    },
+    {
+      "path": "phase0-task-contract.json",
+      "sha256": "e7ee5b4d29be50ea308f1a11ea92303730fa7f445c555f4d059e824dadb5069e",
+      "originalStatus": "FROZEN_PRE_GODOT_GUARDS_PASS"
+    }
+  ],
+  "preservationRule": "The original files remain byte-for-byte preserved as evidence of the false pass. This audit supersedes only their PASS interpretation.",
+  "rootCause": {
+    "expectedSourcePhysicalLines": 15,
+    "expectedSourceNonemptyEntries": 14,
+    "invalidBlankEntries": 1,
+    "faultyPreflightBehavior": "filtered blank lines before semantic comparison",
+    "correctBehavior": "fail on any blank physical line before running Godot"
+  },
+  "result": {
+    "phase0": "RETROACTIVE_FAIL",
+    "phase1": "PARTIAL_EVIDENCE_ONLY",
+    "sourceCommit": "NOT_CREATED",
+    "sourceFreeze": "NOT_RUN",
+    "phase2": "NOT_RUN",
+    "phase3": "NOT_RUN",
+    "engineGate": "NOT_RUN"
+  }
+}
+

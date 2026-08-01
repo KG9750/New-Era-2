@@ -1,0 +1,47 @@
+{
+  "schemaVersion": "new-era-godot-e0-scope-audit-v2",
+  "runId": "20260801-e0-03",
+  "status": "FAIL_PRE_GODOT_GUARD_ONLY",
+  "executionBaseSha": "b020775522f83c4731ba318905d3d436c2f51f60",
+  "sourceCommit": "NOT_CREATED",
+  "projectBoundary": {
+    "stagedPathCount": 14,
+    "allStagedPathsUnder": "spikes/godot-engine-evaluation-e0/",
+    "outsideProjectStagedPaths": [],
+    "trackedDotGodotCount": 0,
+    "stagedDotGodotCount": 0,
+    "ignoredDotGodotFileCount": 12,
+    "status": "PASS"
+  },
+  "productBoundary": {
+    "productMapReadOrWriteObserved": false,
+    "productUiReadOrWriteObserved": false,
+    "gameplayRuleReadOrWriteObserved": false,
+    "gateEvidenceMutationObserved": false,
+    "plugins": [],
+    "autoloads": [],
+    "formalAssets": [],
+    "typeScriptSimulationAuthority": "UNCHANGED",
+    "status": "PASS"
+  },
+  "preGodotGuard": {
+    "expectedNonemptyPathCount": 14,
+    "physicalLineCount": 15,
+    "invalidBlankEntryCount": 1,
+    "preflightFilteredBlankEntries": true,
+    "godotStartedAfterFalsePass": true,
+    "status": "FAIL",
+    "classification": "PRE_GODOT_SOURCE_ALLOWLIST_FORMAT_FAIL"
+  },
+  "governance": {
+    "gate1H": "PENDING",
+    "gate2": "LOCKED",
+    "c04": "REJECTED_PRE_DIAGNOSTIC",
+    "c05": "NOT_CREATED_PLAN_ONLY",
+    "mapRuntime": "LOCKED",
+    "productionAssets": "LOCKED",
+    "productionFoundationAuthorized": false,
+    "engineGate": "NOT_RUN"
+  }
+}
+

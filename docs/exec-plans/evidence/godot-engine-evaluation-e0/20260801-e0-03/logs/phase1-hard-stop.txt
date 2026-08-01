@@ -1,0 +1,23 @@
+run_id=20260801-e0-03
+classification=PRE_GODOT_SOURCE_ALLOWLIST_FORMAT_FAIL
+hard_stop=GODOT_STARTED_BEFORE_PRE_GODOT_REQUIREMENTS_PASS
+execution_base_sha=b020775522f83c4731ba318905d3d436c2f51f60
+source_commit=NOT_CREATED
+expected_source_paths_sha256_at_first_godot=af73b86fcc5c68e9ff284c6179e018e8ddc43963c6a21acb102105070b4706bc
+expected_source_paths_physical_line_count=15
+expected_source_paths_nonempty_entry_count=14
+expected_source_paths_trailing_blank_entry_count=1
+preflight_bug=sed '/^$/d' filtered the invalid blank entry before comparison
+first_discovery=pre-commit source freeze staging loop stopped on empty project_path
+original_pre-godot_bytes_restored=true
+tracked_dotgodot_count=0
+staged_dotgodot_count=0
+ignored_dotgodot_file_count=12
+phase0=PASS_EXCEPT_RETROACTIVE_PRE_GODOT_FORMAT_GUARD
+phase1_runner_editor=PARTIAL_PASS
+source_freeze=NOT_RUN
+phase2=NOT_RUN
+phase3=NOT_RUN
+engine_gate=NOT_RUN
+same_run_repair_allowed=false
+

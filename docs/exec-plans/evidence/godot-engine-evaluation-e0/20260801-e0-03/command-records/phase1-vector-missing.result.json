@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "new-era-godot-e0-command-result-v1",
+  "status": "COMPLETED",
+  "runId": "20260801-e0-03",
+  "commandId": "phase1-vector-missing",
+  "preRecordPath": "/private/tmp/new-era-godot-engine-e0-staging-20260801-e0-03/command-records/phase1-vector-missing.pre.json",
+  "preRecordSha256": "aab20c62b1014960593018ff877acdec49b247d8bd8c0187ba81bbb390c4d49d",
+  "endedAtUtc": "2026-08-01T15:35:19.644188Z",
+  "exitCode": 21,
+  "signal": null,
+  "timedOut": false,
+  "spawnError": null,
+  "stdoutPath": "/private/tmp/new-era-godot-engine-e0-output-20260801-e0-03/command-streams/phase1-vector-missing.stdout",
+  "stdoutBytes": 78,
+  "stdoutSha256": "ead0b8c1da058abce4dc2370f0e23b0ef9add12fa17a8cd0091f328e9f14b5a8",
+  "stderrPath": "/private/tmp/new-era-godot-engine-e0-output-20260801-e0-03/command-streams/phase1-vector-missing.stderr",
+  "stderrBytes": 151,
+  "stderrSha256": "441bec0d110554d2bf5fd0040910a4ef8b1ea4abdc7fabcf553b9cdc26ae230c"
+}

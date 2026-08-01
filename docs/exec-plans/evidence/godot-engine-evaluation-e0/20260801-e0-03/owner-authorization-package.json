@@ -1,0 +1,80 @@
+{
+  "schemaVersion": "new-era-godot-e0-owner-authorization-package-v1",
+  "status": "FROZEN_AWAITING_OWNER_AUTHORIZATION",
+  "authorizationId": "ENGINE_EVALUATION_E0_EXECUTION_AUTHORIZATION_V3",
+  "packagePath": "/private/tmp/new-era-godot-engine-e0-preauth-20260801-e0-03/e0-03-owner-authorization-package-v1.json",
+  "packageHashAlgorithm": "SHA-256 over exact file bytes; UTF-8; LF line endings; terminal LF included",
+  "planRef": "codex/godot-e0-plan-freeze-20260801@8cff10572216e31941bacde8fe85b7c98549c462",
+  "planSha256": "a75f807fb3315834624a3bf69251a8d6cd989fa5ab6891d58b446d6374ea0652",
+  "annexSha256": "c72906b5b4ddfeae45bb2816aac9eda1ac0530c5193a65355d5e33b52fc2c1ed",
+  "executionBaseRef": "codex/godot-e0-execution-base-20260801@b020775522f83c4731ba318905d3d436c2f51f60",
+  "executionBaseManifestSha256": "204305df4111e827ef95e7fcf828629463341dd05875f72f77be390e60255f2f",
+  "remediationContract": {
+    "path": "/private/tmp/new-era-godot-engine-e0-preauth-20260801-e0-03/e0-03-remediation-contract-v1.json",
+    "sha256": "0526cc10803a8c3b350b9be575fec7733074d4b38ef783bb38d8ff941ae34855"
+  },
+  "runId": "20260801-e0-03",
+  "targetBranch": "codex/godot-engine-evaluation-e0-20260801-e0-03",
+  "targetWorktree": "/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-03/repo",
+  "externalOutputRoot": "/private/tmp/new-era-godot-engine-e0-output-20260801-e0-03",
+  "externalEvidenceStagingRoot": "/private/tmp/new-era-godot-engine-e0-staging-20260801-e0-03",
+  "bootstrapReceiptPath": "/private/tmp/new-era-godot-engine-e0-staging-20260801-e0-03/e0-bootstrap-receipt.json",
+  "candidateEvidencePath": "docs/exec-plans/evidence/godot-engine-evaluation-e0/20260801-e0-03",
+  "durableEvidenceRemote": "origin",
+  "durableEvidenceRef": "codex/godot-engine-evaluation-e0-evidence-20260801-e0-03",
+  "remotePublishAuthorized": true,
+  "bootstrapOperator": "/root",
+  "authorizedScope": {
+    "bootstrapExactAbsentNamespace": true,
+    "executePhase0ThroughPhase4SubjectToHardStops": true,
+    "createDisposableSyntheticNoPluginGodotProject": true,
+    "runPinnedGodotBinary": true,
+    "performLocalMacosExportAndLaunchTests": true,
+    "performOsInjectedInputAndPerformanceTests": true,
+    "archivePassOrFailEvidence": true,
+    "publishOnlyDurableEvidenceRef": true,
+    "cleanupAfterPublication": false
+  },
+  "mandatoryBeforeFirstGodotLaunch": {
+    "copyAndVerifyRemediationContractIntoStaging": true,
+    "createAndHashCommandRecorderInStaging": true,
+    "createProjectGitignore": true,
+    "createExactFourteenEntryExpectedSourcePaths": true,
+    "verifyNoDotGodotPathIsTrackedOrStaged": true
+  },
+  "hardStops": [
+    "AUTHORIZATION_PACKAGE_HASH_DRIFT",
+    "PLAN_ANNEX_OR_BASE_HASH_DRIFT",
+    "REMEDIATION_CONTRACT_HASH_DRIFT",
+    "TARGET_OR_EVIDENCE_NAMESPACE_NOT_ABSENT",
+    "BOOTSTRAP_RECEIPT_MISMATCH",
+    "GODOT_STARTED_BEFORE_PRE_GODOT_REQUIREMENTS_PASS",
+    "COMMAND_ARGV_NOT_RECORDED_BEFORE_SPAWN",
+    "SOURCE_PATH_ALLOWLIST_MISMATCH",
+    "ANY_TRACKED_OR_STAGED_DOT_GODOT_PATH",
+    "SOURCE_INVENTORY_OR_ARCHIVE_MISMATCH",
+    "IDENTITY_OR_FIXTURE_DRIFT",
+    "PHASE_REQUIRED_ITEM_FAILURE",
+    "EVIDENCE_PUBLICATION_OR_READBACK_FAILURE"
+  ],
+  "nonAuthorizations": {
+    "amendOrContinueE001": false,
+    "amendOrContinueE002": false,
+    "engineGateDecision": false,
+    "godotProductionFoundation": false,
+    "gameplayRuleImplementation": false,
+    "productMapOrUiImplementation": false,
+    "pluginInstallation": false,
+    "gate1HChange": false,
+    "gate2Unlock": false,
+    "mapOrProductionAssetUnlock": false,
+    "c04OrC05Change": false,
+    "mergeOrCherryPickEvaluationOrEvidenceIntoProduction": false
+  },
+  "authorizationMessageContract": {
+    "requiredExactAuthorizationId": "ENGINE_EVALUATION_E0_EXECUTION_AUTHORIZATION_V3",
+    "requiredPackageSha256Binding": true,
+    "authorizationDoesNotExistUntilOwnerSendsNewMessage": true,
+    "noActionAuthorizedByThisFrozenFileAlone": true
+  }
+}

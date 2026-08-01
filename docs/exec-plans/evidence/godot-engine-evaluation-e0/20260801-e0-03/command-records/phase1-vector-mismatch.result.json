@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "new-era-godot-e0-command-result-v1",
+  "status": "COMPLETED",
+  "runId": "20260801-e0-03",
+  "commandId": "phase1-vector-mismatch",
+  "preRecordPath": "/private/tmp/new-era-godot-engine-e0-staging-20260801-e0-03/command-records/phase1-vector-mismatch.pre.json",
+  "preRecordSha256": "88b0bf2239e60a231a753420d3654bbe0c9984ad7b2e1864823e30877a1ff09f",
+  "endedAtUtc": "2026-08-01T15:35:20.518890Z",
+  "exitCode": 23,
+  "signal": null,
+  "timedOut": false,
+  "spawnError": null,
+  "stdoutPath": "/private/tmp/new-era-godot-engine-e0-output-20260801-e0-03/command-streams/phase1-vector-mismatch.stdout",
+  "stdoutBytes": 471,
+  "stdoutSha256": "77f719233c96decd4f73bb2717946abac1e45019e498a936c4902934d6b5978e",
+  "stderrPath": "/private/tmp/new-era-godot-engine-e0-output-20260801-e0-03/command-streams/phase1-vector-mismatch.stderr",
+  "stderrBytes": 142,
+  "stderrSha256": "420185fddea0e4b2709a131fbfc6e24a6b1a2e25fa0c13dee7f13e04a373a3db"
+}

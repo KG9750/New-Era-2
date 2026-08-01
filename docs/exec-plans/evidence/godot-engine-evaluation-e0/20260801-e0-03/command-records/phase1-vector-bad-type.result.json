@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "new-era-godot-e0-command-result-v1",
+  "status": "COMPLETED",
+  "runId": "20260801-e0-03",
+  "commandId": "phase1-vector-bad-type",
+  "preRecordPath": "/private/tmp/new-era-godot-engine-e0-staging-20260801-e0-03/command-records/phase1-vector-bad-type.pre.json",
+  "preRecordSha256": "7d7b6c684c11c87d9160553637b930b6999cd0891b5fadc978d1abcd35153fbc",
+  "endedAtUtc": "2026-08-01T15:35:20.081397Z",
+  "exitCode": 22,
+  "signal": null,
+  "timedOut": false,
+  "spawnError": null,
+  "stdoutPath": "/private/tmp/new-era-godot-engine-e0-output-20260801-e0-03/command-streams/phase1-vector-bad-type.stdout",
+  "stdoutBytes": 78,
+  "stdoutSha256": "ead0b8c1da058abce4dc2370f0e23b0ef9add12fa17a8cd0091f328e9f14b5a8",
+  "stderrPath": "/private/tmp/new-era-godot-engine-e0-output-20260801-e0-03/command-streams/phase1-vector-bad-type.stderr",
+  "stderrBytes": 176,
+  "stderrSha256": "4610306e7bc2e646a886e73db46bfc78963e0732ec6f0bb61eb31487ab8f5ee1"
+}

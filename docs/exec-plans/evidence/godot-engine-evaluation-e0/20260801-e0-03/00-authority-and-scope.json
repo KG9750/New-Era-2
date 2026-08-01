@@ -1,0 +1,35 @@
+{
+  "schemaVersion": "new-era-godot-e0-authority-scope-v2",
+  "status": "AUTHORIZED_PHASE0_PASS",
+  "createdAtUtc": "2026-08-01T15:28:45Z",
+  "runId": "20260801-e0-03",
+  "authorizationId": "ENGINE_EVALUATION_E0_EXECUTION_AUTHORIZATION_V3",
+  "ownerAuthorizationMessageSha256": "5b5cf3ca3772751ebb8c37e05f4a3ed4640278da01081c3af09f34e354624c6d",
+  "ownerAuthorizationPackageSha256": "ec18e6a8861011ff8f4c712c376ee03b34e18036edc247969eec83950ab0a60c",
+  "remediationContractSha256": "0526cc10803a8c3b350b9be575fec7733074d4b38ef783bb38d8ff941ae34855",
+  "executionBaseSha": "b020775522f83c4731ba318905d3d436c2f51f60",
+  "planSha256": "a75f807fb3315834624a3bf69251a8d6cd989fa5ab6891d58b446d6374ea0652",
+  "annexSha256": "c72906b5b4ddfeae45bb2816aac9eda1ac0530c5193a65355d5e33b52fc2c1ed",
+  "authorizedThrough": "ENGINE_EVALUATION_E0_PHASE_4_SUBJECT_TO_HARD_STOPS",
+  "currentPhase": "PHASE_0_PASS",
+  "preExistingGovernance": {
+    "c04": "REJECTED_PRE_DIAGNOSTIC",
+    "c05": "NOT_CREATED_PLAN_ONLY",
+    "gate1H": "PENDING",
+    "gate2": "LOCKED",
+    "mapRuntime": "LOCKED",
+    "productionAssets": "LOCKED",
+    "typeScriptSimulationAuthority": "UNCHANGED"
+  },
+  "boundaries": {
+    "syntheticDataOnly": true,
+    "noPlugins": true,
+    "noProductMap": true,
+    "noProductUi": true,
+    "noGameplayRules": true,
+    "noGateChanges": true,
+    "productionFoundationAuthorized": false,
+    "priorRunSourceReuse": false
+  }
+}
+

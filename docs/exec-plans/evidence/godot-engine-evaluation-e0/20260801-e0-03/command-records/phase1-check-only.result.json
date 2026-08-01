@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "new-era-godot-e0-command-result-v1",
+  "status": "COMPLETED",
+  "runId": "20260801-e0-03",
+  "commandId": "phase1-check-only",
+  "preRecordPath": "/private/tmp/new-era-godot-engine-e0-staging-20260801-e0-03/command-records/phase1-check-only.pre.json",
+  "preRecordSha256": "5d8dd69e3247aedcbabbaae09cde9d3547db3bedeb80290d1f1015d6fb5e7520",
+  "endedAtUtc": "2026-08-01T15:34:41.486957Z",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "spawnError": null,
+  "stdoutPath": "/private/tmp/new-era-godot-engine-e0-output-20260801-e0-03/command-streams/phase1-check-only.stdout",
+  "stdoutBytes": 78,
+  "stdoutSha256": "ead0b8c1da058abce4dc2370f0e23b0ef9add12fa17a8cd0091f328e9f14b5a8",
+  "stderrPath": "/private/tmp/new-era-godot-engine-e0-output-20260801-e0-03/command-streams/phase1-check-only.stderr",
+  "stderrBytes": 0,
+  "stderrSha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

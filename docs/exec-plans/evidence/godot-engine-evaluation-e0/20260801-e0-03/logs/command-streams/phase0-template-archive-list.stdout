@@ -1,0 +1,15 @@
+Archive:  /Users/leo/Library/Application Support/Godot/export_templates/4.7.1.stable.mono/macos.zip
+  Length      Date    Time    Name
+---------  ---------- -----   ----
+        0  07-14-2026 21:52   macos_template.app/
+        0  07-14-2026 21:52   macos_template.app/Contents/
+     1911  07-14-2026 21:52   macos_template.app/Contents/Info.plist
+        9  07-14-2026 21:52   macos_template.app/Contents/PkgInfo
+        0  07-14-2026 21:52   macos_template.app/Contents/Resources/
+      222  07-14-2026 21:52   macos_template.app/Contents/Resources/PrivacyInfo.xcprivacy
+    67500  07-14-2026 21:52   macos_template.app/Contents/Resources/icon.icns
+        0  07-14-2026 21:52   macos_template.app/Contents/MacOS/
+186518976  07-14-2026 21:52   macos_template.app/Contents/MacOS/godot_macos_debug.universal
+170394672  07-14-2026 21:52   macos_template.app/Contents/MacOS/godot_macos_release.universal
+---------                     -------
+356983290                     10 files

@@ -1,0 +1,8 @@
+{
+	"details": {
+		"scenePath": "res://scenes/ABSENT.tscn"
+	},
+	"errorCode": "RESOURCE_ABSENT",
+	"status": "EXPECTED_FAILURE",
+	"vector": "missing-scene"
+}

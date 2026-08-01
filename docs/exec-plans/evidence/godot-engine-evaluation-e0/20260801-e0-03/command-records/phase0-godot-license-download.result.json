@@ -1,0 +1,19 @@
+{
+  "schemaVersion": "new-era-godot-e0-command-result-v1",
+  "status": "COMPLETED",
+  "runId": "20260801-e0-03",
+  "commandId": "phase0-godot-license-download",
+  "preRecordPath": "/private/tmp/new-era-godot-engine-e0-staging-20260801-e0-03/command-records/phase0-godot-license-download.pre.json",
+  "preRecordSha256": "2f0424595a9bfb502b02cbac7687087e32d6fc3f4270cbc47c88194b894c4cb2",
+  "endedAtUtc": "2026-08-01T15:28:28.344622Z",
+  "exitCode": 0,
+  "signal": null,
+  "timedOut": false,
+  "spawnError": null,
+  "stdoutPath": "/private/tmp/new-era-godot-engine-e0-output-20260801-e0-03/command-streams/phase0-godot-license-download.stdout",
+  "stdoutBytes": 1149,
+  "stdoutSha256": "b0435e3b3e4e55238f05f4b306f30524a1b2e20147810d436eaa554fa6855c80",
+  "stderrPath": "/private/tmp/new-era-godot-engine-e0-output-20260801-e0-03/command-streams/phase0-godot-license-download.stderr",
+  "stderrBytes": 396,
+  "stderrSha256": "04c777781ae9eccf8043dda589c1b2c6800387285128f9ffb41717ca3339883b"
+}

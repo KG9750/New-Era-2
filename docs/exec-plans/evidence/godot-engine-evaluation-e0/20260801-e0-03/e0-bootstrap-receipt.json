@@ -1,0 +1,60 @@
+{
+  "schemaVersion": "new-era-godot-e0-bootstrap-receipt-v2",
+  "status": "BOOTSTRAP_COMPLETE",
+  "createdAtUtc": "2026-08-01T15:24:13Z",
+  "ownerAuthorizationMessageSha256": "5b5cf3ca3772751ebb8c37e05f4a3ed4640278da01081c3af09f34e354624c6d",
+  "ownerAuthorizationPackage": {
+    "authorizationId": "ENGINE_EVALUATION_E0_EXECUTION_AUTHORIZATION_V3",
+    "path": "/private/tmp/new-era-godot-engine-e0-preauth-20260801-e0-03/e0-03-owner-authorization-package-v1.json",
+    "sha256": "ec18e6a8861011ff8f4c712c376ee03b34e18036edc247969eec83950ab0a60c",
+    "remediationContractPath": "/private/tmp/new-era-godot-engine-e0-preauth-20260801-e0-03/e0-03-remediation-contract-v1.json",
+    "remediationContractSha256": "0526cc10803a8c3b350b9be575fec7733074d4b38ef783bb38d8ff941ae34855",
+    "planRef": "codex/godot-e0-plan-freeze-20260801@8cff10572216e31941bacde8fe85b7c98549c462",
+    "planSha256": "a75f807fb3315834624a3bf69251a8d6cd989fa5ab6891d58b446d6374ea0652",
+    "annexSha256": "c72906b5b4ddfeae45bb2816aac9eda1ac0530c5193a65355d5e33b52fc2c1ed",
+    "executionBaseRef": "codex/godot-e0-execution-base-20260801@b020775522f83c4731ba318905d3d436c2f51f60",
+    "executionBaseManifestSha256": "204305df4111e827ef95e7fcf828629463341dd05875f72f77be390e60255f2f",
+    "runId": "20260801-e0-03",
+    "targetBranch": "codex/godot-engine-evaluation-e0-20260801-e0-03",
+    "targetWorktree": "/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-03/repo",
+    "externalOutputRoot": "/private/tmp/new-era-godot-engine-e0-output-20260801-e0-03",
+    "externalEvidenceStagingRoot": "/private/tmp/new-era-godot-engine-e0-staging-20260801-e0-03",
+    "bootstrapReceiptPath": "/private/tmp/new-era-godot-engine-e0-staging-20260801-e0-03/e0-bootstrap-receipt.json",
+    "candidateEvidencePath": "docs/exec-plans/evidence/godot-engine-evaluation-e0/20260801-e0-03",
+    "durableEvidenceRemote": "origin",
+    "durableEvidenceRef": "codex/godot-engine-evaluation-e0-evidence-20260801-e0-03",
+    "remotePublishAuthorized": true,
+    "bootstrapOperator": "/root"
+  },
+  "before": {
+    "targetWorktree": "ABSENT",
+    "externalOutputRoot": "ABSENT",
+    "externalEvidenceStagingRoot": "ABSENT",
+    "targetLocalBranch": "ABSENT",
+    "targetRemoteBranch": "ABSENT",
+    "durableEvidenceRemoteRef": "ABSENT",
+    "candidateEvidencePath": "ABSENT"
+  },
+  "createdArgv": [
+    ["/bin/mkdir", "-p", "/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-03"],
+    ["/usr/bin/git", "worktree", "add", "-b", "codex/godot-engine-evaluation-e0-20260801-e0-03", "/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-03/repo", "b020775522f83c4731ba318905d3d436c2f51f60"],
+    ["/bin/mkdir", "/private/tmp/new-era-godot-engine-e0-output-20260801-e0-03", "/private/tmp/new-era-godot-engine-e0-staging-20260801-e0-03"]
+  ],
+  "after": {
+    "targetHead": "b020775522f83c4731ba318905d3d436c2f51f60",
+    "targetGitClean": true,
+    "externalOutputRootEntries": [],
+    "externalEvidenceStagingRootEntries": ["e0-bootstrap-receipt.json"],
+    "projectPath": "ABSENT",
+    "candidateEvidencePath": "ABSENT"
+  },
+  "boundaries": {
+    "createsGodotProject": false,
+    "runsGodot": false,
+    "installsPlugins": false,
+    "changesGameplayGate": false,
+    "changesMapGate": false,
+    "authorizesProductionFoundation": false
+  }
+}
+

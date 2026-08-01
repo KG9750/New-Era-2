@@ -1,0 +1,52 @@
+{
+  "schemaVersion": "new-era-godot-e0-editor-sequence-witness-v1",
+  "status": "PASS",
+  "runId": "20260801-e0-03",
+  "godotExecutable": "/Volumes/Leo_LLM/Toolchains/NewEra/godot-4.7.1/Godot_mono.app/Contents/MacOS/Godot",
+  "godotExecutableSha256": "d11dc4a241ec29a347e13c8c7706e49433379ae1f9fc6a6e6819efb3891fce97",
+  "projectPath": "/private/tmp/new-era-godot-engine-e0-worktree-20260801-e0-03/repo/spikes/godot-engine-evaluation-e0",
+  "scenePath": "res://scenes/E0.tscn",
+  "finalSceneSha256": "26497806feb65915f7a0aac51b41993bb36d854d88652fe046a7b1f4b49b7577",
+  "checkpoints": [
+    {
+      "sequence": 1,
+      "label": "AFTER_SAVE_SCENE_OPEN",
+      "capturedAtUtc": "2026-08-01T15:37:20Z",
+      "godotPid": 46781,
+      "windowTitle": "E0.tscn - New Era E0-03 Disposable Evaluation - Godot Engine",
+      "imagePath": "screenshots/editor-seq-01-after-save.jpg",
+      "detectedMediaType": "image/jpeg",
+      "pixelDimensions": [1392, 768],
+      "sha256": "e593ea5d5a0a5370866b3e150516b80b84f6918c6d652b96aae2d395dd3ba275"
+    },
+    {
+      "sequence": 2,
+      "label": "EDITOR_CLOSED",
+      "capturedAtUtc": "2026-08-01T15:38:24Z",
+      "godotPid": null,
+      "godotProcessRunning": false,
+      "windowTitle": null,
+      "imagePath": "screenshots/editor-seq-02-editor-closed.jpg",
+      "detectedMediaType": "image/jpeg",
+      "pixelDimensions": [920, 436],
+      "sha256": "65ebf9d54d1d513b8e85144e1a591eb34ca0c1ee2b6c932f97dd3b0dacade87b"
+    },
+    {
+      "sequence": 3,
+      "label": "SCENE_REOPENED",
+      "capturedAtUtc": "2026-08-01T15:39:19Z",
+      "godotPid": 48622,
+      "windowTitle": "E0.tscn - New Era E0-03 Disposable Evaluation - Godot Engine",
+      "imagePath": "screenshots/editor-seq-03-scene-reopened.jpg",
+      "detectedMediaType": "image/jpeg",
+      "pixelDimensions": [1392, 768],
+      "sha256": "545d220e539a13edf85f260c4dbfabc83b64c95c0a7ceb71c01f2c9af359d41a"
+    }
+  ],
+  "evidenceBoundary": {
+    "provesSaveCloseReopenSequence": true,
+    "provesEditorProjectSceneIdentity": true,
+    "substitutesForPhase3Runtime": false
+  }
+}
+
