@@ -1,0 +1,67 @@
+{
+  "schemaVersion": "new-era-godot-e0-command-manifest-v1",
+  "status": "PHASE0_STOPPED",
+  "createdAtUtc": "2026-08-01T10:30:43Z",
+  "runId": "20260801-e0-01",
+  "executionBaseSha": "b020775522f83c4731ba318905d3d436c2f51f60",
+  "planSha256": "a75f807fb3315834624a3bf69251a8d6cd989fa5ab6891d58b446d6374ea0652",
+  "annexSha256": "c72906b5b4ddfeae45bb2816aac9eda1ac0530c5193a65355d5e33b52fc2c1ed",
+  "commands": [
+    {
+      "id": "godot-version",
+      "argv": [
+        "/Volumes/Leo_LLM/Toolchains/NewEra/godot-4.7.1/Godot_mono.app/Contents/MacOS/Godot",
+        "--version"
+      ],
+      "exitCode": 0
+    },
+    {
+      "id": "godot-help",
+      "argv": [
+        "/Volumes/Leo_LLM/Toolchains/NewEra/godot-4.7.1/Godot_mono.app/Contents/MacOS/Godot",
+        "--help"
+      ],
+      "exitCode": 0
+    },
+    {
+      "id": "dotnet-version",
+      "argv": [
+        "/Users/leo/.dotnet/dotnet",
+        "--version"
+      ],
+      "exitCode": 0
+    },
+    {
+      "id": "accessibility-query",
+      "argv": [
+        "/usr/bin/osascript",
+        "-e",
+        "tell application \"System Events\" to get UI elements enabled"
+      ],
+      "exitCode": 0,
+      "stdout": "false"
+    },
+    {
+      "id": "focus-probe",
+      "argv": [
+        "/usr/bin/osascript",
+        "<frozen inline focus probe>"
+      ],
+      "exitCode": 0,
+      "stdout": "ChatGPT|Finder"
+    },
+    {
+      "id": "shift-injection-probe",
+      "argv": [
+        "/usr/bin/osascript",
+        "<frozen inline shift down/up probe>"
+      ],
+      "exitCode": 1,
+      "errorCode": 1002
+    }
+  ],
+  "noProjectCommandsRun": true,
+  "noEditorStarted": true,
+  "noImportRun": true,
+  "noExportRun": true
+}

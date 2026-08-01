@@ -1,0 +1,21 @@
+{
+  "schemaVersion": "new-era-godot-e0-scope-audit-v1",
+  "status": "PASS_WITH_PHASE0_STOP",
+  "createdAtUtc": "2026-08-01T10:30:43Z",
+  "runId": "20260801-e0-01",
+  "executionBaseSha": "b020775522f83c4731ba318905d3d436c2f51f60",
+  "planSha256": "a75f807fb3315834624a3bf69251a8d6cd989fa5ab6891d58b446d6374ea0652",
+  "annexSha256": "c72906b5b4ddfeae45bb2816aac9eda1ac0530c5193a65355d5e33b52fc2c1ed",
+  "targetGitClean": true,
+  "godotProjectPath": "ABSENT",
+  "externalOutputRootEntries": [],
+  "candidateEvidencePath": "ABSENT",
+  "pluginsCreatedOrEnabled": [],
+  "productAssetsReadOrWritten": [],
+  "gameplayRulesReadOrWritten": [],
+  "gateChanges": [],
+  "phase1": "NOT_RUN",
+  "phase2": "NOT_RUN",
+  "phase3": "NOT_RUN",
+  "engineGate": "NOT_RUN"
+}

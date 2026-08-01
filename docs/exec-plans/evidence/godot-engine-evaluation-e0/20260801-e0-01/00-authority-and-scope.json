@@ -1,0 +1,22 @@
+{
+  "schemaVersion": "new-era-godot-e0-authority-scope-v1",
+  "status": "AUTHORIZED_EXECUTION_STOPPED_AT_PHASE0",
+  "createdAtUtc": "2026-08-01T10:30:43Z",
+  "runId": "20260801-e0-01",
+  "executionBaseSha": "b020775522f83c4731ba318905d3d436c2f51f60",
+  "planSha256": "a75f807fb3315834624a3bf69251a8d6cd989fa5ab6891d58b446d6374ea0652",
+  "annexSha256": "c72906b5b4ddfeae45bb2816aac9eda1ac0530c5193a65355d5e33b52fc2c1ed",
+  "ownerAuthorizationSha256": "f9471911be5e6f8570bc1c7b1bf1ee22a9311e2cfefa48c8181dcd862463d843",
+  "bootstrapReceiptSha256": "728fa20400838163bf1e4fbf5d27f97d6abd6ed0f640d62ed1a3a28a29f7f38a",
+  "allowedThrough": "ENGINE_EVALUATION_E0_PHASE_4",
+  "actualStop": "PHASE_0_TEST_HARNESS_FAIL",
+  "boundaries": {
+    "syntheticDataOnly": true,
+    "noPlugins": true,
+    "noProductMap": true,
+    "noProductUi": true,
+    "noGameplayRules": true,
+    "noGateChanges": true,
+    "productionFoundationAuthorized": false
+  }
+}
